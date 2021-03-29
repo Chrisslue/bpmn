@@ -1,0 +1,23 @@
+package de.monticore.bpmn.cocos.activities.invalid;
+
+import de.monticore.bpmn.cds.Domain.*;
+
+process AdHocSubProcessHasNoStartAndEndEvent {
+
+  adhoc S1 {
+    event start E1;
+    task T1;
+  }
+
+  adhoc S2 {
+    event end E2;
+    task T2;
+  }
+
+  adhoc S3 {
+    event start E3;
+    event end E4;
+    task T3;
+  }
+
+}

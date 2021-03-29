@@ -1,0 +1,15 @@
+package de.monticore.bpmn.cocos.analysis.valid;
+
+process Safe {
+
+  task Task1 {
+    <<boundary>> event Reminder timer:[after PT5M];
+  }
+  task Task2;
+  task Task3;
+
+  event start -> Task1 -> Task2 -> event end;
+
+  Task1.Reminder -> Task3 -> event end;
+
+}

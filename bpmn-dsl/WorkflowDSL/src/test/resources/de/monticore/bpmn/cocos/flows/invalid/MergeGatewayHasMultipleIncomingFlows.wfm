@@ -1,0 +1,10 @@
+package de.monticore.bpmn.cocos.flows.invalid;
+
+process MergeGatewayHasMultipleIncomingFlows {
+
+  task T1;
+  merge xor G1;
+
+  T1 -> G1;
+
+}

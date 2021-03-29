@@ -1,0 +1,15 @@
+package de.monticore.bpmn.cocos.events.triggers.invalid;
+
+process CancelIntermediateEventIsAttachedToTransaction {
+
+  event E1 cancel;
+
+  subprocess S1 {
+    event E2 cancel;
+  }
+
+  transaction T1 {
+    event E3 cancel;
+  }
+
+}

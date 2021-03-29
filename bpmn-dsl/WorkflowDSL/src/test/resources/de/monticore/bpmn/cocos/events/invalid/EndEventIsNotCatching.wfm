@@ -1,0 +1,10 @@
+package de.monticore.bpmn.cocos.events.invalid;
+
+process EndEventIsNotCatching {
+
+  event start E1;
+  event end E2 receive;
+
+  E1 -> E2;
+
+}

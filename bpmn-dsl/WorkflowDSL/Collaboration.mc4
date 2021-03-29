@@ -1,0 +1,23 @@
+package de.monticore.workflow;
+
+
+grammar Collaboration extends de.monticore.workflow.Workflow {
+
+  start CollaborationCompilationUnit;
+
+  CollaborationCompilationUnit =
+    ("package" package:(Name& || ".")+ ";")?
+    (ImportStatement)*
+    Collaboration;
+
+  symbol scope Collaboration = "collaboration" Name "{"
+    Process*
+  "}";
+
+  // TODO this is non-distinguishable from sequence flow
+  // TODO include message payload
+  // TODO include correlation key/predicate
+  // TODO Add CoCo for source/target of message flow
+  MessageFlow = "message" from:QName "->" "[" correlationKey:Name "]" to:QName ";";
+
+}

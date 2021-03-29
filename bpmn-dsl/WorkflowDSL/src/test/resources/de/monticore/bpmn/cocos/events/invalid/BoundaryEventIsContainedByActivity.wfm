@@ -1,0 +1,11 @@
+package de.monticore.bpmn.cocos.events.invalid;
+
+import de.monticore.bpmn.cds.Domain.*;
+
+process BoundaryEventIsContainedByActivity {
+
+  message msg:HolidayCard;
+
+  <<boundary>> event E1 message:msg;
+
+}

@@ -1,0 +1,58 @@
+package de.monticore.de.monticore.bpmn._types;
+
+classdiagram RuntimeTypes {
+
+  class ComplexGatewayInstanceAttributes {
+    int activationCount;
+    bool waitingForStart = true;
+  }
+
+  class ParticipantMultiplicityInstanceAttributes {
+    int numParticipants;
+  }
+
+  class ProcessInstanceAttributes {
+    LifecycleState state;
+  }
+
+  class ActivityInstanceAttributes {
+    LifecycleState state;
+  }
+
+  class UserTaskInstanceAttributes {
+    //String actualOwner;
+    /String actualOwner;
+    int taskPriority;
+  }
+
+  class LoopActivityInstanceAttributes {
+    int loopCounter;
+  }
+
+  class MIActivityOuterInstanceAttributes {
+    int numberOfInstances;
+    int numberOfActiveInstances;
+    int numberOfCompletedInstances;
+    int numberOfTerminatedInstances;
+  }
+
+  class MIActivityInnerInstanceAttributes {
+    int loopCounter;
+  }
+
+  enum LifecycleState {
+    INACTIVE,
+    READY,
+    ACTIVE,
+    WITHDRAWN,
+    COMPLETING,
+    COMPLETED,
+    FAILING,
+    FAILED,
+    TERMINATING,
+    TERMINATED,
+    COMPENSATING,
+    COMPENSATED,
+  }
+
+}

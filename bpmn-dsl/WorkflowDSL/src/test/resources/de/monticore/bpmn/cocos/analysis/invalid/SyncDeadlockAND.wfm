@@ -1,0 +1,13 @@
+package de.monticore.bpmn.cocos.analysis.invalid;
+
+process SyncDeadlockAND {
+
+    task Task1;
+    task Task2;
+
+    event start -> split xor -> {
+      [true] Task1,
+      [true] Task2
+    } -> merge and -> event end;
+
+}

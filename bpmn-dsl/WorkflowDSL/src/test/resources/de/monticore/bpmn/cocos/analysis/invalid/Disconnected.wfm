@@ -1,0 +1,12 @@
+package de.monticore.bpmn.cocos.analysis.invalid;
+
+process Disconnected {
+
+    task Task1;
+    task Task2;
+
+    event start -> Task1 -> event end;
+
+    event start -> Task2 -> event end;
+
+}

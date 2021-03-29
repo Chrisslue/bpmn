@@ -1,0 +1,19 @@
+package de.monticore.bpmn.cocos.events.valid;
+
+process AtLeastOneEndEventIfStartEventIsUsed {
+
+  event start E1;
+  task T1;
+  event end E2;
+
+  E1 -> T1 -> E2;
+
+  subprocess S1 {
+    event start E3;
+    task T2;
+    event end E4;
+
+    E3 -> T2 -> E4;
+  }
+
+}

@@ -1,0 +1,11 @@
+package de.monticore.bpmn.cocos.flows.invalid;
+
+process EndEventHasOneOrMoreIncomingFlows {
+
+  event start E1;
+  task T1;
+  event end E2;
+
+  E1 -> T1;
+
+}

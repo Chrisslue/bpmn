@@ -1,0 +1,10 @@
+package de.monticore.bpmn.cocos.flows.invalid;
+
+process SplitGatewayHasMultipleOutgoingFlows {
+
+  task T1;
+  split xor G1;
+
+  G1 -> T1;
+
+}

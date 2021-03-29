@@ -1,0 +1,14 @@
+package de.monticore.bpmn.cocos.flows.valid;
+
+process EndEventHasNoOutgoingFlow {
+
+  event start E1;
+  task T1;
+  event end E2;
+
+  E1 -> T1 -> E2;
+
+  task T2;
+  event start -> T2 -> event end;
+
+}

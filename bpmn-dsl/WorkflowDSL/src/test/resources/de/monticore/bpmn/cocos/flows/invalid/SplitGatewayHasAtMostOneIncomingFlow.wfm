@@ -1,0 +1,14 @@
+package de.monticore.bpmn.cocos.flows.invalid;
+
+process SplitGatewayHasAtMostOneIncomingFlow {
+
+  task T1;
+  task T2;
+  task T3;
+  task T4;
+  split xor G1;
+
+  {T1, T2} -> G1;
+  G1 -> {T3, T4};
+
+}

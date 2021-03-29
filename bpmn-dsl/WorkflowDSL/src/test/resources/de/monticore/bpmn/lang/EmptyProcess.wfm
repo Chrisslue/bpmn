@@ -1,0 +1,4 @@
+package de.monticore.bpmn.lang;
+
+process EmptyProcess {
+}

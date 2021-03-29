@@ -1,0 +1,11 @@
+package de.monticore.bpmn.cocos.activities.valid;
+
+import de.monticore.bpmn.cds.Domain.*;
+
+process AdHocSubProcessContainsAtLeastOneActivity {
+
+  adhoc S1 {
+    task T1;
+  }
+
+}

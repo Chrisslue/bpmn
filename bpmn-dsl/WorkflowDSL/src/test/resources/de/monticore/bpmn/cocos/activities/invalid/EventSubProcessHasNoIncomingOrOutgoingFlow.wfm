@@ -1,0 +1,21 @@
+package de.monticore.bpmn.cocos.activities.invalid;
+
+import de.monticore.bpmn.cds.Domain.*;
+
+process EventSubProcessHasNoIncomingOrOutgoingFlow {
+
+  task T1;
+  task T2;
+
+  subprocess S1 {
+    signal sig:HolidayCard;
+
+    event start E1 signal:sig;
+    event end E2;
+
+    E1 -> E2;
+  }
+
+  T1 -> S1 -> T2;
+
+}

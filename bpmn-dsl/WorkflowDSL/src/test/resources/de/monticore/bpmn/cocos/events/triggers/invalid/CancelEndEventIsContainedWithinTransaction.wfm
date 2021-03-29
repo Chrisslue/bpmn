@@ -1,0 +1,7 @@
+package de.monticore.bpmn.cocos.events.triggers.invalid;
+
+process CancelEndEventIsContainedWithinTransaction {
+
+  event end E1 cancel;
+
+}

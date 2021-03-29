@@ -1,0 +1,13 @@
+package de.monticore.bpmn.cocos.analysis.valid;
+
+process Connected {
+
+    task Task1;
+    task Task2;
+
+    event start -> split and -> {
+      Task1,
+      Task2
+    } -> merge and -> event end;
+
+}

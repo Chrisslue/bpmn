@@ -1,0 +1,28 @@
+package de.monticore.bpmn.petrinet;
+
+import de.monticore.bpmn.cds.Domain.*;
+
+process Task {
+
+  task T1;
+  task T2 {
+    <<boundary>> event E1 timer:[after P12D];
+  }
+  task T3;
+
+  T1 -> split xor -> {
+    T2,
+    T3
+  };
+
+  T2.E1 -> T3;
+
+  subprocess S1 {
+    message msg:Contract;
+
+    task T4;
+
+    event start message:msg -> T4 -> event end;
+  }
+
+}

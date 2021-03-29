@@ -1,0 +1,17 @@
+package de.monticore.bpmn.cocos.events.valid;
+
+process StartEventOutgoingFlowHasNoCondition {
+
+  event start E1;
+  task T1;
+  task T2;
+  task T3;
+  event end E2;
+
+  E1 -> {
+    T1,
+    T2,
+    T3
+  } -> E2;
+
+}

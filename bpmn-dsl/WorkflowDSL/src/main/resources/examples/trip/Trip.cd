@@ -1,0 +1,9 @@
+package examples.trip;
+
+classdiagram Trip {
+
+  class AdvancePaymentRequestMessage;
+
+  class AdvancePaymentResponseMessage;
+
+}

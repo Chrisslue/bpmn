@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!-- See docs: https://github.com/Siggen/jaxb2-namespace-prefix/blob/master/README.md -->
+<jxb:bindings version="1.0"
+              xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xmlns:namespace="http://jaxb2-commons.dev.java.net/namespace-prefix"
+              xsi:schemaLocation="http://java.sun.com/xml/ns/jaxb http://java.sun.com/xml/ns/jaxb/bindingschema_2_0.xsd
+    http://jaxb2-commons.dev.java.net/namespace-prefix https://raw.githubusercontent.com/Siggen/jaxb2-namespace-prefix/master/src/main/resources/prefix-namespace-schema.xsd">
+
+    <jxb:bindings schemaLocation="BPMN20.xsd">
+        <namespace:prefix name="bpmn" />
+        <!-- Additional @XmlNs prefix declarations to take effect for this schema/package -->
+        <!-- <namespace:prefix name="xsi" namespaceURI="http://www.w3.org/2001/XMLSchema-instance" /> -->
+    </jxb:bindings>
+    <jxb:bindings schemaLocation="BPMNDI.xsd">
+        <namespace:prefix name="bpmndi" />
+    </jxb:bindings>
+    <jxb:bindings schemaLocation="DC.xsd">
+        <namespace:prefix name="dc" />
+    </jxb:bindings>
+    <jxb:bindings schemaLocation="DI.xsd">
+        <namespace:prefix name="di" />
+    </jxb:bindings>
+</jxb:bindings>

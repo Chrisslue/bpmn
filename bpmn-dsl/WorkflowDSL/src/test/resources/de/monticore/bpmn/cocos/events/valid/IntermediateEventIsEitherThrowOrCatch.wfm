@@ -1,0 +1,16 @@
+package de.monticore.bpmn.cocos.events.valid;
+
+import de.monticore.bpmn.cds.Domain.*;
+
+process IntermediateEventIsEitherThrowOrCatch {
+
+  message msg:HolidayCard;
+
+  event start E0;
+  event E11 receive message:msg;
+  event E12 send message:msg;
+  event end E2;
+
+  E0 -> {E11, E12} -> E2;
+
+}

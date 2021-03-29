@@ -1,0 +1,17 @@
+package de.monticore.bpmn.cocos.gateways.valid;
+
+import de.monticore.bpmn.cds.Domain.*;
+
+
+process EventGatewayOutgoingFlowsHaveNoCondition {
+
+  message msg:Contract;
+
+  task receive T1 message:msg;
+  task receive T2 message:msg;
+
+  split receive:first G1;
+
+  G1 -> {T1, T2};
+
+}

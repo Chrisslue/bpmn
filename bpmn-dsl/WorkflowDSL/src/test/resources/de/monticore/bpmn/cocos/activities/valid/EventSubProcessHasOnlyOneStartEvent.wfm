@@ -1,0 +1,16 @@
+package de.monticore.bpmn.cocos.activities.valid;
+
+import de.monticore.bpmn.cds.Domain.*;
+
+process EventSubProcessHasOnlyOneStartEvent {
+
+  subprocess S1 {
+    signal sig:Contract;
+
+    event start E1 signal:sig;
+    event end E3;
+
+    E1 -> E3;
+  }
+
+}

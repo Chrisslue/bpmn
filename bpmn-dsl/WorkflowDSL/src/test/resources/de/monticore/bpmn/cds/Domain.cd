@@ -1,0 +1,39 @@
+package de.monticore.bpmn.cds;
+
+classdiagram Domain {
+
+    class Contract {
+      ZonedDateTime hiringDate;
+      int version;
+    }
+
+    association [1] DomainUser -> Contract [*];
+
+    class Report {
+      String result;
+      String details;
+    }
+
+    class LeaveCard;
+
+    class LeaveEntry {
+      ZonedDateTime startDate;
+      ZonedDateTime endDate;
+      /int workingDays;
+      /int remainingLeaveDays;
+      DomainUser substitute;
+      boolean valid;
+      boolean approved;
+    }
+
+    association entries [1] LeaveCard -> LeaveEntry [*]; // <<ordered>>;
+
+    association [1] LeaveCard -> DomainUser [1];
+
+    class MedicalCertificate {
+      ZonedDateTime startDate;
+      ZonedDateTime endDate;
+      String description;
+    }
+
+}

@@ -1,0 +1,26 @@
+package de.monticore.de.monticore.bpmn._types;
+
+classdiagram Types {
+
+  class Error {
+    String name;
+    String errorCode;
+    //ItemDefinition structure;
+  }
+
+  class Escalation {
+    String name;
+    String errorCode;
+    //ItemDefinition structure;
+  }
+
+  class Message {
+    String name;
+  }
+
+  class Signal {
+    String name;
+    //ItemDefinition structure;
+  }
+
+}

@@ -1,0 +1,12 @@
+package de.monticore.bpmn.cocos.events.triggers.invalid;
+
+import de.monticore.bpmn.cds.Domain.*;
+
+process BoundaryEventHasValidTrigger {
+
+  task T1 {
+    <<boundary>> event E1;
+    <<boundary>> event E2 terminate;
+  }
+
+}

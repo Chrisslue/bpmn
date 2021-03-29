@@ -1,0 +1,384 @@
+package de.monticore.bpmn;
+
+grammar Workflow
+        extends ocl.monticoreocl.OCL,
+                de.monticore.expressions.TimeExpressions {
+
+  start WorkflowCompilationUnit;
+
+  /* Condition Language, e. g. OCL */
+
+  interface Condition;
+  scope ConditionExpression implements Condition = Expression;
+
+  interface Timer;
+  scope TimerExpression implements Timer = TimeExpression;
+
+  WorkflowCompilationUnit =
+      PackageStatement?
+      ImportStatement*
+      Process
+    ;
+    
+
+  /*========================================================================*/
+  /*=============================== PROCESS ================================*/
+  /*========================================================================*/
+
+  interface FlowElement;
+
+  interface FlowElementContainer = Name FlowElement*;
+
+  interface symbol CallableElement =
+      Name
+      IOSpecification
+    ;
+
+  symbol scope Process implements CallableElement, FlowElementContainer =
+      "process" Name
+      "{"
+        IOSpecification
+        (   Lane
+          | FlowElement
+        )*
+      "}"
+    ;
+
+  symbol Lane =
+      "lane" Name
+      "{"
+        (   childLane:Lane
+          | FlowElement
+        )*
+      "}"
+    ;
+  astrule Lane =
+      parentLane:Optional<String> // MC 5.0.2 does not yet support '?' // Optional<ASTLane> leads to circular dependencies in AST
+    ;
+
+
+  /*========================================================================*/
+  /*============================== ACTIVITIES ==============================*/
+  /*========================================================================*/
+
+  interface FlowNode ;
+
+  interface GlobalFlowNode extends FlowNode, FlowElement; // TODO naming? BaseFlowNode, RootFlowNode, TopLevelFlowNode, LocalFlowNode, NamedFlowNode, CommonFlowNode?
+  interface InlineFlowNode extends FlowNode ;
+
+  astrule FlowNode astextends ASTFlowElement, IFlowNode = // IFlowNode provides additional default methods for predecessors/successors
+      parentRef:Optional<String>
+      laneRef:Optional<String>
+      incomings:List<SequenceFlow>
+      outgoings:List<SequenceFlow>
+    ;
+
+  interface Activity extends GlobalFlowNode =
+      Name
+      CompensationHandler?
+      LoopCharacteristics?
+    ;
+
+  symbol scope SubProcess implements Activity, FlowElementContainer  =
+      type:SubProcessType
+      Name
+      AdHocCharacteristics?
+      CompensationHandler?
+      LoopCharacteristics?
+      "{"
+        IOSpecification // IOSpecification is not allowed here by BPMN standard, but we include it here to be able to show a suitable error message
+        (   Lane
+          | FlowElement
+        )*
+      "}"
+    ;
+
+  enum SubProcessType =
+      "subprocess"
+    | "transaction"
+    | "adhoc"
+    ;
+
+  AdHocCharacteristics =
+      ("until" ":" "[" completionCondition:Condition "]")
+      (   "parallel" (waitForRemainingInstances:["noninterrupt"])?
+        | ["sequential"]
+      )?
+    ;
+
+  astrule SubProcess =
+      triggeredByEvent:boolean
+    ;
+
+  interface AtomicActivity extends Activity =
+      Name
+      IOSpecification?
+      (boundaryEvent:NamedEvent)*
+    ;
+
+  symbol scope CallActivity implements AtomicActivity =
+      "task"
+      Name
+      "template" ":" template:Name  // @CallableElement
+      CompensationHandler?
+      LoopCharacteristics?
+      (   "{"
+            IOSpecification         // must match the I/O requirements of the called element
+            (boundaryEvent:NamedEvent)*
+          "}"
+        | ";"
+      )
+    ;
+
+  symbol scope Task implements AtomicActivity =
+      "task"
+      type:TaskType?
+      Name
+      TaskTypeAttributes?
+      CompensationHandler?
+      LoopCharacteristics?
+      (   "{"
+            IOSpecification
+            (boundaryEvent:NamedEvent)*
+          "}"
+        | ";"
+      )
+    ;
+
+  enum TaskType =
+      "service"
+    | "send"
+    | "receive"
+    | "user"
+    | "manual"
+    | "rule"
+    | "script"
+    ;
+
+  interface TaskTypeAttributes;
+
+  TaskSendReceiveTypeAttributes implements TaskTypeAttributes =
+      "message" ":" message:Name@Message
+    ;
+
+  CompensationHandler =
+      "compensate" ":" activity:Name // @Activity
+    ;
+
+  interface LoopCharacteristics;
+
+  StandardLoop implements LoopCharacteristics =
+      (testBefore:["while"] | "until") ":" "[" loopCondition:Condition "]"
+      ("max" ":" loopMaximum:IntLiteral)?
+    ;
+
+  MILoop implements LoopCharacteristics =
+      "count" ":" LoopCardinality
+      ("parallel" | ["sequential"])?
+      ("until" ":" "[" completionCondition:Condition "]")?
+      ("implicit" ":" implicitBehavior:MIImplicitEventBehavior)?
+      ("event" ":"    implicitEventDef:EventTrigger           )?
+    ;
+
+  astrule MILoop =
+      loopDataInput: Name
+      loopDataOutput:Name
+    ;
+
+  MIImplicitEventBehavior =
+      ["none"]
+    | ["first"]
+    | ["every"]
+    | "[" complexCondition:Condition "]"
+    ;
+
+  LoopCardinality =
+      count:IntLiteral
+    | ("[" expression:Condition "]")
+    | collection:Name
+    ;
+
+
+  /*========================================================================*/
+  /*=============================== GATEWAYS ===============================*/
+  /*========================================================================*/
+
+  // cannot be an abstract class, due to a bug in MC v5.0.2 (attributes from interface NT FlowNode are not inherited)
+  interface Gateway extends FlowNode =
+      direction:GatewayDirection type:GatewayType
+    ;
+
+  symbol NamedGateway implements Gateway, GlobalFlowNode =
+      direction:GatewayDirection
+      type:GatewayType
+      Name
+      ("[" activationCondition:Condition "]")?  // complex gateway
+      ";"
+    ;
+
+  InlineGateway implements Gateway, InlineFlowNode =
+      direction:GatewayDirection
+      type:GatewayType
+      ("[" activationCondition:Condition "]")?  // complex gateway
+    ;
+
+  enum GatewayDirection =
+      "split"
+    | "merge"
+    ;
+
+  GatewayType =
+      [exclusive:"xor"]
+    | [inclusive:"ior"]
+    | [parallel: "and"]
+    | ("receive" ":" [exclusiveEventBased:"first"])
+    | ("receive" ":" [ parallelEventBased:  "all"])
+    | ["complex"]
+    ;
+
+
+  /*========================================================================*/
+  /*================================ EVENTS ================================*/
+  /*========================================================================*/
+
+  interface Event extends FlowNode =
+      type:EventType? behavior:EventBehavior? trigger:EventTrigger?
+    ;
+
+  symbol NamedEvent implements Event, GlobalFlowNode =
+      (boundary:["<<boundary>>"])?
+      "event" type:EventType?
+      Name
+      behavior:EventBehavior? trigger:EventTrigger?
+      (   "{"
+            (input:IRequirement | output:ORequirement)
+          "}"
+        | ";"
+      )
+    ;
+
+  InlineEvent implements Event, InlineFlowNode =
+      "event" type:EventType?
+      behavior:EventBehavior? trigger:EventTrigger?
+    ;
+
+  enum EventType =
+      "start"
+    | "end"
+    ;
+
+  EventBehavior =
+        throw:["send"]
+      | catch:["receive"] (nonInterrupt:["noninterrupt"])? // TODO move noninterrupt behind the trigger?
+    ;
+
+  interface EventTrigger;
+
+  EventTriggerCancel       implements EventTrigger = "cancel";
+  EventTriggerCompensate   implements EventTrigger = "compensate" (":" activity:Name)? ["async"]?;
+  EventTriggerConditional  implements EventTrigger = "when"        ":" "[" Condition "]";
+  EventTriggerError        implements EventTrigger = "error"       ":" error:Name@Error;
+  EventTriggerEscalate     implements EventTrigger = "escalate"    ":" escalate:Name@Escalation;
+  EventTriggerMessage      implements EventTrigger = "message"     ":" message:Name@Message;
+  EventTriggerSignal       implements EventTrigger = "signal"      ":" signal:Name@Signal;
+  EventTriggerTerminate    implements EventTrigger = "terminate";
+  EventTriggerTimer        implements EventTrigger = "timer"       ":" "[" expression:Timer "]";
+  EventTriggerMultiple     implements EventTrigger = ("one" | parallelMultiple:["all"]) "{" trigger:(EventTrigger || ",")+ "}";
+  astrule EventTriggerMultiple = trigger:EventTrigger min=2 ;
+
+
+  /*========================================================================*/
+  /*============================= CONTROL FLOW =============================*/
+  /*========================================================================*/
+
+
+  SequenceFlow implements FlowElement =
+      path:(FlowTarget || "->")+
+      ";"
+    ;
+  astrule SequenceFlow = path:FlowTarget min=2 ;
+
+  FlowBlock =
+      "{" branch:(FlowBranch || ",")+ "}"
+    ;
+  astrule FlowBlock = branch:FlowBranch min=2 ;
+
+  FlowBranch =
+      path:(FlowTarget || "->")+
+    ;
+
+  FlowTarget =
+      condition:FlowCondition?
+      (   nodeRef:QName
+        | node:InlineFlowNode
+        | block:FlowBlock
+      )
+    ;
+
+  FlowCondition =
+      "[" Condition "]"
+    | default:["<<default>>"]
+    ;
+
+  /*========================================================================*/
+  /*================================ DATA ==================================*/
+  /*========================================================================*/
+
+  symbol DataObject implements FlowElement =
+      ("data" | ["store"]) Name ":" Type ";"
+    ;
+
+  /* symbol rules not yet properly supported by MC 5.0.2
+  symbolrule DataObject =
+    type: de.monticore.umlcd4a.symboltable.references.CDTypeSymbolReference
+  ;
+  */
+
+
+  /*========================================================================*/
+  /*========================== I/O REQUIREMENTS ============================*/
+  /*========================================================================*/
+
+  IOSpecification = IORequirement* ;
+
+  interface IORequirement;
+
+  DataIO =
+      QName
+      (loop:["[i]"] {noSpace()}?)?
+      (":" Type)?
+      (
+        (   optional:["?"]
+          | whileExecuting:["!"]
+        )
+        {noSpace()}?
+      )?
+      ("as" alias:Name)?
+    ;
+
+  InputSet  = input :DataIO | "{" input :(DataIO || ",")* "}" ;
+  OutputSet = output:DataIO | "{" output:(DataIO || ",")* "}" ;
+
+  IRequirement implements IORequirement = "in"  ":" inputSet :InputSet  ";" ;
+  ORequirement implements IORequirement = "out" ":" outputSet:OutputSet ";" ;
+
+  IORule implements IORequirement =
+      "io" (operationName:Name)? ":" inputSet:InputSet "->" outputSet:OutputSet ";"
+    ;
+
+
+  /*========================================================================*/
+  /*================================ MISC ==================================*/
+  /*========================================================================*/
+
+  // TODO [REMOVE] Use de.monticore.types.Types.QualifiedName as soon as ocl.monticoreocl.OCL.QualifiedName is renamed
+  QName = part:(Name|| ".")+;
+
+  PackageStatement = ("package" part:(Name& || ".")+ ";") ;
+
+  symbol Error      implements FlowElement = "error"       Name ":" Type ";" ;
+  symbol Escalation implements FlowElement = "escalation"  Name ":" Type ";" ;
+  symbol Message    implements FlowElement = "message"     Name ":" Type ";" ;
+  symbol Signal     implements FlowElement = "signal"      Name ":" Type ";" ;
+
+}

@@ -1,0 +1,30 @@
+package de.monticore.bpmn.examples.vacation;
+
+import de.monticore.bpmn.cds.Vacation.*;
+
+process RequestVacation {
+
+  lane Admin {
+    store contract:Contract;
+    data report:Report;
+    data notice:VacationCardEntry;
+
+    task service DoWork {
+      out: report;
+    }
+    task user Task1 {
+      io: {contract, report} -> {report};
+    }
+    task user Task2 {
+      io: {report} -> {notice};
+    }
+    task Foo; // template:External;
+    task service Bar;
+
+    event start -> DoWork -> Task1 -> split xor -> {
+      [true] Foo,
+      [false] Bar
+    } -> merge xor -> event receive timer:[after PT20S] -> Task2 -> event end;
+  }
+
+}

@@ -1,0 +1,15 @@
+package de.monticore.bpmn.cocos.events.invalid;
+
+import de.monticore.bpmn.cds.Domain.*;
+
+process NonInterruptingEventIsSubProcessStartOrBoundary {
+
+  message msg:Contract;
+
+  event start E1 receive noninterrupt message:msg;
+  event E2 receive noninterrupt message:msg;
+  event end E3;
+
+  E1 -> E2 -> E3;
+
+}

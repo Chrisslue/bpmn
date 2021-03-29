@@ -1,0 +1,10 @@
+package de.monticore.bpmn.cocos.flows.valid;
+
+process SequenceFlowNodeReferencesExist {
+
+  task T1;
+  task T2;
+
+  T1 -> T2;
+
+}

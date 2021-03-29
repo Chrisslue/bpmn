@@ -1,0 +1,22 @@
+package de.monticore.bpmn.cocos.analysis.invalid;
+
+process Unsafe {
+
+  task Task1;
+  task Task2; // unsafe
+
+  merge xor LoopEntry;
+  split xor LoopExit;
+
+  split and SplitGateway;
+
+  event start Start;
+  event end End1;
+  event end End2;
+
+  Start -> LoopEntry -> Task1 -> LoopExit -> End1;
+  LoopExit -> SplitGateway -> LoopEntry;
+
+  SplitGateway -> Task2 -> End2;
+
+}

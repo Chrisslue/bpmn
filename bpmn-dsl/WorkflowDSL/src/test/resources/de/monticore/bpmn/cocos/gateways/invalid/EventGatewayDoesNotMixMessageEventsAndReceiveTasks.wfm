@@ -1,0 +1,21 @@
+package de.monticore.bpmn.cocos.gateways.invalid;
+
+import de.monticore.bpmn.cds.Domain.*;
+
+process EventGatewayDoesNotMixMessageEventsAndReceiveTasks {
+
+  message msg:Contract;
+
+  task T1;
+
+  event E1 receive message:msg;
+  task receive T2 message:msg;
+
+
+  split receive:first G1;
+
+  T1 -> G1;
+  G1 -> E1;
+  G1 -> T2;
+
+}

@@ -1,0 +1,15 @@
+package de.monticore.bpmn.cocos.analysis.invalid;
+
+process InfiniteLoop {
+
+    task Task1;
+
+    merge xor MergeGateway;
+    split and SplitGateway;
+
+    event start -> MergeGateway -> Task1 -> SplitGateway -> event end;
+
+    // loop back to merge gateway
+    SplitGateway -> MergeGateway;
+
+}

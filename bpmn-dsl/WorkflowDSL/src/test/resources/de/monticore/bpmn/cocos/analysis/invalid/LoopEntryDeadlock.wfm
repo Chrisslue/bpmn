@@ -1,0 +1,15 @@
+package de.monticore.bpmn.cocos.analysis.invalid;
+
+process LoopEntryDeadlock {
+
+    task Task1;
+
+    merge and MergeGateway;
+    split xor SplitGateway;
+
+    event start -> MergeGateway -> Task1 -> SplitGateway -> event end;
+
+    // loop back to merge gateway
+    SplitGateway -> MergeGateway;
+
+}

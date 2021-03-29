@@ -1,0 +1,35 @@
+
+#
+# This is an informal description of how to use the
+# de.monticore.workflow example from a commandline (under Windows)
+# It mimicks the commands from the website
+#		http://www.monticore.de/gettingstarted/
+#
+# Please note: on Unix systems paths are separated using
+# ":" (colon) instead of semicolons. 
+#
+
+#
+# Step 0: Retrieve the monticore-cli.jar
+#
+wget www.monticore.de/gettingstarted/monticore-cli-4.3.0.jar
+mv monticore-cli-4*.jar monticore-cli.jar
+
+# 
+# Step 1: Run MontiCore
+#
+java -jar monticore-cli.jar src/main/grammars/Automaton.mc4 -hcp hwc/
+
+# 
+Step 2: Compiling the de.monticore.workflow DSL
+#
+javac -cp monticore-cli.jar -sourcepath "src/main/java;out/;hwc/" \
+  src/main/java/de.monticore.workflow/AutomatonTool.java
+
+#
+# Step 3: Running the de.monticore.workflow DSL tool
+#
+java -cp "src/main/java;out/;hwc/;monticore-cli.jar" \
+   BPMNTool src/test/resources/de.monticore.workflow/parser/PingPong.aut
+
+

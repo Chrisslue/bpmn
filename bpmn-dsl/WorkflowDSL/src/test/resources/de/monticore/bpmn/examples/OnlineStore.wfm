@@ -1,0 +1,285 @@
+package de.monticore.bpmn.examples;
+
+import de.monticore.bpmn.examples.OnlineStore.*;
+
+process OnlineStore {
+  
+  lane OrderFulfillment {
+    data orderMsg:Order;
+    data order:Order;
+
+    store customer:Customer;
+/*
+    global task service CheckArticleAvailability {
+      in: article:Article;
+    }
+*/
+    task CheckArticleAvailability template:CheckArticleAvailability {
+      in: article;
+    }
+
+    start event OrderReceived receive message:orderMsg {
+      out: order;
+    //order <- orderMsg.order;
+    }
+
+    OrderReceived -> OrderFulfillment;
+
+    subprocess OrderFulfillment {
+      message lateShippingNotice:LateShippingNotice;
+
+      subprocess ReserveArticle multi parallel {
+        in: order.articles[i] as article;
+
+        task service CheckArticleAvailability;
+
+        task ProcureArticle template:ProcureArticle;
+
+        task service ReserveArticle rollback:RemoveReservation;
+        rollback task service RemoveReservation;
+
+        start event -> CheckArticleAvailability -> split xor {
+          [article.isAvailable]: continue;
+          else: ProcureArticle;
+        } merge xor -> end event ArticleReserved;
+
+        subprocess {
+          start event receive rollback -> event CancelReservation send rollback:ReserveArticle async -> end event;
+        }
+
+        boundary event LateShipping receive nocancel escalation:lateShipping;
+      }
+
+      ReserveArticle.LateShipping -> task send InformCustomer message:lateShippingNotice -> end event;
+
+      task rule ComputeFinalDiscount {
+        in: customer;
+      }
+
+      subprocess CheckCreditCardRating {
+        store payments:Collection<PaymentRecord>;
+
+        task rule InternalRiskAssessment {
+          in: payments;
+        }
+        task service GetCreditRatingCompanyA;
+        task service GetCreditRatingCompanyB;
+
+        start event -> split and {
+          InternalRiskAssessment;
+          GetCreditRatingCompanyA;
+          GetCreditRatingCompanyB;
+        } merge complex [activationCount >= 2] -> end event;  // TODO BPMN model instance variables
+      }
+
+      transaction ProcessPayment {
+        in: order;
+
+        error creditCardFailed:CreditCardFailureError;
+
+        task service DeductStoreCredit rollback:RestoreStoreCredit;
+        rollback task service RestoreStoreCredit;
+
+        task ChargeCreditCard template:CollectPayment {
+          boundary event CreditCardFailed receive error:creditCardFailed;
+        }
+        ChargeCreditCard.CreditCardFailed -> end event PaymentFailed send cancel;
+        
+        start event
+
+        PaymentRequested -> DeductStoreCredit -> ChargeCreditCard -> end event PaymentSucceeded;
+    
+      }
+
+      ProcessPayment.PaymentFailed -> event OrderCancelled send rollback;
+
+      subprocess PreparePackage {
+        data shippingNote:ShippingNote;
+
+        task rule DetermineCarrier {
+          in: order;
+        }
+        task user PrintShippingLabel;
+        task user TakeOutShippingInsurance;
+        task manual FinalizePackage;
+        task user PrintShippingNote {
+          in: order;
+          out: shippingNote;
+        }
+        task manual PackageArticles {
+          in: shippingNote;
+        }
+
+        start event -> split and {
+          DetermineCarrier -> split ior {
+            [order.requiresInsurance]: TakeOutShippingInsurance;
+            else: PrintShippingLabel;
+          } merge ior;
+          PrintShippingNote -> PackageArticles;
+        } merge and -> FinalizePackage -> end event ArticlesPackaged;
+
+        boundary event ShippingAddressUpdated receive signal:shippingAddressUpdated;
+      }
+
+      PreparePackage.ShippingAddressUpdated -> PreparePackage; // re-start sub-process
+
+      start event -> split and {
+        ReserveArticle;
+        ComputeFinalDiscount -> split xor {
+          [order.amount >= 1000]: #CheckCreditCardRating -> split xor {
+            [rating == GOOD]: continue;
+            [rating == BAD]:  event OrderCancelled send rollback;
+          };
+          else: continue;
+        } merge xor -> event receive when:[forall a in order.articles: a.isAvailable] -> ProcessPayment;
+      } merge and -> PreparePackage -> end event PackagePrepared;
+
+                 
+      // event sub-processes
+      subprocess {
+        start event NotShippable receive error:notShippable -> event send rollback -> end event OrderCancelled;
+      }
+
+      message orderCancellation:OrderCancellationRequest;
+      subprocess {
+        start event OrderCancellationRequested receive message:orderCancellation -> end event OrderCancelled send rollback;
+      }
+
+      message addressUpdate:ShippingAddressUpdateRequest;
+      signal shippingAddressUpdated:ShippingAddressUpdatedSignal;
+      subprocess {
+        start event ShippingAddressUpdateRequested receive nocancel message:addressUpdate
+          -> task service UpdateDeliveryAddress -> end event send signal:shippingAddressUpdated;
+      }
+      
+      message paymentMethodUpdate:PaymentMethodUpdateRequest;
+      signal paymemntMethodUpdated:PaymentMethodUpdatedSignal;
+      subprocess {
+        start event PaymentMethodUpdateRequested receive nocancel message:paymentMethodUpdate
+          -> task service UpdatePaymentMethod -> end event send signal:paymemntMethodUpdated;
+      }
+    }
+
+    message shippingNotification:ShippingNotification;
+    message deliveryNotification:DeliveryNotification;
+
+    OrderFulfillment -> TransferPackageToCarrier -> event NotifyWasShipped send message:shippingNotification -> event OrderDelivered receive message:deliveryNotification;
+    OrderFulfillment -> [order.payment.isByInstallments] ProcessRecurringPayment;
+
+    task manual TransferPackageToCarrier;
+
+    subprocess ProcessRecurringPayment loop until:[order.isPaid] {
+      escalation recurringPaymentFailed:RecurringPaymentFailure;
+
+      task CollectInstallment template:CollectPayment;
+
+      start event IthMonthAfterPurchase receive timeout:[after "3d"] -> task CollectInstallment;
+
+      boundary event CreditCardFailed receive error:creditCardFailed;
+    }
+
+    ProcessRecurringPayment.CreditCardFailed -> event RecurringPaymentFailed send escalation:recurringPaymentFailed;
+  }
+
+  lane CustomerSupport {
+    message complaint:Complaint;
+    data complaintNotice:ComplaintNotice;
+
+    task send AskForProductReview;
+
+    subprocess HandleComplaint {
+      message moreInfoRequest:AdditionalInformationRequest;
+      message moreInfoResponse:AdditionalInformationResponse;
+      message complaintResolved:ComplaintResolvedNotification;
+      message complaintRejected:ComplaintRejectedNotification;
+
+      task user CheckComplaint {
+        in: {complaintNotice, order};
+      }
+      task rule DetermineCredit;
+      task service UpdateStoreCredit;
+      task send RequestMoreInformation message:moreInfoRequest;
+      task receive ReceiveMoreInformation message:moreInfoResponse;
+
+      start event -> CheckComplaint -> split xor {
+        [complaintNotice.status == ACCEPTED]:
+          DetermineCredit -> UpdateStoreCredit -> end event ComplaintResolved send message:complaintResolved;
+        [complaintNotice.status == REJECTED]:
+          end event ComplaintRejected send message:complaintRejected;
+        [complaintNotice.status == MORE_INFO_REQUIRED]:
+          RequestMoreInformation -> split receive:first {
+            event ThreeDays receive timeout:[after "3d"] -> end event ComplaintRejected send message:complaintRejected;
+            ReceiveMoreInformation -> event RecheckComplaint send link:RecheckComplaint;
+          };
+      };
+      event RecheckComplaint receive link -> CheckComplaint;
+    }
+
+    event ComplaintReceived receive message:complaint {
+      out: complaintNotice;
+    }
+
+    OrderDelivered -> split and {
+      event FortyEightHours receive timeout:[after "48h"] -> AskForProductReview;
+      split receive:all {
+        event FifteenDays receive timeout:[after "15d"];                            // event FifteenDays receive after:15d
+        ComplaintReceived -> HandleComplaint;                                     // but timeout:[Expression] seems more felxible, e.g. allows for CRON expressions "0 0 1 * *"
+      } merge xor;
+    } merge and -> end event OrderClosed;
+  }
+  
+  lane Sales {
+    data salesFigures:Collection<SalesFigures>;
+    data report:SalesReport;
+    message reportDueReminder:SalesReportDueReminder;
+    message publication:SalesReport;
+
+    task script CollectSalesData {
+      out: salesFigures;
+    }
+
+    adhoc PrepareSalesReport parallel until:[report.pageCount >= 2] {
+      task user GenerateGraphics multi sequential;
+      task user CreateRevenueForCast;
+      task user WriteSalesReport {
+        out: report;
+      }
+      CreateRevenueForCast -> WriteSalesReport;
+
+      boundary event EveryTwentyFourHours receive nocancel timeout:[every "24h"];
+    }
+
+    signal newReviewAvailable:ReviewAvailableSignal;
+    event ReviewCreated receive signal:newReviewAvailable;
+
+    task ReviewReport multi sequential count:3 until:[exists r in reviews: !r.accepted] implicit:all event:newReviewAvailable {
+      io: report -> reviews[i];
+    }
+
+    task UpdateReport {
+      io: report -> report;
+    }
+
+    signal publication:SalesReport;
+    end event PublishReport send message:publication {
+      in: report;
+    }
+
+    start event FirstDayOfMonth receive timeout:[every "month"] -> CollectSalesData -> PrepareSalesReport -> ReviewReport -> split xor {
+      [report.accepted ]: PublishReport;
+      [!report.accepted]: UpdateReport -> ReviewReport;
+    };
+    PrepareSalesReport.EveryTwentyFourHours -> task send SendEmailReminder message:reportDueReminder -> end event;
+  }
+
+  lane Inventory {
+    task ReorderArticle template:ProcureArticle {
+      boundary event NotShippable receive error:notShippable;
+    }
+    ReorderArticle.NotShippable -> task service RemoveArticle;
+
+    start event StockLevelBelowMinimum receive when:[exists a in Article: a.stock < 10]
+      -> ReorderArticle -> task service UpdateStockCount -> end event ArticleProcured;
+  }
+
+}

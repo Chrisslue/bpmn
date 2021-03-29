@@ -1,0 +1,66 @@
+package de.monticore.bpmn;
+
+import com.google.common.base.Joiner;
+import de.se_rwth.commons.logging.Finding;
+
+import java.util.Collection;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+/**
+ * Helpers for testing CoCos.
+ */
+public class Assert {
+
+    /**
+     * Asserts that each of the expectedErrors is found at least once in the
+     * actualErrors.
+     *
+     * @param expectedErrors
+     * @param actualErrors
+     */
+    public static void assertErrors(Collection<Finding> expectedErrors,
+                                    Collection<Finding> actualErrors) {
+        String actualErrorsJoined = "\nactual Errors: \n\t" + Joiner.on("\n\t").join(actualErrors);
+        for (Finding expectedError : expectedErrors) {
+            boolean found = actualErrors.stream()
+                    .filter(s -> s.buildMsg().contains(expectedError.buildMsg())).count() >= 1;
+            assertTrue(found, "The following expected error was not found: " + expectedError + actualErrorsJoined);
+        }
+    }
+
+    /**
+     * Asserts that each of the messages of expectedErrors is found at least once
+     * in any of the actualErrors. The check omits other fields of the errors.
+     *
+     * @param expectedErrors
+     * @param actualErrors
+     */
+    public static void assertErrorMsg(Collection<Finding> expectedErrors,
+                                      Collection<Finding> actualErrors) {
+        String actualErrorsJoined = "\nactual Errors: \n\t" + Joiner.on("\n\t").join(actualErrors);
+        for (Finding expectedError : expectedErrors) {
+
+            boolean found = actualErrors.stream().filter(
+                    f -> f.getMsg().equals(expectedError.getMsg())
+            ).count() >= 1;
+            assertTrue(found, "The following expected error was not found: " + expectedError + actualErrorsJoined);
+        }
+    }
+
+    /**
+     * Asserts that there are exactly as many actual errors as expected.
+     *
+     * @param expectedErrors
+     * @param actualErrors
+     */
+    public static void assertEqualErrorCounts(Collection<Finding> expectedErrors,
+                                              Collection<Finding> actualErrors) {
+        String actualErrorsJoined = "\nactual Errors: \n\t" + Joiner.on("\n\t").join(actualErrors);
+        String expectedErrorsJoined = "\nexpected Errors: \n\t" + Joiner.on("\n\t").join(expectedErrors);
+        assertEquals(expectedErrors.size(), actualErrors.size(),
+                "Expected " + expectedErrors.size() + " errors, but found " + actualErrors.size()
+                        + "." + expectedErrorsJoined + actualErrorsJoined);
+    }
+}

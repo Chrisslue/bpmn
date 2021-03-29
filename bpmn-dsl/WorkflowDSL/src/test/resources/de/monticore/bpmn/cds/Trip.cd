@@ -1,0 +1,9 @@
+package de.monticore.bpmn.cds;
+
+classdiagram Trip {
+
+  class AdvancePaymentRequestMessage;
+
+  class AdvancePaymentResponseMessage;
+
+}

@@ -1,0 +1,9 @@
+package de.monticore.bpmn.examples.vacation;
+
+classdiagram RequestVacation {
+
+  class WorkflowVariables {
+    boolean eligible = false;
+  }
+
+}

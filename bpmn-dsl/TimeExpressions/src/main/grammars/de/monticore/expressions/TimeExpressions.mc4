@@ -1,0 +1,85 @@
+package de.monticore.expressions;
+
+grammar TimeExpressions extends de.monticore.literals.Literals {
+
+  interface TimeExpression;
+
+
+  TimeExpr implements TimeExpression =
+      "at" Time
+    ;
+
+  DateExpr implements TimeExpression =
+      "on" Date TimeExpr?
+    ;
+
+  AfterExpr implements TimeExpression =
+      "after" period:Period
+    ;
+
+  EveryExpr implements TimeExpression =
+      ("start" start:DateExpr ",")? (times:IntLiteral "times")? "every" period:Period
+    ;
+
+  CronExpr implements TimeExpression =
+      "cron" value:String
+    ;
+
+  Time =
+      hours:IntLiteral ":" {noSpace()}? minutes:IntLiteral {noSpace()}? (":" {noSpace()}? seconds:IntLiteral {noSpace()}?)?
+    ;
+
+  Date =
+      year:IntLiteral "-" {noSpace()}? month:IntLiteral {noSpace()}? "-" {noSpace()}? day:IntLiteral {noSpace()}?
+    ;
+
+  Period = value:Name; //PERIOD;
+
+/*
+  token DATE_DAY =
+      '0' ('1'..'9')
+    | ('1'..'2') DIGIT
+    | '3' ('0'..'1')
+    : int
+    ;
+  token DATE_MONTH =
+      '0' ('1'..'9')
+    | '1' ('0'..'2')
+    :int
+    ;
+  token DATE_YEAR = ('1'..'2') DIGIT DIGIT DIGIT : int;
+
+  token TIME_HOUR =
+      ('0'..'1') DIGIT
+    | '2' ('0'..'3')
+    : int
+    ;
+  token TIME_MINUTE =
+      ('0'..'5') DIGIT
+    : int
+    ;
+  token TIME_SECOND = TIME_MINUTE : int;
+*/
+/*
+  token PERIOD =
+      //PERIOD_DELIMITER
+      'P'
+      (DIGIT+ 'y')?
+      (DIGIT+ 'M')?
+      (DIGIT+ 'w')?
+      (DIGIT+ 'd')?
+      (DIGIT+ 'h')?
+      (DIGIT+ 'm')?
+      (DIGIT+ 's')?
+      (DIGIT+ "ms")?
+    ;
+*/
+
+  fragment token DIGIT = ('0'..'9') : int;
+
+  fragment token PERIOD_DELIMITER = 'P';
+
+  // See MontiCore Reference Manual, section 18.4.3 - Preventing Whitespaces between Tokens
+  NoWSLast2 = {noSpace()}? ;
+
+}

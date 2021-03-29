@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmlns:xmi="http://schema.omg.org/spec/XMI/2.1">
+<xmi:Documentation exporter="MagicDraw UML" exporterVersion="16.8"/>
+<xmi:Extension extender="MagicDraw UML" extenderID="MagicDraw UML">
+<shareTable/>
+<mountTable>
+<module resource="file:/DI.mdxml" autoloadType="ALWAYS_LOAD" readOnly="true" loadIndex="true" requiredVersion="-1"/>
+<module resource="file:/DC.mdxml" autoloadType="ALWAYS_LOAD" readOnly="true" loadIndex="true" requiredVersion="-1"/>
+<module resource="file:/BPMN20.mdxml" autoloadType="ALWAYS_LOAD" readOnly="true" loadIndex="true" requiredVersion="-1"/>
+<module resource="file:/UML_Standard_Profile.xml" autoloadType="ALWAYS_LOAD" readOnly="true" loadIndex="true" requiredVersion="-1"/>
+</mountTable>
+</xmi:Extension>
+<uml:Model xmlns:uml="http://www.omg.org/spec/UML/20090901" URI="http://www.omg.org/spec/BPMN/20100524/DI-XMI" name="BPMNDI" xmi:id="_0">
+<packagedElement xmi:type="uml:Profile" xmi:id="magicdraw_mof_profile_0001" name="cmof_Profile">
+<packagedElement xmi:type="uml:Stereotype" xmi:id="magicdraw_mof_tags_0001" name="cmof_Stereotype">
+<ownedAttribute xmi:type="uml:Property" xmi:id="_1_tag" name="org.omg.xmi.nsPrefix">
+<type xmi:type="uml:PrimitiveType" href="http://www.omg.org/spec/UML/20090901/uml.xml#String"/>
+</ownedAttribute>
+<ownedAttribute xmi:type="uml:Property" xmi:id="_2_tag" name="org.omg.xmi.nsURI">
+<type xmi:type="uml:PrimitiveType" href="http://www.omg.org/spec/UML/20090901/uml.xml#String"/>
+</ownedAttribute>
+</packagedElement>
+</packagedElement>
+<packageImport xmi:id="_packageImport.0">
+<importedPackage href="DI.mdxml#_0"/>
+</packageImport>
+<packageImport xmi:id="_packageImport.1">
+<importedPackage href="DC.mdxml#_0"/>
+</packageImport>
+<packagedElement xmi:type="uml:Class" name="BPMNDiagram" xmi:id="BPMNDiagram">
+<generalization xmi:type="uml:Generalization" xmi:id="BPMNDiagram_generalization_3">
+<general href="DI.mdxml#Diagram"/>
+</generalization>
+<ownedAttribute xmi:type="uml:Property" name="plane" visibility="public" xmi:id="BPMNDiagram-plane" type="BPMNPlane" aggregation="composite" association="A_plane_diagram">
+<redefinedProperty href="DI.mdxml#Diagram-rootElement"/>
+</ownedAttribute>
+<ownedAttribute xmi:type="uml:Property" name="labelStyle" visibility="public" xmi:id="BPMNDiagram-labelStyle" type="BPMNLabelStyle" aggregation="composite" association="A_labelStyle_diagram">
+<upperValue xmi:id="BPMNDiagram-labelStyleupperValue" xmi:type="uml:LiteralUnlimitedNatural" value="-1"/>
+<lowerValue xmi:id="BPMNDiagram-labelStylelowerValue" xmi:type="uml:LiteralInteger" value="0"/>
+<subsettedProperty href="DI.mdxml#Diagram-ownedStyle"/>
+</ownedAttribute>
+</packagedElement>
+<packagedElement xmi:type="uml:Class" name="BPMNPlane" xmi:id="BPMNPlane">
+<generalization xmi:type="uml:Generalization" xmi:id="BPMNPlane_generalization_2">
+<general href="DI.mdxml#Plane"/>
+</generalization>
+<ownedAttribute xmi:type="uml:Property" name="bpmnElement" visibility="public" xmi:id="BPMNPlane-bpmnElement" association="A_bpmnElement_plane">
+<lowerValue xmi:id="BPMNPlane-bpmnElementlowerValue" xmi:type="uml:LiteralInteger" value="0"/>
+<type xmi:type="uml:PrimitiveType" href="BPMN20.mdxml#BaseElement"/>
+<redefinedProperty href="DI.mdxml#DiagramElement-modelElement"/>
+</ownedAttribute>
+</packagedElement>
+<packagedElement xmi:type="uml:Class" name="BPMNShape" xmi:id="BPMNShape">
+<generalization xmi:type="uml:Generalization" xmi:id="BPMNShape_generalization_9">
+<general href="DI.mdxml#LabeledShape"/>
+</generalization>
+<ownedAttribute xmi:type="uml:Property" name="bpmnElement" visibility="public" xmi:id="BPMNShape-bpmnElement" association="A_bpmnElement_shape">
+<lowerValue xmi:id="BPMNShape-bpmnElementlowerValue" xmi:type="uml:LiteralInteger" value="0"/>
+<type xmi:type="uml:PrimitiveType" href="BPMN20.mdxml#BaseElement"/>
+<redefinedProperty href="DI.mdxml#DiagramElement-modelElement"/>
+</ownedAttribute>
+<ownedAttribute xmi:type="uml:Property" name="isHorizontal" visibility="public" xmi:id="BPMNShape-isHorizontal">
+<lowerValue xmi:id="BPMNShape-isHorizontallowerValue" xmi:type="uml:LiteralInteger" value="0"/>
+<type xmi:type="uml:PrimitiveType" href="DC.mdxml#Boolean"/>
+</ownedAttribute>
+<ownedAttribute xmi:type="uml:Property" name="isExpanded" visibility="public" xmi:id="BPMNShape-isExpanded">
+<lowerValue xmi:id="BPMNShape-isExpandedlowerValue" xmi:type="uml:LiteralInteger" value="0"/>
+<type xmi:type="uml:PrimitiveType" href="DC.mdxml#Boolean"/>
+</ownedAttribute>
+<ownedAttribute xmi:type="uml:Property" name="isMarkerVisible" visibility="public" xmi:id="BPMNShape-isMarkerVisible">
+<lowerValue xmi:id="BPMNShape-isMarkerVisiblelowerValue" xmi:type="uml:LiteralInteger" value="0"/>
+<type xmi:type="uml:PrimitiveType" href="DC.mdxml#Boolean"/>
+</ownedAttribute>
+<ownedAttribute xmi:type="uml:Property" name="label" visibility="public" xmi:id="BPMNShape-label" type="BPMNLabel" aggregation="composite" association="A_label_shape">
+<lowerValue xmi:id="BPMNShape-labellowerValue" xmi:type="uml:LiteralInteger" value="0"/>
+<subsettedProperty href="DI.mdxml#LabeledShape-ownedLabel"/>
+</ownedAttribute>
+<ownedAttribute xmi:type="uml:Property" name="isMessageVisible" visibility="public" xmi:id="BPMNShape-isMessageVisible">
+<lowerValue xmi:id="BPMNShape-isMessageVisiblelowerValue" xmi:type="uml:LiteralInteger" value="0"/>
+<type xmi:type="uml:PrimitiveType" href="DC.mdxml#Boolean"/>
+</ownedAttribute>
+<ownedAttribute xmi:type="uml:Property" name="participantBandKind" visibility="public" xmi:id="BPMNShape-participantBandKind" type="ParticipantBandKind">
+<lowerValue xmi:id="BPMNShape-participantBandKindlowerValue" xmi:type="uml:LiteralInteger" value="0"/>
+</ownedAttribute>
+<ownedAttribute xmi:type="uml:Property" name="choreographyActivityShape" visibility="public" xmi:id="BPMNShape-choreographyActivityShape" type="BPMNShape" association="A_choreographyActivityShape_participantBandShape">
+<lowerValue xmi:id="BPMNShape-choreographyActivityShapelowerValue" xmi:type="uml:LiteralInteger" value="0"/>
+</ownedAttribute>
+</packagedElement>
+<packagedElement xmi:type="uml:Class" name="BPMNEdge" xmi:id="BPMNEdge">
+<generalization xmi:type="uml:Generalization" xmi:id="BPMNEdge_generalization_6">
+<general href="DI.mdxml#LabeledEdge"/>
+</generalization>
+<ownedAttribute xmi:type="uml:Property" name="label" visibility="public" xmi:id="BPMNEdge-label" type="BPMNLabel" aggregation="composite" association="A_label_edge">
+<lowerValue xmi:id="BPMNEdge-labellowerValue" xmi:type="uml:LiteralInteger" value="0"/>
+<subsettedProperty href="DI.mdxml#LabeledEdge-ownedLabel"/>
+</ownedAttribute>
+<ownedAttribute xmi:type="uml:Property" name="bpmnElement" visibility="public" xmi:id="BPMNEdge-bpmnElement" association="A_bpmnElement_edge">
+<lowerValue xmi:id="BPMNEdge-bpmnElementlowerValue" xmi:type="uml:LiteralInteger" value="0"/>
+<type xmi:type="uml:PrimitiveType" href="BPMN20.mdxml#BaseElement"/>
+<redefinedProperty href="DI.mdxml#DiagramElement-modelElement"/>
+</ownedAttribute>
+<ownedAttribute xmi:type="uml:Property" name="sourceElement" visibility="public" xmi:id="BPMNEdge-sourceElement" association="A_sourceElement_sourceEdge">
+<lowerValue xmi:id="BPMNEdge-sourceElementlowerValue" xmi:type="uml:LiteralInteger" value="0"/>
+<type xmi:type="uml:PrimitiveType" href="DI.mdxml#DiagramElement"/>
+<redefinedProperty href="DI.mdxml#Edge-source"/>
+</ownedAttribute>
+<ownedAttribute xmi:type="uml:Property" name="targetElement" visibility="public" xmi:id="BPMNEdge-targetElement" association="A_targetElement_targetEdge">
+<lowerValue xmi:id="BPMNEdge-targetElementlowerValue" xmi:type="uml:LiteralInteger" value="0"/>
+<type xmi:type="uml:PrimitiveType" href="DI.mdxml#DiagramElement"/>
+<redefinedProperty href="DI.mdxml#Edge-target"/>
+</ownedAttribute>
+<ownedAttribute xmi:type="uml:Property" name="messageVisibleKind" visibility="public" xmi:id="BPMNEdge-messageVisibleKind" type="MessageVisibleKind">
+<lowerValue xmi:id="BPMNEdge-messageVisibleKindlowerValue" xmi:type="uml:LiteralInteger" value="0"/>
+</ownedAttribute>
+</packagedElement>
+<packagedElement xmi:type="uml:Class" name="BPMNLabel" xmi:id="BPMNLabel">
+<generalization xmi:type="uml:Generalization" xmi:id="BPMNLabel_generalization_2">
+<general href="DI.mdxml#Label"/>
+</generalization>
+<ownedAttribute xmi:type="uml:Property" name="labelStyle" visibility="public" xmi:id="BPMNLabel-labelStyle" type="BPMNLabelStyle" association="A_labelStyle_label">
+<lowerValue xmi:id="BPMNLabel-labelStylelowerValue" xmi:type="uml:LiteralInteger" value="0"/>
+<redefinedProperty href="DI.mdxml#DiagramElement-style"/>
+</ownedAttribute>
+</packagedElement>
+<packagedElement xmi:type="uml:Class" name="BPMNLabelStyle" xmi:id="BPMNLabelStyle">
+<generalization xmi:type="uml:Generalization" xmi:id="BPMNLabelStyle_generalization_2">
+<general href="DI.mdxml#Style"/>
+</generalization>
+<ownedAttribute xmi:type="uml:Property" name="font" visibility="public" xmi:id="BPMNLabelStyle-font">
+<type xmi:type="uml:PrimitiveType" href="DC.mdxml#Font"/>
+</ownedAttribute>
+</packagedElement>
+<packagedElement xmi:type="uml:Enumeration" name="ParticipantBandKind" xmi:id="ParticipantBandKind">
+<ownedLiteral xmi:type="uml:EnumerationLiteral" name="top_initiating" xmi:id="ParticipantBandKind-top_initiating"/>
+<ownedLiteral xmi:type="uml:EnumerationLiteral" name="middle_initiating" xmi:id="ParticipantBandKind-middle_initiating"/>
+<ownedLiteral xmi:type="uml:EnumerationLiteral" name="bottom_initiating" xmi:id="ParticipantBandKind-bottom_initiating"/>
+<ownedLiteral xmi:type="uml:EnumerationLiteral" name="top_non_initiating" xmi:id="ParticipantBandKind-top_non_initiating"/>
+<ownedLiteral xmi:type="uml:EnumerationLiteral" name="middle_non_initiating" xmi:id="ParticipantBandKind-middle_non_initiating"/>
+<ownedLiteral xmi:type="uml:EnumerationLiteral" name="bottom_non_initiating" xmi:id="ParticipantBandKind-bottom_non_initiating"/>
+</packagedElement>
+<packagedElement xmi:type="uml:Enumeration" name="MessageVisibleKind" xmi:id="MessageVisibleKind">
+<ownedLiteral xmi:type="uml:EnumerationLiteral" name="initiating" xmi:id="MessageVisibleKind-initiating"/>
+<ownedLiteral xmi:type="uml:EnumerationLiteral" name="non_initiating" xmi:id="MessageVisibleKind-non_initiating"/>
+</packagedElement>
+<packagedElement xmi:type="uml:Association" name="A_plane_diagram" visibility="private" xmi:id="A_plane_diagram">
+<ownedEnd xmi:type="uml:Property" name="diagram" visibility="public" xmi:id="A_plane_diagram-diagram" type="BPMNDiagram" association="A_plane_diagram">
+<redefinedProperty href="DI.mdxml#DiagramElement-owningDiagram"/>
+</ownedEnd>
+</packagedElement>
+<packagedElement xmi:type="uml:Association" name="A_bpmnElement_edge" visibility="private" xmi:id="A_bpmnElement_edge">
+<ownedEnd xmi:type="uml:Property" name="edge" visibility="public" xmi:id="A_bpmnElement_edge-edge" type="BPMNEdge" association="A_bpmnElement_edge">
+<upperValue xmi:id="A_bpmnElement_edge-edgeupperValue" xmi:type="uml:LiteralUnlimitedNatural" value="-1"/>
+<lowerValue xmi:id="A_bpmnElement_edge-edgelowerValue" xmi:type="uml:LiteralInteger" value="0"/>
+<redefinedProperty href="DI.mdxml#A_modelElement_diagramElement-diagramElement"/>
+</ownedEnd>
+</packagedElement>
+<packagedElement xmi:type="uml:Association" name="A_bpmnElement_shape" visibility="private" xmi:id="A_bpmnElement_shape">
+<ownedEnd xmi:type="uml:Property" name="shape" visibility="public" xmi:id="A_bpmnElement_shape-shape" type="BPMNShape" association="A_bpmnElement_shape">
+<upperValue xmi:id="A_bpmnElement_shape-shapeupperValue" xmi:type="uml:LiteralUnlimitedNatural" value="-1"/>
+<lowerValue xmi:id="A_bpmnElement_shape-shapelowerValue" xmi:type="uml:LiteralInteger" value="0"/>
+<redefinedProperty href="DI.mdxml#A_modelElement_diagramElement-diagramElement"/>
+</ownedEnd>
+</packagedElement>
+<packagedElement xmi:type="uml:Association" name="A_bpmnElement_plane" visibility="private" xmi:id="A_bpmnElement_plane">
+<ownedEnd xmi:type="uml:Property" name="plane" visibility="public" xmi:id="A_bpmnElement_plane-plane" type="BPMNPlane" association="A_bpmnElement_plane">
+<upperValue xmi:id="A_bpmnElement_plane-planeupperValue" xmi:type="uml:LiteralUnlimitedNatural" value="-1"/>
+<lowerValue xmi:id="A_bpmnElement_plane-planelowerValue" xmi:type="uml:LiteralInteger" value="0"/>
+<redefinedProperty href="DI.mdxml#A_modelElement_diagramElement-diagramElement"/>
+</ownedEnd>
+</packagedElement>
+<packagedElement xmi:type="uml:Association" name="A_label_edge" visibility="private" xmi:id="A_label_edge">
+<ownedEnd xmi:type="uml:Property" name="edge" visibility="public" xmi:id="A_label_edge-edge" type="BPMNEdge" association="A_label_edge">
+<lowerValue xmi:id="A_label_edge-edgelowerValue" xmi:type="uml:LiteralInteger" value="0"/>
+<subsettedProperty href="DI.mdxml#A_ownedLabel_owningEdge-owningEdge"/>
+</ownedEnd>
+</packagedElement>
+<packagedElement xmi:type="uml:Association" name="A_label_shape" visibility="private" xmi:id="A_label_shape">
+<ownedEnd xmi:type="uml:Property" name="shape" visibility="public" xmi:id="A_label_shape-shape" type="BPMNShape" association="A_label_shape">
+<lowerValue xmi:id="A_label_shape-shapelowerValue" xmi:type="uml:LiteralInteger" value="0"/>
+<subsettedProperty href="DI.mdxml#A_ownedLabel_owningShape-owningShape"/>
+</ownedEnd>
+</packagedElement>
+<packagedElement xmi:type="uml:Association" name="A_labelStyle_label" visibility="private" xmi:id="A_labelStyle_label">
+<ownedEnd xmi:type="uml:Property" name="label" visibility="public" xmi:id="A_labelStyle_label-label" type="BPMNLabel" association="A_labelStyle_label">
+<upperValue xmi:id="A_labelStyle_label-labelupperValue" xmi:type="uml:LiteralUnlimitedNatural" value="-1"/>
+<lowerValue xmi:id="A_labelStyle_label-labellowerValue" xmi:type="uml:LiteralInteger" value="0"/>
+<redefinedProperty href="DI.mdxml#A_style_diagramElement-diagramElement"/>
+</ownedEnd>
+</packagedElement>
+<packagedElement xmi:type="uml:Association" name="A_sourceElement_sourceEdge" visibility="private" xmi:id="A_sourceElement_sourceEdge">
+<ownedEnd xmi:type="uml:Property" name="sourceEdge" visibility="public" xmi:id="A_sourceElement_sourceEdge-sourceEdge" type="BPMNEdge" association="A_sourceElement_sourceEdge">
+<upperValue xmi:id="A_sourceElement_sourceEdge-sourceEdgeupperValue" xmi:type="uml:LiteralUnlimitedNatural" value="-1"/>
+<lowerValue xmi:id="A_sourceElement_sourceEdge-sourceEdgelowerValue" xmi:type="uml:LiteralInteger" value="0"/>
+<redefinedProperty href="DI.mdxml#A_source_sourceEdge-sourceEdge"/>
+</ownedEnd>
+</packagedElement>
+<packagedElement xmi:type="uml:Association" name="A_targetElement_targetEdge" visibility="private" xmi:id="A_targetElement_targetEdge">
+<ownedEnd xmi:type="uml:Property" name="targetEdge" visibility="public" xmi:id="A_targetElement_targetEdge-targetEdge" type="BPMNEdge" association="A_targetElement_targetEdge">
+<upperValue xmi:id="A_targetElement_targetEdge-targetEdgeupperValue" xmi:type="uml:LiteralUnlimitedNatural" value="-1"/>
+<lowerValue xmi:id="A_targetElement_targetEdge-targetEdgelowerValue" xmi:type="uml:LiteralInteger" value="0"/>
+<redefinedProperty href="DI.mdxml#A_target_targetEdge-targetEdge"/>
+</ownedEnd>
+</packagedElement>
+<packagedElement xmi:type="uml:Association" name="A_labelStyle_diagram" visibility="private" xmi:id="A_labelStyle_diagram">
+<ownedEnd xmi:type="uml:Property" name="diagram" visibility="public" xmi:id="A_labelStyle_diagram-diagram" type="BPMNDiagram" association="A_labelStyle_diagram">
+<subsettedProperty href="DI.mdxml#A_ownedStyle_owningDiagram-owningDiagram"/>
+</ownedEnd>
+</packagedElement>
+<packagedElement xmi:type="uml:Association" name="A_choreographyActivityShape_participantBandShape" visibility="private" xmi:id="A_choreographyActivityShape_participantBandShape">
+<ownedEnd xmi:type="uml:Property" name="participantBandShape" visibility="public" xmi:id="A_choreographyActivityShape_participantBandShape-participantBandShape" type="BPMNShape" association="A_choreographyActivityShape_participantBandShape"/>
+</packagedElement>
+</uml:Model>
+<xmi:Extension extender="MagicDraw UML">
+<privateProxies>
+<proxy xmi:type="uml:Package" xmi:id="_0" name="unloaded"/>
+<proxy xmi:type="uml:Property" xmi:id="Diagram-rootElement" name="unloaded"/>
+<proxy xmi:type="uml:Property" xmi:id="Diagram-ownedStyle" name="unloaded"/>
+<proxy xmi:type="uml:Class" xmi:id="Diagram" name="unloaded"/>
+<proxy xmi:type="uml:Class" xmi:id="BaseElement" name="unloaded"/>
+<proxy xmi:type="uml:Property" xmi:id="DiagramElement-modelElement" name="unloaded"/>
+<proxy xmi:type="uml:Class" xmi:id="Plane" name="unloaded"/>
+<proxy xmi:type="uml:PrimitiveType" xmi:id="Boolean" name="unloaded"/>
+<proxy xmi:type="uml:Property" xmi:id="LabeledShape-ownedLabel" name="unloaded"/>
+<proxy xmi:type="uml:Class" xmi:id="LabeledShape" name="unloaded"/>
+<proxy xmi:type="uml:Property" xmi:id="LabeledEdge-ownedLabel" name="unloaded"/>
+<proxy xmi:type="uml:Class" xmi:id="DiagramElement" name="unloaded"/>
+<proxy xmi:type="uml:Property" xmi:id="Edge-source" name="unloaded"/>
+<proxy xmi:type="uml:Property" xmi:id="Edge-target" name="unloaded"/>
+<proxy xmi:type="uml:Class" xmi:id="LabeledEdge" name="unloaded"/>
+<proxy xmi:type="uml:Property" xmi:id="DiagramElement-style" name="unloaded"/>
+<proxy xmi:type="uml:Class" xmi:id="Label" name="unloaded"/>
+<proxy xmi:type="uml:DataType" xmi:id="Font" name="unloaded"/>
+<proxy xmi:type="uml:Class" xmi:id="Style" name="unloaded"/>
+<proxy xmi:type="uml:Property" xmi:id="DiagramElement-owningDiagram" name="unloaded"/>
+<proxy xmi:type="uml:Property" xmi:id="A_modelElement_diagramElement-diagramElement" name="unloaded"/>
+<proxy xmi:type="uml:Property" xmi:id="A_ownedLabel_owningEdge-owningEdge" name="unloaded"/>
+<proxy xmi:type="uml:Property" xmi:id="A_ownedLabel_owningShape-owningShape" name="unloaded"/>
+<proxy xmi:type="uml:Property" xmi:id="A_style_diagramElement-diagramElement" name="unloaded"/>
+<proxy xmi:type="uml:Property" xmi:id="A_source_sourceEdge-sourceEdge" name="unloaded"/>
+<proxy xmi:type="uml:Property" xmi:id="A_target_targetEdge-targetEdge" name="unloaded"/>
+<proxy xmi:type="uml:Property" xmi:id="A_ownedStyle_owningDiagram-owningDiagram" name="unloaded"/>
+</privateProxies>
+<options/>
+</xmi:Extension>
+<cmof_Profile:cmof_Stereotype xmlns:cmof_Profile="http://www.magicdraw.com/schemas/cmof_Profile.xmi" xmi:id="_1" base_Element="_0" org.omg.xmi.nsPrefix="bpmndi"/>
+<cmof_Profile:cmof_Stereotype xmlns:cmof_Profile="http://www.magicdraw.com/schemas/cmof_Profile.xmi" xmi:id="_2" base_Element="_0" org.omg.xmi.nsURI="http://www.omg.org/spec/BPMN/20100524/DI-XMI"/>
+</xmi:XMI>

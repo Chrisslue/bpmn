@@ -1,0 +1,6 @@
+package de.monticore.bpmn.examples;
+
+process SimpleProcess {
+  task DoStuff;
+  event start -> DoStuff -> event end;
+}

@@ -1,0 +1,37 @@
+package de.monticore.bpmn.cocos.events.triggers.invalid;
+
+import de.monticore.bpmn.cds.Domain.*;
+
+process NonInterruptingEventHasValidTrigger {
+
+  error err:HolidayCard;
+
+  subprocess S1 {
+    event start E01 receive noninterrupt error:err;
+    event end E03;
+
+    E01 -> E03;
+
+  }
+
+  subprocess S2 {
+    event start E02 receive noninterrupt compensate;
+    event end E04;
+
+    E02 -> E04;
+  }
+
+
+  task T1 {
+    <<boundary>> event E11 receive noninterrupt error:err;
+  }
+
+  task T2 {
+    <<boundary>> event E12 receive noninterrupt cancel;
+  }
+
+  task T3 {
+    <<boundary>> event E13 receive noninterrupt compensate;
+  }
+
+}

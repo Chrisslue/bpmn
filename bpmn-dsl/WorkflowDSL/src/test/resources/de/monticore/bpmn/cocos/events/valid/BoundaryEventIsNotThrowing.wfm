@@ -1,0 +1,17 @@
+package de.monticore.bpmn.cocos.events.valid;
+
+import de.monticore.bpmn.cds.Domain.*;
+
+process BoundaryEventIsNotThrowing {
+
+  message msg:HolidayCard;
+
+  task T1 {
+    <<boundary>> event E1 receive message:msg;
+  }
+
+  task T2 {
+    <<boundary>> event E2 message:msg;
+  }
+
+}

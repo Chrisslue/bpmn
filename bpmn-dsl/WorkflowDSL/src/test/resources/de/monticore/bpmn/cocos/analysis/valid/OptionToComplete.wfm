@@ -1,0 +1,9 @@
+package de.monticore.bpmn.cocos.analysis.valid;
+
+process OptionToComplete {
+
+  task Task1;
+
+  event start -> Task1 -> event end;
+
+}

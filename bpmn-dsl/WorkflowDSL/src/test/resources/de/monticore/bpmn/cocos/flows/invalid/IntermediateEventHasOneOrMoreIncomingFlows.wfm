@@ -1,0 +1,12 @@
+package de.monticore.bpmn.cocos.flows.invalid;
+
+process IntermediateEventHasOneOrMoreIncomingFlows {
+
+  event start E1;
+  event E2;
+  event end E3;
+
+  E1 -> E3;
+  E2 -> E3;
+
+}

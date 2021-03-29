@@ -1,0 +1,16 @@
+package de.monticore.bpmn.examples;
+
+classdiagram OnlineStore {
+
+  class WorkflowVariables {
+  }
+
+  class Order;
+  class Customer;
+  class PaymentRecord;
+  class ShippingNote;
+  class ComplaintNotice;
+  class SalesFigures;
+  class SalesReport;
+
+}

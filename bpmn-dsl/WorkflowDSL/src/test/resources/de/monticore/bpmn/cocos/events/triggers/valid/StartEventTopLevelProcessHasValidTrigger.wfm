@@ -1,0 +1,18 @@
+package de.monticore.bpmn.cocos.events.triggers.valid;
+
+import de.monticore.bpmn.cds.Domain.*;
+
+process StartEventTopLevelProcessHasValidTrigger {
+
+  message msg:Contract;
+  signal sig:Contract;
+
+  event start E1;
+  event start E2 message:msg;
+  event start E3 timer:[on 19-11-2019 at 23:55];
+  event start E4 when:[true];
+  event start E5 signal:sig;
+  event start E6 one { message:msg, signal:sig };
+  event start E7 all { message:msg, signal:sig };
+
+}

@@ -1,0 +1,13 @@
+package de.monticore.bpmn.cocos.events.triggers.valid;
+
+process CompensateBoundaryEventHasNoOutgoingSequenceFlow {
+
+  event start E1;
+  task T1 {
+    <<boundary>> event E3 compensate;
+  }
+  event end E2;
+
+  E1 -> T1 -> E2;
+
+}

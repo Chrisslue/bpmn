@@ -1,0 +1,7 @@
+package de.monticore.bpmn.timer;
+
+process TemporalExpressions {
+
+    event start ReceiveTimeout timer:[on 31-10-2019 at 10:37];
+
+}

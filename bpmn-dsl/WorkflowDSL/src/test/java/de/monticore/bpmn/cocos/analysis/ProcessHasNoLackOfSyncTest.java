@@ -1,0 +1,40 @@
+package de.monticore.bpmn.cocos.analysis;
+
+import com.google.common.collect.Lists;
+import de.monticore.bpmn.Messages;
+import de.monticore.bpmn.cocos.AbstractCoCoTest;
+import de.monticore.bpmn.cocos.WorkflowCoCos;
+import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
+import de.se_rwth.commons.logging.Finding;
+import org.junit.jupiter.api.Test;
+
+import java.util.Collection;
+
+class ProcessHasNoLackOfSyncTest extends AbstractCoCoTest {
+
+    @Override
+    protected WorkflowCoCoChecker getChecker() {
+        return WorkflowCoCos.getStructuralChecker();
+    }
+
+    @Test
+    void mergeANDLackOfSync() {
+        String modelName = "de.monticore.bpmn.cocos.analysis.invalid.LackOfSyncAND";
+        Collection<Finding> expectedWarnings = Lists.newArrayList(
+                Finding.warning(Messages.get("0xWFM7002", "_Gateway_2", "_Gateway_3"))
+        );
+
+        testModelForErrors(modelName, Lists.newArrayList(), expectedWarnings);
+    }
+
+    @Test
+    void mergeIORLackOfSync() {
+        String modelName = "de.monticore.bpmn.cocos.analysis.invalid.LackOfSyncIOR";
+        Collection<Finding> expectedWarnings = Lists.newArrayList(
+                Finding.warning(Messages.get("0xWFM7002", "_Gateway_2", "_Gateway_3"))
+        );
+
+        testModelForErrors(modelName, Lists.newArrayList(), expectedWarnings);
+    }
+
+}

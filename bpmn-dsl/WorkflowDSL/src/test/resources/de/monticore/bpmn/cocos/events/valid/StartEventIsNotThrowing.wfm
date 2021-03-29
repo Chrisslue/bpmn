@@ -1,0 +1,11 @@
+package de.monticore.bpmn.cocos.events.valid;
+
+process StartEventIsNotThrowing {
+
+  event start E1 receive;
+  event start E2;
+  event end E3;
+
+  {E1, E2} -> E3;
+
+}

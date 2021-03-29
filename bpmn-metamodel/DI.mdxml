@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmlns:xmi="http://schema.omg.org/spec/XMI/2.1">
+<xmi:Documentation exporter="MagicDraw UML" exporterVersion="16.8"/>
+<xmi:Extension extender="MagicDraw UML" extenderID="MagicDraw UML">
+<shareTable/>
+<mountTable>
+<module resource="file:/DC.mdxml" autoloadType="ALWAYS_LOAD" readOnly="true" loadIndex="true" requiredVersion="-1"/>
+<module resource="file:/UML_Standard_Profile.xml" autoloadType="ALWAYS_LOAD" readOnly="true" loadIndex="true" requiredVersion="-1"/>
+</mountTable>
+</xmi:Extension>
+<uml:Model xmlns:uml="http://www.omg.org/spec/UML/20090901" URI="http://www.omg.org/spec/DD/20100524/DI-XMI" name="DI" xmi:id="_0">
+<packagedElement xmi:type="uml:Profile" xmi:id="magicdraw_mof_profile_0001" name="cmof_Profile">
+<packagedElement xmi:type="uml:Stereotype" xmi:id="magicdraw_mof_tags_0001" name="cmof_Stereotype">
+<ownedAttribute xmi:type="uml:Property" xmi:id="_1_tag" name="org.omg.xmi.nsPrefix">
+<type xmi:type="uml:PrimitiveType" href="http://www.omg.org/spec/UML/20090901/uml.xml#String"/>
+</ownedAttribute>
+<ownedAttribute xmi:type="uml:Property" xmi:id="_2_tag" name="org.omg.xmi.nsURI">
+<type xmi:type="uml:PrimitiveType" href="http://www.omg.org/spec/UML/20090901/uml.xml#String"/>
+</ownedAttribute>
+</packagedElement>
+</packagedElement>
+<packageImport xmi:id="_packageImport.0">
+<importedPackage href="DC.mdxml#_0"/>
+</packageImport>
+<packagedElement xmi:type="uml:Class" name="DiagramElement" xmi:id="DiagramElement" isAbstract="true">
+<ownedAttribute xmi:type="uml:Property" name="owningDiagram" visibility="public" xmi:id="DiagramElement-owningDiagram" type="Diagram" isDerived="true" isReadOnly="true" isDerivedUnion="true" association="A_rootElement_owningDiagram">
+<lowerValue xmi:id="DiagramElement-owningDiagramlowerValue" xmi:type="uml:LiteralInteger" value="0"/>
+</ownedAttribute>
+<ownedAttribute xmi:type="uml:Property" name="owningElement" visibility="public" xmi:id="DiagramElement-owningElement" type="DiagramElement" isDerived="true" isReadOnly="true" isDerivedUnion="true" association="A_ownedElement_owningElement">
+<lowerValue xmi:id="DiagramElement-owningElementlowerValue" xmi:type="uml:LiteralInteger" value="0"/>
+</ownedAttribute>
+<ownedAttribute xmi:type="uml:Property" name="modelElement" visibility="public" xmi:id="DiagramElement-modelElement" isDerived="true" isReadOnly="true" isDerivedUnion="true" association="A_modelElement_diagramElement">
+<lowerValue xmi:id="DiagramElement-modelElementlowerValue" xmi:type="uml:LiteralInteger" value="0"/>
+<type xmi:type="uml:PrimitiveType" href="http://www.omg.org/spec/UML/20090901/uml.xml#Element"/>
+</ownedAttribute>
+<ownedAttribute xmi:type="uml:Property" name="style" visibility="public" xmi:id="DiagramElement-style" type="Style" isDerived="true" isReadOnly="true" isDerivedUnion="true" association="A_style_diagramElement">
+<lowerValue xmi:id="DiagramElement-stylelowerValue" xmi:type="uml:LiteralInteger" value="0"/>
+</ownedAttribute>
+<ownedAttribute xmi:type="uml:Property" name="ownedElement" visibility="public" xmi:id="DiagramElement-ownedElement" type="DiagramElement" isDerived="true" isReadOnly="true" aggregation="composite" isDerivedUnion="true" association="A_ownedElement_owningElement">
+<upperValue xmi:id="DiagramElement-ownedElementupperValue" xmi:type="uml:LiteralUnlimitedNatural" value="-1"/>
+<lowerValue xmi:id="DiagramElement-ownedElementlowerValue" xmi:type="uml:LiteralInteger" value="0"/>
+</ownedAttribute>
+</packagedElement>
+<packagedElement xmi:type="uml:Class" name="Node" xmi:id="Node" isAbstract="true">
+<generalization xmi:type="uml:Generalization" general="DiagramElement" xmi:id="Node_generalization_1"/>
+</packagedElement>
+<packagedElement xmi:type="uml:Class" name="Edge" xmi:id="Edge" isAbstract="true">
+<generalization xmi:type="uml:Generalization" general="DiagramElement" xmi:id="Edge_generalization_1"/>
+<ownedAttribute xmi:type="uml:Property" name="source" visibility="public" xmi:id="Edge-source" type="DiagramElement" isDerived="true" isReadOnly="true" isDerivedUnion="true" association="A_source_sourceEdge">
+<lowerValue xmi:id="Edge-sourcelowerValue" xmi:type="uml:LiteralInteger" value="0"/>
+</ownedAttribute>
+<ownedAttribute xmi:type="uml:Property" name="target" visibility="public" xmi:id="Edge-target" type="DiagramElement" isDerived="true" isReadOnly="true" isDerivedUnion="true" association="A_target_targetEdge">
+<lowerValue xmi:id="Edge-targetlowerValue" xmi:type="uml:LiteralInteger" value="0"/>
+</ownedAttribute>
+<ownedAttribute xmi:type="uml:Property" name="waypoint" visibility="public" xmi:id="Edge-waypoint" isOrdered="true" isUnique="false">
+<upperValue xmi:id="Edge-waypointupperValue" xmi:type="uml:LiteralUnlimitedNatural" value="-1"/>
+<lowerValue xmi:id="Edge-waypointlowerValue" xmi:type="uml:LiteralInteger" value="2"/>
+<type xmi:type="uml:PrimitiveType" href="DC.mdxml#Point"/>
+</ownedAttribute>
+</packagedElement>
+<packagedElement xmi:type="uml:Class" name="Diagram" xmi:id="Diagram" isAbstract="true">
+<ownedAttribute xmi:type="uml:Property" name="rootElement" visibility="public" xmi:id="Diagram-rootElement" type="DiagramElement" isDerived="true" isReadOnly="true" aggregation="composite" isDerivedUnion="true" association="A_rootElement_owningDiagram"/>
+<ownedAttribute xmi:type="uml:Property" name="name" visibility="public" xmi:id="Diagram-name">
+<lowerValue xmi:id="Diagram-namelowerValue" xmi:type="uml:LiteralInteger" value="0"/>
+<type xmi:type="uml:PrimitiveType" href="DC.mdxml#String"/>
+</ownedAttribute>
+<ownedAttribute xmi:type="uml:Property" name="documentation" visibility="public" xmi:id="Diagram-documentation">
+<lowerValue xmi:id="Diagram-documentationlowerValue" xmi:type="uml:LiteralInteger" value="0"/>
+<type xmi:type="uml:PrimitiveType" href="DC.mdxml#String"/>
+</ownedAttribute>
+<ownedAttribute xmi:type="uml:Property" name="resolution" visibility="public" xmi:id="Diagram-resolution">
+<lowerValue xmi:id="Diagram-resolutionlowerValue" xmi:type="uml:LiteralInteger" value="0"/>
+<type xmi:type="uml:PrimitiveType" href="DC.mdxml#Real"/>
+</ownedAttribute>
+<ownedAttribute xmi:type="uml:Property" name="ownedStyle" visibility="public" xmi:id="Diagram-ownedStyle" type="Style" isDerived="true" isReadOnly="true" aggregation="composite" isDerivedUnion="true" association="A_ownedStyle_owningDiagram">
+<upperValue xmi:id="Diagram-ownedStyleupperValue" xmi:type="uml:LiteralUnlimitedNatural" value="-1"/>
+<lowerValue xmi:id="Diagram-ownedStylelowerValue" xmi:type="uml:LiteralInteger" value="0"/>
+</ownedAttribute>
+</packagedElement>
+<packagedElement xmi:type="uml:Class" name="Shape" xmi:id="Shape" isAbstract="true">
+<generalization xmi:type="uml:Generalization" general="Node" xmi:id="Shape_generalization_1"/>
+<ownedAttribute xmi:type="uml:Property" name="bounds" visibility="public" xmi:id="Shape-bounds">
+<type xmi:type="uml:PrimitiveType" href="DC.mdxml#Bounds"/>
+</ownedAttribute>
+</packagedElement>
+<packagedElement xmi:type="uml:Class" name="Plane" xmi:id="Plane" isAbstract="true">
+<generalization xmi:type="uml:Generalization" general="Node" xmi:id="Plane_generalization_1"/>
+<ownedRule name="plane_element_type" xmi:id="Plane-plane_element_type" constrainedElement="Plane">
+<specification xmi:type="uml:OpaqueExpression" xmi:id="Plane-plane_element_type-_specification">
+<body>planeElement-&gt;forAll(oclIsKindOf(Shape) or oclIsKindOf(Edge))</body>
+<language>OCL</language>
+</specification>
+</ownedRule>
+<ownedAttribute xmi:type="uml:Property" name="planeElement" visibility="public" xmi:id="Plane-planeElement" type="DiagramElement" aggregation="composite" subsettedProperty="DiagramElement-ownedElement" association="A_planeElement_plane" isOrdered="true">
+<upperValue xmi:id="Plane-planeElementupperValue" xmi:type="uml:LiteralUnlimitedNatural" value="-1"/>
+<lowerValue xmi:id="Plane-planeElementlowerValue" xmi:type="uml:LiteralInteger" value="0"/>
+</ownedAttribute>
+</packagedElement>
+<packagedElement xmi:type="uml:Class" name="LabeledEdge" xmi:id="LabeledEdge" isAbstract="true">
+<generalization xmi:type="uml:Generalization" general="Edge" xmi:id="LabeledEdge_generalization_1"/>
+<ownedAttribute xmi:type="uml:Property" name="ownedLabel" visibility="public" xmi:id="LabeledEdge-ownedLabel" type="Label" isDerived="true" isReadOnly="true" aggregation="composite" isDerivedUnion="true" subsettedProperty="DiagramElement-ownedElement" association="A_ownedLabel_owningEdge">
+<upperValue xmi:id="LabeledEdge-ownedLabelupperValue" xmi:type="uml:LiteralUnlimitedNatural" value="-1"/>
+<lowerValue xmi:id="LabeledEdge-ownedLabellowerValue" xmi:type="uml:LiteralInteger" value="0"/>
+</ownedAttribute>
+</packagedElement>
+<packagedElement xmi:type="uml:Class" name="LabeledShape" xmi:id="LabeledShape" isAbstract="true">
+<generalization xmi:type="uml:Generalization" general="Shape" xmi:id="LabeledShape_generalization_1"/>
+<ownedAttribute xmi:type="uml:Property" name="ownedLabel" visibility="public" xmi:id="LabeledShape-ownedLabel" type="Label" isDerived="true" isReadOnly="true" aggregation="composite" isDerivedUnion="true" subsettedProperty="DiagramElement-ownedElement" association="A_ownedLabel_owningShape">
+<upperValue xmi:id="LabeledShape-ownedLabelupperValue" xmi:type="uml:LiteralUnlimitedNatural" value="-1"/>
+<lowerValue xmi:id="LabeledShape-ownedLabellowerValue" xmi:type="uml:LiteralInteger" value="0"/>
+</ownedAttribute>
+</packagedElement>
+<packagedElement xmi:type="uml:Class" name="Label" xmi:id="Label" isAbstract="true">
+<generalization xmi:type="uml:Generalization" general="Node" xmi:id="Label_generalization_1"/>
+<ownedAttribute xmi:type="uml:Property" name="bounds" visibility="public" xmi:id="Label-bounds">
+<lowerValue xmi:id="Label-boundslowerValue" xmi:type="uml:LiteralInteger" value="0"/>
+<type xmi:type="uml:PrimitiveType" href="DC.mdxml#Bounds"/>
+</ownedAttribute>
+</packagedElement>
+<packagedElement xmi:type="uml:Class" name="Style" xmi:id="Style" isAbstract="true"/>
+<packagedElement xmi:type="uml:Association" name="A_target_targetEdge" visibility="private" xmi:id="A_target_targetEdge">
+<ownedEnd xmi:type="uml:Property" name="targetEdge" visibility="public" xmi:id="A_target_targetEdge-targetEdge" type="Edge" isDerived="true" isReadOnly="true" isDerivedUnion="true" association="A_target_targetEdge">
+<upperValue xmi:id="A_target_targetEdge-targetEdgeupperValue" xmi:type="uml:LiteralUnlimitedNatural" value="-1"/>
+<lowerValue xmi:id="A_target_targetEdge-targetEdgelowerValue" xmi:type="uml:LiteralInteger" value="0"/>
+</ownedEnd>
+</packagedElement>
+<packagedElement xmi:type="uml:Association" name="A_source_sourceEdge" visibility="private" xmi:id="A_source_sourceEdge">
+<ownedEnd xmi:type="uml:Property" name="sourceEdge" visibility="public" xmi:id="A_source_sourceEdge-sourceEdge" type="Edge" isDerived="true" isReadOnly="true" isDerivedUnion="true" association="A_source_sourceEdge">
+<upperValue xmi:id="A_source_sourceEdge-sourceEdgeupperValue" xmi:type="uml:LiteralUnlimitedNatural" value="-1"/>
+<lowerValue xmi:id="A_source_sourceEdge-sourceEdgelowerValue" xmi:type="uml:LiteralInteger" value="0"/>
+</ownedEnd>
+</packagedElement>
+<packagedElement xmi:type="uml:Association" name="A_ownedElement_owningElement" visibility="private" xmi:id="A_ownedElement_owningElement"/>
+<packagedElement xmi:type="uml:Association" name="A_modelElement_diagramElement" visibility="private" xmi:id="A_modelElement_diagramElement">
+<ownedEnd xmi:type="uml:Property" name="diagramElement" visibility="public" xmi:id="A_modelElement_diagramElement-diagramElement" type="DiagramElement" isDerived="true" isReadOnly="true" isDerivedUnion="true" association="A_modelElement_diagramElement">
+<upperValue xmi:id="A_modelElement_diagramElement-diagramElementupperValue" xmi:type="uml:LiteralUnlimitedNatural" value="-1"/>
+<lowerValue xmi:id="A_modelElement_diagramElement-diagramElementlowerValue" xmi:type="uml:LiteralInteger" value="0"/>
+</ownedEnd>
+</packagedElement>
+<packagedElement xmi:type="uml:Association" name="A_rootElement_owningDiagram" visibility="private" xmi:id="A_rootElement_owningDiagram"/>
+<packagedElement xmi:type="uml:Association" name="A_ownedLabel_owningEdge" visibility="private" xmi:id="A_ownedLabel_owningEdge">
+<ownedEnd xmi:type="uml:Property" name="owningEdge" visibility="public" xmi:id="A_ownedLabel_owningEdge-owningEdge" type="LabeledEdge" isDerived="true" isReadOnly="true" isDerivedUnion="true" subsettedProperty="DiagramElement-owningElement" association="A_ownedLabel_owningEdge">
+<lowerValue xmi:id="A_ownedLabel_owningEdge-owningEdgelowerValue" xmi:type="uml:LiteralInteger" value="0"/>
+</ownedEnd>
+</packagedElement>
+<packagedElement xmi:type="uml:Association" name="A_planeElement_plane" visibility="private" xmi:id="A_planeElement_plane">
+<ownedEnd xmi:type="uml:Property" name="plane" visibility="public" xmi:id="A_planeElement_plane-plane" type="Plane" subsettedProperty="DiagramElement-owningElement" association="A_planeElement_plane">
+<lowerValue xmi:id="A_planeElement_plane-planelowerValue" xmi:type="uml:LiteralInteger" value="0"/>
+</ownedEnd>
+</packagedElement>
+<packagedElement xmi:type="uml:Association" name="A_style_diagramElement" visibility="private" xmi:id="A_style_diagramElement">
+<ownedEnd xmi:type="uml:Property" name="diagramElement" visibility="public" xmi:id="A_style_diagramElement-diagramElement" type="DiagramElement" isDerived="true" isReadOnly="true" isDerivedUnion="true" association="A_style_diagramElement">
+<upperValue xmi:id="A_style_diagramElement-diagramElementupperValue" xmi:type="uml:LiteralUnlimitedNatural" value="-1"/>
+<lowerValue xmi:id="A_style_diagramElement-diagramElementlowerValue" xmi:type="uml:LiteralInteger" value="0"/>
+</ownedEnd>
+</packagedElement>
+<packagedElement xmi:type="uml:Association" name="A_ownedStyle_owningDiagram" visibility="private" xmi:id="A_ownedStyle_owningDiagram">
+<ownedEnd xmi:type="uml:Property" name="owningDiagram" visibility="public" xmi:id="A_ownedStyle_owningDiagram-owningDiagram" type="Diagram" isDerived="true" isReadOnly="true" isDerivedUnion="true" association="A_ownedStyle_owningDiagram"/>
+</packagedElement>
+<packagedElement xmi:type="uml:Association" name="A_ownedLabel_owningShape" visibility="private" xmi:id="A_ownedLabel_owningShape">
+<ownedEnd xmi:type="uml:Property" name="owningShape" visibility="public" xmi:id="A_ownedLabel_owningShape-owningShape" type="LabeledShape" isDerived="true" isReadOnly="true" isDerivedUnion="true" subsettedProperty="DiagramElement-owningElement" association="A_ownedLabel_owningShape">
+<lowerValue xmi:id="A_ownedLabel_owningShape-owningShapelowerValue" xmi:type="uml:LiteralInteger" value="0"/>
+</ownedEnd>
+</packagedElement>
+</uml:Model>
+<xmi:Extension extender="MagicDraw UML">
+<privateProxies>
+<proxy xmi:type="uml:Package" xmi:id="_0" name="unloaded"/>
+<proxy xmi:type="uml:DataType" xmi:id="Point" name="unloaded"/>
+<proxy xmi:type="uml:PrimitiveType" xmi:id="String" name="unloaded"/>
+<proxy xmi:type="uml:PrimitiveType" xmi:id="Real" name="unloaded"/>
+<proxy xmi:type="uml:DataType" xmi:id="Bounds" name="unloaded"/>
+</privateProxies>
+<options/>
+</xmi:Extension>
+<cmof_Profile:cmof_Stereotype xmlns:cmof_Profile="http://www.magicdraw.com/schemas/cmof_Profile.xmi" xmi:id="_1" base_Element="_0" org.omg.xmi.nsPrefix="di"/>
+<cmof_Profile:cmof_Stereotype xmlns:cmof_Profile="http://www.magicdraw.com/schemas/cmof_Profile.xmi" xmi:id="_2" base_Element="_0" org.omg.xmi.nsURI="http://www.omg.org/spec/DD/20100524/DI-XMI"/>
+</xmi:XMI>

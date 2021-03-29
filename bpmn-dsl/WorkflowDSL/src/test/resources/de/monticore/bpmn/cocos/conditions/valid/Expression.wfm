@@ -1,0 +1,16 @@
+package de.monticore.bpmn.cocos.conditions.valid;
+
+import de.monticore.bpmn.cds.Domain.*;
+
+process Expression {
+
+  data contract:Contract;
+
+  task T1;
+  task T2;
+  //task T3;
+
+  T1 -> [contract.version > 7] T2;
+  //T2 -> [let x = 7; in x > 42] T3;
+
+}

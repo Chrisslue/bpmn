@@ -1,0 +1,14 @@
+package de.monticore.bpmn.cocos.events.triggers.invalid;
+
+import de.monticore.bpmn.cds.Domain.*;
+
+process StartEventSubProcessHasValidTrigger {
+
+  subprocess S1 {
+
+    event start E1 cancel;
+    event start E2 terminate;
+
+  }
+
+}

@@ -1,0 +1,16 @@
+package de.monticore.bpmn.cocos.events.triggers.valid;
+
+import de.monticore.bpmn.cds.Domain.*;
+
+process NonInterruptingEventHasValidTrigger {
+
+  message msg:HolidayCard;
+
+  subprocess S1 {
+    event start E1 receive noninterrupt message:msg;
+    event end E2;
+
+    E1 -> E2;
+  }
+
+}

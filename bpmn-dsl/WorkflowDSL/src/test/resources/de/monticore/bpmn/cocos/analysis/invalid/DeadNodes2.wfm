@@ -1,0 +1,16 @@
+package de.monticore.bpmn.cocos.analysis.invalid;
+
+process DeadNodes2 {
+
+    task Task1;
+    task Task2;
+    event Wait timer:[after PT5M];
+
+    merge xor MergeGateway;
+    split xor LoopGateway;
+
+    event start -> Task1 -> MergeGateway -> event end;
+
+    LoopGateway -> Task2 -> Wait -> LoopGateway -> MergeGateway;
+
+}

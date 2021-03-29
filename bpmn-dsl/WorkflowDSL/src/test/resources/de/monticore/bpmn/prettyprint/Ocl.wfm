@@ -1,0 +1,14 @@
+package de.monticore.bpmn.ocl;
+
+import de.monticore.bpmn.cds.Vacation.VacationCard;
+
+
+process RequestHoliday {
+
+  data vacationCard:VacationCard;
+
+  event OCLTest1 catch when:[let entry = vacationCard.entries.last(); entry.valid];
+
+  event OCLTest2 catch when:[VacationCard.entries.size > 10];
+
+}

@@ -1,0 +1,16 @@
+package de.monticore.bpmn.cocos.gateways.invalid;
+
+import de.monticore.bpmn.cds.Domain.*;
+
+process EventGatewayHasTwoOrMoreOutgoingFlows {
+
+  message msg:Contract;
+
+  task receive T1 message:msg;
+  task receive T2 message:msg;
+  task receive T3 message:msg;
+
+  split receive:first G1;
+
+  {T1, T2} -> G1 -> T3;
+}

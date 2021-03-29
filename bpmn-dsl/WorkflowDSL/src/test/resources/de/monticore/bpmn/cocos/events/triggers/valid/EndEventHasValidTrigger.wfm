@@ -1,0 +1,21 @@
+package de.monticore.bpmn.cocos.events.triggers.valid;
+
+import de.monticore.bpmn.cds.Domain.*;
+
+process EndEventHasValidTrigger {
+
+  escalation esc:Contract;
+  error err:Contract;
+  message msg:Contract;
+  signal sig:Contract;
+
+  event end E1 message:msg;
+  event end E2 escalate:esc;
+  event end E3 error:err;
+  //event end E4 cancel; may only be used in transaction sub-process
+  event end E5 compensate;
+  event end E6 signal:sig;
+  event end E7 all { message:msg, signal:sig };
+  event end E8 terminate;
+
+}

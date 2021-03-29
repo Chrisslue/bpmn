@@ -1,0 +1,13 @@
+package de.monticore.bpmn.cocos.analysis.invalid;
+
+process LackOfSyncAND {
+
+    task Task1;
+    task Task2;
+
+    event start -> split and -> {
+      [true] Task1,
+      [true] Task2
+    } -> merge xor -> event end;
+
+}

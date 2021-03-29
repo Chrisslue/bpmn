@@ -1,0 +1,7 @@
+package de.monticore.bpmn.cocos.events.invalid;
+
+process CompensatedActivityExists {
+
+  event E1 send compensate:T1;
+
+}

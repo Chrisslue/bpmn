@@ -1,0 +1,10 @@
+package de.monticore.bpmn.cocos.types.invalid;
+
+import de.monticore.bpmn.cds.Domain.*;
+
+
+process TypeExists {
+
+  data contract:FooDoesNotExist;
+
+}

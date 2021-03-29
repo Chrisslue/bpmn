@@ -1,0 +1,16 @@
+package de.monticore.bpmn.cocos.analysis.invalid;
+
+process NoOptionToComplete {
+
+    task Task1;
+    task Task2;
+    event Wait timer:[after PT5M];
+
+    split and SplitGateway;
+    merge xor LoopGateway;
+
+    event start -> Task1 -> SplitGateway -> {event end, LoopGateway};
+
+    LoopGateway -> Task2 -> Wait -> LoopGateway;
+
+}

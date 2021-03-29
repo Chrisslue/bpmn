@@ -1,0 +1,30 @@
+package de.monticore.bpmn.cocos.analysis.invalid;
+
+process DeadNodes {
+
+    task Task1;
+    task Task2;
+    task TaskX;
+
+    task Task3;
+    task Task4;
+    task Task5;
+
+    split and IntermediateSplit1;
+    split and IntermediateSplit2;
+    merge and IntermediateJoin; // this one can never fire
+
+    split xor SplitGateway;
+    merge xor MergeGateway;
+
+    event start -> SplitGateway -> {
+      [true] Task1 -> IntermediateSplit1 -> Task3,
+      [true] Task2 -> TaskX -> IntermediateSplit2 -> Task5
+    } -> MergeGateway -> event end;
+
+    IntermediateSplit1 -> IntermediateJoin;
+    IntermediateSplit2 -> IntermediateJoin;
+
+    IntermediateJoin -> Task4 -> MergeGateway;
+
+}

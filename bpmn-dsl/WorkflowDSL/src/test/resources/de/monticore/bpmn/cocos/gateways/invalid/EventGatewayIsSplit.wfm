@@ -1,0 +1,17 @@
+package de.monticore.bpmn.cocos.gateways.invalid;
+
+import de.monticore.bpmn.cds.Domain.*;
+
+process EventGatewayIsSplit {
+
+  message msg:Contract;
+
+  task T1;
+  task T2;
+  task receive T3 message:msg;
+
+  merge receive:first G1;
+
+  {T1, T2} -> G1 -> T3;
+
+}
