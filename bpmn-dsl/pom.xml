@@ -433,14 +433,14 @@
   <repositories>
     <repository>
       <id>se-nexus</id>
-      <url>https://nexus.se.rwth-aachen.de/content/groups/public/</url>
+      <url>https://nexus.se.rwth-aachen.de/content/groups/montigem/</url>
     </repository>
   </repositories>
 
   <pluginRepositories>
     <pluginRepository>
       <id>se-nexus</id>
-      <url>https://nexus.se.rwth-aachen.de/content/groups/public/</url>
+      <url>https://nexus.se.rwth-aachen.de/content/groups/montigem/</url>
     </pluginRepository>
   </pluginRepositories>
 
