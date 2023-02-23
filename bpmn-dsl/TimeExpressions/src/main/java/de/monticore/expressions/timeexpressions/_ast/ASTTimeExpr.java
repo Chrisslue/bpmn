@@ -1,17 +1,9 @@
 package de.monticore.expressions.timeexpressions._ast;
 
-import de.monticore.literals.literals._ast.ASTIntLiteral;
+import de.monticore.literals.mccommonliterals._ast.ASTNatLiteral;
 import org.joda.time.LocalTime;
 
 public class ASTTimeExpr extends ASTTimeExprTOP {
-
-    protected ASTTimeExpr() {
-        super();
-    }
-
-    protected ASTTimeExpr(final ASTTime time) {
-        super(time);
-    }
 
     public int getHours() {
         return getTime().getHours().getValue();
@@ -22,7 +14,7 @@ public class ASTTimeExpr extends ASTTimeExprTOP {
     }
 
     public int getSeconds() {
-        return getTime().getSecondsOpt().map(ASTIntLiteral::getValue).orElse(0);
+        return getTime().seconds.map(ASTNatLiteral::getValue).orElse(0);
     }
 
     public LocalTime getLocalTime() {

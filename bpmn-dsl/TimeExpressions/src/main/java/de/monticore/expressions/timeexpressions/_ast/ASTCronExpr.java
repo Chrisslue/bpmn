@@ -12,15 +12,6 @@ public class ASTCronExpr extends ASTCronExprTOP {
 
     private Cron cron;
 
-    protected ASTCronExpr() {
-        super();
-    }
-
-    protected ASTCronExpr(final String value) {
-        super();
-        this.setValue(value);
-    }
-
     /**
      * Sets the raw value and creates a CRON expression from the raw value.
      * @param value the raw value
