@@ -1,12 +1,14 @@
 package de.monticore.bpmn.cocos.events.triggers;
 
 import de.monticore.bpmn.collectors.WorkflowCollectors;
+import de.monticore.bpmn.workflow.WorkflowMill;
 import de.monticore.bpmn.workflow._ast.ASTEvent;
 import de.monticore.bpmn.workflow._ast.ASTEventTriggerCancel;
 import de.monticore.bpmn.workflow._ast.ASTEventTriggerTerminate;
 import de.monticore.bpmn.workflow._ast.ASTSubProcess;
 import de.monticore.bpmn.workflow._cocos.WorkflowASTSubProcessCoCo;
-import de.monticore.bpmn.workflow._visitor.WorkflowVisitor;
+import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
+import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
 
 /**
  * Source: https://www.omg.org/spec/BPMN/2.0/PDF
@@ -35,7 +37,7 @@ public class StartEventSubProcessHasValidTrigger extends AbstractHasValidTrigger
         if (!event.isPresentTrigger()) {
             logError(event);
         }
-        event.accept(new WorkflowVisitor() {
+        WorkflowVisitor2 visitor = new WorkflowVisitor2() {
             @Override
             public void visit(final ASTEventTriggerCancel trigger) {
                 logError(event);
@@ -45,6 +47,10 @@ public class StartEventSubProcessHasValidTrigger extends AbstractHasValidTrigger
             public void visit(final ASTEventTriggerTerminate trigger) {
                 logError(event);
             }
-        });
+        };
+
+        WorkflowTraverser traverser = WorkflowMill.traverser();
+        traverser.add4Workflow(visitor);
+        event.accept(traverser);
     }
 }

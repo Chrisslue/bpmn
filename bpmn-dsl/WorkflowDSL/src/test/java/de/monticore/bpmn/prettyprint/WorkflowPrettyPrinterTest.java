@@ -4,6 +4,7 @@ import de.monticore.bpmn.cocos.AbstractCoCoTest;
 import de.monticore.bpmn.cocos.WorkflowCoCos;
 import de.monticore.bpmn.workflow._ast.ASTWorkflowCompilationUnit;
 import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
+import de.monticore.bpmn.workflow._prettyprint.WorkflowFullPrettyPrinter;
 import de.monticore.prettyprint.IndentPrinter;
 import de.se_rwth.commons.logging.Log;
 import de.se_rwth.commons.logging.LogStub;
@@ -34,10 +35,9 @@ public class WorkflowPrettyPrinterTest extends AbstractCoCoTest {
 
         IndentPrinter ppi = new IndentPrinter();
 
-        WorkflowPrettyPrinter pp = new WorkflowPrettyPrinter(ppi);
-        pp.handle(cu);
+        WorkflowFullPrettyPrinter pp = new WorkflowFullPrettyPrinter(ppi);
 
-        String content = ppi.getContent();
+        String content = pp.prettyprint(cu);
         // TODO Check actual against expected output.
 
         Log.info("Pretty printing the parsed Workflow:", WorkflowPrettyPrinterTest.class.getName());

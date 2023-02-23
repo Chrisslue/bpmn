@@ -1,9 +1,9 @@
 package de.monticore.bpmn.workflow._ast;
 
 import de.monticore.ast.ASTNode;
-import de.monticore.symboltable.ArtifactScope;
-import de.monticore.symboltable.Scope;
-import de.monticore.symboltable.ScopeSpanningSymbol;
+import de.monticore.bpmn.workflow._symboltable.IWorkflowArtifactScope;
+import de.monticore.bpmn.workflow._symboltable.IWorkflowScope;
+import de.monticore.symboltable.IScopeSpanningSymbol;
 
 import java.util.Optional;
 
@@ -16,18 +16,18 @@ public interface ASTFlowElement extends ASTFlowElementTOP {
      */
     default Optional<ASTFlowElementContainer> getParent() {
         // we can't use a visitor here, as we would need a parent & inheritance-aware visitor
-        Optional<? extends Scope> scope = getEnclosingScopeOpt();
-        while (scope.isPresent() && !(scope.get() instanceof ArtifactScope)) {
-            final Optional<? extends ScopeSpanningSymbol> symbol = scope.get().getSpanningSymbol();
-            if (symbol.isPresent()) {
-                if (symbol.get().getAstNode().isPresent()) {
-                    final ASTNode node = symbol.get().getAstNode().get();
+        IWorkflowScope scope = getEnclosingScope();
+        while (scope != null && !(scope instanceof IWorkflowArtifactScope)) {
+            if(scope.isPresentSpanningSymbol()) {
+                final IScopeSpanningSymbol symbol = scope.getSpanningSymbol();
+                if (symbol.isPresentAstNode()) {
+                    final ASTNode node = symbol.getAstNode();
                     if (node instanceof ASTFlowElementContainer) {
                         return Optional.of((ASTFlowElementContainer) node);
                     }
                 }
             }
-            scope = scope.get().getEnclosingScope();
+            scope = scope.getEnclosingScope();
         }
         return Optional.empty();
     }

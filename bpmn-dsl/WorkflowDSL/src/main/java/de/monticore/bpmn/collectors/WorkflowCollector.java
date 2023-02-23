@@ -1,9 +1,11 @@
 package de.monticore.bpmn.collectors;
 
 import com.google.common.collect.Lists;
-import de.monticore.bpmn.workflow._ast.ASTLane;
+import de.monticore.bpmn.workflow.WorkflowMill;
 import de.monticore.bpmn.workflow._ast.ASTWorkflowNode;
-import de.monticore.bpmn.workflow._visitor.WorkflowInheritanceVisitor;
+import de.monticore.bpmn.workflow._visitor.WorkflowHandler;
+import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
+import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
 
 import java.util.List;
 
@@ -18,7 +20,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  *
  * @param <E> the type of node
  */
-public abstract class WorkflowCollector<E extends ASTWorkflowNode> implements WorkflowInheritanceVisitor {
+public abstract class WorkflowCollector<E extends ASTWorkflowNode> implements WorkflowVisitor2 {
 
     private final ASTWorkflowNode localRoot;
 
@@ -35,11 +37,14 @@ public abstract class WorkflowCollector<E extends ASTWorkflowNode> implements Wo
      *
      * @see WorkflowCollector#select(ASTWorkflowNode)
      */
-    public List<E> collect() {
+    public List<E> collect(WorkflowCollector<E> collector) {
         result = Lists.newArrayList();
 
-        localRoot.accept(getRealThis());
-        return result;
+        WorkflowTraverser traverser = WorkflowMill.inheritanceTraverser();
+        traverser.add4Workflow(collector);
+
+        localRoot.accept(traverser);
+        return collector.result;
     }
 
     /**

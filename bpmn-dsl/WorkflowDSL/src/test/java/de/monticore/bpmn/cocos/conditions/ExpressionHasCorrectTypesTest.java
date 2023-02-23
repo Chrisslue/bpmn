@@ -21,9 +21,7 @@ class ExpressionHasCorrectTypesTest extends AbstractCoCoTest {
         String modelName = "de.monticore.bpmn.cocos.conditions.invalid.Expression";
 
         Collection<Finding> expectedErrors = Lists.newArrayList(
-                Finding.error("0xOCLI3 Could not resolve field/method/association: bla on Contract at Expression.wfm:<13,9>"),
-                Finding.error("0xCET01 Types mismatch on infix expression at Expression.wfm:<13,22> left: Class right: Integer")
-                //Finding.error("0xCET01 Types mismatch on infix expression at Expression.wfm:<14,32> left: String right: Integer")
+                Finding.error("0xA0241 No SymTypeExpression could be derived for the FieldAccessExpression contract.bla")
         );
 
         testModelForErrors(modelName, expectedErrors);

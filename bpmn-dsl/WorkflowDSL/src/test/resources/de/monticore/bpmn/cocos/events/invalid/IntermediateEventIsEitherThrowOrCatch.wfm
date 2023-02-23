@@ -4,7 +4,7 @@ import de.monticore.bpmn.cds.Domain.*;
 
 process IntermediateEventIsEitherThrowOrCatch {
 
-  message msg:HolidayCard;
+  message msg:LeaveCard;
 
   event start E0;
   event E1 message:msg;

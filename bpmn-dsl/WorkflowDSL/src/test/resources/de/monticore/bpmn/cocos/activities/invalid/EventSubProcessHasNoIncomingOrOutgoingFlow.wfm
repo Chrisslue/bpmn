@@ -8,7 +8,7 @@ process EventSubProcessHasNoIncomingOrOutgoingFlow {
   task T2;
 
   subprocess S1 {
-    signal sig:HolidayCard;
+    signal sig:LeaveCard;
 
     event start E1 signal:sig;
     event end E2;

@@ -42,8 +42,8 @@ public class WorkflowParser extends WorkflowParserTOP {
                 Log.error(Messages.get("0xWFM1001", modelName, simpleFileName));
             }
 
-            if (ast.isPresentPackageStatement()) {
-                String packageDeclaration = ast.getPackageStatement().getQualifiedPackage();
+            if (ast.isPresentMCPackageDeclaration()) {
+                String packageDeclaration = ast.getMCPackageDeclaration().getMCQualifiedName().getQName();
 
                 if (!packageName.endsWith(packageDeclaration)) {
                     Log.error(Messages.get("0xWFM1002", packageDeclaration));

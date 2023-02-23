@@ -1,8 +1,9 @@
 package de.monticore.bpmn;
 
 grammar Workflow
-        extends ocl.monticoreocl.OCL,
-                de.monticore.expressions.TimeExpressions {
+        extends de.monticore.ocl.OCL,
+                de.monticore.expressions.TimeExpressions,
+                de.monticore.symbols.OOSymbols {
 
   start WorkflowCompilationUnit;
 
@@ -15,8 +16,8 @@ grammar Workflow
   scope TimerExpression implements Timer = TimeExpression;
 
   WorkflowCompilationUnit =
-      PackageStatement?
-      ImportStatement*
+      MCPackageDeclaration?
+      MCImportStatement*
       Process
     ;
     
@@ -69,8 +70,8 @@ grammar Workflow
   astrule FlowNode astextends ASTFlowElement, IFlowNode = // IFlowNode provides additional default methods for predecessors/successors
       parentRef:Optional<String>
       laneRef:Optional<String>
-      incomings:List<SequenceFlow>
-      outgoings:List<SequenceFlow>
+      incomings:List<de.monticore.bpmn.workflow._ast.SequenceFlow>
+      outgoings:List<de.monticore.bpmn.workflow._ast.SequenceFlow>
     ;
 
   interface Activity extends GlobalFlowNode =
@@ -169,7 +170,7 @@ grammar Workflow
 
   StandardLoop implements LoopCharacteristics =
       (testBefore:["while"] | "until") ":" "[" loopCondition:Condition "]"
-      ("max" ":" loopMaximum:IntLiteral)?
+      ("max" ":" loopMaximum:NatLiteral)?
     ;
 
   MILoop implements LoopCharacteristics =
@@ -193,7 +194,7 @@ grammar Workflow
     ;
 
   LoopCardinality =
-      count:IntLiteral
+      count:NatLiteral
     | ("[" expression:Condition "]")
     | collection:Name
     ;
@@ -284,7 +285,6 @@ grammar Workflow
   EventTriggerTerminate    implements EventTrigger = "terminate";
   EventTriggerTimer        implements EventTrigger = "timer"       ":" "[" expression:Timer "]";
   EventTriggerMultiple     implements EventTrigger = ("one" | parallelMultiple:["all"]) "{" trigger:(EventTrigger || ",")+ "}";
-  astrule EventTriggerMultiple = trigger:EventTrigger min=2 ;
 
 
   /*========================================================================*/
@@ -296,12 +296,10 @@ grammar Workflow
       path:(FlowTarget || "->")+
       ";"
     ;
-  astrule SequenceFlow = path:FlowTarget min=2 ;
 
   FlowBlock =
       "{" branch:(FlowBranch || ",")+ "}"
     ;
-  astrule FlowBlock = branch:FlowBranch min=2 ;
 
   FlowBranch =
       path:(FlowTarget || "->")+
@@ -309,7 +307,7 @@ grammar Workflow
 
   FlowTarget =
       condition:FlowCondition?
-      (   nodeRef:QName
+      (   nodeRef:MCQualifiedName
         | node:InlineFlowNode
         | block:FlowBlock
       )
@@ -324,15 +322,9 @@ grammar Workflow
   /*================================ DATA ==================================*/
   /*========================================================================*/
 
-  symbol DataObject implements FlowElement =
-      ("data" | ["store"]) Name ":" Type ";"
+  symbol DataObject implements FlowElement, Variable =
+      ("data" | ["store"]) Name ":" MCType ";"
     ;
-
-  /* symbol rules not yet properly supported by MC 5.0.2
-  symbolrule DataObject =
-    type: de.monticore.umlcd4a.symboltable.references.CDTypeSymbolReference
-  ;
-  */
 
 
   /*========================================================================*/
@@ -344,9 +336,9 @@ grammar Workflow
   interface IORequirement;
 
   DataIO =
-      QName
+      MCQualifiedName
       (loop:["[i]"] {noSpace()}?)?
-      (":" Type)?
+      (":" MCType)?
       (
         (   optional:["?"]
           | whileExecuting:["!"]
@@ -371,14 +363,12 @@ grammar Workflow
   /*================================ MISC ==================================*/
   /*========================================================================*/
 
-  // TODO [REMOVE] Use de.monticore.types.Types.QualifiedName as soon as ocl.monticoreocl.OCL.QualifiedName is renamed
-  QName = part:(Name|| ".")+;
 
-  PackageStatement = ("package" part:(Name& || ".")+ ";") ;
+  symbol Error      implements FlowElement, Variable = "error"       Name ":" MCType ";" ;
+  symbol Escalation implements FlowElement, Variable = "escalation"  Name ":" MCType ";" ;
+  symbol Message    implements FlowElement, Variable = "message"     Name ":" MCType ";" ;
+  symbol Signal     implements FlowElement, Variable = "signal"      Name ":" MCType ";" ;
 
-  symbol Error      implements FlowElement = "error"       Name ":" Type ";" ;
-  symbol Escalation implements FlowElement = "escalation"  Name ":" Type ";" ;
-  symbol Message    implements FlowElement = "message"     Name ":" Type ";" ;
-  symbol Signal     implements FlowElement = "signal"      Name ":" Type ";" ;
+  nokeyword "timer";
 
 }

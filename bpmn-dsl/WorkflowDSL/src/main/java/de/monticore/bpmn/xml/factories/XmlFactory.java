@@ -1,9 +1,9 @@
 package de.monticore.bpmn.xml.factories;
 
 import de.monticore.bpmn.workflow._ast.ASTWorkflowNode;
+import jakarta.xml.bind.JAXBElement;
 import org.omg.spec.bpmn._20100524.model.ObjectFactory;
 
-import javax.xml.bind.JAXBElement;
 import java.util.function.Function;
 import java.util.function.Supplier;
 

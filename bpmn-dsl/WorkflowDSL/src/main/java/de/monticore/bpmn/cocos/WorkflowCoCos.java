@@ -10,14 +10,11 @@ import de.monticore.bpmn.cocos.events.*;
 import de.monticore.bpmn.cocos.events.triggers.*;
 import de.monticore.bpmn.cocos.flow.*;
 import de.monticore.bpmn.cocos.gateways.*;
-import de.monticore.bpmn.workflow._cocos.WorkflowASTProcessCoCo;
 import de.monticore.bpmn.workflow._cocos.WorkflowASTSubProcessCoCo;
 import de.monticore.expressions.timeexpressions.cocos.TemporalExpressionsCoCos;
 import de.monticore.bpmn.cocos.analysis.*;
-import de.monticore.bpmn.cocos.conditions.ExpressionHasCorrectTypes;
 import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
-import ocl.monticoreocl.ocl._cocos.OCLCoCos;
-
+import de.monticore.ocl.ocl._cocos.OCLCoCos;
 /**
  * Factory for CoCo checkers.
  */
@@ -66,12 +63,13 @@ public class WorkflowCoCos {
      * @return the CoCo checker
      */
     public static WorkflowCoCoChecker getStructuralChecker() {
-        return new WorkflowCoCoChecker()
-                .addCoCo(new ProcessHasNoDisconnectedComponents())
-                .addCoCo(new ProcessHasNoDeadNodes())
-                .addCoCo(new ProcessHasNoInfiniteLoop())
-                .addCoCo(new ProcessHasNoSyncDeadlock())
-                .addCoCo(new ProcessHasNoLackOfSync());
+        WorkflowCoCoChecker checker = new WorkflowCoCoChecker();
+        checker.addCoCo(new ProcessHasNoDisconnectedComponents());
+        checker.addCoCo(new ProcessHasNoDeadNodes());
+        checker.addCoCo(new ProcessHasNoInfiniteLoop());
+        checker.addCoCo(new ProcessHasNoSyncDeadlock());
+        checker.addCoCo(new ProcessHasNoLackOfSync());
+        return checker;
     }
 
     /**
@@ -80,82 +78,83 @@ public class WorkflowCoCos {
      * @return the CoCo checker
      */
     public static WorkflowCoCoChecker getBehavioralChecker() {
-        return new WorkflowCoCoChecker()
-                .addCoCo(new ProcessNetIsSound());
+        WorkflowCoCoChecker checker = new WorkflowCoCoChecker();
+        checker.addCoCo(new ProcessNetIsSound());
+        return checker;
     }
 
     public static WorkflowCoCoChecker getSequenceFlowChecker() {
-        return new WorkflowCoCoChecker()
-                .addCoCo(new SequenceFlowDoesNotCrossSubProcessBoundaries())
-                .addCoCo(new SequenceFlowNodeReferencesExist())
-                .addCoCo(new BoundaryEventHasNoIncomingFlow())
-                .addCoCo(new EndEventHasNoOutgoingFlow())
-                .addCoCo(new EndEventHasOneOrMoreIncomingFlows())
-                .addCoCo(new IntermediateEventHasOneOrMoreIncomingFlows())
-                .addCoCo(new IntermediateEventHasOneOrMoreOutgoingFlows())
-                .addCoCo(new StartEventHasNoIncomingFlow())
-                .addCoCo(new StartEventHasOneOrMoreOutgoingFlows())
-                .addCoCo(new SplitGatewayHasAtMostOneIncomingFlow())
-                .addCoCo(new SplitGatewayHasMultipleOutgoingFlow())
-                .addCoCo(new MergeGatewayHasAtMostOneOutgoingFlow())
-                .addCoCo(new MergeGatewayHasMultipleIncomingFlow());
+        WorkflowCoCoChecker checker = new WorkflowCoCoChecker();
+        checker.addCoCo(new SequenceFlowDoesNotCrossSubProcessBoundaries());
+        checker.addCoCo(new SequenceFlowNodeReferencesExist());
+        checker.addCoCo(new BoundaryEventHasNoIncomingFlow());
+        checker.addCoCo(new EndEventHasNoOutgoingFlow());
+        checker.addCoCo(new EndEventHasOneOrMoreIncomingFlows());
+        checker.addCoCo(new IntermediateEventHasOneOrMoreIncomingFlows());
+        checker.addCoCo(new IntermediateEventHasOneOrMoreOutgoingFlows());
+        checker.addCoCo(new StartEventHasNoIncomingFlow());
+        checker.addCoCo(new StartEventHasOneOrMoreOutgoingFlows());
+        checker.addCoCo(new SplitGatewayHasAtMostOneIncomingFlow());
+        checker.addCoCo(new SplitGatewayHasMultipleOutgoingFlow());
+        checker.addCoCo(new MergeGatewayHasAtMostOneOutgoingFlow());
+        checker.addCoCo(new MergeGatewayHasMultipleIncomingFlow());
+        return checker;
     }
 
     public static WorkflowCoCoChecker getGatewayChecker() {
-        return new WorkflowCoCoChecker()
-                .addCoCo(new EventGatewayDoesNotMixMessageEventsAndReceiveTasks())
-                .addCoCo(new EventGatewayHasTwoOrMoreOutgoingFlows())
-                .addCoCo(new EventGatewayIsSplit())
-                .addCoCo(new EventGatewayOutgoingFlowHasNoCondition())
-                .addCoCo(new EventGatewayHasValidTarget())
-                .addCoCo(new EventGatewayTargetHasNoAdditionalIncomingFlow())
-                .addCoCo(new EventGatewayTargetReceiveTaskHasNoBoundaryEvents())
-                .addCoCo(new ParallelEventGatewayHasNoIncomingFlow());
+        WorkflowCoCoChecker checker = new WorkflowCoCoChecker();
+        checker.addCoCo(new EventGatewayDoesNotMixMessageEventsAndReceiveTasks());
+        checker.addCoCo(new EventGatewayHasTwoOrMoreOutgoingFlows());
+        checker.addCoCo(new EventGatewayIsSplit());
+        checker.addCoCo(new EventGatewayOutgoingFlowHasNoCondition());
+        checker.addCoCo(new EventGatewayHasValidTarget());
+        checker.addCoCo(new EventGatewayTargetHasNoAdditionalIncomingFlow());
+        checker.addCoCo(new EventGatewayTargetReceiveTaskHasNoBoundaryEvents());
+        checker.addCoCo(new ParallelEventGatewayHasNoIncomingFlow());
+        return checker;
     }
 
     public static WorkflowCoCoChecker getActivityChecker() {
-        return new WorkflowCoCoChecker()
-                .addCoCo(new TaskContainsOnlyBoundaryEvents())
-                .addCoCo(new CompensationActivityHasNoIncomingOrOutgoingFlow())
-                .addCoCo(new EventSubProcessHasNoIncomingOrOutgoingFlow())
-                .addCoCo(new EventSubProcessHasOnlyOneStartEvent())
-                .addCoCo(new AdHocSubProcessContainsAtLeastOneActivity())
-                .addCoCo(new AdHocSubProcessHasNoStartAndEndEvent())
-                .addCoCo(new LoopCountExpressionReturnsIntegerNumber());
+        WorkflowCoCoChecker checker = new WorkflowCoCoChecker();
+        checker.addCoCo(new TaskContainsOnlyBoundaryEvents());
+        checker.addCoCo(new CompensationActivityHasNoIncomingOrOutgoingFlow());
+        checker.addCoCo(new EventSubProcessHasNoIncomingOrOutgoingFlow());
+        checker.addCoCo(new EventSubProcessHasOnlyOneStartEvent());
+        checker.addCoCo(new AdHocSubProcessContainsAtLeastOneActivity());
+        checker.addCoCo(new AdHocSubProcessHasNoStartAndEndEvent());
+        checker.addCoCo(new LoopCountExpressionReturnsIntegerNumber());
+        return checker;
     }
 
     public static WorkflowCoCoChecker getEventChecker() {
-        final WorkflowCoCoChecker checker = new WorkflowCoCoChecker()
-                .addCoCo(new AtLeastOneEndEventIfStartEventIsUsed())
-                .addCoCo(new AtLeastOneStartEventIfEndEventIsUsed())
-                .addCoCo(new BoundaryEventIsContainedByActivity())
-                .addCoCo(new BoundaryEventIsNotThrowing())
-                .addCoCo(new CompensatedActivityExists())
-                .addCoCo(new EndEventIsNotCatching())
-                .addCoCo(new IntermediateEventIsEitherThrowOrCatch())
-                .addCoCo(new StartEventIsNotThrowing())
-                .addCoCo(new StartEventOutgoingFlowHasNoCondition());
+        WorkflowCoCoChecker checker = new WorkflowCoCoChecker();
+        checker.addCoCo(new AtLeastOneEndEventIfStartEventIsUsed());
+        checker.addCoCo(new AtLeastOneStartEventIfEndEventIsUsed());
+        checker.addCoCo(new BoundaryEventIsContainedByActivity());
+        checker.addCoCo(new BoundaryEventIsNotThrowing());
+        checker.addCoCo(new CompensatedActivityExists());
+        checker.addCoCo(new EndEventIsNotCatching());
+        checker.addCoCo(new IntermediateEventIsEitherThrowOrCatch());
+        checker.addCoCo(new StartEventIsNotThrowing());
+        checker.addCoCo(new StartEventOutgoingFlowHasNoCondition());
         checker.addChecker(getEventTriggerChecker());
-
         return checker;
     }
 
     public static WorkflowCoCoChecker getEventTriggerChecker() {
-        return new WorkflowCoCoChecker()
-                .addCoCo((WorkflowASTProcessCoCo) new CancelIntermediateEventIsAttachedToTransaction())
-                .addCoCo((WorkflowASTSubProcessCoCo) new CancelIntermediateEventIsAttachedToTransaction())
-                .addCoCo((WorkflowASTProcessCoCo) new CancelEndEventIsContainedWithinTransaction())
-                .addCoCo((WorkflowASTSubProcessCoCo) new CancelEndEventIsContainedWithinTransaction())
-                .addCoCo(new StartEventTopLevelProcessHasValidTrigger())
-                .addCoCo(new StartEventSubProcessHasValidTrigger())
-                .addCoCo(new IntermediateCatchEventHasValidTrigger())
-                .addCoCo(new IntermediateThrowEventHasValidTrigger())
-                .addCoCo(new BoundaryEventHasValidTrigger())
-                .addCoCo(new EndEventHasValidTrigger())
-                .addCoCo(new NonInterruptingEventHasValidTrigger())
-                .addCoCo((WorkflowASTProcessCoCo) new NonInterruptingEventIsSubProcessStartOrBoundary())
-                .addCoCo((WorkflowASTSubProcessCoCo) new NonInterruptingEventIsSubProcessStartOrBoundary())
-                .addCoCo(new CompensateCatchEventIsNotPartOfNormalFlow());
+        WorkflowCoCoChecker checker = new WorkflowCoCoChecker();
+        checker.addCoCo((WorkflowASTSubProcessCoCo) new CancelIntermediateEventIsAttachedToTransaction());
+        checker.addCoCo((WorkflowASTSubProcessCoCo) new CancelEndEventIsContainedWithinTransaction());
+        checker.addCoCo(new StartEventTopLevelProcessHasValidTrigger());
+        checker.addCoCo(new StartEventSubProcessHasValidTrigger());
+        checker.addCoCo(new IntermediateCatchEventHasValidTrigger());
+        checker.addCoCo(new IntermediateThrowEventHasValidTrigger());
+        checker.addCoCo(new BoundaryEventHasValidTrigger());
+        checker.addCoCo(new EndEventHasValidTrigger());
+        checker.addCoCo(new NonInterruptingEventHasValidTrigger());
+        checker.addCoCo((WorkflowASTSubProcessCoCo) new NonInterruptingEventIsSubProcessStartOrBoundary());
+        checker.addCoCo(new CompensateCatchEventIsNotPartOfNormalFlow());
+        return checker;
     }
 
     public static WorkflowCoCoChecker getTimeExpressionsChecker() {
@@ -166,9 +165,9 @@ public class WorkflowCoCos {
     }
 
     public static WorkflowCoCoChecker getTypesChecker() {
-        final WorkflowCoCoChecker checker = new WorkflowCoCoChecker()
-                .addCoCo(new ExpressionHasCorrectTypes())
-                .addCoCo(new CalledElementDoesExist());
+        WorkflowCoCoChecker checker = new WorkflowCoCoChecker();
+
+        checker.addCoCo(new CalledElementDoesExist());
         checker.addChecker(OCLCoCos.createChecker());
 
         return checker;

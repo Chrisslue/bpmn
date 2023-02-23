@@ -17,6 +17,7 @@ class SequenceFlowNodeReferencesExistTest extends AbstractCoCoTest {
 
     @BeforeAll
     public static void init() {
+        Log.clearFindings();
         Log.enableFailQuick(true);
     }
 

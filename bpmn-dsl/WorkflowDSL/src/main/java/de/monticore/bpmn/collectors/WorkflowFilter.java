@@ -1,7 +1,10 @@
 package de.monticore.bpmn.collectors;
 
+import de.monticore.bpmn.workflow.WorkflowMill;
 import de.monticore.bpmn.workflow._ast.*;
-import de.monticore.bpmn.workflow._visitor.WorkflowInheritanceVisitor;
+import de.monticore.bpmn.workflow._visitor.WorkflowHandler;
+import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
+import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
 
 import java.util.Optional;
 
@@ -12,7 +15,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  *
  * @param <E> the type of the filtered node
  */
-public class WorkflowFilter<E extends ASTWorkflowNode> implements WorkflowInheritanceVisitor {
+public class WorkflowFilter<E extends ASTWorkflowNode> implements WorkflowVisitor2 {
 
     private ASTWorkflowNode unfiltered;
 
@@ -20,8 +23,12 @@ public class WorkflowFilter<E extends ASTWorkflowNode> implements WorkflowInheri
 
     public WorkflowFilter(final ASTWorkflowNode node) {
         unfiltered = node;
+    }
 
-        node.accept(getRealThis());
+    public void filter(WorkflowFilter<E> filter){
+        WorkflowTraverser traverser = WorkflowMill.inheritanceTraverser();
+        traverser.add4Workflow(filter);
+        unfiltered.accept(traverser);
     }
 
     /**

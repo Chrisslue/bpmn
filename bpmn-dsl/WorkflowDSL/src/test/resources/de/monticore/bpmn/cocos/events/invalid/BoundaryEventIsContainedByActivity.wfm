@@ -4,7 +4,7 @@ import de.monticore.bpmn.cds.Domain.*;
 
 process BoundaryEventIsContainedByActivity {
 
-  message msg:HolidayCard;
+  message msg:LeaveCard;
 
   <<boundary>> event E1 message:msg;
 

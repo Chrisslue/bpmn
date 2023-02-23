@@ -1,18 +1,20 @@
 package de.monticore.bpmn.workflow._ast;
 
 
-import de.monticore.bpmn.workflow._visitor.WorkflowVisitor;
+import de.monticore.bpmn.workflow.WorkflowMill;
+import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
+import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
 
 import java.util.function.Predicate;
 
 public interface ASTEvent extends ASTEventTOP {
 
     default boolean isStart() {
-        return getTypeOpt().map(ASTEventType.START::equals).orElse(false);
+        return isPresentType() && getType().equals(ASTEventType.START);
     }
 
     default boolean isEnd() {
-        return getTypeOpt().map(ASTEventType.END::equals).orElse(false);
+        return isPresentType() && getType().equals(ASTEventType.END);
     }
 
     default boolean isIntermediate() {
@@ -24,22 +26,32 @@ public interface ASTEvent extends ASTEventTOP {
     }
 
     default boolean isNonInterrupt() {
-        return getBehaviorOpt().map(ASTEventBehavior::isNonInterrupt).orElse(false);
+        return isPresentBehavior() && getBehavior().isNonInterrupt();
     }
 
     default boolean isCatch() {
-        return getBehaviorOpt().map(ASTEventBehavior::isCatch).orElseGet(() ->
-                isStart() || isBoundary() || (isIntermediate() && new IsIntermediateCatchTrigger().test(this)));
+        if(isPresentBehavior()){
+            if(getBehavior().isCatch()){
+                return true;
+            }
+            return isStart() || isBoundary() || (isIntermediate() && new IsIntermediateCatchTrigger().test(this));
+        }
+        return false;
     }
 
     default boolean isThrow() {
-        return getBehaviorOpt().map(ASTEventBehavior::isThrow).orElseGet(() ->
-                isEnd() || (isIntermediate() && new IsIntermediateThrowTrigger().test(this)));
+        if(isPresentBehavior()){
+            if(getBehavior().isThrow()){
+                return true;
+            }
+            return isEnd() || (isIntermediate() && new IsIntermediateThrowTrigger().test(this));
+        }
+        return false;
     }
 
     String getName();
 
-    class IsIntermediateThrowTrigger implements Predicate<ASTEvent>, WorkflowVisitor {
+    class IsIntermediateThrowTrigger implements Predicate<ASTEvent>, WorkflowVisitor2 {
         boolean isThrow;
 
         @Override
@@ -47,7 +59,9 @@ public interface ASTEvent extends ASTEventTOP {
             if (!event.isPresentTrigger()) {
                 return true;
             }
-            event.accept(this);
+            WorkflowTraverser traverser = WorkflowMill.traverser();
+            traverser.add4Workflow(this);
+            event.accept(traverser);
             return isThrow;
         }
 
@@ -61,7 +75,7 @@ public interface ASTEvent extends ASTEventTOP {
         }
     }
 
-    class IsIntermediateCatchTrigger implements Predicate<ASTEvent>, WorkflowVisitor {
+    class IsIntermediateCatchTrigger implements Predicate<ASTEvent>, WorkflowVisitor2 {
         boolean isCatch;
 
         @Override
@@ -69,7 +83,9 @@ public interface ASTEvent extends ASTEventTOP {
 /*            if (event.isBoundary()) {
                 return true;
             }*/
-            event.accept(this);
+            WorkflowTraverser traverser = WorkflowMill.traverser();
+            traverser.add4Workflow(this);
+            event.accept(traverser);
             return isCatch;
         }
 

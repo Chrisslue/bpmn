@@ -7,7 +7,7 @@ import de.monticore.bpmn.workflow._ast.ASTFlowNode;
 import de.monticore.bpmn.workflow._ast.ASTProcess;
 import de.monticore.bpmn.workflow._ast.SequenceFlow;
 import de.monticore.bpmn.workflow._cocos.WorkflowASTProcessCoCo;
-import de.monticore.symboltable.Scope;
+import de.monticore.bpmn.workflow._symboltable.IWorkflowScope;
 import de.se_rwth.commons.logging.Log;
 
 public class SequenceFlowDoesNotCrossSubProcessBoundaries implements WorkflowASTProcessCoCo {
@@ -18,12 +18,12 @@ public class SequenceFlowDoesNotCrossSubProcessBoundaries implements WorkflowAST
     }
 
     public void check(final SequenceFlow sequenceFlow) {
-        Scope sourceScope = sequenceFlow.getSource().getEnclosingScope();
-        Scope targetScope = sequenceFlow.getTarget().getEnclosingScope();
+        IWorkflowScope sourceScope = sequenceFlow.getSource().getEnclosingScope();
+        IWorkflowScope targetScope = sequenceFlow.getTarget().getEnclosingScope();
 
         if (isBoundaryEvent(sequenceFlow.getSource())) {
             // Boundary event is contained within activity and connects to flow objects in the scope of the activity
-            sourceScope = sourceScope.getEnclosingScope().get();
+            sourceScope = sourceScope.getEnclosingScope();
         }
 
         if (!targetScope.equals(sourceScope)) {

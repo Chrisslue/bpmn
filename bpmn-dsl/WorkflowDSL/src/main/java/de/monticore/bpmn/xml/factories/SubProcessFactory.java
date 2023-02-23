@@ -1,13 +1,27 @@
 package de.monticore.bpmn.xml.factories;
 
 import de.monticore.bpmn.workflow._ast.*;
-import de.monticore.bpmn.workflow._visitor.WorkflowVisitor;
+import de.monticore.bpmn.workflow._visitor.WorkflowHandler;
+import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
+import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
 import de.monticore.bpmn.xml.WorkflowXmlUtils;
+import jakarta.xml.bind.JAXBElement;
 import org.omg.spec.bpmn._20100524.model.*;
 
-import javax.xml.bind.JAXBElement;
 
-public class SubProcessFactory extends XmlFactory<ASTSubProcess, TSubProcess> implements WorkflowVisitor {
+public class SubProcessFactory extends XmlFactory<ASTSubProcess, TSubProcess> implements WorkflowVisitor2, WorkflowHandler {
+
+    protected WorkflowTraverser traverser;
+
+    @Override
+    public WorkflowTraverser getTraverser() {
+        return traverser;
+    }
+
+    @Override
+    public void setTraverser(WorkflowTraverser traverser) {
+        this.traverser = traverser;
+    }
 
     public static JAXBElement<? extends TSubProcess> makeXml(final ASTSubProcess subProcess) {
         return new SubProcessFactory().buildXml(subProcess);
@@ -16,7 +30,7 @@ public class SubProcessFactory extends XmlFactory<ASTSubProcess, TSubProcess> im
     @Override
     public JAXBElement<? extends TSubProcess> buildXml(final ASTSubProcess subProcess) {
         // visitor to handle concrete type
-        subProcess.accept(getRealThis());
+        subProcess.accept(getTraverser());
 
         // handle attributes common to all activities
         val.setId(WorkflowXmlUtils.getAsResourceKey(subProcess.getName()));

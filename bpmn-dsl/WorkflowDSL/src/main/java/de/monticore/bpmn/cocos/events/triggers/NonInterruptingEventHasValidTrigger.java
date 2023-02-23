@@ -1,8 +1,10 @@
 package de.monticore.bpmn.cocos.events.triggers;
 
+import de.monticore.bpmn.workflow.WorkflowMill;
 import de.monticore.bpmn.workflow._ast.*;
 import de.monticore.bpmn.workflow._cocos.WorkflowASTEventCoCo;
-import de.monticore.bpmn.workflow._visitor.WorkflowVisitor;
+import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
+import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
 
 public class NonInterruptingEventHasValidTrigger extends AbstractHasValidTriggerCoCo implements WorkflowASTEventCoCo {
 
@@ -18,7 +20,7 @@ public class NonInterruptingEventHasValidTrigger extends AbstractHasValidTrigger
             return;
         }
 
-        event.accept(new WorkflowVisitor() {
+        WorkflowVisitor2 visitor = new WorkflowVisitor2() {
             @Override
             public void visit(final ASTEventTriggerError trigger) {
                 logError(event);
@@ -31,7 +33,11 @@ public class NonInterruptingEventHasValidTrigger extends AbstractHasValidTrigger
             public void visit(final ASTEventTriggerCompensate trigger) {
                 logError(event);
             }
-        });
+        };
+
+        WorkflowTraverser traverser = WorkflowMill.traverser();
+        traverser.add4Workflow(visitor);
+        event.accept(traverser);
     }
 
 }

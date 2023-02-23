@@ -1,16 +1,30 @@
 package de.monticore.bpmn.xml.factories;
 
 import de.monticore.bpmn.workflow._ast.*;
-import de.monticore.bpmn.workflow._visitor.WorkflowVisitor;
+import de.monticore.bpmn.workflow._visitor.WorkflowHandler;
+import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
+import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
+import jakarta.xml.bind.JAXBElement;
 import org.omg.spec.bpmn._20100524.model.TLoopCharacteristics;
 import org.omg.spec.bpmn._20100524.model.TMultiInstanceFlowCondition;
 import org.omg.spec.bpmn._20100524.model.TMultiInstanceLoopCharacteristics;
 import org.omg.spec.bpmn._20100524.model.TStandardLoopCharacteristics;
 
-import javax.xml.bind.JAXBElement;
 import java.math.BigInteger;
 
-public class LoopCharacteristicsFactory extends XmlFactory<ASTLoopCharacteristics, TLoopCharacteristics> implements WorkflowVisitor {
+public class LoopCharacteristicsFactory extends XmlFactory<ASTLoopCharacteristics, TLoopCharacteristics> implements WorkflowVisitor2, WorkflowHandler {
+
+    protected WorkflowTraverser traverser;
+
+    @Override
+    public WorkflowTraverser getTraverser() {
+        return traverser;
+    }
+
+    @Override
+    public void setTraverser(WorkflowTraverser traverser) {
+        this.traverser = traverser;
+    }
 
     public static JAXBElement<? extends TLoopCharacteristics> from(final ASTLoopCharacteristics loopCharacteristics) {
         return new LoopCharacteristicsFactory().buildXml(loopCharacteristics);
@@ -18,7 +32,7 @@ public class LoopCharacteristicsFactory extends XmlFactory<ASTLoopCharacteristic
 
     @Override
     public JAXBElement<? extends TLoopCharacteristics> buildXml(final ASTLoopCharacteristics loopCharacteristics) {
-        loopCharacteristics.accept(getRealThis());
+        loopCharacteristics.accept(getTraverser());
 
         return xml;
     }

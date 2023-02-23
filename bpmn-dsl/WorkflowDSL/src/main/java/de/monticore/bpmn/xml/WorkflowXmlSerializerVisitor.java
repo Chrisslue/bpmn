@@ -3,13 +3,15 @@ package de.monticore.bpmn.xml;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import de.monticore.bpmn.collectors.WorkflowCollectors;
-import de.monticore.bpmn.visitors.WorkflowLocalInheritanceVisitor;
+import de.monticore.bpmn.visitors.WorkflowLocalVisitor;
+import de.monticore.bpmn.workflow.WorkflowMill;
 import de.monticore.bpmn.workflow._ast.*;
-import de.monticore.bpmn.workflow._visitor.WorkflowInheritanceVisitor;
+import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
+import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
 import de.monticore.bpmn.xml.factories.*;
+import jakarta.xml.bind.JAXBElement;
 import org.omg.spec.bpmn._20100524.model.*;
 
-import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 import java.util.Collection;
 import java.util.List;
@@ -29,7 +31,7 @@ import java.util.stream.Collectors;
 // TODO include data and IO in XML output (mapping not completely clear, ignored by Camunda and other engines anyways ...)
 // TODO improvement: use a (configurable) ID provider and inject it into factories/factory calls.
 
-public class WorkflowXmlSerializerVisitor extends WorkflowLocalInheritanceVisitor {
+public class WorkflowXmlSerializerVisitor extends WorkflowLocalVisitor {
 
     private final List<JAXBElement<? extends TRootElement>> rootElements = Lists.newArrayList();
     private final List<JAXBElement<? extends TFlowElement>> flowElements = Lists.newArrayList();
@@ -49,7 +51,10 @@ public class WorkflowXmlSerializerVisitor extends WorkflowLocalInheritanceVisito
     }
 
     protected void makeXml() {
-        localRoot.accept(getRealThis());
+        WorkflowTraverser traverser = WorkflowMill.inheritanceTraverser();
+        traverser.add4Workflow(this);
+        traverser.setWorkflowHandler(this);
+        localRoot.accept(traverser);
     }
 
     // Concrete activity type is handled further down.
@@ -196,7 +201,7 @@ public class WorkflowXmlSerializerVisitor extends WorkflowLocalInheritanceVisito
                 .forEach(defaultFlow -> { // add default flow reference. bit hacky
                     final TSequenceFlow tFlow = flows.get(defaultFlow);
 
-                    defaultFlow.getSource().accept(new WorkflowInheritanceVisitor() {
+                    WorkflowVisitor2 visitor = new WorkflowVisitor2() {
                         @Override
                         public void visit(final ASTActivity activity) {
                             TActivity t = (TActivity) getXmlNode(activity);
@@ -217,7 +222,11 @@ public class WorkflowXmlSerializerVisitor extends WorkflowLocalInheritanceVisito
                                 t.setDefault(tFlow);
                             }
                         }
-                    });
+                    };
+
+                    WorkflowTraverser traverser = WorkflowMill.inheritanceTraverser();
+                    traverser.add4Workflow(visitor);
+                    defaultFlow.getSource().accept(traverser);
         });
     }
 
@@ -231,8 +240,8 @@ public class WorkflowXmlSerializerVisitor extends WorkflowLocalInheritanceVisito
 
     private void addSequenceFlowRefs(final ASTFlowNode astNode, final TFlowNode xmlNode) {
         // add references to sequence flow
-        astNode.getIncomingList().forEach(flow -> xmlNode.getIncoming().add(new QName(WorkflowXmlUtils.getAsResourceKey(flow.getName()))));
-        astNode.getOutgoingList().forEach(flow -> xmlNode.getOutgoing().add(new QName(WorkflowXmlUtils.getAsResourceKey(flow.getName()))));
+        astNode.getIncomingsList().forEach(flow -> xmlNode.getIncoming().add(new QName(WorkflowXmlUtils.getAsResourceKey(flow.getName()))));
+        astNode.getOutgoingsList().forEach(flow -> xmlNode.getOutgoing().add(new QName(WorkflowXmlUtils.getAsResourceKey(flow.getName()))));
     }
 
     private void addLaneFlowNodeRef(final TFlowNode xmlNode) {

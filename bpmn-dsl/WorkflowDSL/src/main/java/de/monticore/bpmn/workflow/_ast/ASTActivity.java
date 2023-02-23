@@ -7,7 +7,7 @@ public interface ASTActivity extends ASTActivityTOP {
     Collection<? extends ASTEvent> getBoundaryEvents();
 
     default boolean isForCompensation() {
-        return getCompensationHandlerOpt().isPresent();
+        return isPresentCompensationHandler();
     }
 
 }

@@ -4,7 +4,7 @@ import de.monticore.bpmn.cds.Domain.*;
 
 process NonInterruptingEventHasValidTrigger {
 
-  error err:HolidayCard;
+  error err:LeaveCard;
 
   subprocess S1 {
     event start E01 receive noninterrupt error:err;

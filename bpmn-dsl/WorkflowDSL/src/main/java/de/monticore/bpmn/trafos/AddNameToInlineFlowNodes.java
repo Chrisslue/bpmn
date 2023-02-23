@@ -1,13 +1,15 @@
 package de.monticore.bpmn.trafos;
 
+import de.monticore.bpmn.workflow.WorkflowMill;
 import de.monticore.bpmn.workflow._ast.ASTInlineEvent;
 import de.monticore.bpmn.workflow._ast.ASTInlineGateway;
-import de.monticore.bpmn.workflow._visitor.WorkflowVisitor;
+import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
+import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
 
 /**
  * Adds anonymous names to in-lined gateways and events.
  */
-public class AddNameToInlineFlowNodes extends WorkflowTransformation implements WorkflowVisitor {
+public class AddNameToInlineFlowNodes extends WorkflowTransformation implements WorkflowVisitor2 {
 
     private int nextAnonymousId = 1;
 
@@ -17,7 +19,9 @@ public class AddNameToInlineFlowNodes extends WorkflowTransformation implements 
 
     @Override
     protected void transform() {
-        getAst().accept(this);
+        WorkflowTraverser traverser = WorkflowMill.traverser();
+        traverser.add4Workflow(this);
+        getAst().accept(traverser);
     }
 
     @Override

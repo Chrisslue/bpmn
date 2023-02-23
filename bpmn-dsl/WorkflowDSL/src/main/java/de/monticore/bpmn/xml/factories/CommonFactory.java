@@ -3,9 +3,9 @@ package de.monticore.bpmn.xml.factories;
 import de.monticore.bpmn.TypesHelper;
 import de.monticore.bpmn.workflow._ast.*;
 import de.monticore.bpmn.xml.WorkflowXmlUtils;
+import jakarta.xml.bind.JAXBElement;
 import org.omg.spec.bpmn._20100524.model.*;
 
-import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -26,15 +26,16 @@ public class CommonFactory {
         return xmlNode;
     }
 
-    public static JAXBElement<TDefinitions> makeDefinitions(final ASTWorkflowCompilationUnit unit, final String name, final String targetNamespace) {
-        JAXBElement<TDefinitions> xmlNode = create(factory::createTDefinitions, factory::createDefinitions);
-        TDefinitions value = xmlNode.getValue();
-        value.setTargetNamespace(targetNamespace);
-        value.setId(WorkflowXmlUtils.getAsResourceKey(name));
-        value.setName(name);
-
-        return xmlNode;
-    }
+    //TODO
+//    public static JAXBElement<TDefinitions> makeDefinitions(final ASTWorkflowCompilationUnit unit, final String name, final String targetNamespace) {
+//        JAXBElement<TDefinitions> xmlNode = create(factory::createTDefinition, factory::createDefinitions);
+//        TDefinitions value = xmlNode.getValue();
+//        value.setTargetNamespace(targetNamespace);
+//        value.setId(WorkflowXmlUtils.getAsResourceKey(name));
+//        value.setName(name);
+//
+//        return xmlNode;
+//    }
 
     public static TLaneSet makeXmlLaneSet() {
         TLaneSet value = factory.createTLaneSet();
@@ -82,7 +83,7 @@ public class CommonFactory {
         JAXBElement<TDataObject> xmlNode = create(factory::createTDataObject, factory::createDataObject);
         TDataObject value = xmlNode.getValue();
         // final String type = TypesPrinter.printType(dataObject.getType());
-        final String type = dataObject.getDataObjectSymbol().getTypeSymbolRef().getFullName();
+        final String type = dataObject.getSymbol().getType().printFullName();
         value.setName(dataObject.getName());
         value.setIsCollection(TypesHelper.isCollection(type));
         value.setItemSubjectRef(new QName(type));

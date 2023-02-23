@@ -5,20 +5,13 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
 import com.google.common.collect.Multimaps;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ASTFlowBlock extends ASTFlowBlockTOP {
-
-    protected ASTFlowBlock() {
-        super();
-    }
-
-    protected ASTFlowBlock(final List<ASTFlowBranch> branches) {
-        super(branches);
-    }
 
     /**
      * Calculates all entry flow nodes corresponding to this block

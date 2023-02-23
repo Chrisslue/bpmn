@@ -1,0 +1,1030 @@
+{
+  "generated-using": "www.MontiCore.de technology",
+  "name": "DefaultTypes",
+  "symbols": [
+    {
+      "kind": "de.monticore.symbols.basicsymbols._symboltable.DiagramSymbol",
+      "name": "DefaultTypes"
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "Class",
+      "isClass": true
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "Object",
+      "isClass": true
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "Collection",
+      "isClass": true,
+      "spannedScope": {
+        "symbols": [
+          {
+            "kind": "de.monticore.cd4codebasis._symboltable.CDMethodSignatureSymbol",
+            "name": "containsAll",
+            "type": {
+              "kind": "de.monticore.types.check.SymTypePrimitive",
+              "primitiveName": "boolean"
+            },
+            "isMethod": true,
+            "spannedScope": {
+              "symbols": [
+                {
+                  "kind": "de.monticore.symbols.oosymbols._symboltable.FieldSymbol",
+                  "name": "c",
+                  "type": {
+                    "kind": "de.monticore.types.check.SymTypeOfObject",
+                    "objName": "Collection"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "kind": "de.monticore.cd4codebasis._symboltable.CDMethodSignatureSymbol",
+            "name": "contains",
+            "type": {
+              "kind": "de.monticore.types.check.SymTypePrimitive",
+              "primitiveName": "boolean"
+            },
+            "isMethod": true,
+            "spannedScope": {
+              "symbols": [
+                {
+                  "kind": "de.monticore.symbols.oosymbols._symboltable.FieldSymbol",
+                  "name": "c",
+                  "type": {
+                    "kind": "de.monticore.types.check.SymTypeOfObject",
+                    "objName": "Collection"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "kind": "de.monticore.cd4codebasis._symboltable.CDMethodSignatureSymbol",
+            "name": "size",
+            "type": {
+              "kind": "de.monticore.types.check.SymTypePrimitive",
+              "primitiveName": "int"
+            },
+            "isMethod": true
+          },
+          {
+            "kind": "de.monticore.cd4codebasis._symboltable.CDMethodSignatureSymbol",
+            "name": "isEmpty",
+            "type": {
+              "kind": "de.monticore.types.check.SymTypePrimitive",
+              "primitiveName": "boolean"
+            },
+            "isMethod": true
+          },
+          {
+            "kind": "de.monticore.cd4codebasis._symboltable.CDMethodSignatureSymbol",
+            "name": "addAll",
+            "type": {
+              "kind": "de.monticore.types.check.SymTypeOfObject",
+              "objName": "Collection"
+            },
+            "isMethod": true,
+            "spannedScope": {
+              "symbols": [
+                {
+                  "kind": "de.monticore.symbols.oosymbols._symboltable.FieldSymbol",
+                  "name": "c",
+                  "type": {
+                    "kind": "de.monticore.types.check.SymTypeOfObject",
+                    "objName": "Collection"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "kind": "de.monticore.cd4codebasis._symboltable.CDMethodSignatureSymbol",
+            "name": "asSet",
+            "type": {
+              "kind": "de.monticore.types.check.SymTypeOfObject",
+              "objName": "Set"
+            },
+            "isMethod": true
+          },
+          {
+            "kind": "de.monticore.cd4codebasis._symboltable.CDMethodSignatureSymbol",
+            "name": "flatten",
+            "type": {
+              "kind": "de.monticore.types.check.SymTypeOfObject",
+              "objName": "Collection"
+            },
+            "isMethod": true
+          }
+        ]
+      }
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "List",
+      "isClass": true,
+      "superTypes": [
+        {
+          "kind": "de.monticore.types.check.SymTypeOfObject",
+          "objName": "Collection"
+        }
+      ],
+      "spannedScope": {
+        "symbols": [
+          {
+            "kind": "de.monticore.cd4codebasis._symboltable.CDMethodSignatureSymbol",
+            "name": "nonEmpty",
+            "type": {
+              "kind": "de.monticore.types.check.SymTypePrimitive",
+              "primitiveName": "boolean"
+            },
+            "isMethod": true
+          },
+          {
+            "kind": "de.monticore.cd4codebasis._symboltable.CDMethodSignatureSymbol",
+            "name": "addAll",
+            "type": {
+              "kind": "de.monticore.types.check.SymTypeOfObject",
+              "objName": "List"
+            },
+            "isMethod": true,
+            "spannedScope": {
+              "symbols": [
+                {
+                  "kind": "de.monticore.symbols.oosymbols._symboltable.FieldSymbol",
+                  "name": "c",
+                  "type": {
+                    "kind": "de.monticore.types.check.SymTypeOfObject",
+                    "objName": "List"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "kind": "de.monticore.cd4codebasis._symboltable.CDMethodSignatureSymbol",
+            "name": "add",
+            "type": {
+              "kind": "de.monticore.types.check.SymTypeOfObject",
+              "objName": "List"
+            },
+            "isMethod": true,
+            "spannedScope": {
+              "symbols": [
+                {
+                  "kind": "de.monticore.symbols.oosymbols._symboltable.FieldSymbol",
+                  "name": "o",
+                  "type": {
+                    "kind": "de.monticore.types.check.SymTypeOfObject",
+                    "objName": "Object"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "Set",
+      "isClass": true,
+      "superTypes": [
+        {
+          "kind": "de.monticore.types.check.SymTypeOfObject",
+          "objName": "Collection"
+        }
+      ],
+      "spannedScope": {
+        "symbols": [
+          {
+            "kind": "de.monticore.cd4codebasis._symboltable.CDMethodSignatureSymbol",
+            "name": "addAll",
+            "type": {
+              "kind": "de.monticore.types.check.SymTypeOfObject",
+              "objName": "Set"
+            },
+            "isMethod": true,
+            "spannedScope": {
+              "symbols": [
+                {
+                  "kind": "de.monticore.symbols.oosymbols._symboltable.FieldSymbol",
+                  "name": "c",
+                  "type": {
+                    "kind": "de.monticore.types.check.SymTypeOfObject",
+                    "objName": "Set"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "kind": "de.monticore.cd4codebasis._symboltable.CDMethodSignatureSymbol",
+            "name": "asList",
+            "type": {
+              "kind": "de.monticore.types.check.SymTypeOfObject",
+              "objName": "List"
+            },
+            "isMethod": true
+          },
+          {
+            "kind": "de.monticore.cd4codebasis._symboltable.CDMethodSignatureSymbol",
+            "name": "add",
+            "type": {
+              "kind": "de.monticore.types.check.SymTypeOfObject",
+              "objName": "Set"
+            },
+            "isMethod": true,
+            "spannedScope": {
+              "symbols": [
+                {
+                  "kind": "de.monticore.symbols.oosymbols._symboltable.FieldSymbol",
+                  "name": "o",
+                  "type": {
+                    "kind": "de.monticore.types.check.SymTypeOfObject",
+                    "objName": "Object"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "Optional",
+      "isClass": true,
+      "spannedScope": {
+        "symbols": [
+          {
+            "kind": "de.monticore.cd4codebasis._symboltable.CDMethodSignatureSymbol",
+            "name": "isAbsent",
+            "type": {
+              "kind": "de.monticore.types.check.SymTypePrimitive",
+              "primitiveName": "boolean"
+            },
+            "isMethod": true
+          },
+          {
+            "kind": "de.monticore.cd4codebasis._symboltable.CDMethodSignatureSymbol",
+            "name": "isPresent",
+            "type": {
+              "kind": "de.monticore.types.check.SymTypePrimitive",
+              "primitiveName": "boolean"
+            },
+            "isMethod": true
+          }
+        ]
+      }
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "Date",
+      "isClass": true
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "Time",
+      "isClass": true,
+      "spannedScope": {
+        "symbols": [
+          {
+            "kind": "de.monticore.cd4codebasis._symboltable.CDMethodSignatureSymbol",
+            "name": "now",
+            "type": {
+              "kind": "de.monticore.types.check.SymTypeOfObject",
+              "objName": "Time"
+            },
+            "isMethod": true,
+            "isStatic": true
+          },
+          {
+            "kind": "de.monticore.cd4codebasis._symboltable.CDMethodSignatureSymbol",
+            "name": "lessThan",
+            "type": {
+              "kind": "de.monticore.types.check.SymTypePrimitive",
+              "primitiveName": "boolean"
+            },
+            "isMethod": true,
+            "spannedScope": {
+              "symbols": [
+                {
+                  "kind": "de.monticore.symbols.oosymbols._symboltable.FieldSymbol",
+                  "name": "that",
+                  "type": {
+                    "kind": "de.monticore.types.check.SymTypeOfObject",
+                    "objName": "Time"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "Number",
+      "isInterface": true,
+      "superTypes": [
+        {
+          "kind": "de.monticore.types.check.SymTypeOfObject",
+          "objName": "Amount"
+        }
+      ]
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "Integer",
+      "isClass": true,
+      "superTypes": [
+        {
+          "kind": "de.monticore.types.check.SymTypeOfObject",
+          "objName": "Number"
+        }
+      ],
+      "spannedScope": {
+        "symbols": [
+          {
+            "kind": "de.monticore.cd4codebasis._symboltable.CDMethodSignatureSymbol",
+            "name": "toString",
+            "type": {
+              "kind": "de.monticore.types.check.SymTypeOfObject",
+              "objName": "String"
+            },
+            "isMethod": true
+          }
+        ]
+      }
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "Double",
+      "isClass": true,
+      "superTypes": [
+        {
+          "kind": "de.monticore.types.check.SymTypeOfObject",
+          "objName": "Number"
+        }
+      ],
+      "spannedScope": {
+        "symbols": [
+          {
+            "kind": "de.monticore.cd4codebasis._symboltable.CDMethodSignatureSymbol",
+            "name": "toString",
+            "type": {
+              "kind": "de.monticore.types.check.SymTypeOfObject",
+              "objName": "String"
+            },
+            "isMethod": true
+          }
+        ]
+      }
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "Float",
+      "isClass": true,
+      "superTypes": [
+        {
+          "kind": "de.monticore.types.check.SymTypeOfObject",
+          "objName": "Number"
+        }
+      ]
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "Long",
+      "isClass": true,
+      "superTypes": [
+        {
+          "kind": "de.monticore.types.check.SymTypeOfObject",
+          "objName": "Number"
+        }
+      ]
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "Boolean",
+      "isClass": true
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "Character",
+      "isClass": true
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "String",
+      "isClass": true,
+      "spannedScope": {
+        "symbols": [
+          {
+            "kind": "de.monticore.cd4codebasis._symboltable.CDMethodSignatureSymbol",
+            "name": "contains",
+            "type": {
+              "kind": "de.monticore.types.check.SymTypePrimitive",
+              "primitiveName": "boolean"
+            },
+            "isMethod": true,
+            "spannedScope": {
+              "symbols": [
+                {
+                  "kind": "de.monticore.symbols.oosymbols._symboltable.FieldSymbol",
+                  "name": "s",
+                  "type": {
+                    "kind": "de.monticore.types.check.SymTypeOfObject",
+                    "objName": "String"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "kind": "de.monticore.cd4codebasis._symboltable.CDMethodSignatureSymbol",
+            "name": "replaceAll",
+            "type": {
+              "kind": "de.monticore.types.check.SymTypeOfObject",
+              "objName": "String"
+            },
+            "isMethod": true,
+            "spannedScope": {
+              "symbols": [
+                {
+                  "kind": "de.monticore.symbols.oosymbols._symboltable.FieldSymbol",
+                  "name": "s1",
+                  "type": {
+                    "kind": "de.monticore.types.check.SymTypeOfObject",
+                    "objName": "String"
+                  }
+                },
+                {
+                  "kind": "de.monticore.symbols.oosymbols._symboltable.FieldSymbol",
+                  "name": "s2",
+                  "type": {
+                    "kind": "de.monticore.types.check.SymTypeOfObject",
+                    "objName": "String"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "kind": "de.monticore.cd4codebasis._symboltable.CDMethodSignatureSymbol",
+            "name": "replace",
+            "type": {
+              "kind": "de.monticore.types.check.SymTypeOfObject",
+              "objName": "String"
+            },
+            "isMethod": true,
+            "spannedScope": {
+              "symbols": [
+                {
+                  "kind": "de.monticore.symbols.oosymbols._symboltable.FieldSymbol",
+                  "name": "s1",
+                  "type": {
+                    "kind": "de.monticore.types.check.SymTypeOfObject",
+                    "objName": "String"
+                  }
+                },
+                {
+                  "kind": "de.monticore.symbols.oosymbols._symboltable.FieldSymbol",
+                  "name": "s2",
+                  "type": {
+                    "kind": "de.monticore.types.check.SymTypeOfObject",
+                    "objName": "String"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "kind": "de.monticore.cd4codebasis._symboltable.CDMethodSignatureSymbol",
+            "name": "endsWith",
+            "type": {
+              "kind": "de.monticore.types.check.SymTypePrimitive",
+              "primitiveName": "boolean"
+            },
+            "isMethod": true,
+            "spannedScope": {
+              "symbols": [
+                {
+                  "kind": "de.monticore.symbols.oosymbols._symboltable.FieldSymbol",
+                  "name": "s",
+                  "type": {
+                    "kind": "de.monticore.types.check.SymTypeOfObject",
+                    "objName": "String"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "kind": "de.monticore.cd4codebasis._symboltable.CDMethodSignatureSymbol",
+            "name": "length",
+            "type": {
+              "kind": "de.monticore.types.check.SymTypePrimitive",
+              "primitiveName": "int"
+            },
+            "isMethod": true
+          }
+        ]
+      }
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "Amount",
+      "isInterface": true
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "Acceleration",
+      "isClass": true,
+      "superTypes": [
+        {
+          "kind": "de.monticore.types.check.SymTypeOfObject",
+          "objName": "Amount"
+        }
+      ]
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "Angle",
+      "isClass": true,
+      "superTypes": [
+        {
+          "kind": "de.monticore.types.check.SymTypeOfObject",
+          "objName": "Amount"
+        }
+      ]
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "AmountOfSubstance",
+      "isClass": true,
+      "superTypes": [
+        {
+          "kind": "de.monticore.types.check.SymTypeOfObject",
+          "objName": "Amount"
+        }
+      ]
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "AngularAcceleration",
+      "isClass": true,
+      "superTypes": [
+        {
+          "kind": "de.monticore.types.check.SymTypeOfObject",
+          "objName": "Amount"
+        }
+      ]
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "AngularVelocity",
+      "isClass": true,
+      "superTypes": [
+        {
+          "kind": "de.monticore.types.check.SymTypeOfObject",
+          "objName": "Amount"
+        }
+      ]
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "Area",
+      "isClass": true,
+      "superTypes": [
+        {
+          "kind": "de.monticore.types.check.SymTypeOfObject",
+          "objName": "Amount"
+        }
+      ]
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "CatalyticActivity",
+      "isClass": true,
+      "superTypes": [
+        {
+          "kind": "de.monticore.types.check.SymTypeOfObject",
+          "objName": "Amount"
+        }
+      ]
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "DataAmount",
+      "isClass": true,
+      "superTypes": [
+        {
+          "kind": "de.monticore.types.check.SymTypeOfObject",
+          "objName": "Amount"
+        }
+      ]
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "DataRate",
+      "isClass": true,
+      "superTypes": [
+        {
+          "kind": "de.monticore.types.check.SymTypeOfObject",
+          "objName": "Amount"
+        }
+      ]
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "Dimensionless",
+      "isClass": true,
+      "superTypes": [
+        {
+          "kind": "de.monticore.types.check.SymTypeOfObject",
+          "objName": "Amount"
+        }
+      ]
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "Duration",
+      "isClass": true,
+      "superTypes": [
+        {
+          "kind": "de.monticore.types.check.SymTypeOfObject",
+          "objName": "Amount"
+        }
+      ]
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "DynamicViscosity",
+      "isClass": true,
+      "superTypes": [
+        {
+          "kind": "de.monticore.types.check.SymTypeOfObject",
+          "objName": "Amount"
+        }
+      ]
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "ElectricCapacitance",
+      "isClass": true,
+      "superTypes": [
+        {
+          "kind": "de.monticore.types.check.SymTypeOfObject",
+          "objName": "Amount"
+        }
+      ]
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "ElectricCharge",
+      "isClass": true,
+      "superTypes": [
+        {
+          "kind": "de.monticore.types.check.SymTypeOfObject",
+          "objName": "Amount"
+        }
+      ]
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "ElectricConductance",
+      "isClass": true,
+      "superTypes": [
+        {
+          "kind": "de.monticore.types.check.SymTypeOfObject",
+          "objName": "Amount"
+        }
+      ]
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "ElectricCurrent",
+      "isClass": true,
+      "superTypes": [
+        {
+          "kind": "de.monticore.types.check.SymTypeOfObject",
+          "objName": "Amount"
+        }
+      ]
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "ElectricInductance",
+      "isClass": true,
+      "superTypes": [
+        {
+          "kind": "de.monticore.types.check.SymTypeOfObject",
+          "objName": "Amount"
+        }
+      ]
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "ElectricPotential",
+      "isClass": true,
+      "superTypes": [
+        {
+          "kind": "de.monticore.types.check.SymTypeOfObject",
+          "objName": "Amount"
+        }
+      ]
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "ElectricResistance",
+      "isClass": true,
+      "superTypes": [
+        {
+          "kind": "de.monticore.types.check.SymTypeOfObject",
+          "objName": "Amount"
+        }
+      ]
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "Energy",
+      "isClass": true,
+      "superTypes": [
+        {
+          "kind": "de.monticore.types.check.SymTypeOfObject",
+          "objName": "Amount"
+        }
+      ]
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "Force",
+      "isClass": true,
+      "superTypes": [
+        {
+          "kind": "de.monticore.types.check.SymTypeOfObject",
+          "objName": "Amount"
+        }
+      ]
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "Frequency",
+      "isClass": true,
+      "superTypes": [
+        {
+          "kind": "de.monticore.types.check.SymTypeOfObject",
+          "objName": "Amount"
+        }
+      ]
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "Illuminance",
+      "isClass": true,
+      "superTypes": [
+        {
+          "kind": "de.monticore.types.check.SymTypeOfObject",
+          "objName": "Amount"
+        }
+      ]
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "KinematicViscosity",
+      "isClass": true,
+      "superTypes": [
+        {
+          "kind": "de.monticore.types.check.SymTypeOfObject",
+          "objName": "Amount"
+        }
+      ]
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "Length",
+      "isClass": true,
+      "superTypes": [
+        {
+          "kind": "de.monticore.types.check.SymTypeOfObject",
+          "objName": "Amount"
+        }
+      ]
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "LuminousFlux",
+      "isClass": true,
+      "superTypes": [
+        {
+          "kind": "de.monticore.types.check.SymTypeOfObject",
+          "objName": "Amount"
+        }
+      ]
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "LuminousIntensity",
+      "isClass": true,
+      "superTypes": [
+        {
+          "kind": "de.monticore.types.check.SymTypeOfObject",
+          "objName": "Amount"
+        }
+      ]
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "MagneticFlux",
+      "isClass": true,
+      "superTypes": [
+        {
+          "kind": "de.monticore.types.check.SymTypeOfObject",
+          "objName": "Amount"
+        }
+      ]
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "MagneticFluxDensity",
+      "isClass": true,
+      "superTypes": [
+        {
+          "kind": "de.monticore.types.check.SymTypeOfObject",
+          "objName": "Amount"
+        }
+      ]
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "Mass",
+      "isClass": true,
+      "superTypes": [
+        {
+          "kind": "de.monticore.types.check.SymTypeOfObject",
+          "objName": "Amount"
+        }
+      ]
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "MassFlowRate",
+      "isClass": true,
+      "superTypes": [
+        {
+          "kind": "de.monticore.types.check.SymTypeOfObject",
+          "objName": "Amount"
+        }
+      ]
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "Money",
+      "isClass": true,
+      "superTypes": [
+        {
+          "kind": "de.monticore.types.check.SymTypeOfObject",
+          "objName": "Amount"
+        }
+      ]
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "Power",
+      "isClass": true,
+      "superTypes": [
+        {
+          "kind": "de.monticore.types.check.SymTypeOfObject",
+          "objName": "Amount"
+        }
+      ]
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "Pressure",
+      "isClass": true,
+      "superTypes": [
+        {
+          "kind": "de.monticore.types.check.SymTypeOfObject",
+          "objName": "Amount"
+        }
+      ]
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "RadiationDoseAbsorbed",
+      "isClass": true,
+      "superTypes": [
+        {
+          "kind": "de.monticore.types.check.SymTypeOfObject",
+          "objName": "Amount"
+        }
+      ]
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "RadiationDoseEffective",
+      "isClass": true,
+      "superTypes": [
+        {
+          "kind": "de.monticore.types.check.SymTypeOfObject",
+          "objName": "Amount"
+        }
+      ]
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "RadioactiveActivity",
+      "isClass": true,
+      "superTypes": [
+        {
+          "kind": "de.monticore.types.check.SymTypeOfObject",
+          "objName": "Amount"
+        }
+      ]
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "SolidAngle",
+      "isClass": true,
+      "superTypes": [
+        {
+          "kind": "de.monticore.types.check.SymTypeOfObject",
+          "objName": "Amount"
+        }
+      ]
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "Temperature",
+      "isClass": true,
+      "superTypes": [
+        {
+          "kind": "de.monticore.types.check.SymTypeOfObject",
+          "objName": "Amount"
+        }
+      ]
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "Torque",
+      "isClass": true,
+      "superTypes": [
+        {
+          "kind": "de.monticore.types.check.SymTypeOfObject",
+          "objName": "Amount"
+        }
+      ]
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "Velocity",
+      "isClass": true,
+      "superTypes": [
+        {
+          "kind": "de.monticore.types.check.SymTypeOfObject",
+          "objName": "Amount"
+        }
+      ]
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "Volume",
+      "isClass": true,
+      "superTypes": [
+        {
+          "kind": "de.monticore.types.check.SymTypeOfObject",
+          "objName": "Amount"
+        }
+      ]
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "VolumetricDensity",
+      "isClass": true,
+      "superTypes": [
+        {
+          "kind": "de.monticore.types.check.SymTypeOfObject",
+          "objName": "Amount"
+        }
+      ]
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "VolumetricFlowRate",
+      "isClass": true,
+      "superTypes": [
+        {
+          "kind": "de.monticore.types.check.SymTypeOfObject",
+          "objName": "Amount"
+        }
+      ]
+    }
+  ]
+}
