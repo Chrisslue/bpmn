@@ -1,0 +1,76 @@
+plugins {
+    id "java-library"
+    id "com.github.johnrengelman.shadow" version "6.0.0"
+    id "jacoco"
+}
+
+group = "de.monticore.lang"
+
+test {
+    useJUnitPlatform()
+}
+
+dependencies {
+    implementation project(":WorkflowDSL")
+    implementation project(":TimeExpressions")
+    implementation "info.picocli:picocli:$picoli_version"
+    implementation "de.monticore:monticore-runtime:$mc_version"
+    implementation "de.monticore:monticore-grammar:$mc_version"
+    implementation "ch.qos.logback:logback-classic:$logback_version"
+    implementation "de.monticore.lang:ocl:$ocl_version"
+
+
+    implementation "jakarta.xml.bind:jakarta.xml.bind-api:3.0.1"
+    implementation "com.sun.xml.bind:jaxb-core:$jaxb_core_version"
+    implementation "com.sun.xml.bind:jaxb-impl:$jaxb_impl_version"
+    implementation "com.sun.xml.bind:jaxb-xjc:$jaxb_impl_version"
+
+    testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_jupiter_version"
+    testImplementation "org.junit.jupiter:junit-jupiter-engine:$junit_jupiter_version"
+}
+
+// build sources jar in addition
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allJava
+    archiveClassifier = "sources"
+}
+
+// build javadoc jar in addition
+task javadocJar(type: Jar) {
+    from javadoc
+    archiveClassifier = "javadoc"
+}
+
+// generated java doc contains errors, disable for now
+javadoc.failOnError(false)
+
+/* ============================================================ */
+/* ======================= Publishing ========================= */
+/* ============================================================ */
+apply plugin: "maven-publish"
+
+publishing {
+    // configure what artifacts to publish
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = "$project.name"
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+            //  artifact shadowJar
+        }
+    }
+    repositories.maven {
+        credentials.username mavenUser
+        credentials.password mavenPassword
+        def releasesRepoUrl = "https://nexus.se.rwth-aachen.de/content/repositories/monticore-releases/"
+        def snapshotsRepoUrl = "https://nexus.se.rwth-aachen.de/content/repositories/monticore-snapshots/"
+        url = version.endsWith("SNAPSHOT") ? snapshotsRepoUrl : releasesRepoUrl
+    }
+}
+
+task buildAll(type: GradleBuild) {
+    tasks = [ 'build' ]
+}
+
+defaultTasks 'build'

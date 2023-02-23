@@ -1,10 +1,10 @@
 package de.monticore.bpmn.cli.commands;
 
-import de.monticore.bpmn.utils.ModelUtils;
-import de.monticore.io.paths.ModelCoordinate;
-import de.monticore.io.paths.ModelPath;
+import de.monticore.io.paths.MCPath;
+import de.se_rwth.commons.Names;
 import picocli.CommandLine;
 
+import java.io.File;
 import java.nio.file.NoSuchFileException;
 
 /**
@@ -15,18 +15,18 @@ import java.nio.file.NoSuchFileException;
  */
 class CommonCliOptions {
 
-    ModelCoordinate qualifiedModel;
+    String qualifiedModel;
 
     @CommandLine.Option(names = {"-mp", "--model-path"}, paramLabel = "<DIR>", required = true)
-    ModelPath modelPath;
+    MCPath modelPath;
 
     @CommandLine.Parameters(paramLabel = "<FILE>", description = "Qualified name of workflow model to process.")
     private void setQualifiedModel(final String qualifiedModelName) throws NoSuchFileException {
-        ModelCoordinate modelCoordinate = ModelUtils.getCoordinate(modelPath, qualifiedModelName);
-        if (!modelCoordinate.exists()) {
-            throw new NoSuchFileException(modelCoordinate.getQualifiedPath().toString());
+        if(modelPath.find(Names.getPathFromPackage(qualifiedModelName)).isPresent()){
+            qualifiedModel = qualifiedModelName;
+        } else {
+            throw new NoSuchFileException(qualifiedModelName);
         }
-        qualifiedModel = modelCoordinate;
     }
 
     @CommandLine.Option(names = {"-v", "--verbose"})
