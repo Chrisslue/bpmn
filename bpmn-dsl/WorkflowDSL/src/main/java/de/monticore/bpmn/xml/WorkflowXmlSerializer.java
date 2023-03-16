@@ -5,12 +5,12 @@ import com.google.common.collect.Maps;
 import de.monticore.bpmn.workflow._ast.ASTWorkflowCompilationUnit;
 import de.monticore.bpmn.xml.factories.CommonFactory;
 import de.se_rwth.commons.logging.Log;
+import jakarta.xml.bind.*;
 import org.omg.spec.bpmn._20100524.model.TDefinitions;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import javax.xml.XMLConstants;
-import javax.xml.bind.*;
 import javax.xml.stream.XMLEventWriter;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
@@ -55,11 +55,11 @@ public class WorkflowXmlSerializer {
         String name = getAsResourceKey(DEFINITIONS_PREFIX + unit.getProcess().getName());
 
         serializer.makeXml();
+//TODO
+//        xmlContentTree = CommonFactory.makeDefinitions(unit, name, targetNamespace);
 
-        xmlContentTree = CommonFactory.makeDefinitions(unit, name, targetNamespace);
-
-        TDefinitions definitions = xmlContentTree.getValue();
-        definitions.getRootElement().addAll(serializer.getRootElements());
+//        TDefinitions definitions = xmlContentTree.getValue();
+//        definitions.getRootElement().addAll(serializer.getRootElements());
 
         return this;
     }

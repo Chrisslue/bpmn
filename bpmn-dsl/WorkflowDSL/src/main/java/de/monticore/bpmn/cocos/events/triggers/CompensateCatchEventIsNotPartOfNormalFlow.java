@@ -1,9 +1,11 @@
 package de.monticore.bpmn.cocos.events.triggers;
 
 import de.monticore.bpmn.Messages;
+import de.monticore.bpmn.workflow.WorkflowMill;
 import de.monticore.bpmn.workflow._ast.*;
 import de.monticore.bpmn.workflow._cocos.WorkflowASTEventCoCo;
-import de.monticore.bpmn.workflow._visitor.WorkflowVisitor;
+import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
+import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
 import de.se_rwth.commons.logging.Log;
 
 /**
@@ -16,7 +18,7 @@ public class CompensateCatchEventIsNotPartOfNormalFlow implements WorkflowASTEve
 
     @Override
     public void check(final ASTEvent event) {
-        event.accept(new WorkflowVisitor() {
+        WorkflowVisitor2 visitor = new WorkflowVisitor2() {
             @Override
             public void visit(final ASTEventTriggerCompensate trigger) {
                 if (event.isBoundary() && !event.isEmptyOutgoings()) {
@@ -24,7 +26,11 @@ public class CompensateCatchEventIsNotPartOfNormalFlow implements WorkflowASTEve
                             event.get_SourcePositionStart(), event.get_SourcePositionEnd());
                 }
             }
-        });
+        };
+
+        WorkflowTraverser traverser = WorkflowMill.traverser();
+        traverser.add4Workflow(visitor);
+        event.accept(traverser);
     }
 
 }

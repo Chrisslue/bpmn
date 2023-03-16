@@ -3,9 +3,9 @@ package de.monticore.bpmn.xml.factories;
 import com.google.common.base.Joiner;
 import com.google.common.base.Supplier;
 import de.monticore.bpmn.workflow._ast.io.*;
+import jakarta.xml.bind.JAXBElement;
 import org.omg.spec.bpmn._20100524.model.*;
 
-import javax.xml.bind.JAXBElement;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.BiFunction;

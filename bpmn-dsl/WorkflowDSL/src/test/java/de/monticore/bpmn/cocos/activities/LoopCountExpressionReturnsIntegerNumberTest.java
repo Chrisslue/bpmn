@@ -22,7 +22,7 @@ class LoopCountExpressionReturnsIntegerNumberTest extends AbstractCoCoTest {
         String modelName = "de.monticore.bpmn.cocos.activities.invalid.LoopCountExpressionReturnsIntegerNumber";
 
         Collection<Finding> expectedErrors = Lists.newArrayList(
-                Finding.error(Messages.get("0xWFM1010", "Boolean"))
+                Finding.error(Messages.get("0xWFM1010", "boolean"))
         );
 
         testModelForErrors(modelName, expectedErrors);

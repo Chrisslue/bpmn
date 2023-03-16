@@ -5,10 +5,7 @@ import com.google.common.graph.ImmutableGraph;
 import de.monticore.bpmn.analysis.graph.WorkflowGraphConverter;
 import de.monticore.bpmn.workflow._ast.ASTFlowElementContainer;
 import de.monticore.bpmn.workflow._ast.ASTFlowNode;
-import de.monticore.bpmn.workflow._ast.ASTProcess;
 import de.monticore.bpmn.workflow._cocos.WorkflowASTFlowElementContainerCoCo;
-import de.monticore.bpmn.workflow._cocos.WorkflowASTProcessCoCo;
-import de.monticore.bpmn.workflow._visitor.WorkflowInheritanceVisitor;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.guava.ImmutableGraphAdapter;
 

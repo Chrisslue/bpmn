@@ -1,23 +1,27 @@
 package de.monticore.bpmn.trafos;
 
+import de.monticore.bpmn.workflow.WorkflowMill;
 import de.monticore.bpmn.workflow._ast.ASTFlowNode;
 import de.monticore.bpmn.workflow._ast.ASTLane;
 import de.monticore.bpmn.workflow._ast.ASTProcess;
 import de.monticore.bpmn.workflow._ast.ASTSubProcess;
-import de.monticore.bpmn.workflow._visitor.WorkflowInheritanceVisitor;
+import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
+import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
 
 import java.util.Stack;
 
 /**
  * Adds a reference to the enclosing lane to flow nodes, if any.
  */
-public class AddReferenceToParentLane extends WorkflowTransformation implements WorkflowInheritanceVisitor {
+public class AddReferenceToParentLane extends WorkflowTransformation implements WorkflowVisitor2 {
 
     private final Stack<Stack<ASTLane>> laneStacks = new Stack<>();
 
     @Override
     protected void transform() {
-        getAst().accept(this);
+        WorkflowTraverser traverser = WorkflowMill.inheritanceTraverser();
+        traverser.add4Workflow(this);
+        getAst().accept(traverser);
     }
 
     @Override

@@ -5,7 +5,7 @@ import de.monticore.bpmn.cds.Domain.*;
 process EventGatewayDoesNotMixMessageEventsAndReceiveTasks {
 
   message msg:Contract;
-  message sig:Signal;
+  message sig:Report;
 
 
   task T1;

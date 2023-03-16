@@ -12,7 +12,7 @@ public class CompensatedActivityExists implements WorkflowASTEventTriggerCompens
 
     @Override
     public void check(ASTEventTriggerCompensate node) {
-        checkArgument(node.getEnclosingScopeOpt().isPresent());
+        checkArgument(node.getEnclosingScope() != null);
 
         if (node.isPresentActivity()) {
             WorkflowScope enclosingScope = (WorkflowScope) node.getEnclosingScope();

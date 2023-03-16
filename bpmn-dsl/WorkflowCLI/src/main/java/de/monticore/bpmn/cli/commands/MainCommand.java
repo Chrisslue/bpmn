@@ -1,14 +1,15 @@
 package de.monticore.bpmn.cli.commands;
 
 import de.monticore.bpmn.cli.VersionProvider;
-import de.monticore.bpmn.lang.Import;
-import de.monticore.bpmn.utils.ModelUtils;
-import de.monticore.io.paths.ModelCoordinate;
-import de.monticore.io.paths.ModelPath;
+import de.monticore.io.paths.MCPath;
+import de.monticore.symboltable.ImportStatement;
+import de.se_rwth.commons.Names;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
+import java.io.File;
 import java.nio.file.NoSuchFileException;
+import java.nio.file.Paths;
 
 /**
  * The main command. Provides the sub-commands {@code verify} and {@code export}.
@@ -30,13 +31,13 @@ import java.nio.file.NoSuchFileException;
 )
 public class MainCommand implements Runnable {
 
-    static final Import OCL_DEFAULT_TYPES_IMPORT = new Import("de.monticore.workflow._types.ocl.DefaultTypes", true);
+    static final ImportStatement OCL_DEFAULT_TYPES_IMPORT = new ImportStatement("de.monticore.workflow._types.ocl.DefaultTypes", true);
 
     @CommandLine.Spec
     private
     CommandLine.Model.CommandSpec spec;
 
-    ModelCoordinate qualifiedModel;
+    String qualifiedModel;
 
     @CommandLine.Option(
             names = {"-p", "--model-path"},
@@ -44,18 +45,18 @@ public class MainCommand implements Runnable {
             description = "Path to model directory.",
             required = true
     )
-    ModelPath modelPath;
+    MCPath modelPath;
 
     @CommandLine.Parameters(
             paramLabel = "FILE",
             description = "Qualified name of BPMN input model."
     )
     private void setQualifiedModel(final String qualifiedModelName) throws NoSuchFileException {
-        ModelCoordinate modelCoordinate = ModelUtils.getCoordinate(modelPath, qualifiedModelName);
-        if (!modelCoordinate.exists()) {
-            throw new NoSuchFileException(modelCoordinate.getQualifiedPath().toString());
+        if(modelPath.find(Names.getPathFromPackage(qualifiedModelName)).isPresent()){
+            qualifiedModel = qualifiedModelName;
+        } else {
+            throw new NoSuchFileException(qualifiedModelName);
         }
-        qualifiedModel = modelCoordinate;
     }
 
     @CommandLine.Option(names = {"-v", "--verbose"})

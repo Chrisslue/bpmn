@@ -1,11 +1,13 @@
-package de.monticore.workflow.cds;
+package de.monticore.bpmn;
 
 classdiagram Domain {
 
     class Contract {
-      ZonedDateTime hiringDate;
+      java.time.ZonedDateTime hiringDate;
       int version;
     }
+
+    class DomainUser;
 
     association [1] DomainUser -> Contract [*];
 
@@ -17,8 +19,8 @@ classdiagram Domain {
     class LeaveCard;
 
     class LeaveEntry {
-      ZonedDateTime startDate;
-      ZonedDateTime endDate;
+      java.time.ZonedDateTime startDate;
+      java.time.ZonedDateTime endDate;
       /int workingDays;
       /int remainingLeaveDays;
       DomainUser substitute;
@@ -31,8 +33,8 @@ classdiagram Domain {
     association [1] LeaveCard -> DomainUser [1];
 
     class MedicalCertificate {
-      ZonedDateTime startDate;
-      ZonedDateTime endDate;
+      java.time.ZonedDateTime startDate;
+      java.time.ZonedDateTime endDate;
       String description;
     }
 

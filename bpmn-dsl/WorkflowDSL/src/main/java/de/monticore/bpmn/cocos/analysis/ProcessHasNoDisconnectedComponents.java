@@ -2,11 +2,14 @@ package de.monticore.bpmn.cocos.analysis;
 
 import com.google.common.graph.EndpointPair;
 import de.monticore.bpmn.Messages;
+import de.monticore.bpmn.workflow.WorkflowMill;
 import de.monticore.bpmn.workflow._ast.ASTActivity;
 import de.monticore.bpmn.workflow._ast.ASTFlowElementContainer;
 import de.monticore.bpmn.workflow._ast.ASTFlowNode;
 import de.monticore.bpmn.workflow._ast.ASTSubProcess;
-import de.monticore.bpmn.workflow._visitor.WorkflowVisitor;
+import de.monticore.bpmn.workflow._visitor.WorkflowHandler;
+import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
+import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
 import de.se_rwth.commons.logging.Log;
 import org.jgrapht.Graph;
 import org.jgrapht.alg.connectivity.ConnectivityInspector;
@@ -41,39 +44,24 @@ public class ProcessHasNoDisconnectedComponents extends ProcessGraphCoCo {
     }
 
     private boolean isEventSubProcess(final Set<ASTFlowNode> nodes) {
-        return nodes.size() == 1 && new IsEventSubProcessPredicate().test(nodes.stream().findFirst().get());
+        if(!nodes.isEmpty()){
+            IsEventSubProcessVisitor visitor = new IsEventSubProcessVisitor();
+
+            WorkflowTraverser traverser = WorkflowMill.traverser();
+            traverser.setWorkflowHandler(visitor);
+            nodes.stream().findFirst().get().accept(traverser);
+            return visitor.isEventSubProcess();
+        }
+        return false;
     }
 
     private boolean isCompensationActivity(final Set<ASTFlowNode> nodes) {
-        return new IsCompensationActivityPredicate().test(nodes.stream().findFirst().get());
-    }
+        IsForCompensationVisitor visitor = new IsForCompensationVisitor();
 
-    static class IsEventSubProcessPredicate implements Predicate<ASTFlowNode>, WorkflowVisitor {
-        boolean isEventSubProcess;
-
-        @Override
-        public boolean test(final ASTFlowNode flowNode) {
-            flowNode.accept(this);
-            return isEventSubProcess;
-        }
-        @Override
-        public void handle(final ASTSubProcess subProcess) {
-            isEventSubProcess = subProcess.isTriggeredByEvent();
-        }
-    }
-
-    static class IsCompensationActivityPredicate implements Predicate<ASTFlowNode>, WorkflowVisitor {
-        boolean isForCompensation;
-
-        @Override
-        public boolean test(final ASTFlowNode flowNode) {
-            flowNode.accept(this);
-            return isForCompensation;
-        }
-        @Override
-        public void handle(final ASTActivity activity) {
-            isForCompensation = activity.isForCompensation();
-        }
+        WorkflowTraverser traverser = WorkflowMill.traverser();
+        traverser.setWorkflowHandler(visitor);
+        nodes.stream().findFirst().get().accept(traverser);
+        return visitor.isForCompensation();
     }
 
 }

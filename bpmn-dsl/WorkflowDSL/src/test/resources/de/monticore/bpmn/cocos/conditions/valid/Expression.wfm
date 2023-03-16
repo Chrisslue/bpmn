@@ -11,6 +11,6 @@ process Expression {
   //task T3;
 
   T1 -> [contract.version > 7] T2;
-  //T2 -> [let x = 7; in x > 42] T3;
+  //T2 -> [let x = 7 in x > 42] T3;
 
 }

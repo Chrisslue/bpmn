@@ -1,14 +1,28 @@
 package de.monticore.bpmn.xml.factories;
 
 import de.monticore.bpmn.workflow._ast.*;
-import de.monticore.bpmn.workflow._visitor.WorkflowVisitor;
+import de.monticore.bpmn.workflow._visitor.WorkflowHandler;
+import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
+import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
 import de.monticore.bpmn.xml.WorkflowXmlUtils;
+import jakarta.xml.bind.JAXBElement;
 import org.omg.spec.bpmn._20100524.model.*;
 
-import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
-public class GatewayFactory extends XmlFactory<ASTGateway, TGateway> implements WorkflowVisitor {
+public class GatewayFactory extends XmlFactory<ASTGateway, TGateway> implements WorkflowVisitor2, WorkflowHandler {
+
+    protected WorkflowTraverser traverser;
+
+    @Override
+    public WorkflowTraverser getTraverser() {
+        return traverser;
+    }
+
+    @Override
+    public void setTraverser(WorkflowTraverser traverser) {
+        this.traverser = traverser;
+    }
 
     public static JAXBElement<? extends TGateway> makeXml(final ASTGateway gateway) {
         return new GatewayFactory().buildXml(gateway);
@@ -16,7 +30,7 @@ public class GatewayFactory extends XmlFactory<ASTGateway, TGateway> implements 
 
     @Override
     public JAXBElement<? extends TGateway> buildXml(final ASTGateway gateway) {
-        gateway.accept(getRealThis());
+        gateway.accept(getTraverser());
 
         return xml;
     }

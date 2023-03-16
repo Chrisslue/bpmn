@@ -1,15 +1,29 @@
 package de.monticore.bpmn.xml.factories;
 
 import de.monticore.bpmn.workflow._ast.*;
-import de.monticore.bpmn.workflow._visitor.WorkflowVisitor;
+import de.monticore.bpmn.workflow._visitor.WorkflowHandler;
+import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
+import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
 import de.monticore.bpmn.xml.WorkflowXmlUtils;
+import jakarta.xml.bind.JAXBElement;
 import org.omg.spec.bpmn._20100524.model.*;
 
-import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 import java.util.List;
 
-public class EventFactory extends XmlFactory<ASTEvent, TEvent> implements WorkflowVisitor {
+public class EventFactory extends XmlFactory<ASTEvent, TEvent> implements WorkflowVisitor2, WorkflowHandler {
+
+    protected WorkflowTraverser traverser;
+
+    @Override
+    public WorkflowTraverser getTraverser() {
+        return traverser;
+    }
+
+    @Override
+    public void setTraverser(WorkflowTraverser traverser) {
+        this.traverser = traverser;
+    }
 
     private boolean isParallelMultiple;
 
@@ -19,7 +33,7 @@ public class EventFactory extends XmlFactory<ASTEvent, TEvent> implements Workfl
 
     @Override
     public JAXBElement<? extends TEvent> buildXml(final ASTEvent event) {
-        event.accept(getRealThis());
+        event.accept(getTraverser());
 
         return xml;
     }
@@ -56,13 +70,15 @@ public class EventFactory extends XmlFactory<ASTEvent, TEvent> implements Workfl
                 if (event.isNonInterrupt()) {
                     tb.setCancelActivity(false);
                 }
-                tb.setAttachedToRef(new QName(event.getEnclosingScope().getName().get()));
+                tb.setAttachedToRef(new QName(event.getEnclosingScope().getName()));
 
             } else {
                 t = create(factory::createTIntermediateCatchEvent, factory::createIntermediateCatchEvent);
             }
-            event.getTriggerOpt().map(this::buildXmlTriggers)
-                    .ifPresent(triggers -> t.getEventDefinition().addAll(triggers));
+            if(event.isPresentTrigger()){
+                List<JAXBElement<? extends TEventDefinition>> jaxbElements = buildXmlTriggers(event.getTrigger());
+                t.getEventDefinition().addAll(jaxbElements);
+            }
             t.setParallelMultiple(isParallelMultiple);
         } else {
             final TThrowEvent t;
@@ -71,8 +87,10 @@ public class EventFactory extends XmlFactory<ASTEvent, TEvent> implements Workfl
             } else {
                 t = create(factory::createTIntermediateThrowEvent, factory::createIntermediateThrowEvent);
             }
-            event.getTriggerOpt().map(this::buildXmlTriggers)
-                    .ifPresent(triggers -> t.getEventDefinition().addAll(triggers));
+            if(event.isPresentTrigger()){
+                List<JAXBElement<? extends TEventDefinition>> jaxbElements = buildXmlTriggers(event.getTrigger());
+                t.getEventDefinition().addAll(jaxbElements);
+            }
         }
 
         val.setId(WorkflowXmlUtils.getAsResourceKey(event.getName()));

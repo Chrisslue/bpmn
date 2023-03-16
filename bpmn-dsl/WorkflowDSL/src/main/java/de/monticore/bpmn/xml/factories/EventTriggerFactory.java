@@ -1,19 +1,33 @@
 package de.monticore.bpmn.xml.factories;
 
 import com.google.common.collect.Lists;
+import de.monticore.bpmn.workflow._visitor.WorkflowHandler;
+import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
 import de.monticore.expressions.timeexpressions._ast.*;
 import de.monticore.bpmn.workflow._ast.*;
-import de.monticore.bpmn.workflow._visitor.WorkflowVisitor;
+import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
+import jakarta.xml.bind.JAXBElement;
 import org.omg.spec.bpmn._20100524.model.*;
 
-import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class EventTriggerFactory implements WorkflowVisitor {
+public class EventTriggerFactory implements WorkflowVisitor2, WorkflowHandler {
+
+    protected WorkflowTraverser traverser;
+
+    @Override
+    public WorkflowTraverser getTraverser() {
+        return traverser;
+    }
+
+    @Override
+    public void setTraverser(WorkflowTraverser traverser) {
+        this.traverser = traverser;
+    }
 
     private static final ObjectFactory factory = new ObjectFactory();
 
@@ -24,7 +38,7 @@ public class EventTriggerFactory implements WorkflowVisitor {
     }
 
     public  List<JAXBElement<? extends TEventDefinition>> buildXml(final ASTEventTrigger trigger) {
-        trigger.accept(getRealThis());
+        trigger.accept(getTraverser());
 
         return xmlTriggers;
     }
@@ -40,7 +54,9 @@ public class EventTriggerFactory implements WorkflowVisitor {
         if (trigger.isAsync()) {
             t.setWaitForCompletion(false);
         }
-        trigger.getActivityOpt().ifPresent(name -> t.setActivityRef(new QName(name)));
+        if(trigger.isPresentActivity()){
+            t.setActivityRef(new QName(trigger.getActivity()));
+        }
     }
 
     @Override
@@ -102,7 +118,7 @@ public class EventTriggerFactory implements WorkflowVisitor {
             buildTimerExpression(tDefinition::setTimeCycle, everyExpr.printISO8601());
         } else if (timer instanceof ASTCronExpr) {
             ASTCronExpr cronExpr = (ASTCronExpr) timer;
-            buildTimerExpression(tDefinition::setTimeCycle, cronExpr.getCron().asString());
+            buildTimerExpression(tDefinition::setTimeCycle, cronExpr.printCron());
         }
     }
 

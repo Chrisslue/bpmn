@@ -55,7 +55,7 @@ public class WorkflowNet {
         this.warnings = warnings;
         this.mapping = mapping;
 
-        if (!petrinet.isPresentEnclosingScope()) {
+        if (petrinet.getEnclosingScope() == null) {
             PetriNetUtils.buildSymTab(petrinet);
         }
     }

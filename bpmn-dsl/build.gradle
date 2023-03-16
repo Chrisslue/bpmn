@@ -1,0 +1,181 @@
+/* (c) https://github.com/MontiCore/monticore */
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.api.tasks.testing.logging.TestLogEvent
+
+
+plugins {
+    // Eclipse compiler as it's much faster than javac
+    // Since the root project does not contain java code, it is only applied to the subprojects
+    id "io.github.themrmilchmann.ecj" version "0.1.0" apply false
+}
+
+allprojects {
+    ext.grammarDir = 'src/main/grammars'
+    buildDir = file("$projectDir/target")
+
+    repositories {
+        if (("true").equals(getProperty('useLocalRepo'))) {
+            mavenLocal()
+        }
+        maven {
+            credentials.username mavenUser
+            credentials.password mavenPassword
+            url repo
+        }
+        mavenCentral()
+    }
+}
+
+subprojects {
+    apply plugin: 'java-library'
+    apply plugin: 'io.github.themrmilchmann.ecj'
+
+    tasks.withType(Test) {
+        useJUnit()
+        testLogging {
+            // controls whether test output is shown
+            showStandardStreams = ("false").equals(getProperty('showTestOutput')) ? false : true
+            showExceptions true
+            showCauses true
+            showStackTraces true
+            exceptionFormat TestExceptionFormat.FULL
+            info {
+                events TestLogEvent.FAILED,
+                        TestLogEvent.PASSED,
+                        TestLogEvent.SKIPPED,
+                        TestLogEvent.STANDARD_OUT
+            }
+        }
+        afterTest { desc, result ->
+            logger.lifecycle "${desc.className} > ${desc.name} ${result.resultType}"
+        }
+        afterSuite { desc, result ->
+            if (!desc.parent) { // will match the outermost suite
+                def output = "Results: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} passed, ${result.failedTestCount} failed, ${result.skippedTestCount} skipped)"
+                def startItem = '|  ', endItem = '  |'
+                logger.lifecycle startItem + output + endItem
+            }
+        }
+        reports {
+            junitXml.enabled = false
+            html.enabled = false
+        }
+    }
+
+    tasks.withType(JavaCompile) {
+        options.encoding = "UTF-8"
+        options.deprecation false
+        options.warnings = false
+        options.forkOptions.jvmArgs += ["-Xmx4G"]
+        // TODO: reevaluate with new ecj plugin
+        outputs.cacheIf { false } // ECJ has problem with caching
+    }
+}
+
+/**
+ * Builds the whole BPMN project
+ * Executes JUnit tests and assembles the jars
+ */
+task buildBPMN {
+    group("build")
+    description("Builds the whole BPMN project, i.e. BpmnXML, TimeExpressions, WorkflowCLI and WorkflowDSL")
+    dependsOn(
+            ":BpmnXML:build",
+            ":TimeExpressions:build",
+//            ":WorkflowCLI:build",
+            ":WorkflowDSL:build",
+            gradle.includedBuilds*.task(":build")
+    )
+}
+
+/**
+ * Executes JUnit tests for the BPMN project
+ */
+task testBPMN {
+    group("verification")
+    description("Tests the JUnit Tests in the BPMN project")
+    dependsOn(
+            ":BpmnXML:test",
+            ":TimeExpressions:test",
+//            ":WorkflowCLI:test",
+            ":WorkflowDSL:test",
+            gradle.includedBuilds*.task(":test")
+    )
+}
+
+/**
+ *  Publishes the jars of the BPMN projects to the nexus repository.
+ *  Assembles the jars and publishes them, but does not execute JUnit tests.
+ */
+task publishBPMN {
+    group("publishing")
+    description('Publishes the BPMN projects')
+
+    dependsOn(
+            ":BpmnXML:publish",
+            ":TimeExpressions:publish",
+//            ":WorkflowCLI:publish",
+            ":WorkflowDSL:publish",
+            gradle.includedBuilds*.task(":publish")
+    )
+}
+
+/**
+ *  Publishes the jars of the BPMN project
+ *  to the local m2 repository. Typically this should not be needed.
+ *  Assembles the jars and publishes them, but does not execute JUnit tests.
+ */
+task publishBPMNToMavenLocal {
+    group("publishing")
+    description('Publishes the BPMN projects' +
+            'to the local maven repository.')
+    dependsOn(
+            ":BpmnXML:publishToMavenLocal",
+            ":TimeExpressions:publishToMavenLocal",
+//            ":WorkflowCLI:publishToMavenLocal",
+            ":WorkflowDSL:publishToMavenLocal",
+            gradle.includedBuilds*.task(':publishToMavenLocal')
+    )
+}
+
+task buildAll(type: GradleBuild) {
+    dependsOn(subprojects.collect { getTasksByName("build", false) })
+}
+
+task cleanBPMN {
+    group("build")
+    dependsOn(
+            ":BpmnXML:clean",
+            ":TimeExpressions:clean",
+//            ":WorkflowCLI:clean",
+            ":WorkflowDSL:clean"
+
+    )
+}
+
+configure([
+        project(':BpmnXML'),
+           project(':TimeExpressions'),
+         //  project(':WorkflowCLI'),
+           project(':WorkflowDSL')
+]){
+    apply plugin: 'maven-publish'
+
+    // configure deployment
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                from(components.java)
+            }
+        }
+        repositories.maven {
+            credentials.username mavenUser
+            credentials.password mavenPassword
+            def releasesRepoUrl = "https://nexus.se.rwth-aachen.de/content/repositories/monticore-releases/"
+            def snapshotsRepoUrl = "https://nexus.se.rwth-aachen.de/content/repositories/monticore-snapshots/"
+            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+        }
+    }
+}
+
+defaultTasks 'build'

@@ -1,7 +1,8 @@
 package de.monticore.bpmn.analysis.petrinet;
 
-import de.monticore.literals.literals._ast.ASTIntLiteral;
-import de.monticore.literals.literals._ast.LiteralsMill;
+import de.monticore.literals.mccommonliterals.MCCommonLiteralsMill;
+import de.monticore.literals.mccommonliterals._ast.ASTNatLiteral;
+import petrinet.PetrinetMill;
 import petrinet._ast.*;
 
 /**
@@ -23,15 +24,15 @@ public class PetriNetFactory {
 
     public static ASTFromEdge createEdgeFrom(final String fromPlace) {
 
-        return PetrinetMill.fromEdgeBuilder().setPlace(fromPlace).setCount(getIntLiteral(1)).build();
+        return PetrinetMill.fromEdgeBuilder().setPlace(fromPlace).setCount(getNatLiteral(1)).build();
     }
 
     public static ASTToEdge createEdgeTo(final String toPlace) {
-        return PetrinetMill.toEdgeBuilder().setPlace(toPlace).setCount(getIntLiteral(1)).build();
+        return PetrinetMill.toEdgeBuilder().setPlace(toPlace).setCount(getNatLiteral(1)).build();
     }
 
-    private static ASTIntLiteral getIntLiteral(final int count) {
-        return LiteralsMill.intLiteralBuilder().setSource(String.valueOf(count)).build();
+    private static ASTNatLiteral getNatLiteral(final int count) {
+        return MCCommonLiteralsMill.natLiteralBuilder().setDigits(String.valueOf(count)).build();
     }
 
 }

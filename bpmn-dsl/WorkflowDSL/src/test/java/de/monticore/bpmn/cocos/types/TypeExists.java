@@ -1,7 +1,6 @@
 package de.monticore.bpmn.cocos.types;
 
 import com.google.common.collect.Lists;
-import de.monticore.bpmn.Messages;
 import de.monticore.bpmn.cocos.AbstractCoCoTest;
 import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
 import de.se_rwth.commons.logging.Finding;
@@ -22,7 +21,7 @@ public class TypeExists extends AbstractCoCoTest {
         String modelName = "de.monticore.bpmn.cocos.types.invalid.TypeExists";
 
         Collection<Finding> expectedErrors = Lists.newArrayList(
-                Finding.error(Messages.get("0xWFM1003", "FooDoesNotExist"))
+                Finding.error("0xA0324 Cannot find symbol FooDoesNotExist")
         );
 
         testModelForErrors(modelName, expectedErrors);

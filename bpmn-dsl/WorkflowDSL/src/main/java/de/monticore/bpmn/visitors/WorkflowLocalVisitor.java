@@ -1,13 +1,29 @@
 package de.monticore.bpmn.visitors;
 
-import de.monticore.bpmn.workflow._ast.ASTSubProcess;
-import de.monticore.bpmn.workflow._ast.ASTFlowElementContainer;
-import de.monticore.bpmn.workflow._visitor.WorkflowVisitor;
+import de.monticore.bpmn.workflow.WorkflowMill;
+import de.monticore.bpmn.workflow._ast.*;
+import de.monticore.bpmn.workflow._visitor.WorkflowHandler;
+import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
+import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
+
+import java.util.Iterator;
 
 /**
  * A visitor that does not traverse contained sub-processes.
  */
-public abstract class WorkflowLocalVisitor implements WorkflowVisitor {
+public abstract class WorkflowLocalVisitor implements WorkflowVisitor2, WorkflowHandler {
+    
+    protected WorkflowTraverser traverser;
+
+    @Override
+    public WorkflowTraverser getTraverser() {
+        return traverser;
+    }
+
+    @Override
+    public void setTraverser(WorkflowTraverser traverser) {
+        this.traverser = traverser;
+    }
 
     /**
      * The root of the process level to traverse.
@@ -21,19 +37,43 @@ public abstract class WorkflowLocalVisitor implements WorkflowVisitor {
     @Override
     public void traverse(final ASTSubProcess subProcess) {
         if (subProcess == localRoot) {
-            WorkflowVisitor.super.traverse(subProcess);
-        } else { // traverse only attributes of the sub-process, but no elements contained within the the sub-process
-            if (subProcess.getAdHocCharacteristicsOpt().isPresent()) {
-                subProcess.getAdHocCharacteristicsOpt().get().accept(getRealThis());
+            if (subProcess.isPresentAdHocCharacteristics()) {
+                subProcess.getAdHocCharacteristics().accept(getTraverser());
             }
             if (null != subProcess.getIOSpecification()) {
-                subProcess.getIOSpecification().accept(getRealThis());
+                subProcess.getIOSpecification().accept(getTraverser());
             }
-            if (subProcess.getCompensationHandlerOpt().isPresent()) {
-                subProcess.getCompensationHandlerOpt().get().accept(getRealThis());
+            for (ASTLane astLane : subProcess.getLaneList()) {
+                astLane.accept(getTraverser());
             }
-            if (subProcess.getLoopCharacteristicsOpt().isPresent()) {
-                subProcess.getLoopCharacteristicsOpt().get().accept(getRealThis());
+            for (ASTFlowElement astFlowElement : subProcess.getFlowElementList()) {
+                astFlowElement.accept(getTraverser());
+            }
+            if (subProcess.isPresentCompensationHandler()) {
+                subProcess.getCompensationHandler().accept(getTraverser());
+            }
+            if (subProcess.isPresentLoopCharacteristics()) {
+                subProcess.getLoopCharacteristics().accept(getTraverser());
+            }
+            for (SequenceFlow sequenceFlow : subProcess.getIncomingsList()) {
+                sequenceFlow.accept(getTraverser());
+            }
+            for (SequenceFlow sequenceFlow : subProcess.getOutgoingsList()) {
+                sequenceFlow.accept(getTraverser());
+            }
+
+        } else { // traverse only attributes of the sub-process, but no elements contained within the the sub-process
+            if (subProcess.isPresentAdHocCharacteristics()) {
+                subProcess.getAdHocCharacteristics().accept(getTraverser());
+            }
+            if (null != subProcess.getIOSpecification()) {
+                subProcess.getIOSpecification().accept(getTraverser());
+            }
+            if (subProcess.isPresentCompensationHandler()) {
+                subProcess.getCompensationHandler().accept(getTraverser());
+            }
+            if (subProcess.isPresentLoopCharacteristics()) {
+                subProcess.getLoopCharacteristics().accept(getTraverser());
             }
         }
     }

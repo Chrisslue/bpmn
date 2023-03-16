@@ -5,7 +5,6 @@ import de.monticore.bpmn.collectors.WorkflowCollector;
 import de.monticore.bpmn.collectors.WorkflowFilter;
 import de.monticore.bpmn.workflow._ast.*;
 import de.monticore.bpmn.workflow._cocos.WorkflowASTGatewayCoCo;
-import de.monticore.bpmn.workflow._visitor.WorkflowVisitor;
 import de.se_rwth.commons.logging.Log;
 
 import java.util.Collection;
@@ -17,7 +16,7 @@ import java.util.Collection;
  * Receive Task in any combination. Only the following Intermediate Event triggers are valid: Message, Signal, Timer,
  * Conditional, and Multiple (which can only include the previous triggers).
  */
-public class EventGatewayHasValidTarget implements WorkflowASTGatewayCoCo, WorkflowVisitor {
+public class EventGatewayHasValidTarget implements WorkflowASTGatewayCoCo {
 
     @Override
     public void check(final ASTGateway gateway) {
@@ -47,14 +46,14 @@ public class EventGatewayHasValidTarget implements WorkflowASTGatewayCoCo, Workf
                 }
             }
         };
-        flowNode.accept(filter);
+        filter.filter(filter);
 
-        return !filter.getFiltered().isPresent();
+        return filter.getFiltered().isEmpty();
     }
 
     private boolean hasValidTrigger(final ASTEvent event) {
         // collect invalid triggers (multiple events may have nested triggers)
-        Collection<ASTEventTrigger> invalidTriggers = new WorkflowCollector<ASTEventTrigger>(event) {
+        WorkflowCollector<ASTEventTrigger> collector = new WorkflowCollector<>(event) {
             @Override
             public void visit(final ASTEventTriggerEscalate trigger) {
                 select(trigger);
@@ -79,7 +78,8 @@ public class EventGatewayHasValidTarget implements WorkflowASTGatewayCoCo, Workf
             public void visit(final ASTEventTriggerTerminate trigger) {
                 select(trigger);
             }
-        }.collect();
+        };
+        Collection<ASTEventTrigger> invalidTriggers = collector.collect(collector);
 
         return event.isPresentTrigger() && invalidTriggers.isEmpty();
     }

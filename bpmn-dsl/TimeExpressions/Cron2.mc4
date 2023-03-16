@@ -1,6 +1,6 @@
 package de.monticore.expressions;
 
-component grammar Cron extends de.monticore.literals.Literals {
+component grammar Cron extends de.monticore.literals.MCCommonLiterals {
 
   // based on https://github.com/schyntax/schyntax
 
@@ -30,7 +30,7 @@ component grammar Cron extends de.monticore.literals.Literals {
 
 
   Value =
-      numeric:IntLiteral
+      numeric:NatLiteral
     | weekday:WeekDay
     | month:Month
     ;

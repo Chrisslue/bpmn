@@ -12,7 +12,7 @@ process EventSubProcessHasNoIncomingOrOutgoingFlow {
   T1 -> S1 -> T2;
 
   subprocess S2 {
-    signal sig:HolidayCard;
+    signal sig:LeaveCard;
 
     event start E1 signal:sig;
     event end E2;

@@ -12,32 +12,6 @@ public class ASTInputSet extends ASTInputSetTOP {
     // expected output sets to be produced for this input set
     private final Collection<ASTOutputSet> expectedOutputSets = Sets.newHashSet();
 
-    protected ASTInputSet() {
-        super();
-    }
-
-    protected ASTInputSet(
-            Optional<ASTDataIO> input,
-            List<ASTDataIO> inputs
-    ) {
-        super(Optional.empty(), input.isPresent() ? Lists.newArrayList(input.get()) : inputs);
-    }
-
-    @Override
-    public ASTDataIO getInput() {
-        throw new UnsupportedOperationException("Use ASTInputSet#getInputList instead");
-    }
-
-    @Override
-    public void setInputOpt(final Optional<ASTDataIO> inputOpt) {
-        inputOpt.ifPresent(input -> inputs.add(input));
-    }
-
-    @Override
-    public void setInput(final ASTDataIO input) {
-        inputs.add(input);
-    }
-
     public Collection<ASTOutputSet> getExpectedOutputSets() {
         return expectedOutputSets;
     }

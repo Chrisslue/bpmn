@@ -3,15 +3,17 @@ package de.monticore.bpmn.analysis.graph;
 import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.ImmutableGraph;
 import com.google.common.graph.MutableGraph;
-import de.monticore.bpmn.visitors.WorkflowLocalInheritanceVisitor;
+import de.monticore.bpmn.visitors.WorkflowLocalVisitor;
+import de.monticore.bpmn.workflow.WorkflowMill;
 import de.monticore.bpmn.workflow._ast.*;
+import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
 
 /**
  * Creates an explicit control flow representation of a BPMN process or sub-process.
  *
  * Handles a single process level at a time. Contained sub-processes must be handled separately.
  */
-public class WorkflowGraphConverter extends WorkflowLocalInheritanceVisitor {
+public class WorkflowGraphConverter extends WorkflowLocalVisitor {
 
     // prefer: https://github.com/google/guava/wiki/GraphsExplained#basic-graph-example
     // requires more recent guava version (conflicts with MC version)
@@ -38,7 +40,9 @@ public class WorkflowGraphConverter extends WorkflowLocalInheritanceVisitor {
      */
     public WorkflowGraphConverter convert() {
         graph = GraphBuilder.directed().build();
-        localRoot.accept(this);
+        WorkflowTraverser traverser = WorkflowMill.inheritanceTraverser();
+        traverser.add4Workflow(this);
+        localRoot.accept(traverser);
 
         return this;
     }

@@ -24,7 +24,7 @@ public class EventGatewayTargetReceiveTaskHasNoBoundaryEvents implements Workflo
                     .flatMap(WorkflowFilters::isTask)
                     .filter(ASTTask::isPresentType)
                     .filter(task -> task.getType() == ASTTaskType.RECEIVE)
-                    .filter(receiveTask -> !receiveTask.isEmptyBoundaryEvents())
+                    .filter(receiveTask -> !receiveTask.isEmptyBoundaryEvent())
                     .forEach(receiveTask ->
                             Log.error(Messages.get("0xWFM5009", receiveTask.getName()),
                                     receiveTask.get_SourcePositionStart(), receiveTask.get_SourcePositionEnd())

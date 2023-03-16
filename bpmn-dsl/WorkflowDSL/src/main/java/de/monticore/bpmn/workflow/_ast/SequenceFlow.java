@@ -1,5 +1,7 @@
 package de.monticore.bpmn.workflow._ast;
 
+import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
+
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -50,6 +52,47 @@ public class SequenceFlow {
 
     public String getName() {
         return  "From" + getSourceName() + "To" + getTargetName();
+    }
+
+    public SequenceFlow deepClone(){
+        return new SequenceFlow(this.getSource(), this.getTarget(), this.getConditions());
+    }
+
+    public boolean deepEquals(SequenceFlow flow){
+        if(flow.getConditions().size() != getConditions().size()){
+            return false;
+        }
+        for(int i = 0; i<getConditions().size(); i++){
+            if(!flow.getConditions().get(i).deepEquals(getConditions().get(i))){
+                return false;
+            }
+        }
+        return flow.getSource().deepEquals(getSource()) && flow.getTarget().deepEquals(getTarget());
+    }
+
+    public boolean deepEquals(SequenceFlow flow, boolean forceSameOrder){
+        return deepEquals(flow);
+    }
+
+    public boolean deepEqualsWithComments(SequenceFlow flow){
+        if(flow.getConditions().size() != getConditions().size()){
+            return false;
+        }
+        for(int i = 0; i<getConditions().size(); i++){
+            if(!flow.getConditions().get(i).deepEqualsWithComments(getConditions().get(i))){
+                return false;
+            }
+        }
+        return flow.getSource().deepEqualsWithComments(getSource())
+          && flow.getTarget().deepEqualsWithComments(getTarget());
+    }
+
+    public boolean deepEqualsWithComments(SequenceFlow flow, boolean forceSameOrder){
+        return deepEqualsWithComments(flow);
+    }
+
+    public void accept(WorkflowTraverser traverser){
+
     }
 
 }

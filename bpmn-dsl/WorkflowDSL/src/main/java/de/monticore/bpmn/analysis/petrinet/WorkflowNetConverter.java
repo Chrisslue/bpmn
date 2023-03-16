@@ -7,8 +7,10 @@ import com.google.common.collect.Sets;
 import de.monticore.bpmn.analysis.petrinet.modules.*;
 import de.monticore.bpmn.collectors.WorkflowCollectors;
 import de.monticore.bpmn.utils.WorkflowFilters;
-import de.monticore.bpmn.visitors.WorkflowLocalInheritanceVisitor;
+import de.monticore.bpmn.visitors.WorkflowLocalVisitor;
+import de.monticore.bpmn.workflow.WorkflowMill;
 import de.monticore.bpmn.workflow._ast.*;
+import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
 import petrinet._ast.ASTPetriNode;
 import petrinet._ast.ASTPetrinet;
 import petrinet._ast.ASTPlace;
@@ -34,7 +36,7 @@ import java.util.stream.Stream;
  *  Based on https://svn.win.tue.nl/trac/prom/browser/Packages/BPMNConversions/Trunk/src/org/processmining/plugins/converters/bpmn2pn/BPMN2PetriNetConverter.java
  */
 
-public class WorkflowNetConverter extends WorkflowLocalInheritanceVisitor {
+public class WorkflowNetConverter extends WorkflowLocalVisitor {
 
     private static final List<Class> UNSUPPORTED_TRIGGERS = Lists.newArrayList(
             ASTEventTriggerCompensate.class,
@@ -44,9 +46,12 @@ public class WorkflowNetConverter extends WorkflowLocalInheritanceVisitor {
     );
 
     private static final Predicate<ASTEvent> isSupportedTrigger =
-            event -> event.getTriggerOpt()
-                    .map(trigger -> UNSUPPORTED_TRIGGERS.stream().noneMatch(unsupported -> unsupported.isInstance(trigger)))
-                    .orElse(true);
+      event -> {
+        if(event.isPresentTrigger()){
+            return UNSUPPORTED_TRIGGERS.stream().noneMatch(unsopported -> unsopported.isInstance(event.getTrigger()));
+        }
+        return true;
+      };
 
     final private Random random = new Random();
 
@@ -78,7 +83,9 @@ public class WorkflowNetConverter extends WorkflowLocalInheritanceVisitor {
         startPlaces = Lists.newArrayList();
         endPlaces = Lists.newArrayList();
 
-        localRoot.accept(getRealThis());
+        WorkflowTraverser traverser = WorkflowMill.inheritanceTraverser();
+        traverser.add4Workflow(this);
+        localRoot.accept(traverser);
 
         return new WorkflowNet(petrinet, source, sink, warnings, getMapping());
     }
@@ -269,7 +276,7 @@ public class WorkflowNetConverter extends WorkflowLocalInheritanceVisitor {
     }
 
     private boolean isBoundaryCompensationEvent(final ASTEvent event) {
-        return event.isBoundary() && event.getTriggerOpt().map(WorkflowFilters::isCompensateTrigger).orElse(false);
+        return event.isBoundary() && event.isPresentTrigger() && WorkflowFilters.isCompensateTrigger(event.getTrigger());
     }
 
     private ASTPlace addPlace(final String name) {

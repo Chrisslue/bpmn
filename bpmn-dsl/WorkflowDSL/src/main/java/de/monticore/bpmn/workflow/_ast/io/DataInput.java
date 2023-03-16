@@ -6,9 +6,9 @@ import com.google.common.collect.Sets;
 import de.monticore.bpmn.workflow._ast.ASTDataIO;
 import de.monticore.bpmn.workflow._ast.ASTDataObject;
 import de.monticore.bpmn.workflow._symboltable.DataObjectSymbol;
-import de.monticore.types.types._ast.ASTType;
-import de.monticore.umlcd4a.cd4analysis._ast.ASTCDParameter;
-import de.monticore.umlcd4a.cd4analysis._ast.CD4AnalysisMill;
+import de.monticore.cd4code.CD4CodeMill;
+import de.monticore.cd4codebasis._ast.ASTCDParameter;
+import de.monticore.types.mcbasictypes._ast.ASTMCType;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -47,22 +47,16 @@ public class DataInput implements DataInputOutput {
     }
 
     @Override
-    public ASTType getType() {
+    public ASTMCType getMCType() {
         return getSourceSymbol()
-                .map(DataObjectSymbol::getDataObjectNode)
-                .map(Optional::get)
-                .map(ASTDataObject::getType)
+                .map(DataObjectSymbol::getAstNode)
+                .map(ASTDataObject::getMCType)
                 .orElse(null);
     }
 
     @Override
     public boolean isCollection() {
         return isCollection;
-    }
-
-    @Override
-    public Optional<DataObjectSymbol> getReferencedDataObject() {
-        return getSourceSymbol();
     }
 
     public Collection<ASTDataIO> getAstDataInputs() {
@@ -124,7 +118,7 @@ public class DataInput implements DataInputOutput {
     }
 
     public ASTCDParameter asParameter() {
-        return CD4AnalysisMill.cDParameterBuilder().setName(getName()).setType(getType()).build();
+        return CD4CodeMill.cDParameterBuilder().setName(getName()).setMCType(getMCType()).build();
     }
 
 }

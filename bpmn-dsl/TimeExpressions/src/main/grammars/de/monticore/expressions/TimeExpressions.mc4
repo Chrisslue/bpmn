@@ -1,6 +1,6 @@
 package de.monticore.expressions;
 
-grammar TimeExpressions extends de.monticore.literals.Literals {
+grammar TimeExpressions extends de.monticore.literals.MCCommonLiterals {
 
   interface TimeExpression;
 
@@ -18,7 +18,7 @@ grammar TimeExpressions extends de.monticore.literals.Literals {
     ;
 
   EveryExpr implements TimeExpression =
-      ("start" start:DateExpr ",")? (times:IntLiteral "times")? "every" period:Period
+      ("start" start:DateExpr ",")? (times:NatLiteral "times")? "every" period:Period
     ;
 
   CronExpr implements TimeExpression =
@@ -26,11 +26,11 @@ grammar TimeExpressions extends de.monticore.literals.Literals {
     ;
 
   Time =
-      hours:IntLiteral ":" {noSpace()}? minutes:IntLiteral {noSpace()}? (":" {noSpace()}? seconds:IntLiteral {noSpace()}?)?
+      hours:NatLiteral ":" {noSpace()}? minutes:NatLiteral {noSpace()}? (":" {noSpace()}? seconds:NatLiteral {noSpace()}?)?
     ;
 
   Date =
-      year:IntLiteral "-" {noSpace()}? month:IntLiteral {noSpace()}? "-" {noSpace()}? day:IntLiteral {noSpace()}?
+      year:NatLiteral "-" {noSpace()}? month:NatLiteral {noSpace()}? "-" {noSpace()}? day:NatLiteral {noSpace()}?
     ;
 
   Period = value:Name; //PERIOD;

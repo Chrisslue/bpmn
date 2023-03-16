@@ -1,0 +1,327 @@
+{
+  "generated-using": "www.MontiCore.de technology",
+  "name": "Domain",
+  "symbols": [
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDPackageSymbol",
+      "name": "de.monticore.bpmn"
+    },
+    {
+      "kind": "de.monticore.symbols.basicsymbols._symboltable.DiagramSymbol",
+      "name": "Domain"
+    },
+    {
+      "kind": "de.monticore.cdassociation._symboltable.CDAssociationSymbol",
+      "name": "entries",
+      "association": 1189084611
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "Contract",
+      "isClass": true,
+      "spannedScope": {
+        "symbols": [
+          {
+            "kind": "de.monticore.cdassociation._symboltable.CDRoleSymbol",
+            "name": "domainUser",
+            "cardinality": "[1]",
+            "association": 443290224,
+            "isLeft": true,
+            "type": {
+              "kind": "de.monticore.types.check.SymTypeOfObject",
+              "objName": "DomainUser"
+            }
+          },
+          {
+            "kind": "de.monticore.symbols.oosymbols._symboltable.FieldSymbol",
+            "name": "hiringDate",
+            "type": {
+              "kind": "de.monticore.types.check.SymTypeOfObject",
+              "objName": "java.time.ZonedDateTime"
+            }
+          },
+          {
+            "kind": "de.monticore.symbols.oosymbols._symboltable.FieldSymbol",
+            "name": "version",
+            "type": {
+              "kind": "de.monticore.types.check.SymTypePrimitive",
+              "primitiveName": "int"
+            }
+          },
+          {
+            "kind": "de.monticore.symbols.oosymbols._symboltable.FieldSymbol",
+            "name": "domainUser",
+            "type": {
+              "kind": "de.monticore.types.check.SymTypeOfObject",
+              "objName": "DomainUser"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "DomainUser",
+      "isClass": true,
+      "spannedScope": {
+        "symbols": [
+          {
+            "kind": "de.monticore.cdassociation._symboltable.CDRoleSymbol",
+            "name": "contract",
+            "isDefinitiveNavigable": true,
+            "cardinality": "[*]",
+            "association": 443290224,
+            "type": {
+              "kind": "de.monticore.types.check.SymTypeOfObject",
+              "objName": "Contract"
+            }
+          },
+          {
+            "kind": "de.monticore.cdassociation._symboltable.CDRoleSymbol",
+            "name": "leaveCard",
+            "cardinality": "[1]",
+            "association": 413218476,
+            "isLeft": true,
+            "type": {
+              "kind": "de.monticore.types.check.SymTypeOfObject",
+              "objName": "LeaveCard"
+            }
+          },
+          {
+            "kind": "de.monticore.symbols.oosymbols._symboltable.FieldSymbol",
+            "name": "contract",
+            "type": {
+              "kind": "de.monticore.types.check.SymTypeOfGenerics",
+              "typeConstructorFullName": "java.util.Set",
+              "arguments": [
+                {
+                  "kind": "de.monticore.types.check.SymTypeOfObject",
+                  "objName": "Contract"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "de.monticore.symbols.oosymbols._symboltable.FieldSymbol",
+            "name": "leaveCard",
+            "type": {
+              "kind": "de.monticore.types.check.SymTypeOfObject",
+              "objName": "LeaveCard"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "Report",
+      "isClass": true,
+      "spannedScope": {
+        "symbols": [
+          {
+            "kind": "de.monticore.symbols.oosymbols._symboltable.FieldSymbol",
+            "name": "result",
+            "type": {
+              "kind": "de.monticore.types.check.SymTypeOfObject",
+              "objName": "java.lang.String"
+            }
+          },
+          {
+            "kind": "de.monticore.symbols.oosymbols._symboltable.FieldSymbol",
+            "name": "details",
+            "type": {
+              "kind": "de.monticore.types.check.SymTypeOfObject",
+              "objName": "java.lang.String"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "LeaveCard",
+      "isClass": true,
+      "spannedScope": {
+        "symbols": [
+          {
+            "kind": "de.monticore.cdassociation._symboltable.CDRoleSymbol",
+            "name": "leaveEntry",
+            "isDefinitiveNavigable": true,
+            "cardinality": "[*]",
+            "association": 1189084611,
+            "type": {
+              "kind": "de.monticore.types.check.SymTypeOfObject",
+              "objName": "LeaveEntry"
+            }
+          },
+          {
+            "kind": "de.monticore.cdassociation._symboltable.CDRoleSymbol",
+            "name": "domainUser",
+            "isDefinitiveNavigable": true,
+            "cardinality": "[1]",
+            "association": 413218476,
+            "type": {
+              "kind": "de.monticore.types.check.SymTypeOfObject",
+              "objName": "DomainUser"
+            }
+          },
+          {
+            "kind": "de.monticore.symbols.oosymbols._symboltable.FieldSymbol",
+            "name": "leaveEntry",
+            "type": {
+              "kind": "de.monticore.types.check.SymTypeOfGenerics",
+              "typeConstructorFullName": "java.util.Set",
+              "arguments": [
+                {
+                  "kind": "de.monticore.types.check.SymTypeOfObject",
+                  "objName": "LeaveEntry"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "de.monticore.symbols.oosymbols._symboltable.FieldSymbol",
+            "name": "domainUser",
+            "type": {
+              "kind": "de.monticore.types.check.SymTypeOfObject",
+              "objName": "DomainUser"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "LeaveEntry",
+      "isClass": true,
+      "spannedScope": {
+        "symbols": [
+          {
+            "kind": "de.monticore.cdassociation._symboltable.CDRoleSymbol",
+            "name": "leaveCard",
+            "cardinality": "[1]",
+            "association": 1189084611,
+            "isLeft": true,
+            "type": {
+              "kind": "de.monticore.types.check.SymTypeOfObject",
+              "objName": "LeaveCard"
+            }
+          },
+          {
+            "kind": "de.monticore.symbols.oosymbols._symboltable.FieldSymbol",
+            "name": "startDate",
+            "type": {
+              "kind": "de.monticore.types.check.SymTypeOfObject",
+              "objName": "java.time.ZonedDateTime"
+            }
+          },
+          {
+            "kind": "de.monticore.symbols.oosymbols._symboltable.FieldSymbol",
+            "name": "endDate",
+            "type": {
+              "kind": "de.monticore.types.check.SymTypeOfObject",
+              "objName": "java.time.ZonedDateTime"
+            }
+          },
+          {
+            "kind": "de.monticore.symbols.oosymbols._symboltable.FieldSymbol",
+            "name": "workingDays",
+            "isDerived": true,
+            "type": {
+              "kind": "de.monticore.types.check.SymTypePrimitive",
+              "primitiveName": "int"
+            }
+          },
+          {
+            "kind": "de.monticore.symbols.oosymbols._symboltable.FieldSymbol",
+            "name": "remainingLeaveDays",
+            "isDerived": true,
+            "type": {
+              "kind": "de.monticore.types.check.SymTypePrimitive",
+              "primitiveName": "int"
+            }
+          },
+          {
+            "kind": "de.monticore.symbols.oosymbols._symboltable.FieldSymbol",
+            "name": "substitute",
+            "type": {
+              "kind": "de.monticore.types.check.SymTypeOfObject",
+              "objName": "DomainUser"
+            }
+          },
+          {
+            "kind": "de.monticore.symbols.oosymbols._symboltable.FieldSymbol",
+            "name": "valid",
+            "type": {
+              "kind": "de.monticore.types.check.SymTypePrimitive",
+              "primitiveName": "boolean"
+            }
+          },
+          {
+            "kind": "de.monticore.symbols.oosymbols._symboltable.FieldSymbol",
+            "name": "approved",
+            "type": {
+              "kind": "de.monticore.types.check.SymTypePrimitive",
+              "primitiveName": "boolean"
+            }
+          },
+          {
+            "kind": "de.monticore.symbols.oosymbols._symboltable.FieldSymbol",
+            "name": "leaveCard",
+            "type": {
+              "kind": "de.monticore.types.check.SymTypeOfObject",
+              "objName": "LeaveCard"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "kind": "de.monticore.cdbasis._symboltable.CDTypeSymbol",
+      "name": "MedicalCertificate",
+      "isClass": true,
+      "spannedScope": {
+        "symbols": [
+          {
+            "kind": "de.monticore.symbols.oosymbols._symboltable.FieldSymbol",
+            "name": "startDate",
+            "type": {
+              "kind": "de.monticore.types.check.SymTypeOfObject",
+              "objName": "java.time.ZonedDateTime"
+            }
+          },
+          {
+            "kind": "de.monticore.symbols.oosymbols._symboltable.FieldSymbol",
+            "name": "endDate",
+            "type": {
+              "kind": "de.monticore.types.check.SymTypeOfObject",
+              "objName": "java.time.ZonedDateTime"
+            }
+          },
+          {
+            "kind": "de.monticore.symbols.oosymbols._symboltable.FieldSymbol",
+            "name": "description",
+            "type": {
+              "kind": "de.monticore.types.check.SymTypeOfObject",
+              "objName": "java.lang.String"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "furtherObjects": {
+    "1189084611": {
+      "kind": "de.monticore.cdassociation._symboltable.SymAssociation",
+      "isAssociation": true
+    },
+    "443290224": {
+      "kind": "de.monticore.cdassociation._symboltable.SymAssociation",
+      "isAssociation": true
+    },
+    "413218476": {
+      "kind": "de.monticore.cdassociation._symboltable.SymAssociation",
+      "isAssociation": true
+    }
+  }
+}

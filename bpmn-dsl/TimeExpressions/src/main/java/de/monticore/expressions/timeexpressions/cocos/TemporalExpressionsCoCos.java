@@ -5,9 +5,10 @@ import de.monticore.expressions.timeexpressions._cocos.TimeExpressionsCoCoChecke
 public class TemporalExpressionsCoCos {
 
     public static TimeExpressionsCoCoChecker createChecker() {
-        return new TimeExpressionsCoCoChecker()
-                .addCoCo(new DateIsValidCoCo())
-                .addCoCo(new TimeIsValidCoCo());
+        TimeExpressionsCoCoChecker checker = new TimeExpressionsCoCoChecker();
+        checker.addCoCo(new DateIsValidCoCo());
+        checker.addCoCo(new TimeIsValidCoCo());
+        return checker;
     }
 
 }

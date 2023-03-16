@@ -1,13 +1,8 @@
 package de.monticore.bpmn.analysis.petrinet;
 
-import de.monticore.io.paths.ModelPath;
-import de.monticore.symboltable.GlobalScope;
-import de.monticore.symboltable.ResolvingConfiguration;
+import petrinet.PetrinetMill;
 import petrinet._ast.*;
-import petrinet._symboltable.PetrinetLanguage;
-import petrinet._symboltable.PetrinetSymbolTableCreator;
-
-import java.util.Optional;
+import petrinet._symboltable.PetrinetScopesGenitorDelegator;
 
 /**
  * Utilities for building Petri nets.
@@ -15,17 +10,8 @@ import java.util.Optional;
 public class PetriNetUtils {
 
     public static void buildSymTab(final ASTPetrinet petrinet) {
-        final PetrinetLanguage lang = new PetrinetLanguage();
-
-        final ResolvingConfiguration resolverConfig = new ResolvingConfiguration();
-        resolverConfig.addDefaultFilters(lang.getResolvingFilters());
-
-        final GlobalScope globalScope = new GlobalScope(new ModelPath(), lang, resolverConfig);
-
-        final Optional<PetrinetSymbolTableCreator> symbolTable = lang
-                .getSymbolTableCreator(resolverConfig, globalScope);
-
-        symbolTable.get().createFromAST(petrinet);
+        PetrinetScopesGenitorDelegator scopesGenitor = PetrinetMill.scopesGenitorDelegator();
+        scopesGenitor.createFromAST(petrinet);
     }
 
     public static void connect(final ASTPlace place, final ASTTransition transition) {

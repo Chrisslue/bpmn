@@ -2,14 +2,14 @@ package de.monticore.bpmn.workflow._ast.io;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import de.monticore.bpmn.workflow.WorkflowMill;
 import de.monticore.bpmn.workflow._ast.*;
-import de.monticore.bpmn.workflow._symboltable.DataObjectSymbol;
-import de.monticore.bpmn.workflow._visitor.WorkflowVisitor;
-import de.monticore.symboltable.Scope;
+import de.monticore.bpmn.workflow._symboltable.IWorkflowScope;
+import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
+import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * IO specification.
@@ -40,14 +40,14 @@ public class IOSpecification {
     (There might be multiple AST nodes denoting the same data input/output or the same data input/output set.)
     Construct sets of unique data inputs/outputs and input/output sets, and add references in both directions.
      */
-    public static IOSpecification from(final ASTIOSpecification ast, final Scope enclosingScope) {
+    public static IOSpecification from(final ASTIOSpecification ast, final IWorkflowScope enclosingScope) {
         final Map<DataInput, DataInput> inputs = Maps.newHashMap();
         final Map<DataOutput, DataOutput> outputs = Maps.newHashMap();
 
         final Map<InputSet, InputSet> inputSets = Maps.newHashMap();
         final Map<OutputSet, OutputSet> outputSets = Maps.newHashMap();
 
-        ast.accept(new WorkflowVisitor() {
+        WorkflowVisitor2 visitor = new WorkflowVisitor2() {
             @Override
             public void visit(final ASTIRequirement inputRequirement) {
                 handleInputSet(inputRequirement.getInputSet());
@@ -70,10 +70,10 @@ public class IOSpecification {
                 final InputSet inputSetCandidate = new InputSet();
 
                 astInputSet.getInputList().forEach(astInput -> {
-                    final String inputName = astInput.getQName().getQualifiedName();
+                    final String inputName = astInput.getMCQualifiedName().getQName();
                     final DataInput inputCandidate = new DataInput(inputName, false);
 
-                    enclosingScope.<DataObjectSymbol>resolve(inputName, DataObjectSymbol.KIND).ifPresent(inputCandidate::setSourceSymbol);
+                    enclosingScope.resolveDataObject(inputName).ifPresent(inputCandidate::setSourceSymbol);
 
                     if (!inputs.containsKey(inputCandidate)) { // the same data input does not yet exist
                         inputs.put(inputCandidate, inputCandidate);
@@ -110,10 +110,10 @@ public class IOSpecification {
                 final OutputSet outputSetCandidate = new OutputSet();
 
                 astOutputSet.getOutputList().forEach(astOutput -> {
-                    final String outputName = astOutput.getQName().getQualifiedName();
+                    final String outputName = astOutput.getMCQualifiedName().getQName();
                     final DataOutput outputCandidate = new DataOutput(outputName, false);
 
-                    enclosingScope.<DataObjectSymbol>resolve(outputName, DataObjectSymbol.KIND)
+                    enclosingScope.resolveDataObject(outputName)
                             .ifPresent(outputCandidate::setTargetSymbol);
 
                     if (!outputs.containsKey(outputCandidate)) { // the same data output does not yet exist
@@ -146,7 +146,12 @@ public class IOSpecification {
 
                 return outputSet;
             }
-        });
+        };
+
+        WorkflowTraverser traverser = WorkflowMill.traverser();
+        traverser.add4Workflow(visitor);
+        ast.accept(traverser);
+
 
         return new IOSpecification(inputSets.values(), outputSets.values(), inputs.values(), outputs.values());
     }

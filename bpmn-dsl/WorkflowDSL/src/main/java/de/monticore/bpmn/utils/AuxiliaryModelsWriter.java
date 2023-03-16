@@ -11,14 +11,15 @@ import de.monticore.bpmn.analysis.petrinet.PetriNetLoLaPrinter;
 import de.monticore.bpmn.analysis.petrinet.WorkflowNet;
 import de.monticore.bpmn.workflow._ast.ASTFlowNode;
 import de.monticore.bpmn.workflow._ast.ASTProcess;
+import de.monticore.prettyprint.IndentPrinter;
 import de.se_rwth.commons.Joiners;
 import de.se_rwth.commons.logging.Log;
 import org.jgrapht.Graph;
 import petrinet._ast.ASTPetrinet;
 import petrinet._ast.ASTPlace;
 import petrinet._ast.ASTTransition;
+import petrinet._prettyprint.PetrinetFullPrettyPrinter;
 import petrinet.prettyprint.PetrinetDotPrinter;
-import petrinet.prettyprint.PetrinetPrettyPrinter;
 
 import java.io.File;
 import java.io.IOException;
@@ -75,7 +76,7 @@ public class AuxiliaryModelsWriter {
         final String name = workflow.getName();
 
         // write pn
-        FilePrinter.from(PetrinetPrettyPrinter.print(petriNet))
+        FilePrinter.from(new PetrinetFullPrettyPrinter(new IndentPrinter()).prettyprint(petriNet))
                 .to(outputDir, name, "pn");
 
         /* skipped for now since ecore incompatibilities when used within other projects

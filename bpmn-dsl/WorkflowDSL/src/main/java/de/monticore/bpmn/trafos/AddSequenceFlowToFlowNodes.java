@@ -1,7 +1,10 @@
 package de.monticore.bpmn.trafos;
 
+import com.google.common.collect.Lists;
+import de.monticore.bpmn.workflow.WorkflowMill;
 import de.monticore.bpmn.workflow._ast.*;
-import de.monticore.bpmn.workflow._visitor.WorkflowVisitor;
+import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
+import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
 import one.util.streamex.StreamEx;
 
 import java.util.List;
@@ -9,11 +12,13 @@ import java.util.List;
 /**
  * Adds references to the incoming and outgoing sequence flows to the flow nodes.
  */
-public class AddSequenceFlowToFlowNodes extends WorkflowTransformation implements WorkflowVisitor {
+public class AddSequenceFlowToFlowNodes extends WorkflowTransformation implements WorkflowVisitor2 {
 
     @Override
     protected void transform() {
-        getAst().accept(this);
+        WorkflowTraverser traverser = WorkflowMill.traverser();
+        traverser.add4Workflow(this);
+        getAst().accept(traverser);
     }
 
     @Override
@@ -39,8 +44,8 @@ public class AddSequenceFlowToFlowNodes extends WorkflowTransformation implement
                                 .addConditions(conditions)
                                 .build();
 
-                        source.addOutgoing(flow);
-                        target.addIncoming(flow);
+                        source.addOutgoings(flow);
+                        target.addIncomings(flow);
                     }));
                 });
     }

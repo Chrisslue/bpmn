@@ -18,14 +18,6 @@ public class ASTPeriod extends ASTPeriodTOP {
     private int minutes = 0;
     private int seconds = 0;
 
-    protected ASTPeriod() {
-        super();
-    }
-
-    protected ASTPeriod(final String value) {
-        super(value);
-    }
-
     public void setValue(final String value) throws IllegalArgumentException {
         super.setValue(value);
         final Pattern p = Pattern.compile(

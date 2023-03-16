@@ -5,12 +5,22 @@
  */
 package de.monticore.bpmn;
 
-import de.monticore.bpmn.lang.Import;
-import de.monticore.bpmn.lang.WorkflowTool;
+import com.google.common.collect.Lists;
+import de.monticore.bpmn.cocos.flow.SequenceFlowNodeReferencesExist;
+import de.monticore.bpmn.trafos.*;
 import de.monticore.bpmn.utils.AuxiliaryModelsWriter;
+import de.monticore.bpmn.workflow.WorkflowMill;
+import de.monticore.bpmn.workflow.WorkflowTool;
 import de.monticore.bpmn.workflow._ast.ASTWorkflowCompilationUnit;
-import de.monticore.io.paths.ModelPath;
-import de.monticore.symboltable.GlobalScope;
+import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
+import de.monticore.bpmn.workflow._symboltable.IWorkflowArtifactScope;
+import de.monticore.bpmn.workflow._symboltable.IWorkflowGlobalScope;
+import de.monticore.bpmn.workflow._symboltable.WorkflowSTCompleter;
+import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
+import de.monticore.io.paths.MCPath;
+import de.monticore.symbols.basicsymbols.BasicSymbolsMill;
+import de.monticore.symboltable.ImportStatement;
+import de.se_rwth.commons.Names;
 import de.se_rwth.commons.logging.Log;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,15 +41,21 @@ abstract public class AbstractTest {
 
     protected final static String MODEL_DIR = "src/test/resources/";
 
-    // Add OCL default types, this way we don't need to import them in the models every time
-    protected static final Import OCL_TYPES = new Import("de.monticore.bpmn._types.ocl.DefaultTypes", true);
+    protected final static String SYMBOL_DIR = "src/test/resources";
 
-    private GlobalScope globalScope;
+    // Add OCL default types, this way we don't need to import them in the models every time
+    protected static final ImportStatement OCL_TYPES = new ImportStatement("de.monticore.bpmn._types.ocl.DefaultTypes", true);
+
+    private IWorkflowGlobalScope globalScope;
 
     @BeforeAll
     public static void init() {
         // LogStub.init();
         Log.enableFailQuick(false);
+        WorkflowMill.init();
+        WorkflowMill.globalScope().clear();
+        WorkflowMill.globalScope().setSymbolPath(new MCPath(SYMBOL_DIR));
+        BasicSymbolsMill.initializePrimitives();
     }
 
     @BeforeEach
@@ -54,18 +70,29 @@ abstract public class AbstractTest {
      * @return the root of the parsed model.
      */
     protected ASTWorkflowCompilationUnit loadModel(final String qualifiedModelName) {
-        ModelPath modelPath = new ModelPath(get(MODEL_DIR));
+        WorkflowTool tool = new WorkflowTool();
+        ASTWorkflowCompilationUnit ast = tool.parse(MODEL_DIR + Names.getPathFromPackage(qualifiedModelName).replaceAll("\\\\", "/") + ".wfm");
+        new AddMoreImports(Lists.newArrayList(OCL_TYPES)).transform(ast);
+        WorkflowMill.scopesGenitorDelegator().createFromAST(ast);
+        WorkflowCoCoChecker checker = new WorkflowCoCoChecker();
+        checker.addCoCo(new SequenceFlowNodeReferencesExist());
+        checker.checkAll(ast);
+        new AddNameToInlineFlowNodes().transform(ast);
+        new AddSequenceFlowToFlowNodes().transform(ast);
+        new AddReferenceToParentLane().transform(ast);
+        new CreateIOSpecification().transform(ast);
+        new SetSubProcessTriggeredByEvent().transform(ast);
 
-        ASTWorkflowCompilationUnit unit = new WorkflowTool()
-                .addImport(OCL_TYPES)
-                .loadModel(qualifiedModelName, modelPath)
-                .getAst();
+        WorkflowSTCompleter stCompleter = new WorkflowSTCompleter();
+        WorkflowTraverser traverser = WorkflowMill.traverser();
+        traverser.add4Workflow(stCompleter);
+        ast.accept(traverser);
 
         if (shouldWriteAuxModels()) {
-            writeTestAuxModels(qualifiedModelName, unit);
+            writeTestAuxModels(qualifiedModelName, ast);
         }
 
-        return unit;
+        return ast;
     }
 
     protected boolean shouldWriteAuxModels() {

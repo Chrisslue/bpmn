@@ -1,13 +1,21 @@
 package de.monticore.bpmn.cocos;
 
+import com.google.common.collect.Lists;
 import de.monticore.bpmn.AbstractTest;
 import de.monticore.bpmn.Assert;
-import de.monticore.bpmn.lang.WorkflowTool;
+import de.monticore.bpmn.cocos.flow.SequenceFlowNodeReferencesExist;
+import de.monticore.bpmn.trafos.*;
+import de.monticore.bpmn.workflow.WorkflowMill;
+import de.monticore.bpmn.workflow.WorkflowTool;
 import de.monticore.bpmn.workflow._ast.ASTWorkflowCompilationUnit;
 import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
-import de.monticore.io.paths.ModelPath;
+import de.monticore.bpmn.workflow._symboltable.WorkflowSTCompleter;
+import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
+import de.monticore.io.paths.MCPath;
+import de.se_rwth.commons.Names;
 import de.se_rwth.commons.logging.Finding;
 import de.se_rwth.commons.logging.Log;
+import org.junit.jupiter.api.BeforeAll;
 
 import java.nio.file.Paths;
 import java.util.Collection;
@@ -80,18 +88,30 @@ public abstract class AbstractCoCoTest extends AbstractTest {
 
     @Override
     protected ASTWorkflowCompilationUnit loadModel(String qualifiedModelName) {
-        ModelPath modelPath = new ModelPath(Paths.get(MODEL_DIR));
+        WorkflowTool tool = new WorkflowTool();
+        ASTWorkflowCompilationUnit ast = tool.parse(MODEL_DIR + Names.getPathFromPackage(qualifiedModelName).replaceAll("\\\\", "/") + ".wfm");
+        new AddMoreImports(Lists.newArrayList(OCL_TYPES)).transform(ast);
+        WorkflowMill.scopesGenitorDelegator().createFromAST(ast);
+        WorkflowCoCoChecker checker = new WorkflowCoCoChecker();
+        checker.addCoCo(new SequenceFlowNodeReferencesExist());
+        checker.checkAll(ast);
+        new AddNameToInlineFlowNodes().transform(ast);
+        new AddSequenceFlowToFlowNodes().transform(ast);
+        new AddReferenceToParentLane().transform(ast);
+        new CreateIOSpecification().transform(ast);
+        new SetSubProcessTriggeredByEvent().transform(ast);
 
-        WorkflowTool tool = new WorkflowTool()
-                .addImport(OCL_TYPES)
-                .loadModel(qualifiedModelName, modelPath);
+        WorkflowSTCompleter stCompleter = new WorkflowSTCompleter();
+        WorkflowTraverser traverser = WorkflowMill.traverser();
+        traverser.add4Workflow(stCompleter);
+        ast.accept(traverser);
 
         if (shouldWriteAuxModels()) { // write models before running CoCos (and potentially failing)
-            writeTestAuxModels(qualifiedModelName, tool.getAst());
+            writeTestAuxModels(qualifiedModelName, ast);
         }
-        tool.checkCoCos(getChecker());
+        getChecker().checkAll(ast);
 
-        return tool.getAst();
+        return ast;
     }
 
 }

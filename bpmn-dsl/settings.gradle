@@ -1,0 +1,22 @@
+/* (c) https://github.com/MontiCore/monticore */
+pluginManagement {
+    repositories {
+        mavenCentral()
+        if(("true").equals(getProperty('useLocalRepo'))){
+            mavenLocal()
+        }
+        maven {
+            credentials.username mavenUser
+            credentials.password mavenPassword
+            url repo
+        }
+
+        gradlePluginPortal()
+    }
+}
+
+rootProject.name="BPMN"
+include(':BpmnXML')
+include(':TimeExpressions')
+include(':WorkflowCLI')
+include(':WorkflowDSL')

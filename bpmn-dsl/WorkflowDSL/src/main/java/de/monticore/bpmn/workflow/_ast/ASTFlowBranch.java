@@ -7,24 +7,16 @@ import java.util.List;
 
 public class ASTFlowBranch extends ASTFlowBranchTOP {
 
-    protected ASTFlowBranch() {
-        super();
-    }
-
-    protected ASTFlowBranch(final List<ASTFlowTarget> path) {
-        super(path);
-    }
-
     public ListMultimap<ASTFlowNode, List<ASTFlowCondition>> asTarget() {
         return getPath(0).asTarget();
     }
 
     public Collection<ASTFlowNode> asSource() {
-        return getPath(sizePaths() - 1).asSource();
+        return getPath(sizePath() - 1).asSource();
     }
 
     public boolean isDefault() {
-        return !isEmptyPaths() && getPathList().get(0).getConditionOpt().map(ASTFlowCondition::isDefault).orElse(false);
+        return !isEmptyPath() && getPathList().get(0).isPresentCondition() && getPathList().get(0).getCondition().isDefault();
     }
 
 }

@@ -1,9 +1,10 @@
 package de.monticore.bpmn.trafos;
 
-import com.google.common.collect.Lists;
-import de.monticore.bpmn.lang.Import;
-import de.monticore.bpmn.workflow._ast.WorkflowNodeFactory;
-import de.monticore.types.types._ast.ASTImportStatement;
+import de.monticore.symboltable.ImportStatement;
+import de.monticore.types.mcbasictypes._ast.ASTMCImportStatement;
+import de.monticore.types.mcbasictypes._ast.ASTMCImportStatementBuilder;
+import de.monticore.types.mcbasictypes._ast.ASTMCQualifiedName;
+import de.monticore.types.mcbasictypes._ast.ASTMCQualifiedNameBuilder;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -16,23 +17,29 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class AddMoreImports extends WorkflowTransformation {
 
-    private final Collection<Import> imports;
+    private final Collection<ImportStatement> imports;
 
-    public AddMoreImports(final Collection<Import> imports) {
+    public AddMoreImports(final Collection<ImportStatement> imports) {
         this.imports = imports;
     }
 
     @Override
     protected void transform() {
         checkNotNull(imports);
-        Collection<ASTImportStatement> astImports = imports.stream().map(this::createASTImport).collect(Collectors.toList());
+        Collection<ASTMCImportStatement> astImports = imports.stream().map(this::createASTImport).collect(Collectors.toList());
 
-        getAst().addAllImportStatements(astImports);
+        getAst().addAllMCImportStatements(astImports);
     }
 
-    private ASTImportStatement createASTImport(final Import imp) {
-        return WorkflowNodeFactory.createASTImportStatement(
-                Lists.newArrayList(imp.getQualifiedName().split("\\.")), imp.isStar());
+    private ASTMCImportStatement createASTImport(final ImportStatement imp) {
+        ASTMCQualifiedName qualName = new ASTMCQualifiedNameBuilder()
+          .setPartsList(Arrays.stream(imp.getStatement().split("\\."))
+            .collect(Collectors.toList()))
+          .build();
+        return new ASTMCImportStatementBuilder()
+          .setMCQualifiedName(qualName)
+          .setStar(imp.isStar())
+          .build();
     }
 
 

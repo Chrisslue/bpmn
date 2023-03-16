@@ -14,7 +14,7 @@ public class EventGatewayHasTwoOrMoreOutgoingFlows implements WorkflowASTGateway
 
     @Override
     public void check(final ASTGateway gateway) {
-        if (gateway.getType().isEventBased() && gateway.getOutgoingList().size() < 2) {
+        if (gateway.getType().isEventBased() && gateway.getOutgoingsList().size() < 2) {
             Log.error(Messages.get("0xWFM5005", gateway.getName()),
                     gateway.get_SourcePositionStart(), gateway.get_SourcePositionEnd());
         }

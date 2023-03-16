@@ -9,7 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 
 public class AbstractTest {
 
-    protected TimeExpressionsParser parser = new TimeExpressionsParser();
+    protected TimeExpressionsParser parser = TimeExpressionsMill.parser();
 
     @BeforeAll
     public static void init() {

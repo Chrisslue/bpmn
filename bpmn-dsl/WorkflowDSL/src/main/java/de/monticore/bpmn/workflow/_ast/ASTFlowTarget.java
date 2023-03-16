@@ -5,6 +5,7 @@ import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import de.monticore.bpmn.Messages;
 import de.monticore.bpmn.workflow._symboltable.WorkflowScope;
+import de.monticore.types.mcbasictypes._ast.ASTMCQualifiedName;
 import de.se_rwth.commons.logging.Log;
 
 import java.util.List;
@@ -13,19 +14,6 @@ import java.util.Optional;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class ASTFlowTarget extends ASTFlowTargetTOP {
-
-    protected ASTFlowTarget() {
-        super();
-    }
-
-    protected ASTFlowTarget(
-            final Optional<ASTFlowCondition> condition,
-            final Optional<ASTQName> nodeRef,
-            final Optional<ASTInlineFlowNode> node,
-            final Optional<ASTFlowBlock> block
-    ) {
-        super(condition, nodeRef, node, block);
-    }
 
     public List<ASTFlowNode> asSource() {
         List<ASTFlowNode> sourceFlowNodes = null;
@@ -61,7 +49,7 @@ public class ASTFlowTarget extends ASTFlowTargetTOP {
     }
 
     private ASTFlowNode resolveFlowNode() {
-        String name = getNodeRef().getQualifiedName();
+        String name = getNodeRef().getQName();
         WorkflowScope scope = (WorkflowScope) getEnclosingScope();
 
         Optional<ASTFlowNode> flowNode = scope.resolveFlowNodeDown(name);

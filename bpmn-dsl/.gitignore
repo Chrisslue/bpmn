@@ -9,3 +9,9 @@
 # Maven
 **/log/
 **/target/
+
+# Gradle
+gradlew
+gradlew.bat
+.gradle/
+gradle/
