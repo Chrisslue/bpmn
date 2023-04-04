@@ -1,0 +1,12 @@
+image: registry.git.rwth-aachen.de/monticore/container-registry/gradle:6.8.2-jdk11
+
+variables:
+  GRADLE_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2"
+stages:
+  - build
+
+build:
+  stage: build
+  script:
+    - "gradle --version"
+    - "gradle build --refresh-dependencies -P mavenPassword=$pass -P mavenUser=$user $GRADLE_OPTS $ARGS1"
