@@ -10,7 +10,7 @@ class WorkflowCliTest {
 
     @Test
     void testExport() {
-        String[] args = {"-p", "src/test/resources/", "de.monticore.bpmn.CliExportTest", "export"};
+        String[] args = {"-p", "src/test/resources/", "de.monticore.bpmn.CliExportTest.wfm", "export"};
 
         int exitCode = new CommandLine(new MainCommand()).execute(args);
         assertEquals(0, exitCode);

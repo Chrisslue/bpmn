@@ -52,7 +52,7 @@ public class MainCommand implements Runnable {
             description = "Qualified name of BPMN input model."
     )
     private void setQualifiedModel(final String qualifiedModelName) throws NoSuchFileException {
-        if(modelPath.find(Names.getPathFromPackage(qualifiedModelName)).isPresent()){
+        if(modelPath.find(Names.getPathFromFilename(qualifiedModelName)).isPresent()){
             qualifiedModel = qualifiedModelName;
         } else {
             throw new NoSuchFileException(qualifiedModelName);
