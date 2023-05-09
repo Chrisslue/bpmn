@@ -7,7 +7,15 @@ process Prototype {
   split xor GatewaySplit;
   merge xor GatewayJoin;
   event start -> GatewaySplit;
-  GatewaySplit -> A -> GatewayJoin;
+  GatewaySplit -> A -> T -> GatewayJoin;
   GatewaySplit -> B -> GatewayJoin;
   GatewayJoin -> event end;
+
+  subprocess T {
+      task G;
+      event start Start;
+      event end End;
+       Start -> G -> End;
+  }
+
 }

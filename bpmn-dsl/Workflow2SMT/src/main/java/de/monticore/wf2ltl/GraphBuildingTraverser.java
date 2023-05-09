@@ -1,0 +1,167 @@
+package de.monticore.wf2ltl;
+
+import de.monticore.bpmn.workflow._ast.*;
+import de.monticore.bpmn.workflow._visitor.WorkflowHandler;
+import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
+import de.monticore.bpmn.workflow._visitor.WorkflowTraverserImplementation;
+import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+public class GraphBuildingTraverser implements WorkflowHandler, WorkflowVisitor2 {
+
+  protected final IntermediateGraph graph;
+
+  protected WorkflowTraverser traverser;
+
+  public GraphBuildingTraverser(WorkflowTraverser traverser, ASTFlowNode startElement) {
+    this(traverser, new IntermediateGraph(startElement));
+  }
+
+  public GraphBuildingTraverser(WorkflowTraverser traverser, IntermediateGraph graph) {
+    traverser.setWorkflowHandler(this);
+    traverser.getWorkflowVisitorList().add(this);
+    this.graph = graph;
+  }
+
+  public static IntermediateGraph graphOf(ASTEvent startEvent) {
+    if (!startEvent.isStart()) {
+      throw new IllegalArgumentException("startEvent has to be a start event");
+    }
+    GraphBuildingTraverser handler = new GraphBuildingTraverser(
+        new WorkflowTraverserImplementation(), startEvent);
+    startEvent.accept(handler.getTraverser());
+    return handler.getGraph();
+  }
+
+  public IntermediateGraph getGraph() {
+    return graph;
+  }
+
+  protected void addEdge(ASTFlowNode source, ASTFlowNode target) {
+    addEdge(source, target, Collections.emptyList());
+  }
+
+  protected void addEdge(ASTFlowNode source, ASTFlowNode target,
+      List<ASTFlowCondition> conditions) {
+    var targetNodes = getGraph().getEdges().getOrDefault(source, new ArrayList<>());
+    targetNodes.add(new IntermediateGraph.EdgeTo(target, conditions));
+    getGraph().getEdges().putIfAbsent(source, targetNodes);
+  }
+
+  protected void addOutgoingsAsEdges(ASTFlowNode node) {
+    this.addOutgoingsAsEdges(node, node.getOutgoingsList());
+  }
+
+  protected void addOutgoingsAsEdges(ASTFlowNode nameOfNode, List<SequenceFlow> outgoings) {
+    for (SequenceFlow sequenceFlow : outgoings) {
+      addEdge(nameOfNode, sequenceFlow.getTarget(), sequenceFlow.getConditions());
+    }
+  }
+
+  @Override
+  public WorkflowTraverser getTraverser() {
+    return traverser;
+  }
+
+  @Override
+  public void setTraverser(WorkflowTraverser traverser) {
+    this.traverser = traverser;
+  }
+
+  /**
+   * Enclose everything between two matching gateways (split -> ... -> merge) as one GatewayScope.
+   * This enables easy implementations of different interleaving strategies. The GatewayScope itself
+   * will build in internal graph of the scope between the gateways.
+   */
+  private void addAndHandleGatewayScope(ASTGateway gateway) {
+    ASTFlowNode continueFrom;
+    if (gateway.isDiverging()) {
+      WorkflowTraverserImplementation traverser = new WorkflowTraverserImplementation();
+      GatewayScope gatewayScope = new GatewayScope(traverser, gateway);
+      getGraph().getGatewayScopes().add(gatewayScope);
+      continueFrom = gatewayScope.getClosingGateway();
+      addOutgoingsAsEdges(continueFrom);
+    }
+    else {
+      continueFrom = gateway;
+    }
+    for (SequenceFlow sequenceFlow : continueFrom.getOutgoingsList()) {
+      sequenceFlow.getTarget().accept(getTraverser());
+    }
+  }
+
+  @Override
+  public void handle(ASTNamedGateway node) {
+    addAndHandleGatewayScope(node);
+  }
+
+  @Override
+  public void handle(ASTInlineGateway node) {
+    addAndHandleGatewayScope(node);
+  }
+
+  /*
+   * Whenever a node is visited add the outgoing transitions as edges to the graph.
+   */
+
+  @Override
+  public void visit(ASTSubProcess node) {
+    addOutgoingsAsEdges(node);
+    SubProcessScope subProcessScope = new SubProcessScope(node);
+    getGraph().getSubProcessScopes().add(subProcessScope);
+  }
+
+  @Override
+  public void visit(ASTTask node) {
+    addOutgoingsAsEdges(node);
+  }
+
+  @Override
+  public void visit(ASTNamedEvent node) {
+    addOutgoingsAsEdges(node);
+  }
+
+  @Override
+  public void visit(ASTInlineEvent node) {
+    addOutgoingsAsEdges(node);
+  }
+
+  /*
+   * Traverse through the diagram by moving along the outgoing SequenceFlows.
+   */
+
+  private void traverseOutgoingTargets(ASTFlowNode node) {
+    for (SequenceFlow sequenceFlow : node.getOutgoingsList()) {
+      sequenceFlow.getTarget().accept(getTraverser());
+    }
+  }
+
+  @Override
+  public void traverse(ASTSubProcess node) {
+    traverseOutgoingTargets(node);
+  }
+
+  @Override
+  public void traverse(ASTTask node) {
+    traverseOutgoingTargets(node);
+  }
+
+  @Override
+  public void traverse(ASTInlineGateway node) {
+    traverseOutgoingTargets(node);
+  }
+
+  @Override
+  public void traverse(ASTNamedEvent node) {
+    traverseOutgoingTargets(node);
+  }
+
+  @Override
+  public void traverse(ASTInlineEvent node) {
+    traverseOutgoingTargets(node);
+  }
+
+}
