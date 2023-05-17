@@ -2,12 +2,17 @@ package de.monticore.ltl;
 
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 
-public interface LTLBuilder<State, Label, Exp extends ASTExpression> {
+import java.util.Collection;
 
-    State addState(String name);
+public interface LTLBuilder<State, Label, Variable> {
 
-    State addInitialState(String name);
+  void addVariable(Variable var);
 
+  State addState(String name);
 
-    void addTransition(State source, State target, Label label, Exp condition);
+  State addInitialState(String name);
+
+  void addTransition(State source, State target, Label label, Collection<ASTExpression> conditions);
 }
+
+
