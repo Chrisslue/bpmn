@@ -79,7 +79,7 @@ public class WorkflowCoCos {
      */
     public static WorkflowCoCoChecker getBehavioralChecker() {
         WorkflowCoCoChecker checker = new WorkflowCoCoChecker();
-        checker.addCoCo(new ProcessNetIsSound());
+        // checker.addCoCo(new ProcessNetIsSound());
         return checker;
     }
 
