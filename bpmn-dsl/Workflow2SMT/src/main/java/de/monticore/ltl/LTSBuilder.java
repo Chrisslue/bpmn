@@ -2,7 +2,6 @@ package de.monticore.ltl;
 
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.types.mcbasictypes._ast.ASTMCQualifiedType;
-import java.util.Collection;
 
 public interface LTSBuilder<State, Label> {
 
@@ -14,5 +13,7 @@ public interface LTSBuilder<State, Label> {
 
   State addInitialState(String name);
 
-  void addTransition(State source, State target, Label label, Collection<ASTExpression> conditions);
+  State addFinalState(String name);
+
+  void addTransition(State source, State target, Label label, ASTExpression condition);
 }
