@@ -1,4 +1,4 @@
-package de.monticore.ltl;
+package de.monticore.lts;
 
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.types.mcbasictypes._ast.ASTMCQualifiedType;

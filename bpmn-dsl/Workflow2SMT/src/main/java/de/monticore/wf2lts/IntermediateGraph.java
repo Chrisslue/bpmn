@@ -1,4 +1,4 @@
-package de.monticore.wf2ltl;
+package de.monticore.wf2lts;
 
 import de.monticore.bpmn.workflow._ast.ASTFlowCondition;
 import de.monticore.bpmn.workflow._ast.ASTFlowNode;

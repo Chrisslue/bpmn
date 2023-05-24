@@ -3,7 +3,7 @@ package de.monticore.wf2ma;
 import arcautomaton._ast.ASTArcStatechart;
 import arcbasis._ast.ASTArcFieldDeclaration;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
-import de.monticore.ltl.LTSBuilder;
+import de.monticore.lts.LTSBuilder;
 import de.monticore.scbasis._ast.ASTSCState;
 import de.monticore.scbasis._ast.ASTSCTransition;
 import de.monticore.sctransitions4code._ast.ASTTransitionAction;
