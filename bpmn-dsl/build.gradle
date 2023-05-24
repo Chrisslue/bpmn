@@ -7,6 +7,7 @@ plugins {
     // Eclipse compiler as it's much faster than javac
     // Since the root project does not contain java code, it is only applied to the subprojects
     id "io.github.themrmilchmann.ecj" version "0.1.0" apply false
+    id "com.github.sherter.google-java-format" version "0.9"    // Task "verifyGoogleJavaFormat" and "googleJavaFormat"
 }
 
 allprojects {
@@ -176,6 +177,21 @@ configure([
             url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
         }
     }
+}
+
+googleJavaFormat {
+    exclude '**/target/**'
+}
+
+verifyGoogleJavaFormat{
+    ignoreFailures true
+    exclude "**"
+}  // do not check format in "build"
+
+task checkfmt(type: com.github.sherter.googlejavaformatgradleplugin.VerifyGoogleJavaFormat) {}
+
+task fmt {
+    dependsOn tasks.named("googleJavaFormat")
 }
 
 defaultTasks 'build'
