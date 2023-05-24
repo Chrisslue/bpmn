@@ -4,7 +4,7 @@ import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 
 import java.util.Collection;
 
-public interface LTLBuilder<State, Label, Variable> {
+public interface LTSBuilder<State, Label, Variable> {
 
   void addVariable(Variable var);
 
