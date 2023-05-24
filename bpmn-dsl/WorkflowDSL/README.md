@@ -1,10 +1,10 @@
 # BPMN
-
-## About
-
-Textual BPMN notation with comprehensive tooling, made in [MontiCore][monticore-website]-land.
+The Business Process Model and Notation (BPMN) is a standardized language for modeling business processes and workflows. This project implements a textual notation of the BPMN language with [MontiCore][monticore-website] and provides comprehensive tooling for working with the language.
 
 [Overview of the supported BPMN elements](../../../06.Dokumentation/BPMN20-Support.md)
+
+## Example
+
 
 ### Built With
 
@@ -30,6 +30,12 @@ To build this project run
 ```bash
 mvn clean install
 ```
+
+
+
+### The nonterminal Process defines a process. A process has 
+  * a name, can specify inputs and outputs through an IOSpecification, and 
+  * contains arbitrarily many FlowElements and Lanes in any order.
 
 ### Documentation
 
