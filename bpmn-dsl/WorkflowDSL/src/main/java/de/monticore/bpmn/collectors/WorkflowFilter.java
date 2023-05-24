@@ -1,14 +1,12 @@
 package de.monticore.bpmn.collectors;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import de.monticore.bpmn.workflow.WorkflowMill;
 import de.monticore.bpmn.workflow._ast.*;
-import de.monticore.bpmn.workflow._visitor.WorkflowHandler;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
 import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
-
 import java.util.Optional;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Filter a single AST node by its type.
@@ -17,40 +15,39 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class WorkflowFilter<E extends ASTWorkflowNode> implements WorkflowVisitor2 {
 
-    private ASTWorkflowNode unfiltered;
+  private ASTWorkflowNode unfiltered;
 
-    private E filtered;
+  private E filtered;
 
-    public WorkflowFilter(final ASTWorkflowNode node) {
-        unfiltered = node;
+  public WorkflowFilter(final ASTWorkflowNode node) {
+    unfiltered = node;
+  }
+
+  public void filter(WorkflowFilter<E> filter) {
+    WorkflowTraverser traverser = WorkflowMill.inheritanceTraverser();
+    traverser.add4Workflow(filter);
+    unfiltered.accept(traverser);
+  }
+
+  /**
+   * Returns the filtered node.
+   *
+   * @return Optional containing the filtered node if selected or else an empty Optional
+   */
+  public Optional<E> getFiltered() {
+    return Optional.ofNullable(filtered);
+  }
+
+  /**
+   * Selects the node. Root nodes cannot be selected.
+   *
+   * @param node the node
+   */
+  protected void select(final E node) {
+    checkNotNull(node);
+    // avoid selecting a traversed node
+    if (node.equals(unfiltered)) {
+      filtered = node;
     }
-
-    public void filter(WorkflowFilter<E> filter){
-        WorkflowTraverser traverser = WorkflowMill.inheritanceTraverser();
-        traverser.add4Workflow(filter);
-        unfiltered.accept(traverser);
-    }
-
-    /**
-     * Returns the filtered node.
-     *
-     * @return Optional containing the filtered node if selected or else an empty Optional
-     */
-    public Optional<E> getFiltered() {
-        return Optional.ofNullable(filtered);
-    }
-
-    /**
-     * Selects the node. Root nodes cannot be selected.
-     *
-     * @param node the node
-     */
-    protected void select(final E node) {
-        checkNotNull(node);
-        // avoid selecting a traversed node
-        if (node.equals(unfiltered)) {
-            filtered = node;
-        }
-    }
-
+  }
 }

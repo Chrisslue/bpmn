@@ -6,33 +6,32 @@ import de.monticore.bpmn.cocos.AbstractCoCoTest;
 import de.monticore.bpmn.cocos.WorkflowCoCos;
 import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
 import de.se_rwth.commons.logging.Finding;
-import org.junit.jupiter.api.Test;
-
 import java.util.Collection;
+import org.junit.jupiter.api.Test;
 
 class EventGatewayOutgoingFlowHasNoConditionTest extends AbstractCoCoTest {
 
-    @Override
-    protected WorkflowCoCoChecker getChecker() {
-        return WorkflowCoCos.getGatewayChecker();
-    }
+  @Override
+  protected WorkflowCoCoChecker getChecker() {
+    return WorkflowCoCos.getGatewayChecker();
+  }
 
-    @Test
-    void sequenceFlowHasCondition() {
-        String modelName = "de.monticore.bpmn.cocos.gateways.invalid.EventGatewayOutgoingFlowsHaveNoCondition";
+  @Test
+  void sequenceFlowHasCondition() {
+    String modelName =
+        "de.monticore.bpmn.cocos.gateways.invalid.EventGatewayOutgoingFlowsHaveNoCondition";
 
-        Collection<Finding> expectedErrors = Lists.newArrayList(
-                Finding.error(Messages.get("0xWFM5006", "G1"))
-        );
+    Collection<Finding> expectedErrors =
+        Lists.newArrayList(Finding.error(Messages.get("0xWFM5006", "G1")));
 
-        testModelForErrors(modelName, expectedErrors);
-    }
+    testModelForErrors(modelName, expectedErrors);
+  }
 
-    @Test
-    void sequenceFlowHasNoCondition() {
-        String modelName = "de.monticore.bpmn.cocos.gateways.valid.EventGatewayOutgoingFlowsHaveNoCondition";
+  @Test
+  void sequenceFlowHasNoCondition() {
+    String modelName =
+        "de.monticore.bpmn.cocos.gateways.valid.EventGatewayOutgoingFlowsHaveNoCondition";
 
-        testModelNoErrors(modelName);
-    }
-
+    testModelNoErrors(modelName);
+  }
 }

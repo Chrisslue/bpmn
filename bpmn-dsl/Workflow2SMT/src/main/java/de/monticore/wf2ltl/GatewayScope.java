@@ -2,7 +2,6 @@ package de.monticore.wf2ltl;
 
 import de.monticore.bpmn.workflow._ast.*;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
-
 import java.util.function.Function;
 
 /**
@@ -30,7 +29,7 @@ public class GatewayScope extends GraphBuildingTraverser {
     }
   }
 
-  static public Function<ASTGatewayType, Boolean> gatewayTypeSelectorBuilder(ASTGatewayType type) {
+  public static Function<ASTGatewayType, Boolean> gatewayTypeSelectorBuilder(ASTGatewayType type) {
     // TODO ASTGatewayType should be Enum?
     if (type.isParallel()) {
       return ASTGatewayTypeTOP::isParallel;
@@ -83,8 +82,7 @@ public class GatewayScope extends GraphBuildingTraverser {
       // Closing the gateway scope -> No further traversing..
       this.closingGateway = gateway;
       return;
-    }
-    else { // Continue traversing graph.
+    } else { // Continue traversing graph.
       addOutgoingsAsEdges(gateway);
       for (SequenceFlow outgoingFlow : gateway.getOutgoingsList()) {
         outgoingFlow.accept(getTraverser());
@@ -101,5 +99,4 @@ public class GatewayScope extends GraphBuildingTraverser {
   public void handle(ASTInlineGateway node) {
     handleGateway(node);
   }
-
 }

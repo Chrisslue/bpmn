@@ -26,8 +26,7 @@ public class IsForCompensationVisitor implements WorkflowHandler {
     isForCompensation = activity.isForCompensation();
   }
 
-  public boolean isForCompensation(){
+  public boolean isForCompensation() {
     return this.isForCompensation;
   }
-
 }

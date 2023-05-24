@@ -16,5 +16,4 @@ public class ErrorSymbolDeSer extends ErrorSymbolDeSerTOP {
   public SymTypeExpression deserializeType(JsonObject symbolJson) {
     return SymTypeExpressionDeSer.deserializeMember("type", symbolJson);
   }
-
 }

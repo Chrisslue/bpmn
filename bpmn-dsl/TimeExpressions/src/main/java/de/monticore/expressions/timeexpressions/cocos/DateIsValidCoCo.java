@@ -8,18 +8,20 @@ import de.se_rwth.commons.logging.Log;
 
 public class DateIsValidCoCo implements TimeExpressionsASTDateCoCo {
 
-    @Override
-    public void check(final ASTDate date) {
-        try {
-            date.getLocalDate();
-        } catch (final IllegalArgumentException e) {
-            Log.error(Messages.TEMP.err("0xTEMP04", Joiner.on(".")
-                            .join(date.getYear().getSource(), date.getMonth().getSource(), date.getDay().getSource())),
-                    date.get_SourcePositionStart()
-            );
-        }
-
-
+  @Override
+  public void check(final ASTDate date) {
+    try {
+      date.getLocalDate();
+    } catch (final IllegalArgumentException e) {
+      Log.error(
+          Messages.TEMP.err(
+              "0xTEMP04",
+              Joiner.on(".")
+                  .join(
+                      date.getYear().getSource(),
+                      date.getMonth().getSource(),
+                      date.getDay().getSource())),
+          date.get_SourcePositionStart());
     }
-
+  }
 }

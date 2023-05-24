@@ -60,5 +60,4 @@ public class WF2LTLGenerator {
 
     return ast;
   }
-
 }

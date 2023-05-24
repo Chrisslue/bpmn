@@ -2,7 +2,6 @@ package de.monticore.wf2ltl;
 
 import de.monticore.bpmn.workflow._ast.ASTEvent;
 import de.monticore.bpmn.workflow._ast.ASTSubProcess;
-
 import java.util.List;
 
 public class SubProcessScope {
@@ -35,5 +34,4 @@ public class SubProcessScope {
   public List<ASTEvent> getEndEvents() {
     return endEvents;
   }
-
 }

@@ -1,4 +1,3 @@
 package de.monticore.bpmn.cocos.events.triggers;
 
-public class BoundaryEventHasNoCompenateTrigger {
-}
+public class BoundaryEventHasNoCompenateTrigger {}

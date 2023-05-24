@@ -16,5 +16,4 @@ public class EscalationSymbolDeSer extends EscalationSymbolDeSerTOP {
   public SymTypeExpression deserializeType(JsonObject symbolJson) {
     return SymTypeExpressionDeSer.deserializeMember("type", symbolJson);
   }
-
 }

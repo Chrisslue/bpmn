@@ -6,34 +6,34 @@ import de.monticore.bpmn.cocos.AbstractCoCoTest;
 import de.monticore.bpmn.cocos.WorkflowCoCos;
 import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
 import de.se_rwth.commons.logging.Finding;
-import org.junit.jupiter.api.Test;
-
 import java.util.Collection;
+import org.junit.jupiter.api.Test;
 
 class AtLeastOneEndEventIfStartEventIsUsedTest extends AbstractCoCoTest {
 
-    @Override
-    protected WorkflowCoCoChecker getChecker() {
-        return WorkflowCoCos.getEventChecker();
-    }
+  @Override
+  protected WorkflowCoCoChecker getChecker() {
+    return WorkflowCoCos.getEventChecker();
+  }
 
-    @Test
-    void noEndEventUsed() {
-        String modelName = "de.monticore.bpmn.cocos.events.invalid.AtLeastOneEndEventIfStartEventIsUsed";
+  @Test
+  void noEndEventUsed() {
+    String modelName =
+        "de.monticore.bpmn.cocos.events.invalid.AtLeastOneEndEventIfStartEventIsUsed";
 
-        Collection<Finding> expectedErrors = Lists.newArrayList(
-                Finding.error(Messages.get("0xWFM2007", "AtLeastOneEndEventIfStartEventIsUsed", "\"E1\"")),
-                Finding.error(Messages.get("0xWFM2007", "S1", "\"E2\""))
-        );
+    Collection<Finding> expectedErrors =
+        Lists.newArrayList(
+            Finding.error(
+                Messages.get("0xWFM2007", "AtLeastOneEndEventIfStartEventIsUsed", "\"E1\"")),
+            Finding.error(Messages.get("0xWFM2007", "S1", "\"E2\"")));
 
-        testModelForErrors(modelName, expectedErrors);
-    }
+    testModelForErrors(modelName, expectedErrors);
+  }
 
-    @Test
-    void endEventUsed() {
-        String modelName = "de.monticore.bpmn.cocos.events.valid.AtLeastOneEndEventIfStartEventIsUsed";
+  @Test
+  void endEventUsed() {
+    String modelName = "de.monticore.bpmn.cocos.events.valid.AtLeastOneEndEventIfStartEventIsUsed";
 
-        testModelNoErrors(modelName);
-    }
-
+    testModelNoErrors(modelName);
+  }
 }

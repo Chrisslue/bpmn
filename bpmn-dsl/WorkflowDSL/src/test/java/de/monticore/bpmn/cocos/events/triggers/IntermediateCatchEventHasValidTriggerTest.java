@@ -6,39 +6,39 @@ import de.monticore.bpmn.cocos.AbstractCoCoTest;
 import de.monticore.bpmn.cocos.WorkflowCoCos;
 import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
 import de.se_rwth.commons.logging.Finding;
-import org.junit.jupiter.api.Test;
-
 import java.util.Collection;
+import org.junit.jupiter.api.Test;
 
 class IntermediateCatchEventHasValidTriggerTest extends AbstractCoCoTest {
 
-    @Override
-    protected WorkflowCoCoChecker getChecker() {
-        return WorkflowCoCos.getEventTriggerChecker();
-    }
+  @Override
+  protected WorkflowCoCoChecker getChecker() {
+    return WorkflowCoCos.getEventTriggerChecker();
+  }
 
-    @Test
-    void invalidTriggers() {
-        String modelName = "de.monticore.bpmn.cocos.events.triggers.invalid.IntermediateCatchEventHasValidTrigger";
+  @Test
+  void invalidTriggers() {
+    String modelName =
+        "de.monticore.bpmn.cocos.events.triggers.invalid.IntermediateCatchEventHasValidTrigger";
 
-        Collection<Finding> expectedErrors = Lists.newArrayList(
-                Finding.error(Messages.get("0xWFM2013", "E1")),
-                Finding.error(Messages.get("0xWFM2013", "E2")),
-                Finding.error(Messages.get("0xWFM2013", "E3")),
-                Finding.error(Messages.get("0xWFM2013", "E4")),
-                Finding.error(Messages.get("0xWFM2023", "E4")),
-                Finding.error(Messages.get("0xWFM2013", "E5")),
-                Finding.error(Messages.get("0xWFM2013", "E6"))
-        );
+    Collection<Finding> expectedErrors =
+        Lists.newArrayList(
+            Finding.error(Messages.get("0xWFM2013", "E1")),
+            Finding.error(Messages.get("0xWFM2013", "E2")),
+            Finding.error(Messages.get("0xWFM2013", "E3")),
+            Finding.error(Messages.get("0xWFM2013", "E4")),
+            Finding.error(Messages.get("0xWFM2023", "E4")),
+            Finding.error(Messages.get("0xWFM2013", "E5")),
+            Finding.error(Messages.get("0xWFM2013", "E6")));
 
-        testModelForErrors(modelName, expectedErrors);
-    }
+    testModelForErrors(modelName, expectedErrors);
+  }
 
-    @Test
-    void validTriggers() {
-        String modelName = "de.monticore.bpmn.cocos.events.triggers.valid.IntermediateCatchEventHasValidTrigger";
+  @Test
+  void validTriggers() {
+    String modelName =
+        "de.monticore.bpmn.cocos.events.triggers.valid.IntermediateCatchEventHasValidTrigger";
 
-        testModelNoErrors(modelName);
-    }
-
+    testModelNoErrors(modelName);
+  }
 }

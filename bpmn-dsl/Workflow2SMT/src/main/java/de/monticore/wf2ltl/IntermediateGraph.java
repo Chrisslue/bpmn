@@ -2,7 +2,6 @@ package de.monticore.wf2ltl;
 
 import de.monticore.bpmn.workflow._ast.ASTFlowCondition;
 import de.monticore.bpmn.workflow._ast.ASTFlowNode;
-
 import java.util.*;
 
 public class IntermediateGraph {
@@ -73,7 +72,5 @@ public class IntermediateGraph {
     public String toString() {
       return "EdgeTo{" + "target=" + target.getName() + ", conditions=" + conditions + '}';
     }
-
   }
-
 }

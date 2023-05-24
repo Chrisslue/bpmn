@@ -2,10 +2,8 @@ package de.monticore.bpmn.cli.commands;
 
 import de.monticore.io.paths.MCPath;
 import de.se_rwth.commons.Names;
-import picocli.CommandLine;
-
-import java.io.File;
 import java.nio.file.NoSuchFileException;
+import picocli.CommandLine;
 
 /**
  * CLI options shared by multiple commands.
@@ -15,21 +13,25 @@ import java.nio.file.NoSuchFileException;
  */
 class CommonCliOptions {
 
-    String qualifiedModel;
+  String qualifiedModel;
 
-    @CommandLine.Option(names = {"-mp", "--model-path"}, paramLabel = "<DIR>", required = true)
-    MCPath modelPath;
+  @CommandLine.Option(
+      names = {"-mp", "--model-path"},
+      paramLabel = "<DIR>",
+      required = true)
+  MCPath modelPath;
 
-    @CommandLine.Parameters(paramLabel = "<FILE>", description = "Qualified name of workflow model to process.")
-    private void setQualifiedModel(final String qualifiedModelName) throws NoSuchFileException {
-        if(modelPath.find(Names.getPathFromPackage(qualifiedModelName)).isPresent()){
-            qualifiedModel = qualifiedModelName;
-        } else {
-            throw new NoSuchFileException(qualifiedModelName);
-        }
+  @CommandLine.Parameters(
+      paramLabel = "<FILE>",
+      description = "Qualified name of workflow model to process.")
+  private void setQualifiedModel(final String qualifiedModelName) throws NoSuchFileException {
+    if (modelPath.find(Names.getPathFromPackage(qualifiedModelName)).isPresent()) {
+      qualifiedModel = qualifiedModelName;
+    } else {
+      throw new NoSuchFileException(qualifiedModelName);
     }
+  }
 
-    @CommandLine.Option(names = {"-v", "--verbose"})
-    boolean verbose;
-
+  @CommandLine.Option(names = {"-v", "--verbose"})
+  boolean verbose;
 }

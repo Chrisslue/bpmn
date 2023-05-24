@@ -11,20 +11,21 @@ import org.jgrapht.graph.guava.ImmutableGraphAdapter;
 
 public abstract class ProcessGraphCoCo implements WorkflowASTFlowElementContainerCoCo {
 
-    protected Graph<ASTFlowNode, EndpointPair<ASTFlowNode>> processGraph;
+  protected Graph<ASTFlowNode, EndpointPair<ASTFlowNode>> processGraph;
 
-    protected ASTFlowElementContainer process;
+  protected ASTFlowElementContainer process;
 
-    @Override
-    public void check(final ASTFlowElementContainer process) {
-        ImmutableGraph<ASTFlowNode> graph = new WorkflowGraphConverter(process).convert().getGraph();
+  @Override
+  public void check(final ASTFlowElementContainer process) {
+    ImmutableGraph<ASTFlowNode> graph = new WorkflowGraphConverter(process).convert().getGraph();
 
-        this.processGraph = new ImmutableGraphAdapter<>(graph);
-        this.process = process;
+    this.processGraph = new ImmutableGraphAdapter<>(graph);
+    this.process = process;
 
-        check(new ImmutableGraphAdapter<>(graph), process);
-    }
+    check(new ImmutableGraphAdapter<>(graph), process);
+  }
 
-    abstract protected void check(final Graph<ASTFlowNode, EndpointPair<ASTFlowNode>> processGraph, final ASTFlowElementContainer process);
-
+  protected abstract void check(
+      final Graph<ASTFlowNode, EndpointPair<ASTFlowNode>> processGraph,
+      final ASTFlowElementContainer process);
 }

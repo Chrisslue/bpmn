@@ -47,7 +47,8 @@ public class WorkflowSTCompleter implements WorkflowVisitor2 {
   }
 
   protected SymTypeExpression createTypeSymbolRef(ASTMCType astType) {
-    TypeCalculator calculator = new TypeCalculator(new OCLSynthesizer(), new OCLDeriver(), new TypeRelations());
+    TypeCalculator calculator =
+        new TypeCalculator(new OCLSynthesizer(), new OCLDeriver(), new TypeRelations());
     return calculator.symTypeFromAST(astType);
   }
 }

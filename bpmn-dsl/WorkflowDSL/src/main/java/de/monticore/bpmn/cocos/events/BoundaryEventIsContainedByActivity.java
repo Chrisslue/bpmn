@@ -9,13 +9,15 @@ import de.se_rwth.commons.logging.Log;
 
 public class BoundaryEventIsContainedByActivity implements WorkflowASTProcessCoCo {
 
-    @Override
-    public void check(final ASTProcess process) {
-        WorkflowCollectors.toEventsLocal(process).stream()
-                .filter(ASTEvent::isBoundary)
-                .forEach(event -> Log.error(Messages.get("0xWFM1006", event.getName()),
-                        event.get_SourcePositionStart(), event.get_SourcePositionEnd())
-                );
-    }
-
+  @Override
+  public void check(final ASTProcess process) {
+    WorkflowCollectors.toEventsLocal(process).stream()
+        .filter(ASTEvent::isBoundary)
+        .forEach(
+            event ->
+                Log.error(
+                    Messages.get("0xWFM1006", event.getName()),
+                    event.get_SourcePositionStart(),
+                    event.get_SourcePositionEnd()));
+  }
 }

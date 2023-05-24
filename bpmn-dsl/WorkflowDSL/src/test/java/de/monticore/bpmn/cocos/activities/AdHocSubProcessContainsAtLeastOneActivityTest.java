@@ -6,33 +6,32 @@ import de.monticore.bpmn.cocos.AbstractCoCoTest;
 import de.monticore.bpmn.cocos.WorkflowCoCos;
 import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
 import de.se_rwth.commons.logging.Finding;
-import org.junit.jupiter.api.Test;
-
 import java.util.Collection;
+import org.junit.jupiter.api.Test;
 
 class AdHocSubProcessContainsAtLeastOneActivityTest extends AbstractCoCoTest {
 
-    @Override
-    protected WorkflowCoCoChecker getChecker() {
-        return WorkflowCoCos.getActivityChecker();
-    }
+  @Override
+  protected WorkflowCoCoChecker getChecker() {
+    return WorkflowCoCos.getActivityChecker();
+  }
 
-    @Test
-    void hasNoActivities() {
-        String modelName = "de.monticore.bpmn.cocos.activities.invalid.AdHocSubProcessContainsAtLeastOneActivity";
+  @Test
+  void hasNoActivities() {
+    String modelName =
+        "de.monticore.bpmn.cocos.activities.invalid.AdHocSubProcessContainsAtLeastOneActivity";
 
-        Collection<Finding> expectedErrors = Lists.newArrayList(
-                Finding.error(Messages.get("0xWFM4002", "S1"))
-        );
+    Collection<Finding> expectedErrors =
+        Lists.newArrayList(Finding.error(Messages.get("0xWFM4002", "S1")));
 
-        testModelForErrors(modelName, expectedErrors);
-    }
+    testModelForErrors(modelName, expectedErrors);
+  }
 
-    @Test
-    void hasActivities() {
-        String modelName = "de.monticore.bpmn.cocos.activities.valid.AdHocSubProcessContainsAtLeastOneActivity";
+  @Test
+  void hasActivities() {
+    String modelName =
+        "de.monticore.bpmn.cocos.activities.valid.AdHocSubProcessContainsAtLeastOneActivity";
 
-        testModelNoErrors(modelName);
-    }
-
+    testModelNoErrors(modelName);
+  }
 }

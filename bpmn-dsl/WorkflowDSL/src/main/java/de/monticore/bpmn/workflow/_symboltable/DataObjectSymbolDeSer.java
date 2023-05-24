@@ -16,5 +16,4 @@ public class DataObjectSymbolDeSer extends DataObjectSymbolDeSerTOP {
   public SymTypeExpression deserializeType(JsonObject symbolJson) {
     return SymTypeExpressionDeSer.deserializeMember("type", symbolJson);
   }
-
 }

@@ -3,7 +3,6 @@ package de.monticore.wf2ltl;
 import de.monticore.bpmn.workflow._ast.*;
 import de.monticore.bpmn.workflow._visitor.WorkflowHandler;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,11 +38,10 @@ public class EventCollector implements WorkflowHandler {
       // If the flow target is an event we want to handle it.
       if (flowTarget.isPresentNode()) {
         flowTarget.getNode().accept(traverser); // This is an inline event.
-      }
-      else if (flowTarget.isPresentNodeRef()) {
+      } else if (flowTarget.isPresentNodeRef()) {
         // We have to resolve the reference.
-        var optReferencedNode = flowTarget.getEnclosingScope()
-            .resolveNamedEvent(flowTarget.getNodeRef().getBaseName());
+        var optReferencedNode =
+            flowTarget.getEnclosingScope().resolveNamedEvent(flowTarget.getNodeRef().getBaseName());
         optReferencedNode.ifPresent(namedEvent -> namedEvent.accept(traverser));
       }
     }
@@ -54,34 +52,22 @@ public class EventCollector implements WorkflowHandler {
     this.visitFlow(sequenceFlow);
   }
 
-  /**
-   * Override all handle methods in order to prevent further traversing of the ast.
-   */
+  /** Override all handle methods in order to prevent further traversing of the ast. */
+  @Override
+  public void handle(ASTConditionExpression node) {}
 
   @Override
-  public void handle(ASTConditionExpression node) {
-  }
+  public void handle(ASTProcess node) {}
 
   @Override
-  public void handle(ASTProcess node) {
-  }
+  public void handle(ASTSubProcess node) {}
 
   @Override
-  public void handle(ASTSubProcess node) {
-  }
+  public void handle(ASTTask node) {}
 
   @Override
-  public void handle(ASTTask node) {
-  }
+  public void handle(ASTNamedGateway node) {}
 
   @Override
-  public void handle(ASTNamedGateway node) {
-  }
-
-  @Override
-  public void handle(ASTInlineGateway node) {
-  }
-
+  public void handle(ASTInlineGateway node) {}
 }
-
-

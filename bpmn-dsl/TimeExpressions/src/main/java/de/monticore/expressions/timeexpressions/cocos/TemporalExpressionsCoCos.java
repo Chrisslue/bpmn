@@ -4,11 +4,10 @@ import de.monticore.expressions.timeexpressions._cocos.TimeExpressionsCoCoChecke
 
 public class TemporalExpressionsCoCos {
 
-    public static TimeExpressionsCoCoChecker createChecker() {
-        TimeExpressionsCoCoChecker checker = new TimeExpressionsCoCoChecker();
-        checker.addCoCo(new DateIsValidCoCo());
-        checker.addCoCo(new TimeIsValidCoCo());
-        return checker;
-    }
-
+  public static TimeExpressionsCoCoChecker createChecker() {
+    TimeExpressionsCoCoChecker checker = new TimeExpressionsCoCoChecker();
+    checker.addCoCo(new DateIsValidCoCo());
+    checker.addCoCo(new TimeIsValidCoCo());
+    return checker;
+  }
 }

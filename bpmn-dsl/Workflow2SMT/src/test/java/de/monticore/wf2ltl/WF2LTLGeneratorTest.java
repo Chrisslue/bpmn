@@ -23,5 +23,4 @@ public class WF2LTLGeneratorTest {
     WF2LTLGenerator.loadBPMN("src/test/resources/de/monticore/wf2smt/Prototype.wfm");
     Assertions.assertEquals(0, Log.getErrorCount());
   }
-
 }
