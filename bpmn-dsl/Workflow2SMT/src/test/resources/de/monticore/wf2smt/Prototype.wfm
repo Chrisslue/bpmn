@@ -1,0 +1,13 @@
+package de.monticore.wf2smt;
+
+process Prototype {
+
+  task A;
+  task B;
+  split xor GatewaySplit;
+  merge xor GatewayJoin;
+  event start -> GatewaySplit;
+  GatewaySplit -> A -> GatewayJoin;
+  GatewaySplit -> B -> GatewayJoin;
+  GatewayJoin -> event end;
+}

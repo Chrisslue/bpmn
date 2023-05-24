@@ -1,0 +1,24 @@
+plugins {
+    id "java-library"
+    id "monticore" version "$version"
+    id "jacoco"
+}
+
+group = "de.monticore.lang"
+sourceCompatibility = '11'
+
+dependencies {
+    implementation project(':TimeExpressions')
+    implementation project(':WorkflowDSL')
+    implementation "de.monticore:monticore-grammar:$mc_version"
+    implementation "de.monticore.lang:ocl:$ocl_version"
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
+    implementation 'tools.aqua:z3-turnkey:4.11.2'
+    testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_jupiter_version"
+    testImplementation "org.junit.jupiter:junit-jupiter-engine:$junit_jupiter_version"
+}
+
+test {
+    useJUnitPlatform()
+    finalizedBy jacocoTestReport
+}
