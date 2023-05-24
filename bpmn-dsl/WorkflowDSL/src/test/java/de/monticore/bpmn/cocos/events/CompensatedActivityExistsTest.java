@@ -6,33 +6,30 @@ import de.monticore.bpmn.cocos.AbstractCoCoTest;
 import de.monticore.bpmn.cocos.WorkflowCoCos;
 import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
 import de.se_rwth.commons.logging.Finding;
-import org.junit.jupiter.api.Test;
-
 import java.util.Collection;
+import org.junit.jupiter.api.Test;
 
 class CompensatedActivityExistsTest extends AbstractCoCoTest {
 
-    @Override
-    protected WorkflowCoCoChecker getChecker() {
-        return WorkflowCoCos.getEventChecker();
-    }
+  @Override
+  protected WorkflowCoCoChecker getChecker() {
+    return WorkflowCoCos.getEventChecker();
+  }
 
-    @Test
-    void compensatedActivityDoesNotExist() {
-        String modelName = "de.monticore.bpmn.cocos.events.invalid.CompensatedActivityExists";
+  @Test
+  void compensatedActivityDoesNotExist() {
+    String modelName = "de.monticore.bpmn.cocos.events.invalid.CompensatedActivityExists";
 
-        Collection<Finding> expectedErrors = Lists.newArrayList(
-                Finding.error(Messages.get("0xWFM1005", "T1"))
-        );
+    Collection<Finding> expectedErrors =
+        Lists.newArrayList(Finding.error(Messages.get("0xWFM1005", "T1")));
 
-        testModelForErrors(modelName, expectedErrors);
-    }
+    testModelForErrors(modelName, expectedErrors);
+  }
 
-    @Test
-    void compensatedActivityExists() {
-        String modelName = "de.monticore.bpmn.cocos.events.valid.CompensatedActivityExists";
+  @Test
+  void compensatedActivityExists() {
+    String modelName = "de.monticore.bpmn.cocos.events.valid.CompensatedActivityExists";
 
-        testModelNoErrors(modelName);
-    }
-
+    testModelNoErrors(modelName);
+  }
 }

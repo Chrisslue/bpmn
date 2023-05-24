@@ -6,33 +6,30 @@ import de.monticore.bpmn.cocos.AbstractCoCoTest;
 import de.monticore.bpmn.cocos.WorkflowCoCos;
 import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
 import de.se_rwth.commons.logging.Finding;
-import org.junit.jupiter.api.Test;
-
 import java.util.Collection;
+import org.junit.jupiter.api.Test;
 
 class BoundaryEventIsContainedByActivityTest extends AbstractCoCoTest {
 
-    @Override
-    protected WorkflowCoCoChecker getChecker() {
-        return WorkflowCoCos.getEventChecker();
-    }
+  @Override
+  protected WorkflowCoCoChecker getChecker() {
+    return WorkflowCoCos.getEventChecker();
+  }
 
-    @Test
-    void boundaryEventIsNotContainedByActivity() {
-        String modelName = "de.monticore.bpmn.cocos.events.invalid.BoundaryEventIsContainedByActivity";
+  @Test
+  void boundaryEventIsNotContainedByActivity() {
+    String modelName = "de.monticore.bpmn.cocos.events.invalid.BoundaryEventIsContainedByActivity";
 
-        Collection<Finding> expectedErrors = Lists.newArrayList(
-                Finding.error(Messages.get("0xWFM1006", "E1"))
-        );
+    Collection<Finding> expectedErrors =
+        Lists.newArrayList(Finding.error(Messages.get("0xWFM1006", "E1")));
 
-        testModelForErrors(modelName, expectedErrors);
-    }
+    testModelForErrors(modelName, expectedErrors);
+  }
 
-    @Test
-    void boundaryEventIsContainedByActivity() {
-        String modelName = "de.monticore.bpmn.cocos.events.valid.BoundaryEventIsContainedByActivity";
+  @Test
+  void boundaryEventIsContainedByActivity() {
+    String modelName = "de.monticore.bpmn.cocos.events.valid.BoundaryEventIsContainedByActivity";
 
-        testModelNoErrors(modelName);
-    }
-
+    testModelNoErrors(modelName);
+  }
 }

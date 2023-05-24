@@ -6,34 +6,32 @@ import de.monticore.bpmn.cocos.AbstractCoCoTest;
 import de.monticore.bpmn.cocos.WorkflowCoCos;
 import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
 import de.se_rwth.commons.logging.Finding;
-import org.junit.jupiter.api.Test;
-
 import java.util.Collection;
+import org.junit.jupiter.api.Test;
 
 class CancelEndEventIsContainedWithinTransactionTest extends AbstractCoCoTest {
 
-    @Override
-    protected WorkflowCoCoChecker getChecker() {
-        return WorkflowCoCos.getEventTriggerChecker();
-    }
+  @Override
+  protected WorkflowCoCoChecker getChecker() {
+    return WorkflowCoCos.getEventTriggerChecker();
+  }
 
-    @Test
-    void invalidTriggers() {
-        String modelName = "de.monticore.bpmn.cocos.events.triggers.invalid.CancelEndEventIsContainedWithinTransaction";
+  @Test
+  void invalidTriggers() {
+    String modelName =
+        "de.monticore.bpmn.cocos.events.triggers.invalid.CancelEndEventIsContainedWithinTransaction";
 
+    Collection<Finding> expectedErrors =
+        Lists.newArrayList(Finding.error(Messages.get("0xWFM2022", "E1")));
 
-        Collection<Finding> expectedErrors = Lists.newArrayList(
-                Finding.error(Messages.get("0xWFM2022", "E1"))
-        );
+    testModelForErrors(modelName, expectedErrors);
+  }
 
-        testModelForErrors(modelName, expectedErrors);
-    }
+  @Test
+  void validTriggers() {
+    String modelName =
+        "de.monticore.bpmn.cocos.events.triggers.valid.CancelEndEventIsContainedWithinTransaction";
 
-    @Test
-    void validTriggers() {
-        String modelName = "de.monticore.bpmn.cocos.events.triggers.valid.CancelEndEventIsContainedWithinTransaction";
-
-        testModelNoErrors(modelName);
-    }
-
+    testModelNoErrors(modelName);
+  }
 }

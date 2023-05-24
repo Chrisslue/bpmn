@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 public class WF2SMTGeneratorTest {
 
   @BeforeEach
-  public void init(){
+  public void init() {
     Log.init();
     Log.enableFailQuick(false);
     WorkflowMill.init();
@@ -19,10 +19,8 @@ public class WF2SMTGeneratorTest {
   }
 
   @Test
-  public void testLoading(){
+  public void testLoading() {
     WF2SMTGenerator.loadBPMN("src/test/resources/de/monticore/wf2smt/Prototype.wfm");
-    Assertions.assertEquals(0,Log.getErrorCount());
+    Assertions.assertEquals(0, Log.getErrorCount());
   }
-
-
 }

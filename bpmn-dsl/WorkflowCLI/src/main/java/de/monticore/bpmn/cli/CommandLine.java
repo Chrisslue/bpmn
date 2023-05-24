@@ -10,9 +10,8 @@ import de.monticore.io.paths.MCPath;
  */
 public class CommandLine extends picocli.CommandLine {
 
-    public CommandLine(final Object command) {
-        super(command);
-        registerConverter(MCPath.class, new MCPathTypeConverter());
-    }
-
+  public CommandLine(final Object command) {
+    super(command);
+    registerConverter(MCPath.class, new MCPathTypeConverter());
+  }
 }

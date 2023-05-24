@@ -6,35 +6,31 @@ import de.monticore.bpmn.cocos.AbstractCoCoTest;
 import de.monticore.bpmn.cocos.WorkflowCoCos;
 import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
 import de.se_rwth.commons.logging.Finding;
-import org.junit.jupiter.api.Test;
-
 import java.util.Collection;
+import org.junit.jupiter.api.Test;
 
 class ProcessHasNoInfiniteLoopTest extends AbstractCoCoTest {
 
-    @Override
-    protected WorkflowCoCoChecker getChecker() {
-        return WorkflowCoCos.getStructuralChecker();
-    }
+  @Override
+  protected WorkflowCoCoChecker getChecker() {
+    return WorkflowCoCos.getStructuralChecker();
+  }
 
-    @Test
-    void infiniteLoop() {
-        String modelName = "de.monticore.bpmn.cocos.analysis.invalid.InfiniteLoop";
-        Collection<Finding> expectedWarnings = Lists.newArrayList(
-                Finding.warning(Messages.get("0xWFM7007", "SplitGateway"))
-        );
+  @Test
+  void infiniteLoop() {
+    String modelName = "de.monticore.bpmn.cocos.analysis.invalid.InfiniteLoop";
+    Collection<Finding> expectedWarnings =
+        Lists.newArrayList(Finding.warning(Messages.get("0xWFM7007", "SplitGateway")));
 
-        testModelForErrors(modelName, Lists.newArrayList(), expectedWarnings);
-    }
+    testModelForErrors(modelName, Lists.newArrayList(), expectedWarnings);
+  }
 
-    @Test
-    void loopEntryDeadlock() {
-        String modelName = "de.monticore.bpmn.cocos.analysis.invalid.LoopEntryDeadlock";
-        Collection<Finding> expectedWarnings = Lists.newArrayList(
-                Finding.warning(Messages.get("0xWFM7008", "MergeGateway"))
-        );
+  @Test
+  void loopEntryDeadlock() {
+    String modelName = "de.monticore.bpmn.cocos.analysis.invalid.LoopEntryDeadlock";
+    Collection<Finding> expectedWarnings =
+        Lists.newArrayList(Finding.warning(Messages.get("0xWFM7008", "MergeGateway")));
 
-        testModelForErrors(modelName, Lists.newArrayList(), expectedWarnings);
-    }
-
+    testModelForErrors(modelName, Lists.newArrayList(), expectedWarnings);
+  }
 }

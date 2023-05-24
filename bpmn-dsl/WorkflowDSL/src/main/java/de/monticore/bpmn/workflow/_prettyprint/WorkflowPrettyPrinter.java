@@ -31,7 +31,6 @@ public class WorkflowPrettyPrinter extends WorkflowPrettyPrinterTOP {
     getTraverser().traverse(node);
     getPrinter().unindent();
     getPrinter().println("}");
-
   }
 
   @Override

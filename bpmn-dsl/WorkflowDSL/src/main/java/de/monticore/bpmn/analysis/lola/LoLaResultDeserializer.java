@@ -1,7 +1,6 @@
 package de.monticore.bpmn.analysis.lola;
 
 import com.google.gson.*;
-
 import java.lang.reflect.Type;
 
 /**
@@ -11,16 +10,18 @@ import java.lang.reflect.Type;
  */
 public class LoLaResultDeserializer implements JsonDeserializer<LoLaResult> {
 
-    @Override
-    public LoLaResult deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-        final JsonObject jsonObject = jsonElement.getAsJsonObject();
+  @Override
+  public LoLaResult deserialize(
+      JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext)
+      throws JsonParseException {
+    final JsonObject jsonObject = jsonElement.getAsJsonObject();
 
-        final Gson gson = new Gson();//new GsonBuilder().setPrettyPrinting().create();
+    final Gson gson = new Gson(); // new GsonBuilder().setPrettyPrinting().create();
 
-        final LoLaResult result = gson.fromJson(jsonObject, LoLaResult.class);
-        // add raw result (formatted json)
-        result.rawResult = jsonObject;
+    final LoLaResult result = gson.fromJson(jsonObject, LoLaResult.class);
+    // add raw result (formatted json)
+    result.rawResult = jsonObject;
 
-        return result;
-    }
+    return result;
+  }
 }

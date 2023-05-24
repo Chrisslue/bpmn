@@ -4,23 +4,21 @@ import de.monticore.bpmn.AbstractTest;
 import de.monticore.bpmn.utils.FileUtils;
 import de.monticore.bpmn.workflow._ast.ASTWorkflowCompilationUnit;
 import jakarta.xml.bind.JAXBException;
-import org.junit.jupiter.api.Test;
-
 import java.io.File;
 import java.io.IOException;
+import org.junit.jupiter.api.Test;
 
 class XmlSerializationTest extends AbstractTest {
 
-    @Test
-    void serialize() throws IOException, JAXBException {
-        ASTWorkflowCompilationUnit unit = loadModel("de.monticore.bpmn.xml.Example");
+  @Test
+  void serialize() throws IOException, JAXBException {
+    ASTWorkflowCompilationUnit unit = loadModel("de.monticore.bpmn.xml.Example");
 
-        File xmlFile = FileUtils.createTempFile("test", "bpmn");
+    File xmlFile = FileUtils.createTempFile("test", "bpmn");
 
-        //TODO activate when corrected
-//        new WorkflowXmlSerializer(unit, new WorkflowXmlSerializerVisitor(unit.getProcess()))
-//                .makeXml()
-//                .writeToFile(xmlFile);
-    }
-
+    // TODO activate when corrected
+    //        new WorkflowXmlSerializer(unit, new WorkflowXmlSerializerVisitor(unit.getProcess()))
+    //                .makeXml()
+    //                .writeToFile(xmlFile);
+  }
 }

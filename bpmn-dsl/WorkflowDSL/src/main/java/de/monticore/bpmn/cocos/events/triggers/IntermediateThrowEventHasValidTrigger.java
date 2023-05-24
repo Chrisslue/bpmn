@@ -8,65 +8,65 @@ import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
 import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
 
 /**
- * Source: https://www.omg.org/spec/BPMN/2.0/PDF
- * Page: 249
- * Description: There are twelve types of Intermediate Events in BPMN: None, Message, Timer, Escalation, Error, Cancel, Compensation, Conditional, Link, Signal, Multiple, and Parallel Multiple.
+ * Source: https://www.omg.org/spec/BPMN/2.0/PDF Page: 249 Description: There are twelve types of
+ * Intermediate Events in BPMN: None, Message, Timer, Escalation, Error, Cancel, Compensation,
+ * Conditional, Link, Signal, Multiple, and Parallel Multiple.
  */
-public class IntermediateThrowEventHasValidTrigger extends AbstractHasValidTriggerCoCo implements WorkflowASTFlowElementContainerCoCo {
+public class IntermediateThrowEventHasValidTrigger extends AbstractHasValidTriggerCoCo
+    implements WorkflowASTFlowElementContainerCoCo {
 
-    private static final String ERROR_CODE = "0xWFM2014";
+  private static final String ERROR_CODE = "0xWFM2014";
 
-    public IntermediateThrowEventHasValidTrigger() {
-        super(ERROR_CODE);
-    }
+  public IntermediateThrowEventHasValidTrigger() {
+    super(ERROR_CODE);
+  }
 
-    @Override
-    public void check(final ASTFlowElementContainer container) {
-        WorkflowCollectors.toEventsLocal(container)
-                .stream()
-                .filter(ASTEvent::isIntermediate)
-                .filter(ASTEvent::isThrow)
-                .forEach(this::check);
-    }
+  @Override
+  public void check(final ASTFlowElementContainer container) {
+    WorkflowCollectors.toEventsLocal(container).stream()
+        .filter(ASTEvent::isIntermediate)
+        .filter(ASTEvent::isThrow)
+        .forEach(this::check);
+  }
 
-    private void check(final ASTEvent event) {
-        WorkflowVisitor2 visitor = new WorkflowVisitor2() {
-            @Override
-            public void visit(final ASTEventTriggerTimer trigger) {
-                logError(event);
+  private void check(final ASTEvent event) {
+    WorkflowVisitor2 visitor =
+        new WorkflowVisitor2() {
+          @Override
+          public void visit(final ASTEventTriggerTimer trigger) {
+            logError(event);
+          }
+
+          @Override
+          public void visit(final ASTEventTriggerConditional trigger) {
+            logError(event);
+          }
+
+          @Override
+          public void visit(final ASTEventTriggerError trigger) {
+            logError(event);
+          }
+
+          @Override
+          public void visit(final ASTEventTriggerCancel trigger) {
+            logError(event);
+          }
+
+          @Override
+          public void visit(final ASTEventTriggerMultiple trigger) {
+            if (!trigger.isParallelMultiple()) {
+              logError(event);
             }
+          }
 
-            @Override
-            public void visit(final ASTEventTriggerConditional trigger) {
-                logError(event);
-            }
-
-            @Override
-            public void visit(final ASTEventTriggerError trigger) {
-                logError(event);
-            }
-
-            @Override
-            public void visit(final ASTEventTriggerCancel trigger) {
-                logError(event);
-            }
-
-            @Override
-            public void visit(final ASTEventTriggerMultiple trigger) {
-                if (!trigger.isParallelMultiple()) {
-                    logError(event);
-                }
-            }
-
-            @Override
-            public void visit(final ASTEventTriggerTerminate trigger) {
-                logError(event);
-            }
+          @Override
+          public void visit(final ASTEventTriggerTerminate trigger) {
+            logError(event);
+          }
         };
 
-        WorkflowTraverser traverser = WorkflowMill.traverser();
-        traverser.add4Workflow(visitor);
-        event.accept(traverser);
-    }
-
+    WorkflowTraverser traverser = WorkflowMill.traverser();
+    traverser.add4Workflow(visitor);
+    event.accept(traverser);
+  }
 }

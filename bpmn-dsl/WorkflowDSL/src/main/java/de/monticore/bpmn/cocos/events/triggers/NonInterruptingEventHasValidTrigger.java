@@ -6,38 +6,41 @@ import de.monticore.bpmn.workflow._cocos.WorkflowASTEventCoCo;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
 import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
 
-public class NonInterruptingEventHasValidTrigger extends AbstractHasValidTriggerCoCo implements WorkflowASTEventCoCo {
+public class NonInterruptingEventHasValidTrigger extends AbstractHasValidTriggerCoCo
+    implements WorkflowASTEventCoCo {
 
-    private static final String ERROR_CODE = "0xWFM2019";
+  private static final String ERROR_CODE = "0xWFM2019";
 
-    public NonInterruptingEventHasValidTrigger() {
-        super(ERROR_CODE);
+  public NonInterruptingEventHasValidTrigger() {
+    super(ERROR_CODE);
+  }
+
+  @Override
+  public void check(final ASTEvent event) {
+    if (!event.isNonInterrupt()) {
+      return;
     }
 
-    @Override
-    public void check(final ASTEvent event) {
-        if (!event.isNonInterrupt()) {
-            return;
-        }
+    WorkflowVisitor2 visitor =
+        new WorkflowVisitor2() {
+          @Override
+          public void visit(final ASTEventTriggerError trigger) {
+            logError(event);
+          }
 
-        WorkflowVisitor2 visitor = new WorkflowVisitor2() {
-            @Override
-            public void visit(final ASTEventTriggerError trigger) {
-                logError(event);
-            }
-            @Override
-            public void visit(final ASTEventTriggerCancel trigger) {
-                logError(event);
-            }
-            @Override
-            public void visit(final ASTEventTriggerCompensate trigger) {
-                logError(event);
-            }
+          @Override
+          public void visit(final ASTEventTriggerCancel trigger) {
+            logError(event);
+          }
+
+          @Override
+          public void visit(final ASTEventTriggerCompensate trigger) {
+            logError(event);
+          }
         };
 
-        WorkflowTraverser traverser = WorkflowMill.traverser();
-        traverser.add4Workflow(visitor);
-        event.accept(traverser);
-    }
-
+    WorkflowTraverser traverser = WorkflowMill.traverser();
+    traverser.add4Workflow(visitor);
+    event.accept(traverser);
+  }
 }

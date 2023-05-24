@@ -5,6 +5,10 @@
  */
 package de.monticore.bpmn;
 
+import static de.se_rwth.commons.Names.getPathFromQualifiedName;
+import static de.se_rwth.commons.Names.getSimpleName;
+import static java.nio.file.Paths.get;
+
 import com.google.common.collect.Lists;
 import de.monticore.bpmn.cocos.flow.SequenceFlowNodeReferencesExist;
 import de.monticore.bpmn.trafos.*;
@@ -13,7 +17,6 @@ import de.monticore.bpmn.workflow.WorkflowMill;
 import de.monticore.bpmn.workflow.WorkflowTool;
 import de.monticore.bpmn.workflow._ast.ASTWorkflowCompilationUnit;
 import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
-import de.monticore.bpmn.workflow._symboltable.IWorkflowArtifactScope;
 import de.monticore.bpmn.workflow._symboltable.IWorkflowGlobalScope;
 import de.monticore.bpmn.workflow._symboltable.WorkflowSTCompleter;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
@@ -22,91 +25,90 @@ import de.monticore.symbols.basicsymbols.BasicSymbolsMill;
 import de.monticore.symboltable.ImportStatement;
 import de.se_rwth.commons.Names;
 import de.se_rwth.commons.logging.Log;
+import java.io.IOException;
+import java.nio.file.Path;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 
-import java.io.IOException;
-import java.nio.file.Path;
+/** Abstract test with default methods for loading models. */
+public abstract class AbstractTest {
 
-import static de.se_rwth.commons.Names.getPathFromQualifiedName;
-import static de.se_rwth.commons.Names.getSimpleName;
-import static java.nio.file.Paths.get;
+  protected static final String MODEL_AUX_DIR = "out/";
 
-/**
- * Abstract test with default methods for loading models.
- */
-abstract public class AbstractTest {
+  protected static final String MODEL_DIR = "src/test/resources/";
 
-    protected final static String MODEL_AUX_DIR = "out/";
+  protected static final String SYMBOL_DIR = "src/test/resources";
 
-    protected final static String MODEL_DIR = "src/test/resources/";
+  // Add OCL default types, this way we don't need to import them in the models every time
+  protected static final ImportStatement OCL_TYPES =
+      new ImportStatement("de.monticore.bpmn._types.ocl.DefaultTypes", true);
 
-    protected final static String SYMBOL_DIR = "src/test/resources";
+  private IWorkflowGlobalScope globalScope;
 
-    // Add OCL default types, this way we don't need to import them in the models every time
-    protected static final ImportStatement OCL_TYPES = new ImportStatement("de.monticore.bpmn._types.ocl.DefaultTypes", true);
+  @BeforeAll
+  public static void init() {
+    // LogStub.init();
+    Log.enableFailQuick(false);
+    WorkflowMill.init();
+    WorkflowMill.globalScope().clear();
+    WorkflowMill.globalScope().setSymbolPath(new MCPath(SYMBOL_DIR));
+    BasicSymbolsMill.initializePrimitives();
+  }
 
-    private IWorkflowGlobalScope globalScope;
+  @BeforeEach
+  public void setUp() {
+    Log.getFindings().clear();
+  }
 
-    @BeforeAll
-    public static void init() {
-        // LogStub.init();
-        Log.enableFailQuick(false);
-        WorkflowMill.init();
-        WorkflowMill.globalScope().clear();
-        WorkflowMill.globalScope().setSymbolPath(new MCPath(SYMBOL_DIR));
-        BasicSymbolsMill.initializePrimitives();
+  /**
+   * Parses a model and ensures that the root node is present.
+   *
+   * @param qualifiedModelName the fully qualified name of the model.
+   * @return the root of the parsed model.
+   */
+  protected ASTWorkflowCompilationUnit loadModel(final String qualifiedModelName) {
+    WorkflowTool tool = new WorkflowTool();
+    ASTWorkflowCompilationUnit ast =
+        tool.parse(
+            MODEL_DIR
+                + Names.getPathFromPackage(qualifiedModelName).replaceAll("\\\\", "/")
+                + ".wfm");
+    new AddMoreImports(Lists.newArrayList(OCL_TYPES)).transform(ast);
+    WorkflowMill.scopesGenitorDelegator().createFromAST(ast);
+    WorkflowCoCoChecker checker = new WorkflowCoCoChecker();
+    checker.addCoCo(new SequenceFlowNodeReferencesExist());
+    checker.checkAll(ast);
+    new AddNameToInlineFlowNodes().transform(ast);
+    new AddSequenceFlowToFlowNodes().transform(ast);
+    new AddReferenceToParentLane().transform(ast);
+    new CreateIOSpecification().transform(ast);
+    new SetSubProcessTriggeredByEvent().transform(ast);
+
+    WorkflowSTCompleter stCompleter = new WorkflowSTCompleter();
+    WorkflowTraverser traverser = WorkflowMill.traverser();
+    traverser.add4Workflow(stCompleter);
+    ast.accept(traverser);
+
+    if (shouldWriteAuxModels()) {
+      writeTestAuxModels(qualifiedModelName, ast);
     }
 
-    @BeforeEach
-    public void setUp() {
-        Log.getFindings().clear();
+    return ast;
+  }
+
+  protected boolean shouldWriteAuxModels() {
+    return false;
+  }
+
+  protected void writeTestAuxModels(
+      final String qualifiedModelName, final ASTWorkflowCompilationUnit unit) {
+    Path out =
+        get(MODEL_AUX_DIR)
+            .resolve(get(getPathFromQualifiedName(qualifiedModelName)))
+            .resolve(getSimpleName(qualifiedModelName).toLowerCase());
+    try {
+      new AuxiliaryModelsWriter(unit.getProcess()).print(out);
+    } catch (IOException ignored) {
     }
-
-    /**
-     * Parses a model and ensures that the root node is present.
-     *
-     * @param qualifiedModelName the fully qualified name of the model.
-     * @return the root of the parsed model.
-     */
-    protected ASTWorkflowCompilationUnit loadModel(final String qualifiedModelName) {
-        WorkflowTool tool = new WorkflowTool();
-        ASTWorkflowCompilationUnit ast = tool.parse(MODEL_DIR + Names.getPathFromPackage(qualifiedModelName).replaceAll("\\\\", "/") + ".wfm");
-        new AddMoreImports(Lists.newArrayList(OCL_TYPES)).transform(ast);
-        WorkflowMill.scopesGenitorDelegator().createFromAST(ast);
-        WorkflowCoCoChecker checker = new WorkflowCoCoChecker();
-        checker.addCoCo(new SequenceFlowNodeReferencesExist());
-        checker.checkAll(ast);
-        new AddNameToInlineFlowNodes().transform(ast);
-        new AddSequenceFlowToFlowNodes().transform(ast);
-        new AddReferenceToParentLane().transform(ast);
-        new CreateIOSpecification().transform(ast);
-        new SetSubProcessTriggeredByEvent().transform(ast);
-
-        WorkflowSTCompleter stCompleter = new WorkflowSTCompleter();
-        WorkflowTraverser traverser = WorkflowMill.traverser();
-        traverser.add4Workflow(stCompleter);
-        ast.accept(traverser);
-
-        if (shouldWriteAuxModels()) {
-            writeTestAuxModels(qualifiedModelName, ast);
-        }
-
-        return ast;
-    }
-
-    protected boolean shouldWriteAuxModels() {
-        return false;
-    }
-
-    protected void writeTestAuxModels(final String qualifiedModelName, final ASTWorkflowCompilationUnit unit) {
-        Path out = get(MODEL_AUX_DIR)
-                .resolve(get(getPathFromQualifiedName(qualifiedModelName)))
-                .resolve(getSimpleName(qualifiedModelName).toLowerCase());
-        try {
-            new AuxiliaryModelsWriter(unit.getProcess()).print(out);
-        } catch (IOException ignored) {
-        }
-    }
-
+  }
 }

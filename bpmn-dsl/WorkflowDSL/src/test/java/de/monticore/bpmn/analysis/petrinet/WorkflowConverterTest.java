@@ -8,23 +8,23 @@ import org.junit.jupiter.api.Test;
 
 class WorkflowConverterTest extends AbstractCoCoTest {
 
-  //fixme
+  // fixme
   @Disabled
-    @Test
-    void testTask() {
-        String modelName = "de.monticore.bpmn.petrinet.Task";
+  @Test
+  void testTask() {
+    String modelName = "de.monticore.bpmn.petrinet.Task";
 
-        testModelNoErrors(modelName);
-    }
+    testModelNoErrors(modelName);
+  }
 
-    @Override
-    protected boolean shouldWriteAuxModels() {
-        return true;
-    }
+  @Override
+  protected boolean shouldWriteAuxModels() {
+    return true;
+  }
 
-    //todo: structure check
-    @Override
-    protected WorkflowCoCoChecker getChecker() {
-        return WorkflowCoCos.getStructuralChecker();
-    }
+  // todo: structure check
+  @Override
+  protected WorkflowCoCoChecker getChecker() {
+    return WorkflowCoCos.getStructuralChecker();
+  }
 }

@@ -8,19 +8,22 @@ import de.se_rwth.commons.logging.Log;
 
 public class TimeIsValidCoCo implements TimeExpressionsASTTimeCoCo {
 
-    @Override
-    public void check(final ASTTime time) {
-        try {
-            time.getLocalTime();
-        } catch (final IllegalArgumentException e) {
-            String source = null;
-            if(time.isPresentSeconds()){
-                source = time.getSeconds().getSource();
-            }
-            Log.error(Messages.TEMP.err("0xTEMP03", Joiner.on(":").skipNulls()
-                            .join(time.getHours().getSource(), time.getMinutes().getSource(), source)),
-                    time.get_SourcePositionStart());
-        }
+  @Override
+  public void check(final ASTTime time) {
+    try {
+      time.getLocalTime();
+    } catch (final IllegalArgumentException e) {
+      String source = null;
+      if (time.isPresentSeconds()) {
+        source = time.getSeconds().getSource();
+      }
+      Log.error(
+          Messages.TEMP.err(
+              "0xTEMP03",
+              Joiner.on(":")
+                  .skipNulls()
+                  .join(time.getHours().getSource(), time.getMinutes().getSource(), source)),
+          time.get_SourcePositionStart());
     }
-
+  }
 }

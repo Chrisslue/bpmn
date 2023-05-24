@@ -4,10 +4,9 @@ import de.monticore.types.mcbasictypes._ast.ASTMCType;
 
 public interface DataInputOutput {
 
-    String getName();
+  String getName();
 
-    ASTMCType getMCType();
+  ASTMCType getMCType();
 
-    boolean isCollection();
-
+  boolean isCollection();
 }

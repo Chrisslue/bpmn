@@ -6,33 +6,32 @@ import de.monticore.bpmn.cocos.AbstractCoCoTest;
 import de.monticore.bpmn.cocos.WorkflowCoCos;
 import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
 import de.se_rwth.commons.logging.Finding;
-import org.junit.jupiter.api.Test;
-
 import java.util.Collection;
+import org.junit.jupiter.api.Test;
 
 class LoopCountExpressionReturnsIntegerNumberTest extends AbstractCoCoTest {
 
-    @Override
-    protected WorkflowCoCoChecker getChecker() {
-        return WorkflowCoCos.getActivityChecker();
-    }
+  @Override
+  protected WorkflowCoCoChecker getChecker() {
+    return WorkflowCoCos.getActivityChecker();
+  }
 
-    @Test
-    void isNonInteger() {
-        String modelName = "de.monticore.bpmn.cocos.activities.invalid.LoopCountExpressionReturnsIntegerNumber";
+  @Test
+  void isNonInteger() {
+    String modelName =
+        "de.monticore.bpmn.cocos.activities.invalid.LoopCountExpressionReturnsIntegerNumber";
 
-        Collection<Finding> expectedErrors = Lists.newArrayList(
-                Finding.error(Messages.get("0xWFM1010", "boolean"))
-        );
+    Collection<Finding> expectedErrors =
+        Lists.newArrayList(Finding.error(Messages.get("0xWFM1010", "boolean")));
 
-        testModelForErrors(modelName, expectedErrors);
-    }
+    testModelForErrors(modelName, expectedErrors);
+  }
 
-    @Test
-    void isInteger() {
-        String modelName = "de.monticore.bpmn.cocos.activities.valid.LoopCountExpressionReturnsIntegerNumber";
+  @Test
+  void isInteger() {
+    String modelName =
+        "de.monticore.bpmn.cocos.activities.valid.LoopCountExpressionReturnsIntegerNumber";
 
-        testModelNoErrors(modelName);
-    }
-
+    testModelNoErrors(modelName);
+  }
 }

@@ -6,35 +6,35 @@ import de.monticore.bpmn.cocos.AbstractCoCoTest;
 import de.monticore.bpmn.cocos.WorkflowCoCos;
 import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
 import de.se_rwth.commons.logging.Finding;
-import org.junit.jupiter.api.Test;
-
 import java.util.Collection;
+import org.junit.jupiter.api.Test;
 
 class CancelIntermediateEventIsAttachedToTransactionTest extends AbstractCoCoTest {
 
-    @Override
-    protected WorkflowCoCoChecker getChecker() {
-        return WorkflowCoCos.getEventTriggerChecker();
-    }
+  @Override
+  protected WorkflowCoCoChecker getChecker() {
+    return WorkflowCoCos.getEventTriggerChecker();
+  }
 
-    @Test
-    void invalidTriggers() {
-        String modelName = "de.monticore.bpmn.cocos.events.triggers.invalid.CancelIntermediateEventIsAttachedToTransaction";
+  @Test
+  void invalidTriggers() {
+    String modelName =
+        "de.monticore.bpmn.cocos.events.triggers.invalid.CancelIntermediateEventIsAttachedToTransaction";
 
-        Collection<Finding> expectedErrors = Lists.newArrayList(
-                Finding.error(Messages.get("0xWFM2023", "E1")),
-                Finding.error(Messages.get("0xWFM2023", "E2")),
-                Finding.error(Messages.get("0xWFM2023", "E3"))
-        );
+    Collection<Finding> expectedErrors =
+        Lists.newArrayList(
+            Finding.error(Messages.get("0xWFM2023", "E1")),
+            Finding.error(Messages.get("0xWFM2023", "E2")),
+            Finding.error(Messages.get("0xWFM2023", "E3")));
 
-        testModelForErrors(modelName, expectedErrors);
-    }
+    testModelForErrors(modelName, expectedErrors);
+  }
 
-    @Test
-    void validTriggers() {
-        String modelName = "de.monticore.bpmn.cocos.events.triggers.valid.CancelIntermediateEventIsAttachedToTransaction";
+  @Test
+  void validTriggers() {
+    String modelName =
+        "de.monticore.bpmn.cocos.events.triggers.valid.CancelIntermediateEventIsAttachedToTransaction";
 
-        testModelNoErrors(modelName);
-    }
-
+    testModelNoErrors(modelName);
+  }
 }

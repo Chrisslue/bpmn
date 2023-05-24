@@ -8,20 +8,26 @@ import de.monticore.bpmn.collectors.WorkflowCollectors;
 import de.monticore.bpmn.workflow._ast.ASTFlowElementContainer;
 import de.monticore.bpmn.workflow._ast.ASTFlowNode;
 import de.se_rwth.commons.logging.Log;
-import org.jgrapht.Graph;
-
 import java.util.Set;
+import org.jgrapht.Graph;
 
 public class ProcessHasNoDeadNodes extends ProcessGraphCoCo {
 
-    @Override
-    protected void check(final Graph<ASTFlowNode, EndpointPair<ASTFlowNode>> processGraph, final ASTFlowElementContainer process) {
-        final Set<ASTFlowNode> startNodes = Sets.newHashSet(WorkflowCollectors.toStartNodesLocal(process));
+  @Override
+  protected void check(
+      final Graph<ASTFlowNode, EndpointPair<ASTFlowNode>> processGraph,
+      final ASTFlowElementContainer process) {
+    final Set<ASTFlowNode> startNodes =
+        Sets.newHashSet(WorkflowCollectors.toStartNodesLocal(process));
 
-        Sets.difference(processGraph.vertexSet(), new ReachabilityInspector<>(processGraph).reachableFrom(startNodes))
-                .forEach(node ->
-                        Log.error(Messages.get("0xWFM7009", node.getName()), node.get_SourcePositionStart(), node.get_SourcePositionEnd())
-                );
-    }
-
+    Sets.difference(
+            processGraph.vertexSet(),
+            new ReachabilityInspector<>(processGraph).reachableFrom(startNodes))
+        .forEach(
+            node ->
+                Log.error(
+                    Messages.get("0xWFM7009", node.getName()),
+                    node.get_SourcePositionStart(),
+                    node.get_SourcePositionEnd()));
+  }
 }

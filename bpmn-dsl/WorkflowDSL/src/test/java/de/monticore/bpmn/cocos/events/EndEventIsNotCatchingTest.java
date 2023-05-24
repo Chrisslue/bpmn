@@ -6,33 +6,30 @@ import de.monticore.bpmn.cocos.AbstractCoCoTest;
 import de.monticore.bpmn.cocos.WorkflowCoCos;
 import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
 import de.se_rwth.commons.logging.Finding;
-import org.junit.jupiter.api.Test;
-
 import java.util.Collection;
+import org.junit.jupiter.api.Test;
 
 class EndEventIsNotCatchingTest extends AbstractCoCoTest {
 
-    @Override
-    protected WorkflowCoCoChecker getChecker() {
-        return WorkflowCoCos.getEventChecker();
-    }
+  @Override
+  protected WorkflowCoCoChecker getChecker() {
+    return WorkflowCoCos.getEventChecker();
+  }
 
-    @Test
-    void endEventIsCatching() {
-        String modelName = "de.monticore.bpmn.cocos.events.invalid.EndEventIsNotCatching";
+  @Test
+  void endEventIsCatching() {
+    String modelName = "de.monticore.bpmn.cocos.events.invalid.EndEventIsNotCatching";
 
-        Collection<Finding> expectedErrors = Lists.newArrayList(
-                Finding.error(Messages.get("0xWFM2002", "E2"))
-        );
+    Collection<Finding> expectedErrors =
+        Lists.newArrayList(Finding.error(Messages.get("0xWFM2002", "E2")));
 
-        testModelForErrors(modelName, expectedErrors);
-    }
+    testModelForErrors(modelName, expectedErrors);
+  }
 
-    @Test
-    void endEventIsNotCatching() {
-        String modelName = "de.monticore.bpmn.cocos.events.valid.EndEventIsNotCatching";
+  @Test
+  void endEventIsNotCatching() {
+    String modelName = "de.monticore.bpmn.cocos.events.valid.EndEventIsNotCatching";
 
-        testModelNoErrors(modelName);
-    }
-
+    testModelNoErrors(modelName);
+  }
 }

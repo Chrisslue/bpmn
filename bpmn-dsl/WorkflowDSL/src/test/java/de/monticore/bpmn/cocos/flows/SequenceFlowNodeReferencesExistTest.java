@@ -7,42 +7,39 @@ import de.monticore.bpmn.cocos.WorkflowCoCos;
 import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
 import de.se_rwth.commons.logging.Finding;
 import de.se_rwth.commons.logging.Log;
+import java.util.Collection;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collection;
-
 class SequenceFlowNodeReferencesExistTest extends AbstractCoCoTest {
 
-    @BeforeAll
-    public static void init() {
-        Log.clearFindings();
-        Log.enableFailQuick(true);
-    }
+  @BeforeAll
+  public static void init() {
+    Log.clearFindings();
+    Log.enableFailQuick(true);
+  }
 
-    @Override
-    protected WorkflowCoCoChecker getChecker() {
-        return WorkflowCoCos.getSequenceFlowChecker();
-    }
+  @Override
+  protected WorkflowCoCoChecker getChecker() {
+    return WorkflowCoCos.getSequenceFlowChecker();
+  }
 
-    @Disabled
-    @Test
-    void invalidSourcesAndTargets() {
-        String modelName = "de.monticore.bpmn.cocos.flows.invalid.SequenceFlowNodeReferencesExist";
+  @Disabled
+  @Test
+  void invalidSourcesAndTargets() {
+    String modelName = "de.monticore.bpmn.cocos.flows.invalid.SequenceFlowNodeReferencesExist";
 
-        Collection<Finding> expectedErrors = Lists.newArrayList(
-                Finding.error(Messages.get("0xWFM1004", "T2"))
-        );
+    Collection<Finding> expectedErrors =
+        Lists.newArrayList(Finding.error(Messages.get("0xWFM1004", "T2")));
 
-        testModelForErrors(modelName, expectedErrors);
-    }
+    testModelForErrors(modelName, expectedErrors);
+  }
 
-    @Test
-    void validSourcesAndTargets() {
-        String modelName = "de.monticore.bpmn.cocos.flows.valid.SequenceFlowNodeReferencesExist";
+  @Test
+  void validSourcesAndTargets() {
+    String modelName = "de.monticore.bpmn.cocos.flows.valid.SequenceFlowNodeReferencesExist";
 
-        testModelNoErrors(modelName);
-    }
-
+    testModelNoErrors(modelName);
+  }
 }

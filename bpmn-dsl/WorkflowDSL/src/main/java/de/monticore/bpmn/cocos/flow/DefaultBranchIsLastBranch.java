@@ -9,15 +9,12 @@ import one.util.streamex.EntryStream;
 
 public class DefaultBranchIsLastBranch implements WorkflowASTFlowBlockCoCo {
 
-    @Override
-    public void check(final ASTFlowBlock block) {
-        EntryStream.of(block.getBranchList())
-                .filterKeys(index -> index < block.sizeBranch())
-                .filterValues(ASTFlowBranch::isDefault)
-                .values()
-                .forEach(branch ->
-                        Log.error(Messages.get("0xWFM3005"), branch.get_SourcePositionStart())
-                );
-    }
-
+  @Override
+  public void check(final ASTFlowBlock block) {
+    EntryStream.of(block.getBranchList())
+        .filterKeys(index -> index < block.sizeBranch())
+        .filterValues(ASTFlowBranch::isDefault)
+        .values()
+        .forEach(branch -> Log.error(Messages.get("0xWFM3005"), branch.get_SourcePositionStart()));
+  }
 }

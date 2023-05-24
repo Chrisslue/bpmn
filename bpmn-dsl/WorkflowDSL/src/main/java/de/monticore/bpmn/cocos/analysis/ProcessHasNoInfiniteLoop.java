@@ -11,23 +11,32 @@ import org.jgrapht.alg.cycle.CycleDetector;
 
 public class ProcessHasNoInfiniteLoop extends ProcessGraphCoCo {
 
-    @Override
-    protected void check(final Graph<ASTFlowNode, EndpointPair<ASTFlowNode>> processGraph, final ASTFlowElementContainer process) {
-        new CycleDetector<>(processGraph).findCycles()
-                .stream()
-                .flatMap(WorkflowFilters::isGateway)
-                .filter(gateway -> !gateway.getType().isExclusive() && !gateway.getType().isExclusiveEventBased())
-                .forEach(gateway -> {
-                    if (gateway.isDiverging()) {  // loop exit
-                        Log.warn(Messages.get("0xWFM7007", gateway.getName()),
-                                gateway.get_SourcePositionStart(), gateway.get_SourcePositionEnd());
-                    }
-                    if (gateway.isConverging()
-                            && (gateway.getType().isParallel() || gateway.getType().isParallelEventBased())) { // loop entry
-                        Log.warn(Messages.get("0xWFM7008", gateway.getName()),
-                                gateway.get_SourcePositionStart(), gateway.get_SourcePositionEnd());
-                    }
+  @Override
+  protected void check(
+      final Graph<ASTFlowNode, EndpointPair<ASTFlowNode>> processGraph,
+      final ASTFlowElementContainer process) {
+    new CycleDetector<>(processGraph)
+        .findCycles().stream()
+            .flatMap(WorkflowFilters::isGateway)
+            .filter(
+                gateway ->
+                    !gateway.getType().isExclusive() && !gateway.getType().isExclusiveEventBased())
+            .forEach(
+                gateway -> {
+                  if (gateway.isDiverging()) { // loop exit
+                    Log.warn(
+                        Messages.get("0xWFM7007", gateway.getName()),
+                        gateway.get_SourcePositionStart(),
+                        gateway.get_SourcePositionEnd());
+                  }
+                  if (gateway.isConverging()
+                      && (gateway.getType().isParallel()
+                          || gateway.getType().isParallelEventBased())) { // loop entry
+                    Log.warn(
+                        Messages.get("0xWFM7008", gateway.getName()),
+                        gateway.get_SourcePositionStart(),
+                        gateway.get_SourcePositionEnd());
+                  }
                 });
-    }
-
+  }
 }

@@ -4,10 +4,9 @@ import java.util.Collection;
 
 public interface ASTActivity extends ASTActivityTOP {
 
-    Collection<? extends ASTEvent> getBoundaryEvents();
+  Collection<? extends ASTEvent> getBoundaryEvents();
 
-    default boolean isForCompensation() {
-        return isPresentCompensationHandler();
-    }
-
+  default boolean isForCompensation() {
+    return isPresentCompensationHandler();
+  }
 }

@@ -4,12 +4,11 @@ import java.util.Optional;
 
 public class ASTWorkflowCompilationUnit extends ASTWorkflowCompilationUnitTOP {
 
-    public Optional<String> getPackageName() {
-        if (isPresentMCPackageDeclaration()) {
-            return Optional.of(getMCPackageDeclaration().getMCQualifiedName().getQName());
-        } else {
-            return Optional.empty();
-        }
+  public Optional<String> getPackageName() {
+    if (isPresentMCPackageDeclaration()) {
+      return Optional.of(getMCPackageDeclaration().getMCQualifiedName().getQName());
+    } else {
+      return Optional.empty();
     }
-
+  }
 }
