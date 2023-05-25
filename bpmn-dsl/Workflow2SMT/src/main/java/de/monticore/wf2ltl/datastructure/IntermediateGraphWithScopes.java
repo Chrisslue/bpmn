@@ -1,8 +1,11 @@
 package de.monticore.wf2ltl.datastructure;
 
 import de.monticore.bpmn.workflow._ast.ASTFlowNode;
+import de.monticore.wf2ltl.NamingStrategy;
 import de.monticore.wf2ltl.scopes.GatewayScope;
 import de.monticore.wf2ltl.scopes.SubProcessScope;
+import de.monticore.wf2ltl.transformer.GatewayTransformer;
+import de.monticore.wf2ltl.transformer.SubprocessTransformer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,6 +28,16 @@ public class IntermediateGraphWithScopes
     super(startNode, edges);
     this.gatewayScopes = new ArrayList<>();
     this.subProcessScopes = new ArrayList<>();
+  }
+
+  /**
+   * TODO this should probably be a strategy too.
+   * Convert from a state based graph to a labeled-transition based LTS.
+   * Push all node-label to all incoming edges.
+   */
+  public LTS asLTS(NamingStrategy namingStrategy, SubprocessTransformer subprocessTransformer,
+      GatewayTransformer gatewayTransformer) {
+    throw new UnsupportedOperationException("TODO implement this method");
   }
 
   @Override
