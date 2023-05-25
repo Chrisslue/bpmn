@@ -5,6 +5,10 @@ import de.monticore.bpmn.workflow._visitor.WorkflowHandler;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverserImplementation;
 import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
+import de.monticore.wf2ltl.datastructure.EdgeTo;
+import de.monticore.wf2ltl.datastructure.IntermediateGraphWithScopes;
+import de.monticore.wf2ltl.scopes.GatewayScope;
+import de.monticore.wf2ltl.scopes.SubProcessScope;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,21 +16,21 @@ import java.util.List;
 
 public class GraphBuildingTraverser implements WorkflowHandler, WorkflowVisitor2 {
 
-  protected final IntermediateGraph graph;
+  protected final IntermediateGraphWithScopes graph;
 
   protected WorkflowTraverser traverser;
 
   public GraphBuildingTraverser(WorkflowTraverser traverser, ASTFlowNode startElement) {
-    this(traverser, new IntermediateGraph(startElement));
+    this(traverser, new IntermediateGraphWithScopes(startElement));
   }
 
-  public GraphBuildingTraverser(WorkflowTraverser traverser, IntermediateGraph graph) {
+  public GraphBuildingTraverser(WorkflowTraverser traverser, IntermediateGraphWithScopes graph) {
     traverser.setWorkflowHandler(this);
     traverser.getWorkflowVisitorList().add(this);
     this.graph = graph;
   }
 
-  public static IntermediateGraph graphOf(ASTEvent startEvent) {
+  public static IntermediateGraphWithScopes graphOf(ASTEvent startEvent) {
     if (!startEvent.isStart()) {
       throw new IllegalArgumentException("startEvent has to be a start event");
     }
@@ -36,7 +40,7 @@ public class GraphBuildingTraverser implements WorkflowHandler, WorkflowVisitor2
     return handler.getGraph();
   }
 
-  public IntermediateGraph getGraph() {
+  public IntermediateGraphWithScopes getGraph() {
     return graph;
   }
 
@@ -47,7 +51,7 @@ public class GraphBuildingTraverser implements WorkflowHandler, WorkflowVisitor2
   protected void addEdge(ASTFlowNode source, ASTFlowNode target,
       List<ASTFlowCondition> conditions) {
     var targetNodes = getGraph().getEdges().getOrDefault(source, new ArrayList<>());
-    targetNodes.add(new IntermediateGraph.EdgeTo(target, conditions));
+    targetNodes.add(new EdgeTo<>(conditions, target));
     getGraph().getEdges().putIfAbsent(source, targetNodes);
   }
 

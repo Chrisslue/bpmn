@@ -1,4 +1,4 @@
-package de.monticore.wf2ltl;
+package de.monticore.wf2ltl.collector;
 
 import de.monticore.bpmn.workflow._ast.*;
 import de.monticore.bpmn.workflow._visitor.WorkflowHandler;
@@ -30,7 +30,7 @@ public class EventCollector implements WorkflowHandler {
     this.traverser = traverser;
   }
 
-  protected List<ASTEvent> getEvents() {
+  public List<ASTEvent> getEvents() {
     return events;
   }
 

@@ -1,9 +1,8 @@
-package de.monticore.wf2ltl;
+package de.monticore.wf2ltl.scopes;
 
 import de.monticore.bpmn.workflow._ast.*;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
-
-import java.util.function.Function;
+import de.monticore.wf2ltl.GraphBuildingTraverser;
 
 /**
  * Encapsulate a block of sequences between two matching gateways (split -> ... -> merge). Build the
@@ -13,7 +12,33 @@ import java.util.function.Function;
  */
 public class GatewayScope extends GraphBuildingTraverser {
 
-  private final Function<ASTGatewayType, Boolean> gatewayTypeSelector;
+  public enum GatewayType {
+    XOR, IOR, PARALLEL, EVENT_PARALLEL, EVENT_XOR, COMPLEX;
+
+    public static GatewayType of(ASTGatewayType type) {
+      if (type.isParallel()) {
+        return PARALLEL;
+      }
+      if (type.isInclusive()) {
+        return IOR;
+      }
+      if (type.isExclusive()) {
+        return XOR;
+      }
+      if (type.isComplex()) {
+        return COMPLEX;
+      }
+      if (type.isExclusiveEventBased()) {
+        return EVENT_XOR;
+      }
+      if (type.isParallelEventBased()) {
+        return EVENT_PARALLEL;
+      }
+      throw new IllegalArgumentException("Gateway type was unknown" + type);
+    }
+  }
+
+  private final GatewayType gatewayType;
 
   private ASTGateway closingGateway;
 
@@ -22,7 +47,7 @@ public class GatewayScope extends GraphBuildingTraverser {
     if (startElement.isConverging()) {
       throw new IllegalArgumentException("Opened a GatewayScope with a merging gateway");
     }
-    this.gatewayTypeSelector = gatewayTypeSelectorBuilder(startElement.getType());
+    gatewayType = GatewayType.of(startElement.getType());
 
     addOutgoingsAsEdges(startElement);
     for (SequenceFlow sequenceFlow : startElement.getOutgoingsList()) {
@@ -30,29 +55,9 @@ public class GatewayScope extends GraphBuildingTraverser {
     }
   }
 
-  static public Function<ASTGatewayType, Boolean> gatewayTypeSelectorBuilder(ASTGatewayType type) {
-    // TODO ASTGatewayType should be Enum?
-    if (type.isParallel()) {
-      return ASTGatewayTypeTOP::isParallel;
-    }
-    if (type.isInclusive()) {
-      return ASTGatewayTypeTOP::isInclusive;
-    }
-    if (type.isExclusive()) {
-      return ASTGatewayTypeTOP::isExclusive;
-    }
-    if (type.isComplex()) {
-      return ASTGatewayTypeTOP::isComplex;
-    }
-    if (type.isExclusiveEventBased()) {
-      return ASTGatewayTypeTOP::isExclusiveEventBased;
-    }
-    if (type.isParallelEventBased()) {
-      return ASTGatewayTypeTOP::isParallelEventBased;
-    }
-    throw new IllegalArgumentException("Gateway type was unknown" + type);
+  public GatewayType getGatewayType() {
+    return gatewayType;
   }
-
   public ASTGateway getClosingGateway() {
     // If no matching gateway was found while traversing the ast the closingGateway will not be set.
     // This will only occur with a malformed diagram.
@@ -78,7 +83,7 @@ public class GatewayScope extends GraphBuildingTraverser {
     if (gateway.isDiverging()) {
       handleDiverging(gateway);
     }
-    if (gateway.isConverging() && gatewayTypeSelector.apply(gateway.getType())) {
+    if (gateway.isConverging() && gatewayType == GatewayType.of(gateway.getType())) {
       // We found the matching merge gateway.
       // Closing the gateway scope -> No further traversing..
       this.closingGateway = gateway;
