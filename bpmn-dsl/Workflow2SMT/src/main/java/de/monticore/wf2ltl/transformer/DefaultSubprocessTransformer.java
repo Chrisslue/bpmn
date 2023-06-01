@@ -116,14 +116,13 @@ public class DefaultSubprocessTransformer implements SubprocessTransformer {
    */
   @Override
   public void transform(SubProcessScope subProcessScope, LTS externalGraph,
-      NamingStrategy namingStrategy, GatewayTransformer gatewayTransformer) {
+      NamingStrategy namingStrategy, Graph2LTSTransformer graphTransformer) {
     var processName = namingStrategy.apply(subProcessScope.getSubProcess());
     var parameterPack = new ParameterPack(namingStrategy, subProcessScope, processName + "_Start",
         processName + "_End");
 
     // Convert internalGraph
-    var internalGraph = subProcessScope.getInternalGraph()
-        .asLTS(namingStrategy, this, gatewayTransformer);
+    var internalGraph = graphTransformer.transform(subProcessScope.getInternalGraph());
 
     for (var oldSubprocessTransition : externalGraph.getTransitionsForLabel(processName)) {
       collectAndReplaceStartEvents(parameterPack, oldSubprocessTransition, internalGraph,

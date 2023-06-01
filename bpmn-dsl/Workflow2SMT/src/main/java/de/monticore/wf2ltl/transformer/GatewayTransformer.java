@@ -9,6 +9,6 @@ public interface GatewayTransformer {
   GatewayInterleavingStrategy getGatewayInterleavingStrategy();
 
   void transform(GatewayScope gatewayScope, LTS externalGraph, NamingStrategy namingStrategy,
-      SubprocessTransformer subprocessTransformer);
+      Graph2LTSTransformer graphTransformer);
 
 }

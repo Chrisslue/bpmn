@@ -7,6 +7,6 @@ import de.monticore.wf2ltl.scopes.SubProcessScope;
 public interface SubprocessTransformer {
 
   void transform(SubProcessScope subProcessScope, LTS externalGraph, NamingStrategy namingStrategy,
-      GatewayTransformer gatewayTransformer);
+      Graph2LTSTransformer graphTransformer);
 
 }
