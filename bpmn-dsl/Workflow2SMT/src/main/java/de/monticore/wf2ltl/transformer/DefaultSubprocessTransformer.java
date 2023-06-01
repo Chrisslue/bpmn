@@ -6,7 +6,6 @@ import de.monticore.bpmn.workflow._util.WorkflowTypeDispatcher;
 import de.monticore.wf2ltl.NamingStrategy;
 import de.monticore.wf2ltl.datastructure.LTS;
 import de.monticore.wf2ltl.scopes.SubProcessScope;
-
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -27,7 +26,7 @@ public class DefaultSubprocessTransformer implements SubprocessTransformer {
       List<String> startEventNames, String startName, LTS.State externalSource,
       List<ASTFlowCondition> oldConditions) {
     startEventNames.stream()
-        .map(internalGraph::getTransitionsForLabel)
+        .map(internalGraph::getTransitionsForLabelRO)
         .flatMap(List::stream)
         .map(
             transition -> replaceInternalStart(internalGraph, transition, startName, externalSource,
@@ -60,7 +59,7 @@ public class DefaultSubprocessTransformer implements SubprocessTransformer {
   private static void replaceInternalEndEvents(LTS internalGraph, List<String> endEventNames,
       String endName, LTS.State externalTarget) {
     endEventNames.stream()
-        .map(internalGraph::getTransitionsForLabel)
+        .map(internalGraph::getTransitionsForLabelRO)
         .flatMap(List::stream)
         .forEach(
             transition -> replaceInternalEnd(internalGraph, transition, endName, externalTarget));
@@ -89,7 +88,7 @@ public class DefaultSubprocessTransformer implements SubprocessTransformer {
   private static void replaceInternalTermEvents(LTS internalGraph,
       List<String> terminatingEventNames, List<LTS.Transition> subProcessOutgoings) {
     terminatingEventNames.stream()
-        .map(internalGraph::getTransitionsForLabel)
+        .map(internalGraph::getTransitionsForLabelRO)
         .flatMap(List::stream)
         .forEach(terminatingTransition -> subProcessOutgoings.forEach(
             subProcessOut -> replaceInternalTerm(internalGraph, terminatingTransition,
@@ -109,10 +108,9 @@ public class DefaultSubprocessTransformer implements SubprocessTransformer {
   }
 
   /**
-   * Transform surrounding (external) graph to lts. For all occurrences in the external LTS: -
-   * Replace the start-event-transitions with one labeled with startName - Replace the
-   * terminating-transitions with the successors of the subprocess. - Replace the
-   * end-event-transitions with one labeled with endName
+   * Transform surrounding (external) graph to lts. For all occurrences in the external LTS: - Replace the
+   * start-event-transitions with one labeled with startName - Replace the terminating-transitions with the successors
+   * of the subprocess. - Replace the end-event-transitions with one labeled with endName
    */
   @Override
   public void transform(SubProcessScope subProcessScope, LTS externalGraph,
@@ -124,11 +122,11 @@ public class DefaultSubprocessTransformer implements SubprocessTransformer {
     // Convert internalGraph
     var internalGraph = graphTransformer.transform(subProcessScope.getInternalGraph());
 
-    for (var oldSubprocessTransition : externalGraph.getTransitionsForLabel(processName)) {
+    for (var oldSubprocessTransition : externalGraph.getTransitionsForLabelRO(processName)) {
       collectAndReplaceStartEvents(parameterPack, oldSubprocessTransition, internalGraph,
           externalGraph);
       collectAndReplaceEndEvents(parameterPack, oldSubprocessTransition, internalGraph);
-      var subProcessOutgoings = externalGraph.getOutgoings(oldSubprocessTransition.getTarget());
+      var subProcessOutgoings = externalGraph.getOutgoingsRO(oldSubprocessTransition.getTarget());
       collectAndReplaceTerminatingEvents(parameterPack, internalGraph, subProcessOutgoings);
       externalGraph.removeTransition(oldSubprocessTransition);
     }

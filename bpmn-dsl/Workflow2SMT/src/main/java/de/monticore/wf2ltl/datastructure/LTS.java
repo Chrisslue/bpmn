@@ -1,8 +1,13 @@
 package de.monticore.wf2ltl.datastructure;
 
 import de.monticore.bpmn.workflow._ast.ASTFlowCondition;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 public class LTS extends IntermediateGraph<LTS.State, LTS.Transition> {
@@ -18,28 +23,80 @@ public class LTS extends IntermediateGraph<LTS.State, LTS.Transition> {
     this.transitionMap = new HashMap<>();
   }
 
+  public void addState(State state) {
+    getEdges().putIfAbsent(state, new ArrayList<>());
+  }
+
+  public void removeState(State state) {
+    if (getStart().equals(state)) {
+      throw new IllegalArgumentException("Cant remove start state.");
+    }
+    var outgoings = new ArrayList<>(getOutgoings(state));
+    outgoings.forEach(this::removeTransition);
+    getEdges().remove(state);
+  }
+
   public void addTransition(Transition transition) {
-    getOutgoingAddIfAbsent(transition.getSource()).add(transition);
+    if (!getEdges().containsKey(transition.getTarget())) {
+      addState(transition.getTarget());
+    }
+    getOutgoingsAddIfAbsent(transition.getSource()).add(transition);
+
     transitionMap.putIfAbsent(transition.getLabel(), new ArrayList<>());
     transitionMap.get(transition.getLabel()).add(transition);
   }
 
   public void removeTransition(Transition transition) {
-    getEdges().get(transition.getSource()).remove(transition);
+    getOutgoings(transition.getSource()).remove(transition);
     transitionMap.get(transition.getLabel()).remove(transition);
-    // TODO Should we remove label if no other transitions exist?
+    if (transitionMap.get(transition.getLabel()).isEmpty()) {
+      transitionMap.remove(transition.getLabel());
+    }
   }
 
-  public List<Transition> getOutgoingAddIfAbsent(State state) {
-    edges.putIfAbsent(state, new ArrayList<>());
+  public void removeAllOutgoingsWith(State state, String label) {
+    var toBeRemoved = getOutgoings(state)
+        .stream()
+        .filter(transition -> transition.getLabel().equals(label))
+        .collect(Collectors.toList());
+    transitionMap.get(label).removeAll(toBeRemoved);
+    getOutgoings(state).removeAll(toBeRemoved);
+  }
+
+  public void removeTargetIfNoIncomings(List<Transition> transitions) {
+    transitions.stream()
+        .map(Transition::getTarget)
+        .filter(state -> this.getIncoming(state).isEmpty())
+        .distinct() // We don't want to remove states twice.
+        .collect(Collectors.toList()) // Trigger lazy execution before removing.
+        .forEach(this::removeState);
+  }
+
+  private List<Transition> getOutgoingsAddIfAbsent(State state) {
+    if (!getEdges().containsKey(state)) {
+      addState(state);
+    }
     return getOutgoings(state);
   }
 
-  public List<Transition> getOutgoings(State state) {
-    return Collections.unmodifiableList(edges.get(state));
+  public List<Transition> getOutgoingsRO(State state) {
+    requireStateIsInLTS(state);
+    return Collections.unmodifiableList(getOutgoings(state));
+  }
+
+  private void requireStateIsInLTS(State state) {
+    if (!getEdges().containsKey(state)) {
+      throw new IllegalArgumentException("State " + state + " is not part of the lts.");
+    }
+  }
+
+  private List<Transition> getOutgoings(State state) {
+    requireStateIsInLTS(state);
+    return getEdges().get(state);
   }
 
   public List<Transition> getIncoming(State state) {
+    requireStateIsInLTS(state);
     return transitionMap.values()
         .stream()
         .flatMap(Collection::stream)
@@ -60,15 +117,24 @@ public class LTS extends IntermediateGraph<LTS.State, LTS.Transition> {
   }
 
   public boolean isLabelPresent(String label) {
-    return transitionMap.containsKey(label);
+    return transitionMap.containsKey(label) && !transitionMap.get(label).isEmpty();
   }
 
-  public List<Transition> getTransitionsForLabel(String label) {
-    // TODO should we throw error
-    return transitionMap.getOrDefault(label, new ArrayList<>());
+  public List<String> allUsedLabels() {
+    return transitionMap.entrySet()
+        .stream()
+        .filter(entry -> !entry.getValue().isEmpty())
+        .map(Entry::getKey)
+        .collect(Collectors.toList());
+  }
+
+  public List<Transition> getTransitionsForLabelRO(String label) {
+    // TODO should we throw error if label is not present?
+    return Collections.unmodifiableList(transitionMap.getOrDefault(label, new ArrayList<>()));
   }
 
   public static class State {
+
   }
 
   public static class Transition extends EdgeTo<State> {
