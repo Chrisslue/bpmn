@@ -1,6 +1,16 @@
 package de.monticore.wf2ltl;
 
-import de.monticore.bpmn.workflow._ast.*;
+import de.monticore.bpmn.workflow._ast.ASTEvent;
+import de.monticore.bpmn.workflow._ast.ASTFlowCondition;
+import de.monticore.bpmn.workflow._ast.ASTFlowNode;
+import de.monticore.bpmn.workflow._ast.ASTGateway;
+import de.monticore.bpmn.workflow._ast.ASTInlineEvent;
+import de.monticore.bpmn.workflow._ast.ASTInlineGateway;
+import de.monticore.bpmn.workflow._ast.ASTNamedEvent;
+import de.monticore.bpmn.workflow._ast.ASTNamedGateway;
+import de.monticore.bpmn.workflow._ast.ASTSubProcess;
+import de.monticore.bpmn.workflow._ast.ASTTask;
+import de.monticore.bpmn.workflow._ast.SequenceFlow;
 import de.monticore.bpmn.workflow._visitor.WorkflowHandler;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverserImplementation;
@@ -9,7 +19,6 @@ import de.monticore.wf2ltl.datastructure.EdgeTo;
 import de.monticore.wf2ltl.datastructure.IntermediateGraphWithScopes;
 import de.monticore.wf2ltl.scopes.GatewayScope;
 import de.monticore.wf2ltl.scopes.SubProcessScope;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -86,7 +95,10 @@ public class GraphBuildingTraverser implements WorkflowHandler, WorkflowVisitor2
       WorkflowTraverserImplementation traverser = new WorkflowTraverserImplementation();
       GatewayScope gatewayScope = new GatewayScope(traverser, gateway);
       getGraph().getGatewayScopes().add(gatewayScope);
-      continueFrom = gatewayScope.getClosingGateway();
+      if (gatewayScope.getClosingGateway().isEmpty()) {
+        return;
+      }
+      continueFrom = gatewayScope.getClosingGateway().get();
       addOutgoingsAsEdges(continueFrom);
     }
     else {
