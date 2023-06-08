@@ -1,5 +1,6 @@
 package de.monticore.wf2ltl.transformer;
 
+import static de.monticore.wf2ltl.Utils.equalIgnoreOrder;
 import static java.util.Collections.emptyList;
 
 import de.monticore.bpmn.workflow.WorkflowMill;
@@ -132,13 +133,4 @@ class DefaultGatewayTransformerTest {
     Assertions.assertTrue(equalIgnoreOrder(expectedEndStates, externalLTS.getTerminalStates()));
   }
 
-  /**
-   * Compare equality of two lists but ignore the order of elements. Every element has to occur equally often in both
-   * lists.
-   */
-  private <T> boolean equalIgnoreOrder(List<T> list1, List<T> list2) {
-    return list1.size() == list2.size() &&
-        list1.containsAll(list2)
-        && list2.containsAll(list1);
-  }
 }
