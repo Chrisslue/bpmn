@@ -1,6 +1,7 @@
 package de.monticore.wf2ltl.datastructure;
 
 import de.monticore.bpmn.workflow._ast.ASTFlowCondition;
+import de.monticore.ltl.LTS2Mermaid;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -135,6 +136,28 @@ public class LTS extends IntermediateGraph<LTS.State, LTS.Transition> {
     return new ArrayList<>(transitionMap.getOrDefault(label, new ArrayList<>()));
   }
 
+  public LTS2Mermaid toMermaid() {
+    Map<LTS.State, LTS2Mermaid.State> stateLookup = new HashMap<>();
+    var mermaid = new LTS2Mermaid();
+    getEdges().keySet().forEach(state -> {
+      if (state != getStart()) {
+        stateLookup.put(state, mermaid.addState());
+      } else {
+        stateLookup.put(state, mermaid.addInitialState());
+      }
+    });
+    getEdges().values()
+        .stream()
+        .flatMap(List::stream)
+        .forEach(transition ->
+            mermaid.addTransition(
+                stateLookup.get(transition.getSource()),
+                stateLookup.get(transition.getTarget()),
+                transition.getLabel()));
+
+    return mermaid;
+  }
+
   public static class State {
 
   }
@@ -177,6 +200,18 @@ public class LTS extends IntermediateGraph<LTS.State, LTS.Transition> {
       return new Transition(getSource(), newConditions, getLabel(), getTarget());
     }
 
+    @Override
+    public String toString() {
+      return "Transition{" +
+          getSource().toString() +
+          " --> " +
+          getTarget().toString() +
+          " : " +
+          getLabel() +
+          " with " +
+          getConditions().toString() +
+          '}';
+    }
   }
 
 }
