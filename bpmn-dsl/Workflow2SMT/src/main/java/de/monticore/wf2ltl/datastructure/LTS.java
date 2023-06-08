@@ -20,6 +20,7 @@ public class LTS extends IntermediateGraph<LTS.State, LTS.Transition> {
   public LTS(State startNode) {
     super(startNode);
     this.transitionMap = new HashMap<>();
+    addState(startNode);
   }
 
   public void addState(State state) {
