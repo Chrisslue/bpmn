@@ -26,11 +26,14 @@ public class DefaultSubprocessTransformer implements SubprocessTransformer {
       List<String> startEventNames, String startName, LTS.State externalSource,
       List<ASTFlowCondition> oldConditions) {
     startEventNames.stream()
-        .map(internalGraph::getTransitionsForLabelRO)
+        .map(internalGraph::getTransitionsForLabel)
         .flatMap(List::stream)
+        .collect(Collectors.toList())
+        .stream()
         .map(
             transition -> replaceInternalStart(internalGraph, transition, startName, externalSource,
                 oldConditions))
+        .collect(Collectors.toList())
         .forEach(externalGraph::addTransition);
   }
 
@@ -59,8 +62,9 @@ public class DefaultSubprocessTransformer implements SubprocessTransformer {
   private static void replaceInternalEndEvents(LTS internalGraph, List<String> endEventNames,
       String endName, LTS.State externalTarget) {
     endEventNames.stream()
-        .map(internalGraph::getTransitionsForLabelRO)
+        .map(internalGraph::getTransitionsForLabel)
         .flatMap(List::stream)
+        .collect(Collectors.toList())
         .forEach(
             transition -> replaceInternalEnd(internalGraph, transition, endName, externalTarget));
   }
@@ -88,22 +92,30 @@ public class DefaultSubprocessTransformer implements SubprocessTransformer {
   private static void replaceInternalTermEvents(LTS internalGraph,
       List<String> terminatingEventNames, List<LTS.Transition> subProcessOutgoings) {
     terminatingEventNames.stream()
-        .map(internalGraph::getTransitionsForLabelRO)
+        .map(internalGraph::getTransitionsForLabel)
         .flatMap(List::stream)
-        .forEach(terminatingTransition -> subProcessOutgoings.forEach(
-            subProcessOut -> replaceInternalTerm(internalGraph, terminatingTransition,
-                subProcessOut)));
+        .forEach(
+            terminatingTransition -> replaceInternalTerm(terminatingTransition, subProcessOutgoings, internalGraph));
   }
 
-  private static void replaceInternalTerm(LTS internalGraph, LTS.Transition terminatingTransition,
-      LTS.Transition subprocessOutgoing) {
+  private static void replaceInternalTerm(
+      LTS.Transition terminatingTransition,
+      List<LTS.Transition> subprocessOutgoingList,
+      LTS internalGraph
+  ) {
     internalGraph.removeTransition(terminatingTransition);
-    internalGraph.addTransition(subprocessOutgoing.changedSource(terminatingTransition.getSource())
-        .withAddedConditions(terminatingTransition.getConditions()));
+    subprocessOutgoingList.forEach(subprocessOutgoing ->
+        internalGraph.addTransition(
+            subprocessOutgoing.changedSource(terminatingTransition.getSource())
+                .withAddedConditions(terminatingTransition.getConditions())
+        )
+    );
   }
 
-  private static List<String> getEventNames(Stream<ASTEvent> events,
-      NamingStrategy namingStrategy) {
+  private static List<String> getEventNames(
+      Stream<ASTEvent> events,
+      NamingStrategy namingStrategy
+  ) {
     return events.map(namingStrategy).collect(Collectors.toList());
   }
 
@@ -122,11 +134,11 @@ public class DefaultSubprocessTransformer implements SubprocessTransformer {
     // Convert internalGraph
     var internalGraph = graphTransformer.transform(subProcessScope.getInternalGraph());
 
-    for (var oldSubprocessTransition : externalGraph.getTransitionsForLabelRO(processName)) {
+    for (var oldSubprocessTransition : externalGraph.getTransitionsForLabel(processName)) {
       collectAndReplaceStartEvents(parameterPack, oldSubprocessTransition, internalGraph,
           externalGraph);
       collectAndReplaceEndEvents(parameterPack, oldSubprocessTransition, internalGraph);
-      var subProcessOutgoings = externalGraph.getOutgoingsRO(oldSubprocessTransition.getTarget());
+      var subProcessOutgoings = externalGraph.getOutgoings(oldSubprocessTransition.getTarget());
       collectAndReplaceTerminatingEvents(parameterPack, internalGraph, subProcessOutgoings);
       externalGraph.removeTransition(oldSubprocessTransition);
     }
@@ -134,6 +146,7 @@ public class DefaultSubprocessTransformer implements SubprocessTransformer {
   }
 
   private static class ParameterPack {
+
     private final NamingStrategy namingStrategy;
 
     private final SubProcessScope subProcessScope;

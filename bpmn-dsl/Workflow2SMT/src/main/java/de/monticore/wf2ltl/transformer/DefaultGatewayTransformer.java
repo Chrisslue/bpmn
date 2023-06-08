@@ -5,7 +5,6 @@ import de.monticore.wf2ltl.NamingStrategy;
 import de.monticore.wf2ltl.datastructure.LTS;
 import de.monticore.wf2ltl.datastructure.LTS.Transition;
 import de.monticore.wf2ltl.scopes.GatewayScope;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,11 +30,11 @@ public class DefaultGatewayTransformer implements GatewayTransformer {
    * @param internalLTS The lts representing all transitions encapsulated by the GatewayScope.
    */
   private static void transformSplit(LTS externalLTS, String splitName, LTS internalLTS) {
-    List<Transition> oldTransitions = externalLTS.getTransitionsForLabelRO(splitName);
+    List<Transition> oldTransitions = externalLTS.getTransitionsForLabel(splitName);
     if (internalLTS.isLabelPresent(splitName)) {
       throw new IllegalStateException("Internal LTS should not contain transitions with splitName");
     }
-    List<Transition> internalStartTransitions = new ArrayList<>(internalLTS.getOutgoingsRO(internalLTS.getStart()));
+    List<Transition> internalStartTransitions = internalLTS.getOutgoings(internalLTS.getStart());
     for (LTS.Transition oldTransition : oldTransitions) {
       for (LTS.Transition internalStartTransition : internalStartTransitions) {
         externalLTS.addTransition(internalStartTransition.changedSource(oldTransition.getSource())
@@ -53,15 +52,15 @@ public class DefaultGatewayTransformer implements GatewayTransformer {
    * @param internalLTS The lts representing all transitions encapsulated by the GatewayScope
    */
   private static void transformMerge(LTS externalLTS, String mergeName, LTS internalLTS) {
-    List<Transition> internalMerging = internalLTS.getTransitionsForLabelRO(mergeName);
-    List<Transition> externalMerging = externalLTS.getTransitionsForLabelRO(mergeName);
+    List<Transition> internalMerging = internalLTS.getTransitionsForLabel(mergeName);
+    List<Transition> externalMerging = externalLTS.getTransitionsForLabel(mergeName);
     if (internalMerging.isEmpty() || externalMerging.isEmpty()) {
       throw new IllegalStateException("No merging transitions in lts. Expected to find" + mergeName
           + " .In lts: " + (internalMerging.isEmpty() ? internalLTS : externalLTS));
     }
     for (var internalMergingTransition : internalMerging) {
       for (var externalMergeTransition : externalMerging) {
-        List<Transition> externalSuccessors = externalLTS.getOutgoingsRO(externalMergeTransition.getTarget());
+        List<Transition> externalSuccessors = externalLTS.getOutgoings(externalMergeTransition.getTarget());
         for (LTS.Transition externalSuccessor : externalSuccessors) {
           internalLTS.addTransition(externalSuccessor
               .changedSource(internalMergingTransition.getSource())
@@ -79,7 +78,7 @@ public class DefaultGatewayTransformer implements GatewayTransformer {
    * @param splitName   The name of the split-gateway produced by the naming strategy.
    */
   private static void removeInternalSplitTransitions(LTS internalLTS, String splitName) {
-    List<Transition> internalSplitting = new ArrayList<>(internalLTS.getTransitionsForLabelRO(splitName));
+    List<Transition> internalSplitting = internalLTS.getTransitionsForLabel(splitName);
     if (internalSplitting.isEmpty()) {
       throw new IllegalStateException("No splitting transitions in lts."
           + "Expected to find" + splitName + " .In lts: " + internalLTS);
@@ -95,7 +94,7 @@ public class DefaultGatewayTransformer implements GatewayTransformer {
           + " for transition" + optWitness.get());
     }
     for (var splitTransition : internalSplitting) {
-      List<Transition> toBeChanged = new ArrayList<>(internalLTS.getOutgoingsRO(splitTransition.getTarget()));
+      List<Transition> toBeChanged = internalLTS.getOutgoings(splitTransition.getTarget());
       for (var successorTransitions : toBeChanged) {
         internalLTS.addTransition(successorTransitions
             .changedSource(splitTransition.getSource())
@@ -108,7 +107,7 @@ public class DefaultGatewayTransformer implements GatewayTransformer {
   }
 
   public static void cleanUp(String name, LTS lts) {
-    List<Transition> transitionsToBeRemoved = new ArrayList<>(lts.getTransitionsForLabelRO(name));
+    List<Transition> transitionsToBeRemoved = lts.getTransitionsForLabel(name);
     transitionsToBeRemoved.forEach(lts::removeTransition);
     lts.removeTargetIfNoIncomings(transitionsToBeRemoved);
   }

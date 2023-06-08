@@ -3,7 +3,6 @@ package de.monticore.wf2ltl.datastructure;
 import de.monticore.bpmn.workflow._ast.ASTFlowCondition;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +30,7 @@ public class LTS extends IntermediateGraph<LTS.State, LTS.Transition> {
     if (getStart().equals(state)) {
       throw new IllegalArgumentException("Cant remove start state.");
     }
-    var outgoings = new ArrayList<>(getOutgoings(state));
+    var outgoings = new ArrayList<>(getOutgoingsInPlace(state));
     outgoings.forEach(this::removeTransition);
     getEdges().remove(state);
   }
@@ -47,7 +46,10 @@ public class LTS extends IntermediateGraph<LTS.State, LTS.Transition> {
   }
 
   public void removeTransition(Transition transition) {
-    getOutgoings(transition.getSource()).remove(transition);
+    if (!transitionMap.containsKey(transition.getLabel())) {
+      throw new IllegalArgumentException("Transition is not part of LTS: " + transition);
+    }
+    getOutgoingsInPlace(transition.getSource()).remove(transition);
     transitionMap.get(transition.getLabel()).remove(transition);
     if (transitionMap.get(transition.getLabel()).isEmpty()) {
       transitionMap.remove(transition.getLabel());
@@ -55,12 +57,12 @@ public class LTS extends IntermediateGraph<LTS.State, LTS.Transition> {
   }
 
   public void removeAllOutgoingsWith(State state, String label) {
-    var toBeRemoved = getOutgoings(state)
+    var toBeRemoved = getOutgoingsInPlace(state)
         .stream()
         .filter(transition -> transition.getLabel().equals(label))
         .collect(Collectors.toList());
     transitionMap.get(label).removeAll(toBeRemoved);
-    getOutgoings(state).removeAll(toBeRemoved);
+    getOutgoingsInPlace(state).removeAll(toBeRemoved);
   }
 
   public void removeTargetIfNoIncomings(List<Transition> transitions) {
@@ -76,12 +78,11 @@ public class LTS extends IntermediateGraph<LTS.State, LTS.Transition> {
     if (!getEdges().containsKey(state)) {
       addState(state);
     }
-    return getOutgoings(state);
+    return getOutgoingsInPlace(state);
   }
 
-  public List<Transition> getOutgoingsRO(State state) {
-    requireStateIsInLTS(state);
-    return Collections.unmodifiableList(getOutgoings(state));
+  public List<Transition> getOutgoings(State state) {
+    return new ArrayList<>(getOutgoingsInPlace(state));
   }
 
   private void requireStateIsInLTS(State state) {
@@ -90,7 +91,7 @@ public class LTS extends IntermediateGraph<LTS.State, LTS.Transition> {
     }
   }
 
-  private List<Transition> getOutgoings(State state) {
+  private List<Transition> getOutgoingsInPlace(State state) {
     requireStateIsInLTS(state);
     return getEdges().get(state);
   }
@@ -128,9 +129,9 @@ public class LTS extends IntermediateGraph<LTS.State, LTS.Transition> {
         .collect(Collectors.toList());
   }
 
-  public List<Transition> getTransitionsForLabelRO(String label) {
+  public List<Transition> getTransitionsForLabel(String label) {
     // TODO should we throw error if label is not present?
-    return Collections.unmodifiableList(transitionMap.getOrDefault(label, new ArrayList<>()));
+    return new ArrayList<>(transitionMap.getOrDefault(label, new ArrayList<>()));
   }
 
   public static class State {
