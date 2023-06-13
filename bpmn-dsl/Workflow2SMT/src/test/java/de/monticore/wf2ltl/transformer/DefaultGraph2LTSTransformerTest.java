@@ -1,0 +1,142 @@
+package de.monticore.wf2ltl.transformer;
+
+import static java.util.Map.entry;
+
+import de.monticore.bpmn.workflow._ast.ASTEventType;
+import de.monticore.bpmn.workflow._ast.ASTFlowNode;
+import de.monticore.bpmn.workflow._ast.ASTIOSpecificationBuilder;
+import de.monticore.bpmn.workflow._ast.ASTInlineEventBuilder;
+import de.monticore.bpmn.workflow._ast.ASTNamedEvent;
+import de.monticore.bpmn.workflow._ast.ASTNamedEventBuilder;
+import de.monticore.bpmn.workflow._ast.ASTSubProcess;
+import de.monticore.bpmn.workflow._ast.ASTSubProcessBuilder;
+import de.monticore.bpmn.workflow._ast.ASTSubProcessType;
+import de.monticore.bpmn.workflow._ast.ASTTask;
+import de.monticore.bpmn.workflow._ast.ASTTaskBuilder;
+import de.monticore.bpmn.workflow._ast.SequenceFlowBuilder;
+import de.monticore.wf2ltl.NamingStrategy;
+import de.monticore.wf2ltl.datastructure.EdgeTo;
+import de.monticore.wf2ltl.datastructure.IntermediateGraphWithScopes;
+import de.monticore.wf2ltl.datastructure.LTS;
+import de.monticore.wf2ltl.scopes.GatewayScope;
+import de.monticore.wf2ltl.scopes.SubProcessScope;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
+class DefaultGraph2LTSTransformerTest {
+
+  private ASTSubProcess buildSubprocess(String subProcessName, String gTaskName) {
+    var start = new ASTInlineEventBuilder().setType(ASTEventType.START).build();
+    var end = new ASTInlineEventBuilder().setType(ASTEventType.END).build();
+    var taskG = new ASTTaskBuilder().setName(gTaskName).build();
+
+    var start2G = new SequenceFlowBuilder().setSource(start).setTarget(taskG).build();
+    var g2End = new SequenceFlowBuilder().setSource(taskG).setTarget(end).build();
+    start.getOutgoingsList().add(start2G);
+    taskG.getOutgoingsList().add(g2End);
+
+    return new ASTSubProcessBuilder()
+        .setName(subProcessName)
+        .setType(ASTSubProcessType.SUBPROCESS)
+        .setIOSpecification(new ASTIOSpecificationBuilder().build())
+        .setFlowElementsList(List.of(
+            start,
+            end,
+            taskG
+        )).build();
+  }
+
+  private GatewayTransformer doNothingGatewayTransformer() {
+    return new GatewayTransformer() {
+
+      @Override
+      public GatewayInterleavingStrategy getGatewayInterleavingStrategy() {
+        return null;
+      }
+
+      @Override
+      public void transform(GatewayScope gatewayScope, LTS externalGraph, NamingStrategy namingStrategy,
+          Graph2LTSTransformer graphTransformer) {
+      }
+    };
+  }
+
+  private SubprocessTransformer doNothingSubprocessTransformer() {
+    return new SubprocessTransformer() {
+      @Override
+      public void transform(SubProcessScope subProcessScope, LTS externalGraph, NamingStrategy namingStrategy,
+          Graph2LTSTransformer graphTransformer) {
+      }
+    };
+  }
+
+  private IntermediateGraphWithScopes buildTestGraph(
+      String aTaskName,
+      String bTaskName,
+      String cTaskName,
+      String startEventName,
+      String endEventName
+  ) {
+    ASTTask aTask = new ASTTaskBuilder().setName(aTaskName).build();
+    ASTTask bTask = new ASTTaskBuilder().setName(bTaskName).build();
+    ASTTask cTask = new ASTTaskBuilder().setName(cTaskName).build();
+    ASTNamedEvent start = new ASTNamedEventBuilder()
+        .setType(ASTEventType.START)
+        .setName(startEventName)
+        .build();
+    ASTNamedEvent end = new ASTNamedEventBuilder()
+        .setType(ASTEventType.END)
+        .setName(endEventName)
+        .build();
+
+    Map<ASTFlowNode, List<EdgeTo<ASTFlowNode>>> edges = Map.ofEntries(
+        entry(start, List.of(new EdgeTo<>(Collections.emptyList(), aTask))),
+        entry(aTask, List.of(
+            new EdgeTo<>(Collections.emptyList(), bTask),
+            new EdgeTo<>(Collections.emptyList(), cTask))),
+        entry(bTask, List.of(new EdgeTo<>(Collections.emptyList(), end))),
+        entry(cTask, List.of(
+            new EdgeTo<>(Collections.emptyList(), aTask),
+            new EdgeTo<>(Collections.emptyList(), end))
+        )
+    );
+    return new IntermediateGraphWithScopes(start, edges);
+  }
+
+  @Test
+  void transform() {
+
+    String aTaskName = "A";
+    String bTaskName = "B";
+    String cTaskName = "C";
+    String startEventName = "Start";
+    String endEventName = "End";
+
+    var namingStrategy = new NamingStrategy() {
+    };
+
+    var graphTransformer = new DefaultGraph2LTSTransformer(
+        namingStrategy,
+        doNothingGatewayTransformer(),
+        doNothingSubprocessTransformer());
+
+    var graph = buildTestGraph(aTaskName, bTaskName, cTaskName, startEventName, endEventName);
+    LTS lts = graphTransformer.transform(graph);
+
+    // Only end-event ends in terminal state.
+    Assertions.assertEquals(1, lts.getTerminalStates().size());
+    Assertions.assertTrue(
+        lts.getTerminalStates().stream().map(lts::getIncoming).flatMap(List::stream)
+            .allMatch(transition -> transition.getLabel().equals(endEventName))
+    );
+    for (var existingLabel : List.of(aTaskName, bTaskName, cTaskName, startEventName, endEventName)) {
+      Assertions.assertTrue(lts.isLabelPresent(existingLabel), existingLabel + " not present.");
+    }
+    var asMermaid = lts.toMermaid().build(); // optionally look at result in https://mermaid.live/
+
+
+  }
+}
