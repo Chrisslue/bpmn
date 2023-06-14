@@ -51,5 +51,5 @@ s3 --> s4
 | DefaultGatewayTransformer    | x           | x      |
 | DefaultSubprocessTransformer | x           | WIP    |
 | DefaultGraph2LTSTransformer  | x           | x      |
-| DefaultGatewayInterleaving   | x           | WIP    |
-| DefaultParallelInterleaving  | WIP         |        |
+| DefaultGatewayInterleaving   |             |        |
+| DefaultParallelInterleaving  | WIP         | x      |
