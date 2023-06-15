@@ -104,6 +104,10 @@ public class LTS extends IntermediateGraph<LTS.State, LTS.Transition> {
         .forEach(this::removeState);
   }
 
+  public List<State> getStates() {
+    return new ArrayList<>(getEdges().keySet());
+  }
+
   private List<Transition> getOutgoingsAddIfAbsent(State state) {
     if (!getEdges().containsKey(state)) {
       addState(state);

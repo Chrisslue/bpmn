@@ -1,6 +1,10 @@
-package de.monticore.wf2lts;
+package de.monticore.wf2ltl;
 
-import de.monticore.bpmn.trafos.*;
+import de.monticore.bpmn.trafos.AddNameToInlineFlowNodes;
+import de.monticore.bpmn.trafos.AddReferenceToParentLane;
+import de.monticore.bpmn.trafos.AddSequenceFlowToFlowNodes;
+import de.monticore.bpmn.trafos.CreateIOSpecification;
+import de.monticore.bpmn.trafos.SetSubProcessTriggeredByEvent;
 import de.monticore.bpmn.workflow.WorkflowMill;
 import de.monticore.bpmn.workflow.WorkflowTool;
 import de.monticore.bpmn.workflow._ast.ASTEvent;
@@ -9,8 +13,13 @@ import de.monticore.bpmn.workflow._ast.ASTWorkflowCompilationUnit;
 import de.monticore.bpmn.workflow._symboltable.WorkflowSTCompleter;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverserImplementation;
-import de.monticore.wf2lts.collector.StartEventCollector;
-import de.monticore.wf2lts.datastructure.IntermediateGraphWithScopes;
+import de.monticore.wf2ltl.collector.StartEventCollector;
+import de.monticore.wf2ltl.datastructure.IntermediateGraphWithScopes;
+import de.monticore.wf2ltl.datastructure.LTS;
+import de.monticore.wf2ltl.transformer.DefaultGatewayInterleaving;
+import de.monticore.wf2ltl.transformer.DefaultGatewayTransformer;
+import de.monticore.wf2ltl.transformer.DefaultGraph2LTSTransformer;
+import de.monticore.wf2ltl.transformer.DefaultSubprocessTransformer;
 
 public class WF2LTLGenerator {
 
@@ -52,14 +61,44 @@ public class WF2LTLGenerator {
 
     WorkflowSTCompleter stCompleter = new WorkflowSTCompleter();
     WorkflowTraverser traverser = WorkflowMill.traverser();
-    var startEvent = getStartEvent(ast);
     traverser.add4Workflow(stCompleter);
     ast.accept(traverser);
 
-    // 1. Building the intermediate graph.
-    IntermediateGraphWithScopes graph = GraphBuildingTraverser.graphOf(startEvent);
-    System.out.println(graph);
-
     return ast;
   }
+
+  public static LTS ltsOfWorkflow(String file) {
+    var ast = loadBPMN(file);
+
+    var startEvent = getStartEvent(ast);
+    // 1. Building the intermediate graph.
+    IntermediateGraphWithScopes graph = GraphBuildingTraverser.graphOf(startEvent);
+    var lts = transformToLTS(graph);
+    removeUnreachable(lts);
+    return lts;
+  }
+
+  private static void removeUnreachable(LTS lts) {
+    var stateSize = 0;
+    do {
+      stateSize = lts.getStates().size();
+      lts.getStates()
+          .stream()
+          .filter(state -> state != lts.getStart() && lts.getIncoming(state).isEmpty())
+          .forEach(lts::removeState);
+    } while (lts.getStates().size() != stateSize);
+  }
+
+  protected static LTS transformToLTS(IntermediateGraphWithScopes graph) {
+    var defaultNaming = new NamingStrategy() {
+
+    };
+    var graphTransformer = new DefaultGraph2LTSTransformer(
+        defaultNaming,
+        new DefaultGatewayTransformer(new DefaultGatewayInterleaving()),
+        new DefaultSubprocessTransformer()
+    );
+    return graphTransformer.transform(graph);
+  }
+
 }

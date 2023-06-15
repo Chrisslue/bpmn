@@ -1,4 +1,4 @@
-package de.monticore.wf2lts;
+package de.monticore.wf2ltl;
 
 import de.monticore.bpmn.workflow.WorkflowMill;
 import de.monticore.symbols.basicsymbols.BasicSymbolsMill;
@@ -18,9 +18,21 @@ public class WF2LTLGeneratorTest {
     BasicSymbolsMill.initializePrimitives();
   }
 
+  private static String diagramFile = "src/test/resources/de/monticore/wf2smt/Prototype.wfm";
+
   @Test
   public void testLoading() {
-    WF2LTLGenerator.loadBPMN("src/test/resources/de/monticore/wf2smt/Prototype.wfm");
+    WF2LTLGenerator.loadBPMN(diagramFile);
     Assertions.assertEquals(0, Log.getErrorCount());
   }
+
+  @Test
+  public void testComplete() {
+    var lts = WF2LTLGenerator.ltsOfWorkflow(diagramFile);
+    System.out.println(lts.toMermaid().build());
+    Assertions.assertEquals(1, lts.getOutgoings(lts.getStart()).size());
+    Assertions.assertEquals("Start", lts.getOutgoings(lts.getStart()).get(0).getLabel());
+
+  }
+
 }
