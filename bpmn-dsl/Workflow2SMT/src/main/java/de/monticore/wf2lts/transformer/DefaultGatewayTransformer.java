@@ -51,8 +51,8 @@ public class DefaultGatewayTransformer implements GatewayTransformer {
    * @param mergeName   The name of the merging gateway. Appearing both in the external and internal lts.
    * @param internalLTS The lts representing all transitions encapsulated by the GatewayScope
    */
-  private static void transformMerge(LTS externalLTS, String mergeName, LTS internalLTS) {
-    List<Transition> internalMerging = internalLTS.getTransitionsForLabel(mergeName);
+  private static void transformMerge(LTS externalLTS, String mergeName, LTS internalLTS,
+      List<Transition> internalMerging) {
     List<Transition> externalMerging = externalLTS.getTransitionsForLabel(mergeName);
     if (internalMerging.isEmpty() || externalMerging.isEmpty()) {
       throw new IllegalStateException("No merging transitions in lts. Expected to find" + mergeName
@@ -97,13 +97,22 @@ public class DefaultGatewayTransformer implements GatewayTransformer {
       List<Transition> toBeChanged = internalLTS.getOutgoings(splitTransition.getTarget());
       for (var successorTransitions : toBeChanged) {
         internalLTS.addTransition(successorTransitions
-            .changedSource(splitTransition.getSource())
+            .changedSource(internalLTS.getStart())
             .withAddedConditions(splitTransition.getConditions())
         );
       }
       toBeChanged.forEach(internalLTS::removeTransition);
     }
     cleanUp(splitName, internalLTS);
+  }
+
+  private List<Transition> removeInternalMergeTransition(LTS internalLTS, String mergeName) {
+    var mergeTransitions = internalLTS.getTransitionsForLabel(mergeName);
+    if (mergeTransitions.stream().anyMatch(transition -> !internalLTS.getOutgoings(transition.getTarget()).isEmpty())) {
+      throw new IllegalStateException("Merge transition target had outgoing transitions");
+    }
+    mergeTransitions.forEach(internalLTS::removeTransition);
+    return mergeTransitions;
   }
 
   public static void cleanUp(String name, LTS lts) {
@@ -123,8 +132,11 @@ public class DefaultGatewayTransformer implements GatewayTransformer {
     Optional<String> optMergeName = gatewayScope.getClosingGateway().map(namingStrategy);
 
     LTS transformedInternalLTS = subprocessTransformer.transform(gatewayScope.getGraph());
-
     removeInternalSplitTransitions(transformedInternalLTS, splitName);
+    LTS finalTransformedInternalLTS = transformedInternalLTS;
+    Optional<List<Transition>> optMergeTransitions = optMergeName.map(mergeName ->
+        removeInternalMergeTransition(finalTransformedInternalLTS, mergeName));
+
     transformedInternalLTS = getGatewayInterleavingStrategy()
         .interleave(gatewayScope.getGatewayType(), transformedInternalLTS);
 
@@ -132,7 +144,7 @@ public class DefaultGatewayTransformer implements GatewayTransformer {
 
     if (optMergeName.isPresent()) {
       var mergeName = optMergeName.get();
-      transformMerge(externalLTS, mergeName, transformedInternalLTS);
+      transformMerge(externalLTS, mergeName, transformedInternalLTS, optMergeTransitions.orElseThrow());
       cleanUp(mergeName, transformedInternalLTS);
       cleanUp(mergeName, externalLTS);
     }
