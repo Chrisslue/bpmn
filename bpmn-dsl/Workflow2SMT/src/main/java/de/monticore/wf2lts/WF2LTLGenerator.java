@@ -9,6 +9,8 @@ import de.monticore.bpmn.workflow._ast.ASTWorkflowCompilationUnit;
 import de.monticore.bpmn.workflow._symboltable.WorkflowSTCompleter;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverserImplementation;
+import de.monticore.wf2lts.collector.StartEventCollector;
+import de.monticore.wf2lts.datastructure.IntermediateGraphWithScopes;
 
 public class WF2LTLGenerator {
 
@@ -55,7 +57,7 @@ public class WF2LTLGenerator {
     ast.accept(traverser);
 
     // 1. Building the intermediate graph.
-    IntermediateGraph graph = GraphBuildingTraverser.graphOf(startEvent);
+    IntermediateGraphWithScopes graph = GraphBuildingTraverser.graphOf(startEvent);
     System.out.println(graph);
 
     return ast;

@@ -1,11 +1,12 @@
-package de.monticore.wf2lts;
+package de.monticore.wf2lts.collector;
 
+import de.monticore.bpmn.workflow.WorkflowMill;
 import de.monticore.bpmn.workflow._ast.ASTEvent;
 import de.monticore.bpmn.workflow._ast.ASTFlowElement;
 import de.monticore.bpmn.workflow._ast.ASTInlineEvent;
 import de.monticore.bpmn.workflow._ast.ASTNamedEvent;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
-import de.monticore.bpmn.workflow._visitor.WorkflowTraverserImplementation;
+
 import java.util.List;
 
 public class EndEventCollector extends EventCollector {
@@ -15,7 +16,7 @@ public class EndEventCollector extends EventCollector {
   }
 
   public static List<ASTEvent> of(List<ASTFlowElement> flowElements) {
-    var traverser = new WorkflowTraverserImplementation();
+    var traverser = WorkflowMill.traverser();
     var collector = new EndEventCollector(traverser);
     for (ASTFlowElement flowElement : flowElements) {
       flowElement.accept(traverser);
@@ -36,4 +37,5 @@ public class EndEventCollector extends EventCollector {
       super.getEvents().add(node);
     }
   }
+
 }

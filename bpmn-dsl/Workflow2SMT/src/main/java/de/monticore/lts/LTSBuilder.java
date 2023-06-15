@@ -15,5 +15,7 @@ public interface LTSBuilder<State, Label> {
 
   State addFinalState(String name);
 
+  void addTransition(State source, State target, Label label);
+
   void addTransition(State source, State target, Label label, ASTExpression condition);
 }
