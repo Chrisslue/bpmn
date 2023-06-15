@@ -1,11 +1,12 @@
-package de.monticore.wf2lts.transformer;
+package de.monticore.wf2ltl.transformer;
 
 import de.monticore.bpmn.workflow._ast.ASTFlowNode;
-import de.monticore.wf2lts.NamingStrategy;
-import de.monticore.wf2lts.datastructure.EdgeTo;
-import de.monticore.wf2lts.datastructure.IntermediateGraphWithScopes;
-import de.monticore.wf2lts.datastructure.LTS;
-import de.monticore.wf2lts.datastructure.LTS.Transition;
+import de.monticore.wf2ltl.NamingStrategy;
+import de.monticore.wf2ltl.datastructure.EdgeTo;
+import de.monticore.wf2ltl.datastructure.IntermediateGraphWithScopes;
+import de.monticore.wf2ltl.datastructure.LTS;
+import de.monticore.wf2ltl.datastructure.LTS.State;
+import de.monticore.wf2ltl.datastructure.LTS.Transition;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -57,6 +58,20 @@ public class DefaultGraph2LTSTransformer implements Graph2LTSTransformer {
             nodeToState.get(graph.getStart())
         )
     );
+    graph.getEdges().keySet().stream()
+        .filter(node -> node != graph.getStart() && graph.getEdges().values().stream().noneMatch(
+            transitionList -> transitionList.stream().anyMatch(transition -> transition.getTarget() == node)))
+        .forEach(node ->
+            lts.addTransition(
+                new Transition(
+                    new State(),
+                    Collections.emptyList(),
+                    namingStrategy.apply(node),
+                    nodeToState.get(node)
+                )
+            )
+        );
+
     graph.getEdges().forEach((node, edgeList) ->
         edgeList.forEach(edgeTo ->
             lts.addTransition(transitionFromNodes(nodeToState, node, edgeTo))
