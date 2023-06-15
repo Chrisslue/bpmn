@@ -24,6 +24,34 @@ public class LTS extends IntermediateGraph<LTS.State, LTS.Transition> {
     addState(startNode);
   }
 
+  /**
+   * Create a deep copy of another lts. The new lts is 'isomorphic' to the given one with different states and
+   * transitions.
+   */
+  public LTS(LTS toBeCloned) {
+    this(); // Creates a new start state.
+    var lookup = new HashMap<State, State>();
+    lookup.put(toBeCloned.getStart(), this.start);
+    toBeCloned.getEdges().forEach((state, transitions) -> {
+          lookup.putIfAbsent(state, new State());
+          addState(lookup.get(state));
+          transitions.forEach(transition -> {
+                lookup.putIfAbsent(transition.getSource(), new State());
+                lookup.putIfAbsent(transition.getTarget(), new State());
+                addTransition(
+                    new Transition(
+                        lookup.get(transition.getSource()),
+                        transition.getConditions(),
+                        transition.getLabel(),
+                        lookup.get(transition.getTarget())
+                    )
+                );
+              }
+          );
+        }
+    );
+  }
+
   public void addState(State state) {
     getEdges().putIfAbsent(state, new ArrayList<>());
   }
@@ -115,7 +143,14 @@ public class LTS extends IntermediateGraph<LTS.State, LTS.Transition> {
   }
 
   public void addLTS(LTS otherLTS) {
-    // States are added implicitly.
+    // Add all states explicitly. This will also add states that have no incoming transition.
+    otherLTS.getEdges().keySet().forEach(this::addState);
+    addTransitionsOf(otherLTS);
+  }
+
+  public void addTransitionsOf(LTS otherLTS) {
+    // Only add transitions -> implicitly adds source and target states.
+    // Resulting lts only contains states with at least one incoming or outgoing transition.
     otherLTS.getEdges().forEach((state, transitions) -> transitions.forEach(this::addTransition));
   }
 

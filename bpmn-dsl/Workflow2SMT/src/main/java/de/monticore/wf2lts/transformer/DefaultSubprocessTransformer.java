@@ -142,7 +142,7 @@ public class DefaultSubprocessTransformer implements SubprocessTransformer {
       collectAndReplaceTerminatingEvents(parameterPack, internalGraph, subProcessOutgoings);
       externalGraph.removeTransition(oldSubprocessTransition);
     }
-    externalGraph.addLTS(internalGraph);
+    externalGraph.addTransitionsOf(internalGraph);
   }
 
   private static class ParameterPack {

@@ -139,7 +139,7 @@ public class DefaultGatewayTransformer implements GatewayTransformer {
     cleanUp(splitName, externalLTS);
     // cleanUp for splitName and internal lts is done in removeInternalSplitTransitions.
 
-    externalLTS.addLTS(transformedInternalLTS);
+    externalLTS.addTransitionsOf(transformedInternalLTS);
   }
 
 }
