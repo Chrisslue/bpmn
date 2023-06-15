@@ -35,21 +35,30 @@ s3 --> s4
 
 ## Current state
 
-| Component                    | Implemented | Tested |
-|------------------------------|-------------|--------|
-| GraphBuildingTransformer     | x           |        |
-| IntermediateGraph            | x           | -      |
-| IntermediateGraphWithScopes  | x           |        |
-| LTS                          | x           |        |
-| GatewayScope                 | x           |        |
-| SubprocessScope              | x           |        |
-| NamingStrategy               | x           | -      |
-| GatewayTransformer           | x           | -      |
-| SubprocessTransformer        | x           | -      |
-| GatewayInterleavingStrategy  | x           | -      |
-| Graph2LTSTransformer         | x           | -      |
-| DefaultGatewayTransformer    | x           | x      |
-| DefaultSubprocessTransformer | x           | WIP    |
-| DefaultGraph2LTSTransformer  | x           | x      |
-| DefaultGatewayInterleaving   |             |        |
-| DefaultParallelInterleaving  | WIP         | x      |
+| Component                     | Implemented | Tested |
+|-------------------------------|-------------|--------|
+| GraphBuildingTransformer      | x           |        |
+| IntermediateGraph             | x           | -      |
+| IntermediateGraphWithScopes   | x           |        |
+| LTS                           | x           |        |
+| GatewayScope                  | x           |        |
+| SubprocessScope               | x           |        |
+| NamingStrategy                | x           | -      |
+| GatewayTransformer            | x           | -      |
+| SubprocessTransformer         | x           | -      |
+| GatewayInterleavingStrategy   | x           | -      |
+| Graph2LTSTransformer          | x           | -      |
+| DefaultGatewayTransformer     | x           | x      |
+| DefaultSubprocessTransformer  | x           | WIP    |
+| DefaultGraph2LTSTransformer   | x           | x      |
+| DefaultGatewayInterleaving    |             |        |
+| DefaultParallelInterleaving   | WIP         | x      |
+| DefaultSequentialInterleaving | WIP         | x      |
+
+#### Problems
+
+- Cycle are not yet handled in `DefaultParallelInterleaving`
+- `DefaultSequentialInterleaving` depends on some implicit assumptions like
+  - There are no links between the subgraph of each start-transition
+  - There is no cycle back to the start node
+  - From terminal-state (no outgoing transition) one can take the next path
