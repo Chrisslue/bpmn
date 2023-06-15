@@ -6,7 +6,9 @@ import de.monticore.wf2ltl.datastructure.LTS;
 import de.monticore.wf2ltl.datastructure.LTS.State;
 import de.monticore.wf2ltl.datastructure.LTS.Transition;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -42,6 +44,12 @@ public class LTSTestingUtils {
 
   public static void assertPathExists(LTS lts, List<String> labels) {
     assertTrue(pathOfLabel(lts, labels).isPresent(), "Path of labels doesnt exist" + labels);
+  }
+
+  public static void assertPathsExists(LTS lts, List<List<String>> paths) {
+    for (var path : paths) {
+      assertPathExists(lts, path);
+    }
   }
 
   public static <T> List<List<T>> generatePermutations(List<T> originalList) {
@@ -98,5 +106,9 @@ public class LTSTestingUtils {
     var outgoingLabel2 = lts2.getOutgoings(state2)
         .stream().map(Transition::getLabel).collect(Collectors.toList());
     Utils.assertEqualIgnoreOrder(outgoingLabel1, outgoingLabel2);
+  }
+
+  public static void addTransition(State source, String label, Map<String, State> targets, LTS lts) {
+    lts.addTransition(new Transition(source, Collections.emptyList(), label, targets.get(label)));
   }
 }

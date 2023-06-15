@@ -23,26 +23,21 @@ class DefaultParallelInterleavingTest {
 
   private final List<String> elements = List.of("A", "B", "C", "D", "E", "F", "G");
 
-
-  private void addTransition(LTS.State source, String label, Map<String, State> targets, LTS lts) {
-    lts.addTransition(new Transition(source, Collections.emptyList(), label, targets.get(label)));
-  }
-
   private LTS buildBranchingLTS() {
     // Use lts.toMermaid().build() to visualize the lts
     var lts = new LTS();
     Map<String, State> targets = elements.stream()
         .collect(Collectors.toMap(Function.identity(), (x) -> new LTS.State()));
     targets.values().forEach(lts::addState);
-    addTransition(lts.getStart(), "A", targets, lts);
-    addTransition(targets.get("A"), "B", targets, lts);
-    addTransition(targets.get("B"), "C", targets, lts);
+    LTSTestingUtils.addTransition(lts.getStart(), "A", targets, lts);
+    LTSTestingUtils.addTransition(targets.get("A"), "B", targets, lts);
+    LTSTestingUtils.addTransition(targets.get("B"), "C", targets, lts);
     // addTransition(targets.get("C"), "B", targets, lts); TODO test backlinks if implemented
-    addTransition(targets.get("C"), "G", targets, lts);
-    addTransition(targets.get("B"), "D", targets, lts);
-    addTransition(targets.get("D"), "G", targets, lts);
-    addTransition(targets.get("E"), "F", targets, lts);
-    addTransition(lts.getStart(), "E", targets, lts);
+    LTSTestingUtils.addTransition(targets.get("C"), "G", targets, lts);
+    LTSTestingUtils.addTransition(targets.get("B"), "D", targets, lts);
+    LTSTestingUtils.addTransition(targets.get("D"), "G", targets, lts);
+    LTSTestingUtils.addTransition(targets.get("E"), "F", targets, lts);
+    LTSTestingUtils.addTransition(lts.getStart(), "E", targets, lts);
     return lts;
   }
 
@@ -51,13 +46,13 @@ class DefaultParallelInterleavingTest {
     Map<String, State> targets = elements.stream()
         .collect(Collectors.toMap(Function.identity(), (x) -> new LTS.State()));
     targets.values().forEach(lts::addState);
-    addTransition(lts.getStart(), "A", targets, lts);
-    addTransition(targets.get("A"), "B", targets, lts);
-    addTransition(targets.get("B"), "C", targets, lts);
-    addTransition(lts.getStart(), "D", targets, lts);
-    addTransition(targets.get("D"), "E", targets, lts);
-    addTransition(lts.getStart(), "F", targets, lts);
-    addTransition(targets.get("F"), "G", targets, lts);
+    LTSTestingUtils.addTransition(lts.getStart(), "A", targets, lts);
+    LTSTestingUtils.addTransition(targets.get("A"), "B", targets, lts);
+    LTSTestingUtils.addTransition(targets.get("B"), "C", targets, lts);
+    LTSTestingUtils.addTransition(lts.getStart(), "D", targets, lts);
+    LTSTestingUtils.addTransition(targets.get("D"), "E", targets, lts);
+    LTSTestingUtils.addTransition(lts.getStart(), "F", targets, lts);
+    LTSTestingUtils.addTransition(targets.get("F"), "G", targets, lts);
     return lts;
   }
 
@@ -124,8 +119,7 @@ class DefaultParallelInterleavingTest {
 
     LTSTestingUtils.assertSameStartOutgoingLabel(originalLTS, interleaved);
 
-    allValidPathForThreeOptionsLTS().forEach(
-        validPath -> LTSTestingUtils.assertPathExists(interleaved, validPath));
+    LTSTestingUtils.assertPathsExists(interleaved, allValidPathForThreeOptionsLTS());
   }
 
   @Test

@@ -28,8 +28,8 @@ public class DefaultParallelInterleaving {
     this.oldLTs = oldLTS;
   }
 
-  public static LTS interleave(LTS graph) {
-    return new DefaultParallelInterleaving(graph).interleave();
+  public static LTS interleave(LTS lts) {
+    return new DefaultParallelInterleaving(lts).interleave();
   }
 
   private LTS interleave() {
