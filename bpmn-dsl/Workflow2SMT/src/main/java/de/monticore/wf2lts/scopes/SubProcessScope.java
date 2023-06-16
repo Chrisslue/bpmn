@@ -3,10 +3,9 @@ package de.monticore.wf2lts.scopes;
 import de.monticore.bpmn.workflow._ast.ASTEvent;
 import de.monticore.bpmn.workflow._ast.ASTSubProcess;
 import de.monticore.wf2lts.GraphBuildingTraverser;
-import de.monticore.wf2lts.datastructure.IntermediateGraphWithScopes;
 import de.monticore.wf2lts.collector.EndEventCollector;
 import de.monticore.wf2lts.collector.StartEventCollector;
-
+import de.monticore.wf2lts.datastructure.IntermediateGraphWithScopes;
 import java.util.List;
 
 public class SubProcessScope {
@@ -48,5 +47,4 @@ public class SubProcessScope {
   public List<ASTEvent> getEndEvents() {
     return endEvents;
   }
-
 }

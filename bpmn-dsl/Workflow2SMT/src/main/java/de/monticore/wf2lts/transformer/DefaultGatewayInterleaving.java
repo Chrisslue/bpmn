@@ -33,5 +33,4 @@ public class DefaultGatewayInterleaving implements GatewayInterleavingStrategy {
   public LTS interleaveComplex(LTS lts) {
     throw new UnsupportedOperationException("interleaveComplex is not yet implemented");
   }
-
 }

@@ -19,8 +19,8 @@ public class IntermediateGraphWithScopes
     this(startNode, new HashMap<>());
   }
 
-  public IntermediateGraphWithScopes(ASTFlowNode startNode,
-      Map<ASTFlowNode, List<EdgeTo<ASTFlowNode>>> edges) {
+  public IntermediateGraphWithScopes(
+      ASTFlowNode startNode, Map<ASTFlowNode, List<EdgeTo<ASTFlowNode>>> edges) {
     super(startNode, edges);
     this.gatewayScopes = new ArrayList<>();
     this.subProcessScopes = new ArrayList<>();
@@ -53,5 +53,4 @@ public class IntermediateGraphWithScopes
   public List<ASTFlowNode> getSources(EdgeTo<ASTFlowNode> edge) {
     return super.getSources(edge);
   }
-
 }

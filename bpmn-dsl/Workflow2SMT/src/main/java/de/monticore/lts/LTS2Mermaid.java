@@ -4,11 +4,9 @@ import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.lts.LTS2Mermaid.State;
 import de.monticore.types.mcbasictypes._ast.ASTMCQualifiedType;
 import de.se_rwth.commons.logging.Log;
-
 import java.util.*;
 
 public class LTS2Mermaid implements LTSBuilder<State, String> {
-
 
   private final Set<State> initialStates;
   private final Set<State> states;
@@ -76,7 +74,6 @@ public class LTS2Mermaid implements LTSBuilder<State, String> {
     transitions.add(new Transition(source, target, label, List.of(condition)));
   }
 
-
   public String build() {
     return build("direction LR");
   }
@@ -87,17 +84,14 @@ public class LTS2Mermaid implements LTSBuilder<State, String> {
     for (var state : states) {
       // Declare all states with id = toString and their name as description.
       // This allows for spaces in state-names.
-      diagram.append("\t")
-          .append(state)
-          .append(" : ")
-          .append(state.name)
-          .append("\n");
+      diagram.append("\t").append(state).append(" : ").append(state.name).append("\n");
     }
     for (State initialState : initialStates) {
       diagram.append("\t").append("[*]").append(" --> ").append(initialState).append("\n");
     }
     for (Transition transition : transitions) {
-      diagram.append("\t")
+      diagram
+          .append("\t")
           .append(transition.source)
           .append(" --> ")
           .append(transition.target)
@@ -107,9 +101,7 @@ public class LTS2Mermaid implements LTSBuilder<State, String> {
         diagram.append("\n");
         continue;
       }
-      diagram.append(" with ")
-          .append(transition.conditions)
-          .append("\n");
+      diagram.append(" with ").append(transition.conditions).append("\n");
     }
     return diagram.toString();
   }
@@ -121,7 +113,6 @@ public class LTS2Mermaid implements LTSBuilder<State, String> {
     public State(String name) {
       this.name = name;
     }
-
   }
 
   public static class Transition {
@@ -132,7 +123,8 @@ public class LTS2Mermaid implements LTSBuilder<State, String> {
 
     Collection<ASTExpression> conditions;
 
-    public Transition(State source, State target, String label, Collection<ASTExpression> conditions) {
+    public Transition(
+        State source, State target, String label, Collection<ASTExpression> conditions) {
       this.source = source;
       this.target = target;
       this.label = label;

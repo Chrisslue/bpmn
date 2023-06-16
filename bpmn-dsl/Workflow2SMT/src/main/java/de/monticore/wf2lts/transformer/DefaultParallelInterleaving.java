@@ -15,16 +15,16 @@ public class DefaultParallelInterleaving {
 
   private final MetaState metaRoot;
 
-
   public DefaultParallelInterleaving(LTS oldLTS) {
     var initialParallelTransitions = oldLTS.getOutgoings(oldLTS.getStart());
 
     this.lts = new LTS();
-    this.metaRoot = new MetaState(
-        initialParallelTransitions,
-        Collections.emptyList(),
-        Collections.emptyMap(),
-        lts.getStart());
+    this.metaRoot =
+        new MetaState(
+            initialParallelTransitions,
+            Collections.emptyList(),
+            Collections.emptyMap(),
+            lts.getStart());
     this.oldLTs = oldLTS;
   }
 
@@ -37,12 +37,12 @@ public class DefaultParallelInterleaving {
     return lts;
   }
 
-
   /**
-   * This class encapsulates the logic of interleaving. Every meta state is tied to a new state in the interleaved lts.
-   * It contains additional information of which transitions could be expanded next. Note that
-   * initialParallelTransitions and ltsReferences are kept separately as every outgoing of every non-start state is
-   * treated as exclusive choice but the outgoings transitions of the start state (of the oldLTS) are parallel.
+   * This class encapsulates the logic of interleaving. Every meta state is tied to a new state in
+   * the interleaved lts. It contains additional information of which transitions could be expanded
+   * next. Note that initialParallelTransitions and ltsReferences are kept separately as every
+   * outgoing of every non-start state is treated as exclusive choice but the outgoings transitions
+   * of the start state (of the oldLTS) are parallel.
    */
   private class MetaState {
 
@@ -55,17 +55,17 @@ public class DefaultParallelInterleaving {
     private final LTS.State ltsState;
 
     /**
-     * @param initialParallelTransitions The outgoings of the start-state form the oldLts that were not yet visited.
-     * @param ltsReferences              The other places in the oldLts where a transition could be chosen next.
-     * @param previous                   Previously seen transition-label, kept in order to detect back references.
-     * @param ltsState                   The corresponding lts state in the newly build interleaved lts.
+     * @param initialParallelTransitions The outgoings of the start-state form the oldLts that were
+     *     not yet visited.
+     * @param ltsReferences The other places in the oldLts where a transition could be chosen next.
+     * @param previous Previously seen transition-label, kept in order to detect back references.
+     * @param ltsState The corresponding lts state in the newly build interleaved lts.
      */
     private MetaState(
         List<LTS.Transition> initialParallelTransitions,
         List<LTS.State> ltsReferences,
         Map<String, LTS.State> previous,
-        LTS.State ltsState
-    ) {
+        LTS.State ltsState) {
       this.initialParallelTransitions = initialParallelTransitions;
       this.ltsReferences = ltsReferences;
       this.previous = previous;
@@ -73,9 +73,10 @@ public class DefaultParallelInterleaving {
     }
 
     /**
-     * Build the interleaved lts by successively expanding outgoing-transitions. At every point either a direct
-     * successor of a reference is expanded or one of the initial outgoing transitions of the start-state are expanded.
-     * 1. Expand all successors of all references. 2. Expand all parallel initial edges.
+     * Build the interleaved lts by successively expanding outgoing-transitions. At every point
+     * either a direct successor of a reference is expanded or one of the initial outgoing
+     * transitions of the start-state are expanded. 1. Expand all successors of all references. 2.
+     * Expand all parallel initial edges.
      */
     public void recursiveExpand() {
 
@@ -91,7 +92,8 @@ public class DefaultParallelInterleaving {
       nextInitial.remove(transition);
       var nextReferences = new ArrayList<>(ltsReferences);
       nextReferences.add(transition.getTarget());
-      var nextMeta = new MetaState(nextInitial, nextReferences, new HashMap<>(previous), new LTS.State());
+      var nextMeta =
+          new MetaState(nextInitial, nextReferences, new HashMap<>(previous), new LTS.State());
       nextMeta.previous.put(transition.getLabel(), nextMeta.ltsState);
       lts.addTransition(transition.changedSource(this.ltsState).changedTarget(nextMeta.ltsState));
       nextMeta.recursiveExpand();

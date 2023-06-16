@@ -1,7 +1,6 @@
 package de.monticore.wf2lts.datastructure;
 
 import de.monticore.bpmn.workflow._ast.ASTFlowCondition;
-
 import java.util.List;
 
 public class EdgeTo<S> {
@@ -22,5 +21,4 @@ public class EdgeTo<S> {
   public S getTarget() {
     return target;
   }
-
 }

@@ -23,11 +23,13 @@ public class IntermediateGraph<S, E extends EdgeTo<S>> {
 
   protected List<S> predecessorNodes(S node) {
     List<S> predecessor = new ArrayList<>();
-    getEdges().forEach((key, edgeList) -> {
-      if (edgeList.stream().anyMatch(edge -> edge.getTarget().equals(node))) {
-        predecessor.add(key);
-      }
-    });
+    getEdges()
+        .forEach(
+            (key, edgeList) -> {
+              if (edgeList.stream().anyMatch(edge -> edge.getTarget().equals(node))) {
+                predecessor.add(key);
+              }
+            });
     return predecessor;
   }
 
@@ -37,18 +39,20 @@ public class IntermediateGraph<S, E extends EdgeTo<S>> {
    */
   protected Map<S, List<E>> predecessors(S node) {
     Map<S, List<E>> predecessorSubSet = new HashMap<>();
-    getEdges().forEach((key, edgeList) -> {
-      var relevantEdges = edgeList.stream()
-          .filter(edge -> edge.getTarget().equals(node))
-          .collect(Collectors.toList());
-      predecessorSubSet.put(key, relevantEdges);
-    });
+    getEdges()
+        .forEach(
+            (key, edgeList) -> {
+              var relevantEdges =
+                  edgeList.stream()
+                      .filter(edge -> edge.getTarget().equals(node))
+                      .collect(Collectors.toList());
+              predecessorSubSet.put(key, relevantEdges);
+            });
     return predecessorSubSet;
   }
 
   protected List<S> getSources(E edge) {
-    return getEdges().entrySet()
-        .stream()
+    return getEdges().entrySet().stream()
         .filter(entry -> entry.getValue().contains(edge))
         .map(Map.Entry::getKey)
         .collect(Collectors.toList());
@@ -61,5 +65,4 @@ public class IntermediateGraph<S, E extends EdgeTo<S>> {
   protected Map<S, List<E>> getEdges() {
     return edges;
   }
-
 }

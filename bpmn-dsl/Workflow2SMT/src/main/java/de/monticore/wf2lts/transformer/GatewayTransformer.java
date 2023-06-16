@@ -8,7 +8,9 @@ public interface GatewayTransformer {
 
   GatewayInterleavingStrategy getGatewayInterleavingStrategy();
 
-  void transform(GatewayScope gatewayScope, LTS externalGraph, NamingStrategy namingStrategy,
+  void transform(
+      GatewayScope gatewayScope,
+      LTS externalGraph,
+      NamingStrategy namingStrategy,
       Graph2LTSTransformer graphTransformer);
-
 }

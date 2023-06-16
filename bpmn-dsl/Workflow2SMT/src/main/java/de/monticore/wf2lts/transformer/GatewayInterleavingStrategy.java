@@ -22,7 +22,6 @@ public interface GatewayInterleavingStrategy {
       default:
         throw new IllegalArgumentException("Passed unexpected GatewayType: " + type);
     }
-
   }
 
   LTS interleaveExclusive(LTS graph);
@@ -36,5 +35,4 @@ public interface GatewayInterleavingStrategy {
   LTS interleaveEventBasedExclusive(LTS graph);
 
   LTS interleaveComplex(LTS graph);
-
 }

@@ -92,8 +92,7 @@ public class MASCBuilder implements LTSBuilder<ASTSCState, ASTTransitionAction> 
   }
 
   @Override
-  public void addTransition(
-      ASTSCState source, ASTSCState target, ASTTransitionAction label) {
+  public void addTransition(ASTSCState source, ASTSCState target, ASTTransitionAction label) {
     transitions.add(
         MontiArcMill.sCTransitionBuilder()
             .setSourceName(source.getName())

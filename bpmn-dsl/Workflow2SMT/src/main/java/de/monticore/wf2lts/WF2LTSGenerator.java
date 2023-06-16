@@ -82,23 +82,20 @@ public class WF2LTSGenerator {
     var stateSize = 0;
     do {
       stateSize = lts.getStates().size();
-      lts.getStates()
-          .stream()
+      lts.getStates().stream()
           .filter(state -> state != lts.getStart() && lts.getIncoming(state).isEmpty())
           .forEach(lts::removeState);
     } while (lts.getStates().size() != stateSize);
   }
 
   protected static LTS transformToLTS(IntermediateGraphWithScopes graph) {
-    var defaultNaming = new NamingStrategy() {
+    var defaultNaming = new NamingStrategy() {};
 
-    };
-    var graphTransformer = new DefaultGraph2LTSTransformer(
-        defaultNaming,
-        new DefaultGatewayTransformer(new DefaultGatewayInterleaving()),
-        new DefaultSubprocessTransformer()
-    );
+    var graphTransformer =
+        new DefaultGraph2LTSTransformer(
+            defaultNaming,
+            new DefaultGatewayTransformer(new DefaultGatewayInterleaving()),
+            new DefaultSubprocessTransformer());
     return graphTransformer.transform(graph);
   }
-
 }

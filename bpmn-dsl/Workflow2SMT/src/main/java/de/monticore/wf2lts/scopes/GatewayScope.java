@@ -10,14 +10,20 @@ import de.monticore.wf2lts.GraphBuildingTraverser;
 import java.util.Optional;
 
 /**
- * Encapsulate a block of sequences between two matching gateways (split -> ... -> merge). Or paths from split that end
- * in an end event. Build the internal graph connecting both gateways. Might include other nested GatewayScopes or
- * SubprocessScopes. When created (using the constructor) the intermediate graph is build immediately.
+ * Encapsulate a block of sequences between two matching gateways (split -> ... -> merge). Or paths
+ * from split that end in an end event. Build the internal graph connecting both gateways. Might
+ * include other nested GatewayScopes or SubprocessScopes. When created (using the constructor) the
+ * intermediate graph is build immediately.
  */
 public class GatewayScope extends GraphBuildingTraverser {
 
   public enum GatewayType {
-    XOR, IOR, PARALLEL, EVENT_PARALLEL, EVENT_XOR, COMPLEX;
+    XOR,
+    IOR,
+    PARALLEL,
+    EVENT_PARALLEL,
+    EVENT_XOR,
+    COMPLEX;
 
     public static GatewayType of(ASTGatewayType type) {
       if (type.isParallel()) {
@@ -92,8 +98,7 @@ public class GatewayScope extends GraphBuildingTraverser {
       // We found the matching merge gateway.
       // Closing the gateway scope -> No further traversing..
       this.closingGateway = gateway;
-    }
-    else { // Continue traversing graph.
+    } else { // Continue traversing graph.
       addOutgoingsAsEdges(gateway);
       for (SequenceFlow outgoingFlow : gateway.getOutgoingsList()) {
         outgoingFlow.accept(getTraverser());
@@ -110,5 +115,4 @@ public class GatewayScope extends GraphBuildingTraverser {
   public void handle(ASTInlineGateway node) {
     handleGateway(node);
   }
-
 }

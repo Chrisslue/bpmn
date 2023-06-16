@@ -6,7 +6,6 @@ import de.monticore.bpmn.workflow._ast.ASTFlowElement;
 import de.monticore.bpmn.workflow._ast.ASTInlineEvent;
 import de.monticore.bpmn.workflow._ast.ASTNamedEvent;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
-
 import java.util.List;
 
 public class EndEventCollector extends EventCollector {
@@ -37,5 +36,4 @@ public class EndEventCollector extends EventCollector {
       super.getEvents().add(node);
     }
   }
-
 }

@@ -12,18 +12,31 @@ import java.util.stream.Stream;
 
 public class DefaultSubprocessTransformer implements SubprocessTransformer {
 
-  private static void collectAndReplaceStartEvents(ParameterPack parameterPack,
-      LTS.Transition oldTransition, LTS internalGraph, LTS externalGraph) {
+  private static void collectAndReplaceStartEvents(
+      ParameterPack parameterPack,
+      LTS.Transition oldTransition,
+      LTS internalGraph,
+      LTS externalGraph) {
 
-    var internalStartNames = getEventNames(
-        parameterPack.getSubProcessScope().getStartEvents().stream(),
-        parameterPack.getNamingStrategy());
-    replaceInternalStartEvents(internalGraph, externalGraph, internalStartNames,
-        parameterPack.getNewStartName(), oldTransition.getSource(), oldTransition.getConditions());
+    var internalStartNames =
+        getEventNames(
+            parameterPack.getSubProcessScope().getStartEvents().stream(),
+            parameterPack.getNamingStrategy());
+    replaceInternalStartEvents(
+        internalGraph,
+        externalGraph,
+        internalStartNames,
+        parameterPack.getNewStartName(),
+        oldTransition.getSource(),
+        oldTransition.getConditions());
   }
 
-  private static void replaceInternalStartEvents(LTS internalGraph, LTS externalGraph,
-      List<String> startEventNames, String startName, LTS.State externalSource,
+  private static void replaceInternalStartEvents(
+      LTS internalGraph,
+      LTS externalGraph,
+      List<String> startEventNames,
+      String startName,
+      LTS.State externalSource,
       List<ASTFlowCondition> oldConditions) {
     startEventNames.stream()
         .map(internalGraph::getTransitionsForLabel)
@@ -31,36 +44,43 @@ public class DefaultSubprocessTransformer implements SubprocessTransformer {
         .collect(Collectors.toList())
         .stream()
         .map(
-            transition -> replaceInternalStart(internalGraph, transition, startName, externalSource,
-                oldConditions))
+            transition ->
+                replaceInternalStart(
+                    internalGraph, transition, startName, externalSource, oldConditions))
         .collect(Collectors.toList())
         .forEach(externalGraph::addTransition);
   }
 
-  private static LTS.Transition replaceInternalStart(LTS internalGraph,
-      LTS.Transition startEventTransition, String startName, LTS.State externalSource,
+  private static LTS.Transition replaceInternalStart(
+      LTS internalGraph,
+      LTS.Transition startEventTransition,
+      String startName,
+      LTS.State externalSource,
       List<ASTFlowCondition> oldConditions) {
     internalGraph.removeTransition(startEventTransition);
-    return startEventTransition.changedLabel(startName)
+    return startEventTransition
+        .changedLabel(startName)
         .changedSource(externalSource)
         .withAddedConditions(oldConditions);
   }
 
-  private static void collectAndReplaceEndEvents(ParameterPack parameterPack,
-      LTS.Transition oldTransition, LTS internalGraph) {
-    var plainEndEvents = parameterPack.getSubProcessScope()
-        .getEndEvents()
-        .stream()
-        .filter(event -> !event.isPresentTrigger()
-            || !new WorkflowTypeDispatcher().isASTEventTriggerTerminate(event.getTrigger()));
+  private static void collectAndReplaceEndEvents(
+      ParameterPack parameterPack, LTS.Transition oldTransition, LTS internalGraph) {
+    var plainEndEvents =
+        parameterPack.getSubProcessScope().getEndEvents().stream()
+            .filter(
+                event ->
+                    !event.isPresentTrigger()
+                        || !new WorkflowTypeDispatcher()
+                            .isASTEventTriggerTerminate(event.getTrigger()));
 
     var internalEndNames = getEventNames(plainEndEvents, parameterPack.getNamingStrategy());
-    replaceInternalEndEvents(internalGraph, internalEndNames, parameterPack.getNewEndName(),
-        oldTransition.getTarget());
+    replaceInternalEndEvents(
+        internalGraph, internalEndNames, parameterPack.getNewEndName(), oldTransition.getTarget());
   }
 
-  private static void replaceInternalEndEvents(LTS internalGraph, List<String> endEventNames,
-      String endName, LTS.State externalTarget) {
+  private static void replaceInternalEndEvents(
+      LTS internalGraph, List<String> endEventNames, String endName, LTS.State externalTarget) {
     endEventNames.stream()
         .map(internalGraph::getTransitionsForLabel)
         .flatMap(List::stream)
@@ -69,74 +89,84 @@ public class DefaultSubprocessTransformer implements SubprocessTransformer {
             transition -> replaceInternalEnd(internalGraph, transition, endName, externalTarget));
   }
 
-  private static void replaceInternalEnd(LTS internalGraph, LTS.Transition endEventTransition,
-      String endName, LTS.State externalTarget) {
+  private static void replaceInternalEnd(
+      LTS internalGraph,
+      LTS.Transition endEventTransition,
+      String endName,
+      LTS.State externalTarget) {
     internalGraph.removeTransition(endEventTransition);
     internalGraph.addTransition(
         endEventTransition.changedLabel(endName).changedTarget(externalTarget));
   }
 
-  private static void collectAndReplaceTerminatingEvents(ParameterPack parameterPack,
-      LTS internalGraph, List<LTS.Transition> subProcessOutgoings) {
-    var terminatingEvents = parameterPack.getSubProcessScope()
-        .getEndEvents()
-        .stream()
-        .filter(event -> event.isPresentTrigger()
-            && new WorkflowTypeDispatcher().isASTEventTriggerTerminate(event.getTrigger()));
+  private static void collectAndReplaceTerminatingEvents(
+      ParameterPack parameterPack, LTS internalGraph, List<LTS.Transition> subProcessOutgoings) {
+    var terminatingEvents =
+        parameterPack.getSubProcessScope().getEndEvents().stream()
+            .filter(
+                event ->
+                    event.isPresentTrigger()
+                        && new WorkflowTypeDispatcher()
+                            .isASTEventTriggerTerminate(event.getTrigger()));
 
-    var internalTerminatingNames = getEventNames(terminatingEvents,
-        parameterPack.getNamingStrategy());
+    var internalTerminatingNames =
+        getEventNames(terminatingEvents, parameterPack.getNamingStrategy());
     replaceInternalTermEvents(internalGraph, internalTerminatingNames, subProcessOutgoings);
   }
 
-  private static void replaceInternalTermEvents(LTS internalGraph,
-      List<String> terminatingEventNames, List<LTS.Transition> subProcessOutgoings) {
+  private static void replaceInternalTermEvents(
+      LTS internalGraph,
+      List<String> terminatingEventNames,
+      List<LTS.Transition> subProcessOutgoings) {
     terminatingEventNames.stream()
         .map(internalGraph::getTransitionsForLabel)
         .flatMap(List::stream)
         .forEach(
-            terminatingTransition -> replaceInternalTerm(terminatingTransition, subProcessOutgoings, internalGraph));
+            terminatingTransition ->
+                replaceInternalTerm(terminatingTransition, subProcessOutgoings, internalGraph));
   }
 
   private static void replaceInternalTerm(
       LTS.Transition terminatingTransition,
       List<LTS.Transition> subprocessOutgoingList,
-      LTS internalGraph
-  ) {
+      LTS internalGraph) {
     internalGraph.removeTransition(terminatingTransition);
-    subprocessOutgoingList.forEach(subprocessOutgoing ->
-        internalGraph.addTransition(
-            subprocessOutgoing.changedSource(terminatingTransition.getSource())
-                .withAddedConditions(terminatingTransition.getConditions())
-        )
-    );
+    subprocessOutgoingList.forEach(
+        subprocessOutgoing ->
+            internalGraph.addTransition(
+                subprocessOutgoing
+                    .changedSource(terminatingTransition.getSource())
+                    .withAddedConditions(terminatingTransition.getConditions())));
   }
 
   private static List<String> getEventNames(
-      Stream<ASTEvent> events,
-      NamingStrategy namingStrategy
-  ) {
+      Stream<ASTEvent> events, NamingStrategy namingStrategy) {
     return events.map(namingStrategy).collect(Collectors.toList());
   }
 
   /**
-   * Transform surrounding (external) graph to lts. For all occurrences in the external LTS: - Replace the
-   * start-event-transitions with one labeled with startName - Replace the terminating-transitions with the successors
-   * of the subprocess. - Replace the end-event-transitions with one labeled with endName
+   * Transform surrounding (external) graph to lts. For all occurrences in the external LTS: -
+   * Replace the start-event-transitions with one labeled with startName - Replace the
+   * terminating-transitions with the successors of the subprocess. - Replace the
+   * end-event-transitions with one labeled with endName
    */
   @Override
-  public void transform(SubProcessScope subProcessScope, LTS externalGraph,
-      NamingStrategy namingStrategy, Graph2LTSTransformer graphTransformer) {
+  public void transform(
+      SubProcessScope subProcessScope,
+      LTS externalGraph,
+      NamingStrategy namingStrategy,
+      Graph2LTSTransformer graphTransformer) {
     var processName = namingStrategy.apply(subProcessScope.getSubProcess());
-    var parameterPack = new ParameterPack(namingStrategy, subProcessScope, processName + "_Start",
-        processName + "_End");
+    var parameterPack =
+        new ParameterPack(
+            namingStrategy, subProcessScope, processName + "_Start", processName + "_End");
 
     // Convert internalGraph
     var internalGraph = graphTransformer.transform(subProcessScope.getInternalGraph());
 
     for (var oldSubprocessTransition : externalGraph.getTransitionsForLabel(processName)) {
-      collectAndReplaceStartEvents(parameterPack, oldSubprocessTransition, internalGraph,
-          externalGraph);
+      collectAndReplaceStartEvents(
+          parameterPack, oldSubprocessTransition, internalGraph, externalGraph);
       collectAndReplaceEndEvents(parameterPack, oldSubprocessTransition, internalGraph);
       var subProcessOutgoings = externalGraph.getOutgoings(oldSubprocessTransition.getTarget());
       collectAndReplaceTerminatingEvents(parameterPack, internalGraph, subProcessOutgoings);
@@ -155,8 +185,11 @@ public class DefaultSubprocessTransformer implements SubprocessTransformer {
 
     private final String newEndName;
 
-    public ParameterPack(NamingStrategy namingStrategy, SubProcessScope subProcessScope,
-        String newStartName, String newEndName) {
+    public ParameterPack(
+        NamingStrategy namingStrategy,
+        SubProcessScope subProcessScope,
+        String newStartName,
+        String newEndName) {
       this.namingStrategy = namingStrategy;
       this.subProcessScope = subProcessScope;
       this.newStartName = newStartName;
@@ -178,7 +211,5 @@ public class DefaultSubprocessTransformer implements SubprocessTransformer {
     public String getNewEndName() {
       return newEndName;
     }
-
   }
-
 }

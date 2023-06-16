@@ -13,11 +13,12 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
- * Interleaving strategy designed for inclusive gateways. At an inclusive split-gateway in BPMN every number of outgoing
- * transitions can be taken. This strategy implements this in a sequential way, such that one path has to be finished
- * before the next begins. For example: s0 --> s1: A s0 --> s2: B s1 --> s3: C s2 --> s4: D Will become: s0 --> s1: A s1
- * --> s3: C s3 --> s5: B s5 --> s6: D s0 --> s2: B s2 --> s4: D s3 --> s7: A s7 --> s8: B Even tho the strategy is
- * especially suited to be used for inclusive-gateways it could be also used for parallel gateways if desired.
+ * Interleaving strategy designed for inclusive gateways. At an inclusive split-gateway in BPMN
+ * every number of outgoing transitions can be taken. This strategy implements this in a sequential
+ * way, such that one path has to be finished before the next begins. For example: s0 --> s1: A s0
+ * --> s2: B s1 --> s3: C s2 --> s4: D Will become: s0 --> s1: A s1 --> s3: C s3 --> s5: B s5 -->
+ * s6: D s0 --> s2: B s2 --> s4: D s3 --> s7: A s7 --> s8: B Even tho the strategy is especially
+ * suited to be used for inclusive-gateways it could be also used for parallel gateways if desired.
  */
 public class DefaultSequentialInterleaving {
 
@@ -40,10 +41,10 @@ public class DefaultSequentialInterleaving {
     // TODO States that only have back-links should be considered terminal too?
     var startTransitions = oldLTS.getOutgoings(oldLTS.getStart());
 
-    List<LTS> subLTSCopies = startTransitions
-        .stream()
-        .map(transition -> subLTS(oldLTS, transition))
-        .collect(Collectors.toList());
+    List<LTS> subLTSCopies =
+        startTransitions.stream()
+            .map(transition -> subLTS(oldLTS, transition))
+            .collect(Collectors.toList());
 
     for (int i = 0; i < startTransitions.size(); i++) {
       var transition = startTransitions.get(i);
@@ -82,10 +83,10 @@ public class DefaultSequentialInterleaving {
   }
 
   /**
-   * Use depth-first-search to compute the reachable lts in lts The returned lts will have the exact same states and
-   * transitions (no copies).
+   * Use depth-first-search to compute the reachable lts in lts The returned lts will have the exact
+   * same states and transitions (no copies).
    *
-   * @param lts       The lts for which the sub-lts should be computed.
+   * @param lts The lts for which the sub-lts should be computed.
    * @param fromState The start point from which the search is started.
    * @return the reachable part form lts starting fromState with fromState as start-state.
    */
@@ -95,9 +96,7 @@ public class DefaultSequentialInterleaving {
     depthFirstSearchLTS(lts, fromState, visitedStates::add);
 
     LTS subLTS = new LTS(fromState);
-    visitedStates.forEach(state ->
-        lts.getOutgoings(state).forEach(subLTS::addTransition)
-    );
+    visitedStates.forEach(state -> lts.getOutgoings(state).forEach(subLTS::addTransition));
     return subLTS;
   }
 
@@ -117,15 +116,16 @@ public class DefaultSequentialInterleaving {
   public static List<State> reachableTerminalStates(LTS oldLTS, State state) {
 
     List<State> foundTerminalStates = new ArrayList<>();
-    depthFirstSearchLTS(oldLTS, state, (s) -> {
+    depthFirstSearchLTS(
+        oldLTS,
+        state,
+        (s) -> {
           if (oldLTS.getOutgoings(s).isEmpty()) {
             foundTerminalStates.add(s);
           }
-        }
-    );
+        });
     return foundTerminalStates;
   }
-
 
   public static void depthFirstSearchLTS(LTS lts, State state, Consumer<State> visitingConsumer) {
     Deque<State> queue = new ArrayDeque<>();

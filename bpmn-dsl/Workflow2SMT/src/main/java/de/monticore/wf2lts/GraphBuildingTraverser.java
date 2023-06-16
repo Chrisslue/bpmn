@@ -43,8 +43,8 @@ public class GraphBuildingTraverser implements WorkflowHandler, WorkflowVisitor2
     if (!startEvent.isStart()) {
       throw new IllegalArgumentException("startEvent has to be a start event");
     }
-    GraphBuildingTraverser handler = new GraphBuildingTraverser(
-        new WorkflowTraverserImplementation(), startEvent);
+    GraphBuildingTraverser handler =
+        new GraphBuildingTraverser(new WorkflowTraverserImplementation(), startEvent);
     startEvent.accept(handler.getTraverser());
     return handler.getGraph();
   }
@@ -57,8 +57,8 @@ public class GraphBuildingTraverser implements WorkflowHandler, WorkflowVisitor2
     addEdge(source, target, Collections.emptyList());
   }
 
-  protected void addEdge(ASTFlowNode source, ASTFlowNode target,
-      List<ASTFlowCondition> conditions) {
+  protected void addEdge(
+      ASTFlowNode source, ASTFlowNode target, List<ASTFlowCondition> conditions) {
     var targetNodes = getGraph().getEdges().getOrDefault(source, new ArrayList<>());
     targetNodes.add(new EdgeTo<>(conditions, target));
     getGraph().getEdges().putIfAbsent(source, targetNodes);
@@ -100,8 +100,7 @@ public class GraphBuildingTraverser implements WorkflowHandler, WorkflowVisitor2
       }
       continueFrom = gatewayScope.getClosingGateway().get();
       addOutgoingsAsEdges(continueFrom);
-    }
-    else {
+    } else {
       continueFrom = gateway;
     }
     for (SequenceFlow sequenceFlow : continueFrom.getOutgoingsList()) {
@@ -179,5 +178,4 @@ public class GraphBuildingTraverser implements WorkflowHandler, WorkflowVisitor2
   public void traverse(ASTInlineEvent node) {
     traverseOutgoingTargets(node);
   }
-
 }

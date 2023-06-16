@@ -25,31 +25,31 @@ public class LTS extends IntermediateGraph<LTS.State, LTS.Transition> {
   }
 
   /**
-   * Create a deep copy of another lts. The new lts is 'isomorphic' to the given one with different states and
-   * transitions.
+   * Create a deep copy of another lts. The new lts is 'isomorphic' to the given one with different
+   * states and transitions.
    */
   public LTS(LTS toBeCloned) {
     this(); // Creates a new start state.
     var lookup = new HashMap<State, State>();
     lookup.put(toBeCloned.getStart(), this.start);
-    toBeCloned.getEdges().forEach((state, transitions) -> {
-          lookup.putIfAbsent(state, new State());
-          addState(lookup.get(state));
-          transitions.forEach(transition -> {
-                lookup.putIfAbsent(transition.getSource(), new State());
-                lookup.putIfAbsent(transition.getTarget(), new State());
-                addTransition(
-                    new Transition(
-                        lookup.get(transition.getSource()),
-                        transition.getConditions(),
-                        transition.getLabel(),
-                        lookup.get(transition.getTarget())
-                    )
-                );
-              }
-          );
-        }
-    );
+    toBeCloned
+        .getEdges()
+        .forEach(
+            (state, transitions) -> {
+              lookup.putIfAbsent(state, new State());
+              addState(lookup.get(state));
+              transitions.forEach(
+                  transition -> {
+                    lookup.putIfAbsent(transition.getSource(), new State());
+                    lookup.putIfAbsent(transition.getTarget(), new State());
+                    addTransition(
+                        new Transition(
+                            lookup.get(transition.getSource()),
+                            transition.getConditions(),
+                            transition.getLabel(),
+                            lookup.get(transition.getTarget())));
+                  });
+            });
   }
 
   public void addState(State state) {
@@ -87,10 +87,10 @@ public class LTS extends IntermediateGraph<LTS.State, LTS.Transition> {
   }
 
   public void removeAllOutgoingsWith(State state, String label) {
-    var toBeRemoved = getOutgoingsInPlace(state)
-        .stream()
-        .filter(transition -> transition.getLabel().equals(label))
-        .collect(Collectors.toList());
+    var toBeRemoved =
+        getOutgoingsInPlace(state).stream()
+            .filter(transition -> transition.getLabel().equals(label))
+            .collect(Collectors.toList());
     transitionMap.get(label).removeAll(toBeRemoved);
     getOutgoingsInPlace(state).removeAll(toBeRemoved);
   }
@@ -132,16 +132,14 @@ public class LTS extends IntermediateGraph<LTS.State, LTS.Transition> {
 
   public List<Transition> getIncoming(State state) {
     requireStateIsInLTS(state);
-    return transitionMap.values()
-        .stream()
+    return transitionMap.values().stream()
         .flatMap(Collection::stream)
         .filter(transition -> transition.getTarget().equals(state))
         .collect(Collectors.toList());
   }
 
   public List<State> getTerminalStates() {
-    return getEdges().keySet()
-        .stream()
+    return getEdges().keySet().stream()
         .filter(state -> getEdges().get(state).isEmpty())
         .collect(Collectors.toList());
   }
@@ -163,8 +161,7 @@ public class LTS extends IntermediateGraph<LTS.State, LTS.Transition> {
   }
 
   public List<String> allUsedLabels() {
-    return transitionMap.entrySet()
-        .stream()
+    return transitionMap.entrySet().stream()
         .filter(entry -> !entry.getValue().isEmpty())
         .map(Entry::getKey)
         .collect(Collectors.toList());
@@ -178,28 +175,29 @@ public class LTS extends IntermediateGraph<LTS.State, LTS.Transition> {
   public LTS2Mermaid toMermaid() {
     Map<LTS.State, LTS2Mermaid.State> stateLookup = new HashMap<>();
     var mermaid = new LTS2Mermaid();
-    getEdges().keySet().forEach(state -> {
-      if (state != getStart()) {
-        stateLookup.put(state, mermaid.addState());
-      } else {
-        stateLookup.put(state, mermaid.addInitialState());
-      }
-    });
-    getEdges().values()
-        .stream()
+    getEdges()
+        .keySet()
+        .forEach(
+            state -> {
+              if (state != getStart()) {
+                stateLookup.put(state, mermaid.addState());
+              } else {
+                stateLookup.put(state, mermaid.addInitialState());
+              }
+            });
+    getEdges().values().stream()
         .flatMap(List::stream)
-        .forEach(transition ->
-            mermaid.addTransition(
-                stateLookup.get(transition.getSource()),
-                stateLookup.get(transition.getTarget()),
-                transition.getLabel()));
+        .forEach(
+            transition ->
+                mermaid.addTransition(
+                    stateLookup.get(transition.getSource()),
+                    stateLookup.get(transition.getTarget()),
+                    transition.getLabel()));
 
     return mermaid;
   }
 
-  public static class State {
-
-  }
+  public static class State {}
 
   public static class Transition extends EdgeTo<State> {
 
@@ -241,16 +239,15 @@ public class LTS extends IntermediateGraph<LTS.State, LTS.Transition> {
 
     @Override
     public String toString() {
-      return "Transition{" +
-          getSource().toString() +
-          " --> " +
-          getTarget().toString() +
-          " : " +
-          getLabel() +
-          " with " +
-          getConditions().toString() +
-          '}';
+      return "Transition{"
+          + getSource().toString()
+          + " --> "
+          + getTarget().toString()
+          + " : "
+          + getLabel()
+          + " with "
+          + getConditions().toString()
+          + '}';
     }
   }
-
 }
