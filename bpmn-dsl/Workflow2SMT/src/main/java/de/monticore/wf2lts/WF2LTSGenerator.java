@@ -21,7 +21,7 @@ import de.monticore.wf2lts.transformer.DefaultGatewayTransformer;
 import de.monticore.wf2lts.transformer.DefaultGraph2LTSTransformer;
 import de.monticore.wf2lts.transformer.DefaultSubprocessTransformer;
 
-public class WF2LTLGenerator {
+public class WF2LTSGenerator {
 
   private static ASTEvent getStartEvent(ASTWorkflowCompilationUnit ast) {
 
