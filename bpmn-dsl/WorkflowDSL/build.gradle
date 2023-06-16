@@ -37,7 +37,11 @@ test {
 
 dependencies {
     implementation project(':TimeExpressions')
-    grammar "de.monticore.expressions:TimeExpressions:$version:$grammars_classifier"
+    grammar (project(':TimeExpressions')){
+      capabilities {
+        requireCapability("de.monticore.expressions:TimeExpressions-grammars")
+      }
+    }
     implementation project(':BpmnXML')
 
 
