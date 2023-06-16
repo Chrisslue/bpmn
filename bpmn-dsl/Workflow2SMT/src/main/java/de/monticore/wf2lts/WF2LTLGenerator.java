@@ -1,4 +1,4 @@
-package de.monticore.wf2ltl;
+package de.monticore.wf2lts;
 
 import de.monticore.bpmn.trafos.AddNameToInlineFlowNodes;
 import de.monticore.bpmn.trafos.AddReferenceToParentLane;
@@ -13,13 +13,13 @@ import de.monticore.bpmn.workflow._ast.ASTWorkflowCompilationUnit;
 import de.monticore.bpmn.workflow._symboltable.WorkflowSTCompleter;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverserImplementation;
-import de.monticore.wf2ltl.collector.StartEventCollector;
-import de.monticore.wf2ltl.datastructure.IntermediateGraphWithScopes;
-import de.monticore.wf2ltl.datastructure.LTS;
-import de.monticore.wf2ltl.transformer.DefaultGatewayInterleaving;
-import de.monticore.wf2ltl.transformer.DefaultGatewayTransformer;
-import de.monticore.wf2ltl.transformer.DefaultGraph2LTSTransformer;
-import de.monticore.wf2ltl.transformer.DefaultSubprocessTransformer;
+import de.monticore.wf2lts.collector.StartEventCollector;
+import de.monticore.wf2lts.datastructure.IntermediateGraphWithScopes;
+import de.monticore.wf2lts.datastructure.LTS;
+import de.monticore.wf2lts.transformer.DefaultGatewayInterleaving;
+import de.monticore.wf2lts.transformer.DefaultGatewayTransformer;
+import de.monticore.wf2lts.transformer.DefaultGraph2LTSTransformer;
+import de.monticore.wf2lts.transformer.DefaultSubprocessTransformer;
 
 public class WF2LTLGenerator {
 

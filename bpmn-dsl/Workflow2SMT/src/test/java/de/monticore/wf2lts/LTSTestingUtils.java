@@ -1,10 +1,10 @@
-package de.monticore.wf2ltl;
+package de.monticore.wf2lts;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import de.monticore.wf2ltl.datastructure.LTS;
-import de.monticore.wf2ltl.datastructure.LTS.State;
-import de.monticore.wf2ltl.datastructure.LTS.Transition;
+import de.monticore.wf2lts.datastructure.LTS;
+import de.monticore.wf2lts.datastructure.LTS.State;
+import de.monticore.wf2lts.datastructure.LTS.Transition;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

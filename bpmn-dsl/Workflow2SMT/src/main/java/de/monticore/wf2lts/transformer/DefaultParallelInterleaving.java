@@ -1,6 +1,6 @@
-package de.monticore.wf2ltl.transformer;
+package de.monticore.wf2lts.transformer;
 
-import de.monticore.wf2ltl.datastructure.LTS;
+import de.monticore.wf2lts.datastructure.LTS;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;

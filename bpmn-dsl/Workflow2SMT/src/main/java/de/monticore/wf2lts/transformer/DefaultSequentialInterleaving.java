@@ -1,8 +1,8 @@
-package de.monticore.wf2ltl.transformer;
+package de.monticore.wf2lts.transformer;
 
-import de.monticore.wf2ltl.datastructure.LTS;
-import de.monticore.wf2ltl.datastructure.LTS.State;
-import de.monticore.wf2ltl.datastructure.LTS.Transition;
+import de.monticore.wf2lts.datastructure.LTS;
+import de.monticore.wf2lts.datastructure.LTS.State;
+import de.monticore.wf2lts.datastructure.LTS.Transition;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
