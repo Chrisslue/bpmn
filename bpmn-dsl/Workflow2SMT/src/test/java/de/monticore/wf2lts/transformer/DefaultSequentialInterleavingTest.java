@@ -14,12 +14,11 @@ import org.junit.jupiter.api.Test;
 
 class DefaultSequentialInterleavingTest {
 
-
   private static LTS buildSimpleLTS() {
     var labels = List.of("A", "B", "C", "D");
     var lts = new LTS();
-    Map<String, State> targets = labels.stream()
-        .collect(Collectors.toMap(Function.identity(), (x) -> new LTS.State()));
+    Map<String, State> targets =
+        labels.stream().collect(Collectors.toMap(Function.identity(), (x) -> new LTS.State()));
     LTSTestingUtils.addTransition(lts.getStart(), "A", targets, lts);
     LTSTestingUtils.addTransition(lts.getStart(), "C", targets, lts);
     LTSTestingUtils.addTransition(targets.get("A"), "B", targets, lts);
@@ -41,12 +40,8 @@ class DefaultSequentialInterleavingTest {
 
     var interleaved = DefaultSequentialInterleaving.interleave(lts);
 
-    LTSTestingUtils.assertPathExists(interleaved,
-        List.of("A", "B", "C", "D")
-    );
-    LTSTestingUtils.assertPathExists(interleaved,
-        List.of("C", "D", "A", "B")
-    );
+    LTSTestingUtils.assertPathExists(interleaved, List.of("A", "B", "C", "D"));
+    LTSTestingUtils.assertPathExists(interleaved, List.of("C", "D", "A", "B"));
     Assertions.assertFalse(LTSTestingUtils.pathOfLabel(interleaved, List.of("A", "C")).isPresent());
     Assertions.assertFalse(LTSTestingUtils.pathOfLabel(interleaved, List.of("C", "A")).isPresent());
 
@@ -80,8 +75,8 @@ class DefaultSequentialInterleavingTest {
 
     // Generate all combinations of the three paths.
     List<List<String>> threePathsLTSValidPaths =
-        LTSTestingUtils
-            .generatePermutations(List.of(List.of("A", "B"), List.of("C", "D"), List.of("E", "F")))
+        LTSTestingUtils.generatePermutations(
+                List.of(List.of("A", "B"), List.of("C", "D"), List.of("E", "F")))
             .stream()
             .map(x -> x.stream().flatMap(List::stream).collect(Collectors.toList()))
             .collect(Collectors.toList());
@@ -95,41 +90,21 @@ class DefaultSequentialInterleavingTest {
     var bTransition = lts.getTransitionsForLabel("B").get(0);
     lts.addTransition(
         new Transition(
-            bTransition.getTarget(),
-            Collections.emptyList(),
-            "Z",
-            bTransition.getSource()
-        )
-    );
+            bTransition.getTarget(), Collections.emptyList(), "Z", bTransition.getSource()));
     lts.addTransition(
-        new Transition(
-            bTransition.getTarget(),
-            Collections.emptyList(),
-            "BB",
-            new State()
-        )
-    );
+        new Transition(bTransition.getTarget(), Collections.emptyList(), "BB", new State()));
 
     var interleaved = DefaultSequentialInterleaving.interleave(lts);
 
     LTSTestingUtils.assertSameStartOutgoingLabel(lts, interleaved);
 
-    LTSTestingUtils.assertPathExists(interleaved,
-        List.of("A", "B", "BB", "C", "D")
-    );
-    LTSTestingUtils.assertPathExists(interleaved,
-        List.of("C", "D", "A", "B", "BB")
-    );
+    LTSTestingUtils.assertPathExists(interleaved, List.of("A", "B", "BB", "C", "D"));
+    LTSTestingUtils.assertPathExists(interleaved, List.of("C", "D", "A", "B", "BB"));
     // Test for recursive paths
-    LTSTestingUtils.assertPathExists(interleaved,
-        List.of("A", "B", "Z", "B", "BB", "C", "D")
-    );
-    LTSTestingUtils.assertPathExists(interleaved,
-        List.of("A", "B", "Z", "B", "Z", "B", "BB", "C", "D")
-    );
-    LTSTestingUtils.assertPathExists(interleaved,
-        List.of("C", "D", "A", "B", "Z", "B", "BB")
-    );
+    LTSTestingUtils.assertPathExists(interleaved, List.of("A", "B", "Z", "B", "BB", "C", "D"));
+    LTSTestingUtils.assertPathExists(
+        interleaved, List.of("A", "B", "Z", "B", "Z", "B", "BB", "C", "D"));
+    LTSTestingUtils.assertPathExists(interleaved, List.of("C", "D", "A", "B", "Z", "B", "BB"));
 
     // Assert backlink is indeed pointing back.
     Assertions.assertEquals(2, interleaved.getTransitionsForLabel("Z").size());
@@ -143,41 +118,23 @@ class DefaultSequentialInterleavingTest {
     var lts = buildThreePaths();
     // Add second successor to A transition
     var aTarget = lts.getTransitionsForLabel("A").get(0).getTarget();
-    lts.addTransition(
-        new Transition(
-            aTarget,
-            Collections.emptyList(),
-            "BB",
-            new State()
-        )
-    );
+    lts.addTransition(new Transition(aTarget, Collections.emptyList(), "BB", new State()));
     // Create cycle D,Z
     var bTransition = lts.getTransitionsForLabel("D").get(0);
     lts.addTransition(
         new Transition(
-            bTransition.getTarget(),
-            Collections.emptyList(),
-            "Z",
-            bTransition.getSource()
-        )
-    );
+            bTransition.getTarget(), Collections.emptyList(), "Z", bTransition.getSource()));
     // Add new successor to D s.t. the C,D path ends in a terminal state
     lts.addTransition(
-        new Transition(
-            bTransition.getTarget(),
-            Collections.emptyList(),
-            "DD",
-            new State()
-        )
-    );
+        new Transition(bTransition.getTarget(), Collections.emptyList(), "DD", new State()));
 
     var interleaved = DefaultSequentialInterleaving.interleave(lts);
 
     LTSTestingUtils.assertSameStartOutgoingLabel(lts, interleaved);
 
     List<List<String>> threePathsLTSValidPaths =
-        LTSTestingUtils
-            .generatePermutations(List.of(List.of("A", "B"), List.of("C", "D", "DD"), List.of("E", "F")))
+        LTSTestingUtils.generatePermutations(
+                List.of(List.of("A", "B"), List.of("C", "D", "DD"), List.of("E", "F")))
             .stream()
             .map(x -> x.stream().flatMap(List::stream).collect(Collectors.toList()))
             .collect(Collectors.toList());
@@ -186,19 +143,19 @@ class DefaultSequentialInterleavingTest {
       LTSTestingUtils.assertPathExists(interleaved, validPath);
     }
 
-    var backLinkPaths = List.of(
-        List.of("A", "B", "C", "D", "Z", "D", "DD", "E", "F"),
-        List.of("C", "D", "Z", "D", "DD", "E", "F", "A", "B"),
-        List.of("C", "D", "DD", "E", "F", "A", "B")
-    );
+    var backLinkPaths =
+        List.of(
+            List.of("A", "B", "C", "D", "Z", "D", "DD", "E", "F"),
+            List.of("C", "D", "Z", "D", "DD", "E", "F", "A", "B"),
+            List.of("C", "D", "DD", "E", "F", "A", "B"));
     LTSTestingUtils.assertPathsExists(interleaved, backLinkPaths);
 
-    var branchingAPaths = List.of(
-        List.of("A", "B", "C", "D"),
-        List.of("A", "BB", "C"),
-        List.of("E", "F", "A", "BB", "C"),
-        List.of("E", "F", "A", "B", "C")
-    );
+    var branchingAPaths =
+        List.of(
+            List.of("A", "B", "C", "D"),
+            List.of("A", "BB", "C"),
+            List.of("E", "F", "A", "BB", "C"),
+            List.of("E", "F", "A", "B", "C"));
     LTSTestingUtils.assertPathsExists(interleaved, branchingAPaths);
   }
 }

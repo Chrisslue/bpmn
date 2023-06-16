@@ -96,7 +96,7 @@ public class IOSpecification {
 
             if (!inputSets.containsKey(
                 inputSetCandidate)) { // the same input set w/ the same data inputs does not yet
-                                      // exist
+              // exist
               inputSetCandidate.getDataInputs().forEach(in -> in.addInputSet(inputSetCandidate));
               inputSetCandidate
                   .getDataInputsOptional()
@@ -145,7 +145,7 @@ public class IOSpecification {
 
             if (!outputSets.containsKey(
                 outputSetCandidate)) { // the same output set w/ the same data outputs does not yet
-                                       // exist
+              // exist
               outputSetCandidate
                   .getDataOutputs()
                   .forEach(output -> output.addOutputSet(outputSetCandidate));

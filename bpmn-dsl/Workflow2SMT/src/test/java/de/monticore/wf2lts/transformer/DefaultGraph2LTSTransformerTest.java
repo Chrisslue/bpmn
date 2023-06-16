@@ -42,11 +42,8 @@ class DefaultGraph2LTSTransformerTest {
         .setName(subProcessName)
         .setType(ASTSubProcessType.SUBPROCESS)
         .setIOSpecification(new ASTIOSpecificationBuilder().build())
-        .setFlowElementsList(List.of(
-            start,
-            end,
-            taskG
-        )).build();
+        .setFlowElementsList(List.of(start, end, taskG))
+        .build();
   }
 
   private GatewayTransformer doNothingGatewayTransformer() {
@@ -58,18 +55,22 @@ class DefaultGraph2LTSTransformerTest {
       }
 
       @Override
-      public void transform(GatewayScope gatewayScope, LTS externalGraph, NamingStrategy namingStrategy,
-          Graph2LTSTransformer graphTransformer) {
-      }
+      public void transform(
+          GatewayScope gatewayScope,
+          LTS externalGraph,
+          NamingStrategy namingStrategy,
+          Graph2LTSTransformer graphTransformer) {}
     };
   }
 
   private SubprocessTransformer doNothingSubprocessTransformer() {
     return new SubprocessTransformer() {
       @Override
-      public void transform(SubProcessScope subProcessScope, LTS externalGraph, NamingStrategy namingStrategy,
-          Graph2LTSTransformer graphTransformer) {
-      }
+      public void transform(
+          SubProcessScope subProcessScope,
+          LTS externalGraph,
+          NamingStrategy namingStrategy,
+          Graph2LTSTransformer graphTransformer) {}
     };
   }
 
@@ -78,31 +79,29 @@ class DefaultGraph2LTSTransformerTest {
       String bTaskName,
       String cTaskName,
       String startEventName,
-      String endEventName
-  ) {
+      String endEventName) {
     ASTTask aTask = new ASTTaskBuilder().setName(aTaskName).build();
     ASTTask bTask = new ASTTaskBuilder().setName(bTaskName).build();
     ASTTask cTask = new ASTTaskBuilder().setName(cTaskName).build();
-    ASTNamedEvent start = new ASTNamedEventBuilder()
-        .setType(ASTEventType.START)
-        .setName(startEventName)
-        .build();
-    ASTNamedEvent end = new ASTNamedEventBuilder()
-        .setType(ASTEventType.END)
-        .setName(endEventName)
-        .build();
+    ASTNamedEvent start =
+        new ASTNamedEventBuilder().setType(ASTEventType.START).setName(startEventName).build();
+    ASTNamedEvent end =
+        new ASTNamedEventBuilder().setType(ASTEventType.END).setName(endEventName).build();
 
-    Map<ASTFlowNode, List<EdgeTo<ASTFlowNode>>> edges = Map.ofEntries(
-        entry(start, List.of(new EdgeTo<>(Collections.emptyList(), aTask))),
-        entry(aTask, List.of(
-            new EdgeTo<>(Collections.emptyList(), bTask),
-            new EdgeTo<>(Collections.emptyList(), cTask))),
-        entry(bTask, List.of(new EdgeTo<>(Collections.emptyList(), end))),
-        entry(cTask, List.of(
-            new EdgeTo<>(Collections.emptyList(), aTask),
-            new EdgeTo<>(Collections.emptyList(), end))
-        )
-    );
+    Map<ASTFlowNode, List<EdgeTo<ASTFlowNode>>> edges =
+        Map.ofEntries(
+            entry(start, List.of(new EdgeTo<>(Collections.emptyList(), aTask))),
+            entry(
+                aTask,
+                List.of(
+                    new EdgeTo<>(Collections.emptyList(), bTask),
+                    new EdgeTo<>(Collections.emptyList(), cTask))),
+            entry(bTask, List.of(new EdgeTo<>(Collections.emptyList(), end))),
+            entry(
+                cTask,
+                List.of(
+                    new EdgeTo<>(Collections.emptyList(), aTask),
+                    new EdgeTo<>(Collections.emptyList(), end))));
     return new IntermediateGraphWithScopes(start, edges);
   }
 
@@ -115,13 +114,11 @@ class DefaultGraph2LTSTransformerTest {
     String startEventName = "Start";
     String endEventName = "End";
 
-    var namingStrategy = new NamingStrategy() {
-    };
+    var namingStrategy = new NamingStrategy() {};
 
-    var graphTransformer = new DefaultGraph2LTSTransformer(
-        namingStrategy,
-        doNothingGatewayTransformer(),
-        doNothingSubprocessTransformer());
+    var graphTransformer =
+        new DefaultGraph2LTSTransformer(
+            namingStrategy, doNothingGatewayTransformer(), doNothingSubprocessTransformer());
 
     var graph = buildTestGraph(aTaskName, bTaskName, cTaskName, startEventName, endEventName);
     LTS lts = graphTransformer.transform(graph);
@@ -129,14 +126,14 @@ class DefaultGraph2LTSTransformerTest {
     // Only end-event ends in terminal state.
     Assertions.assertEquals(1, lts.getTerminalStates().size());
     Assertions.assertTrue(
-        lts.getTerminalStates().stream().map(lts::getIncoming).flatMap(List::stream)
-            .allMatch(transition -> transition.getLabel().equals(endEventName))
-    );
-    for (var existingLabel : List.of(aTaskName, bTaskName, cTaskName, startEventName, endEventName)) {
+        lts.getTerminalStates().stream()
+            .map(lts::getIncoming)
+            .flatMap(List::stream)
+            .allMatch(transition -> transition.getLabel().equals(endEventName)));
+    for (var existingLabel :
+        List.of(aTaskName, bTaskName, cTaskName, startEventName, endEventName)) {
       Assertions.assertTrue(lts.isLabelPresent(existingLabel), existingLabel + " not present.");
     }
     var asMermaid = lts.toMermaid().build(); // optionally look at result in https://mermaid.live/
-
-
   }
 }

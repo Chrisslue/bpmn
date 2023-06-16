@@ -30,8 +30,7 @@ import org.junit.jupiter.api.Test;
 class DefaultSubprocessTransformerTest {
 
   @BeforeEach
-  void setUp() {
-  }
+  void setUp() {}
 
   private SubProcessScope buildSubProcessScope(
       String startEventName,
@@ -39,28 +38,25 @@ class DefaultSubprocessTransformerTest {
       String taskBName,
       String xorGatewayName,
       String endEventName,
-      String termEventName
-  ) {
-    var startEvent = new ASTNamedEventBuilder()
-        .setName(startEventName)
-        .setType(ASTEventType.START)
-        .build();
+      String termEventName) {
+    var startEvent =
+        new ASTNamedEventBuilder().setName(startEventName).setType(ASTEventType.START).build();
     var taskA = new ASTTaskBuilder().setName(taskAName).build();
     var taskB = new ASTTaskBuilder().setName(taskBName).build();
-    var xorGateway = new ASTNamedGatewayBuilder()
-        .setName(xorGatewayName)
-        .setType(new ASTGatewayTypeBuilder().setExclusive(true).build())
-        .setDirection(ASTGatewayDirection.SPLIT)
-        .build();
-    var termEvent = new ASTNamedEventBuilder()
-        .setName(termEventName)
-        .setTrigger(new ASTEventTriggerTerminateBuilder().build())
-        .setType(ASTEventType.END)
-        .build();
-    var endEvent = new ASTNamedEventBuilder()
-        .setName(endEventName)
-        .setType(ASTEventType.END)
-        .build();
+    var xorGateway =
+        new ASTNamedGatewayBuilder()
+            .setName(xorGatewayName)
+            .setType(new ASTGatewayTypeBuilder().setExclusive(true).build())
+            .setDirection(ASTGatewayDirection.SPLIT)
+            .build();
+    var termEvent =
+        new ASTNamedEventBuilder()
+            .setName(termEventName)
+            .setTrigger(new ASTEventTriggerTerminateBuilder().build())
+            .setType(ASTEventType.END)
+            .build();
+    var endEvent =
+        new ASTNamedEventBuilder().setName(endEventName).setType(ASTEventType.END).build();
 
     var start2A = new SequenceFlowBuilder().setSource(startEvent).setTarget(taskA).build();
     var a2Xor = new SequenceFlowBuilder().setSource(taskA).setTarget(xorGateway).build();
@@ -82,22 +78,15 @@ class DefaultSubprocessTransformerTest {
     taskB.getOutgoingsList().add(b2Term);
     termEvent.getIncomingsList().add(b2Term);
 
-    var subprocess = new ASTSubProcessBuilder()
-        .setName("T")
-        .setType(ASTSubProcessType.SUBPROCESS)
-        .setIOSpecification(new ASTIOSpecificationBuilder().build())
-        .setFlowElementsList(List.of(
-            startEvent,
-            taskA,
-            taskB,
-            xorGateway,
-            endEvent,
-            termEvent
-        ))
-        .build();
+    var subprocess =
+        new ASTSubProcessBuilder()
+            .setName("T")
+            .setType(ASTSubProcessType.SUBPROCESS)
+            .setIOSpecification(new ASTIOSpecificationBuilder().build())
+            .setFlowElementsList(List.of(startEvent, taskA, taskB, xorGateway, endEvent, termEvent))
+            .build();
 
     return new SubProcessScope(subprocess);
-
   }
 
   private LTS buildInternalLTS(
@@ -105,8 +94,7 @@ class DefaultSubprocessTransformerTest {
       String taskAName,
       String taskBName,
       String endEventName,
-      String termEventName
-  ) {
+      String termEventName) {
     LTS internalLTS = new LTS();
     var startEventTarget = new State();
     var taskATarget = new State();
@@ -114,11 +102,16 @@ class DefaultSubprocessTransformerTest {
     var endEventTarget = new State();
     var termEventTarget = new State();
     internalLTS.addTransition(
-        new Transition(internalLTS.getStart(), Collections.emptyList(), startEventName, startEventTarget));
-    internalLTS.addTransition(new Transition(startEventTarget, Collections.emptyList(), taskAName, taskATarget));
-    internalLTS.addTransition(new Transition(taskATarget, Collections.emptyList(), taskBName, taskBTarget));
-    internalLTS.addTransition(new Transition(taskATarget, Collections.emptyList(), endEventName, endEventTarget));
-    internalLTS.addTransition(new Transition(taskBTarget, Collections.emptyList(), termEventName, termEventTarget));
+        new Transition(
+            internalLTS.getStart(), Collections.emptyList(), startEventName, startEventTarget));
+    internalLTS.addTransition(
+        new Transition(startEventTarget, Collections.emptyList(), taskAName, taskATarget));
+    internalLTS.addTransition(
+        new Transition(taskATarget, Collections.emptyList(), taskBName, taskBTarget));
+    internalLTS.addTransition(
+        new Transition(taskATarget, Collections.emptyList(), endEventName, endEventTarget));
+    internalLTS.addTransition(
+        new Transition(taskBTarget, Collections.emptyList(), termEventName, termEventTarget));
 
     return internalLTS;
   }
@@ -130,12 +123,16 @@ class DefaultSubprocessTransformerTest {
     var postStates = List.of(new State(), new State());
     // States are added implicitly by addTransition
     for (int i = 0; i < 2; i++) {
-      lts.addTransition(new Transition(lts.getStart(), Collections.emptyList(), "@Pre" + i, subprocessSource));
+      lts.addTransition(
+          new Transition(lts.getStart(), Collections.emptyList(), "@Pre" + i, subprocessSource));
     }
-    lts.addTransition(new Transition(subprocessSource, Collections.emptyList(), subprocessName, subprocessTarget));
+    lts.addTransition(
+        new Transition(
+            subprocessSource, Collections.emptyList(), subprocessName, subprocessTarget));
     for (int i = 0; i < postStates.size(); i++) {
       var post = postStates.get(i);
-      lts.addTransition(new Transition(subprocessTarget, Collections.emptyList(), "@Post" + i, post));
+      lts.addTransition(
+          new Transition(subprocessTarget, Collections.emptyList(), "@Post" + i, post));
     }
     return lts;
   }
@@ -151,59 +148,54 @@ class DefaultSubprocessTransformerTest {
     String termEventName = "termEvent";
     String subprocessName = "T";
 
-    NamingStrategy namingStrategy = new NamingStrategy() {
-
-    };
+    NamingStrategy namingStrategy = new NamingStrategy() {};
 
     var externalLTS = buildExternalLTS(subprocessName);
-    var internalLTS = buildInternalLTS(
-        startEventName,
-        taskAName,
-        taskBName,
-        endEventName,
-        termEventName);
+    var internalLTS =
+        buildInternalLTS(startEventName, taskAName, taskBName, endEventName, termEventName);
 
-    var graph2LTSTransformer = new Graph2LTSTransformer() {
-      @Override
-      public LTS transform(IntermediateGraphWithScopes graph) {
-        return internalLTS;
-      }
-    };
+    var graph2LTSTransformer =
+        new Graph2LTSTransformer() {
+          @Override
+          public LTS transform(IntermediateGraphWithScopes graph) {
+            return internalLTS;
+          }
+        };
 
-    var subProcessScope = buildSubProcessScope(
-        startEventName,
-        taskAName,
-        taskBName,
-        xorGatewayName,
-        endEventName,
-        termEventName
-    );
+    var subProcessScope =
+        buildSubProcessScope(
+            startEventName, taskAName, taskBName, xorGatewayName, endEventName, termEventName);
 
     var expectedTerminalStates = externalLTS.getTerminalStates();
 
-    new DefaultSubprocessTransformer().transform(subProcessScope, externalLTS, namingStrategy, graph2LTSTransformer);
+    new DefaultSubprocessTransformer()
+        .transform(subProcessScope, externalLTS, namingStrategy, graph2LTSTransformer);
 
     for (var absentName : List.of(subprocessName, startEventName, endEventName, xorGatewayName)) {
-      Assertions.assertFalse(externalLTS.isLabelPresent(absentName),
+      Assertions.assertFalse(
+          externalLTS.isLabelPresent(absentName),
           absentName + " should not be a label of a transition in the final LTS.");
     }
 
     for (var existingName : List.of(taskAName, taskBName)) {
-      Assertions.assertTrue(externalLTS.isLabelPresent(existingName),
+      Assertions.assertTrue(
+          externalLTS.isLabelPresent(existingName),
           "Expected " + existingName + " to be a label in lts.");
     }
 
     // We still expect two terminal states (where @Pre0 and @Pre1 point to)
     assertEqualIgnoreOrder(expectedTerminalStates, externalLTS.getTerminalStates());
 
-    // As the bpmn has a terminating transition after B there should be no proper end of the subprocess.
+    // As the bpmn has a terminating transition after B there should be no proper end of the
+    // subprocess.
     // Therefore, we expect the external successor-transitions of the subprocess as outgoings.
     var bTransitions = externalLTS.getTransitionsForLabel(taskBName);
-    Assertions.assertEquals(1, bTransitions.size(), "Only one transition should be labeled with " + taskBName + ".");
+    Assertions.assertEquals(
+        1, bTransitions.size(), "Only one transition should be labeled with " + taskBName + ".");
     var bOutgoings = externalLTS.getOutgoings(bTransitions.get(0).getTarget());
-    Assertions.assertEquals(2, bOutgoings.size(), "Expected @Post0 and @Post1 as outgoing transitions.");
+    Assertions.assertEquals(
+        2, bOutgoings.size(), "Expected @Post0 and @Post1 as outgoing transitions.");
     var bSuccessors = bOutgoings.stream().map(Transition::getTarget).collect(Collectors.toList());
     assertEqualIgnoreOrder(expectedTerminalStates, bSuccessors);
   }
-
 }

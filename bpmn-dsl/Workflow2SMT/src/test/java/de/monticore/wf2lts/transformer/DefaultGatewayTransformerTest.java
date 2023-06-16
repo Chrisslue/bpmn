@@ -30,20 +30,19 @@ class DefaultGatewayTransformerTest {
     var taskA = new ASTTaskBuilder().setName("A").build();
     var taskB = new ASTTaskBuilder().setName("B").build();
     var taskC = new ASTTaskBuilder().setName("C").build();
-    var endEvent = new ASTNamedEventBuilder()
-        .setName("End")
-        .setType(ASTEventType.END)
-        .build();
-    var mergingGateway = new ASTNamedGatewayBuilder()
-        .setName(mergingName)
-        .setDirection(ASTGatewayDirection.MERGE)
-        .setType(new ASTGatewayTypeBuilder().setParallel(true).build())
-        .build();
-    var splittingGateway = new ASTNamedGatewayBuilder()
-        .setName(splitName)
-        .setDirection(ASTGatewayDirection.SPLIT)
-        .setType(new ASTGatewayTypeBuilder().setParallel(true).build())
-        .build();
+    var endEvent = new ASTNamedEventBuilder().setName("End").setType(ASTEventType.END).build();
+    var mergingGateway =
+        new ASTNamedGatewayBuilder()
+            .setName(mergingName)
+            .setDirection(ASTGatewayDirection.MERGE)
+            .setType(new ASTGatewayTypeBuilder().setParallel(true).build())
+            .build();
+    var splittingGateway =
+        new ASTNamedGatewayBuilder()
+            .setName(splitName)
+            .setDirection(ASTGatewayDirection.SPLIT)
+            .setType(new ASTGatewayTypeBuilder().setParallel(true).build())
+            .build();
 
     var c2End = new SequenceFlowBuilder().setSource(taskC).setTarget(endEvent).build();
     endEvent.setIncomingsList(List.of(c2End));
@@ -70,7 +69,8 @@ class DefaultGatewayTransformerTest {
     var aState = new LTS.State();
     var bState = new LTS.State();
     var cState = new LTS.State();
-    internalGraph.addTransition(new Transition(internalGraph.getStart(), emptyList(), splitName, splitState));
+    internalGraph.addTransition(
+        new Transition(internalGraph.getStart(), emptyList(), splitName, splitState));
     internalGraph.addTransition(new Transition(splitState, emptyList(), "A", aState));
     internalGraph.addTransition(new Transition(splitState, emptyList(), "B", bState));
     internalGraph.addTransition(new Transition(splitState, emptyList(), "C", cState));
@@ -95,35 +95,41 @@ class DefaultGatewayTransformerTest {
       externalLTS.addTransition(new Transition(externalLTS.getStart(), emptyList(), "", pre));
       externalLTS.addTransition(new Transition(pre, emptyList(), "@Pre" + i, gatewaySplitState));
     }
-    externalLTS.addTransition(new Transition(gatewaySplitState, emptyList(), splitName, gatewayState));
-    externalLTS.addTransition(new Transition(gatewayState, emptyList(), mergingName, gatewayClosingState));
+    externalLTS.addTransition(
+        new Transition(gatewaySplitState, emptyList(), splitName, gatewayState));
+    externalLTS.addTransition(
+        new Transition(gatewayState, emptyList(), mergingName, gatewayClosingState));
     for (int i = 0; i < postStates.size(); i++) {
-      externalLTS.addTransition(new Transition(gatewayClosingState, emptyList(), "@Next" + i, postStates.get(i)));
+      externalLTS.addTransition(
+          new Transition(gatewayClosingState, emptyList(), "@Next" + i, postStates.get(i)));
     }
     var namingStrategy = new NamingStrategy() { // Default uses the name
-    };
+        };
     LTS internalLTS = internalGraph(splitName, mergingName);
     Graph2LTSTransformer graphTransformer = graph -> internalLTS;
 
     var doNothingInterleaving = new DoNothingInterleaving();
 
-    Stream<State> internalEndEventTerminals = internalLTS.getTerminalStates()
-        .stream()
-        .filter(terminal ->
-            internalLTS.getIncoming(terminal).stream().allMatch(incoming -> incoming.getLabel().equals("End"))
-        );
-    List<State> expectedEndStates = Stream.concat(
-        internalEndEventTerminals,
-        externalLTS.getTerminalStates().stream()
-    ).collect(Collectors.toList());
+    Stream<State> internalEndEventTerminals =
+        internalLTS.getTerminalStates().stream()
+            .filter(
+                terminal ->
+                    internalLTS.getIncoming(terminal).stream()
+                        .allMatch(incoming -> incoming.getLabel().equals("End")));
+    List<State> expectedEndStates =
+        Stream.concat(internalEndEventTerminals, externalLTS.getTerminalStates().stream())
+            .collect(Collectors.toList());
     List<String> expectedExternalNames =
         Stream.concat(externalLTS.allUsedLabels().stream(), internalLTS.allUsedLabels().stream())
             .filter(label -> !label.equals(splitName) && !label.equals(mergingName))
             .collect(Collectors.toList());
 
     new DefaultGatewayTransformer(doNothingInterleaving)
-        .transform(buildGatewayScope(splitName, mergingName),
-            externalLTS, namingStrategy, graphTransformer);
+        .transform(
+            buildGatewayScope(splitName, mergingName),
+            externalLTS,
+            namingStrategy,
+            graphTransformer);
 
     Assertions.assertFalse(externalLTS.isLabelPresent(splitName));
     Assertions.assertFalse(externalLTS.isLabelPresent(mergingName));
@@ -132,5 +138,4 @@ class DefaultGatewayTransformerTest {
 
     Assertions.assertTrue(equalIgnoreOrder(expectedEndStates, externalLTS.getTerminalStates()));
   }
-
 }

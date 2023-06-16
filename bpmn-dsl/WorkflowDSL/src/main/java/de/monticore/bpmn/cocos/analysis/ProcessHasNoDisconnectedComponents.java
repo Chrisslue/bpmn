@@ -21,7 +21,7 @@ public class ProcessHasNoDisconnectedComponents extends ProcessGraphCoCo {
       final ASTFlowElementContainer process) {
     if (process
         .isEmptyFlowElements()) { // allow empty processes (an empty process is disconnected by
-                                  // definition)
+      // definition)
       return;
     }
     ConnectivityInspector<ASTFlowNode, EndpointPair<ASTFlowNode>> inspector =

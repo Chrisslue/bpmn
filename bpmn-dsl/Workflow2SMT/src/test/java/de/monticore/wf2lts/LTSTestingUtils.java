@@ -15,12 +15,11 @@ import java.util.stream.Collectors;
 
 public class LTSTestingUtils {
 
-
   /**
-   * Traverse a lst given a list of transition label. NOTE Uses the first transition it finds, not suited for
-   * non-deterministic lts.
+   * Traverse a lst given a list of transition label. NOTE Uses the first transition it finds, not
+   * suited for non-deterministic lts.
    *
-   * @param lts    The lts to be traversed.
+   * @param lts The lts to be traversed.
    * @param labels List of transition label.
    * @return The visited transitions if a path could be found else empty.
    */
@@ -30,10 +29,10 @@ public class LTSTestingUtils {
     for (int idx = 0; idx < labels.size(); idx++) {
       var lastState = idx == 0 ? lts.getStart() : transitions.get(idx - 1).getTarget();
       int indexCopy = idx;
-      var nextTransition = lts.getOutgoings(lastState)
-          .stream()
-          .filter(transition -> transition.getLabel().equals(labels.get(indexCopy)))
-          .findFirst();
+      var nextTransition =
+          lts.getOutgoings(lastState).stream()
+              .filter(transition -> transition.getLabel().equals(labels.get(indexCopy)))
+              .findFirst();
       if (nextTransition.isEmpty()) {
         return Optional.empty();
       }
@@ -84,16 +83,13 @@ public class LTSTestingUtils {
   }
 
   public static List<List<String>> filterCorrectComesBefore(
-      List<List<String>> paths,
-      List<Entry<String, String>> beforeRelation
-  ) {
-    return paths
-        .stream()
-        .filter(path ->
-            beforeRelation
-                .stream()
-                .allMatch(entry -> xComesBeforeY(path, entry.getKey(), entry.getValue()))
-        ).collect(Collectors.toList());
+      List<List<String>> paths, List<Entry<String, String>> beforeRelation) {
+    return paths.stream()
+        .filter(
+            path ->
+                beforeRelation.stream()
+                    .allMatch(entry -> xComesBeforeY(path, entry.getKey(), entry.getValue())))
+        .collect(Collectors.toList());
   }
 
   public static void assertSameStartOutgoingLabel(LTS lts1, LTS lts2) {
@@ -101,14 +97,15 @@ public class LTSTestingUtils {
   }
 
   public static void assertSameOutgoingLabel(LTS lts1, State state1, LTS lts2, State state2) {
-    var outgoingLabel1 = lts1.getOutgoings(state1)
-        .stream().map(Transition::getLabel).collect(Collectors.toList());
-    var outgoingLabel2 = lts2.getOutgoings(state2)
-        .stream().map(Transition::getLabel).collect(Collectors.toList());
+    var outgoingLabel1 =
+        lts1.getOutgoings(state1).stream().map(Transition::getLabel).collect(Collectors.toList());
+    var outgoingLabel2 =
+        lts2.getOutgoings(state2).stream().map(Transition::getLabel).collect(Collectors.toList());
     Utils.assertEqualIgnoreOrder(outgoingLabel1, outgoingLabel2);
   }
 
-  public static void addTransition(State source, String label, Map<String, State> targets, LTS lts) {
+  public static void addTransition(
+      State source, String label, Map<String, State> targets, LTS lts) {
     lts.addTransition(new Transition(source, Collections.emptyList(), label, targets.get(label)));
   }
 }

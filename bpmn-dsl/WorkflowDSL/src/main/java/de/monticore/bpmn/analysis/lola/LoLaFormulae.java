@@ -27,7 +27,7 @@ public class LoLaFormulae {
         + " AND "
         + wfNet.getSink().getName()
         + " > 0" // proper completion is than guaranteed by safeness check (option to complete +
-                 // safeness => proper completion)
+        // safeness => proper completion)
         + ")";
   }
 
@@ -47,7 +47,7 @@ public class LoLaFormulae {
         + " AND "
         + wfNet.getSink().getName()
         + " > 0" // proper completion is than guaranteed by safeness check (option to complete +
-                 // safeness => proper completion)
+        // safeness => proper completion)
         + "))";
   }
 
@@ -62,14 +62,14 @@ public class LoLaFormulae {
   public static String dead(
       final ASTTransition
           transition) { // instead of checking liveness directly we check if t is not enabled in the
-                        // start marking
+    // start marking
     return "AG NOT FIREABLE(" + transition.getName() + ")";
   }
 
   public static String live(
       final ASTTransition
           transition) { // instead of checking liveness directly we check if t is not enabled in the
-                        // start marking
+    // start marking
     return "EF FIREABLE(" + transition.getName() + ")";
   }
 }

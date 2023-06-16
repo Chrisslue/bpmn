@@ -56,7 +56,7 @@ public abstract class WorkflowLocalVisitor implements WorkflowVisitor2, Workflow
       }
 
     } else { // traverse only attributes of the sub-process, but no elements contained within the
-             // the sub-process
+      // the sub-process
       if (subProcess.isPresentAdHocCharacteristics()) {
         subProcess.getAdHocCharacteristics().accept(getTraverser());
       }

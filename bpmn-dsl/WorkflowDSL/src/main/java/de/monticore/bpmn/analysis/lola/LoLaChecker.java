@@ -122,7 +122,7 @@ public class LoLaChecker {
     parameter(
         "search",
         "cover"); // use coverability graph instead of reachability graph (depth-first search may
-                  // fail if petri-net is unbounded)
+    // fail if petri-net is unbounded)
     parameter("encoder", "full"); // required with --search=cover
     // argument("cycle");
     parameter("json", output.getAbsolutePath());

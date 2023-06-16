@@ -32,7 +32,5 @@ public class WF2LTSGeneratorTest {
     System.out.println(lts.toMermaid().build());
     Assertions.assertEquals(1, lts.getOutgoings(lts.getStart()).size());
     Assertions.assertEquals("Start", lts.getOutgoings(lts.getStart()).get(0).getLabel());
-
   }
-
 }

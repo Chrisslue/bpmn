@@ -20,14 +20,13 @@ import org.junit.jupiter.api.Test;
 
 class DefaultParallelInterleavingTest {
 
-
   private final List<String> elements = List.of("A", "B", "C", "D", "E", "F", "G");
 
   private LTS buildBranchingLTS() {
     // Use lts.toMermaid().build() to visualize the lts
     var lts = new LTS();
-    Map<String, State> targets = elements.stream()
-        .collect(Collectors.toMap(Function.identity(), (x) -> new LTS.State()));
+    Map<String, State> targets =
+        elements.stream().collect(Collectors.toMap(Function.identity(), (x) -> new LTS.State()));
     targets.values().forEach(lts::addState);
     LTSTestingUtils.addTransition(lts.getStart(), "A", targets, lts);
     LTSTestingUtils.addTransition(targets.get("A"), "B", targets, lts);
@@ -43,8 +42,8 @@ class DefaultParallelInterleavingTest {
 
   private LTS buildThreeOptionsLTS() {
     var lts = new LTS();
-    Map<String, State> targets = elements.stream()
-        .collect(Collectors.toMap(Function.identity(), (x) -> new LTS.State()));
+    Map<String, State> targets =
+        elements.stream().collect(Collectors.toMap(Function.identity(), (x) -> new LTS.State()));
     targets.values().forEach(lts::addState);
     LTSTestingUtils.addTransition(lts.getStart(), "A", targets, lts);
     LTSTestingUtils.addTransition(targets.get("A"), "B", targets, lts);
@@ -63,24 +62,22 @@ class DefaultParallelInterleavingTest {
     pathsWithD.remove("C");
     var allPaths = LTSTestingUtils.generatePermutations(pathsWithC);
     allPaths.addAll(LTSTestingUtils.generatePermutations(pathsWithD));
-    var beforeRelation = List.of(
-        entry("A", "B"),
-        entry("B", "C"),
-        entry("B", "D"),
-        entry("C", "G"),
-        entry("D", "G"),
-        entry("E", "F"));
+    var beforeRelation =
+        List.of(
+            entry("A", "B"),
+            entry("B", "C"),
+            entry("B", "D"),
+            entry("C", "G"),
+            entry("D", "G"),
+            entry("E", "F"));
     return LTSTestingUtils.filterCorrectComesBefore(allPaths, beforeRelation);
   }
 
   private List<List<String>> allValidPathForThreeOptionsLTS() {
-    var beforeRelation = List.of(
-        entry("A", "B"),
-        entry("B", "C"),
-        entry("D", "E"),
-        entry("F", "G")
-    );
-    return LTSTestingUtils.filterCorrectComesBefore(LTSTestingUtils.generatePermutations(elements), beforeRelation);
+    var beforeRelation =
+        List.of(entry("A", "B"), entry("B", "C"), entry("D", "E"), entry("F", "G"));
+    return LTSTestingUtils.filterCorrectComesBefore(
+        LTSTestingUtils.generatePermutations(elements), beforeRelation);
   }
 
   private void assertUsingAllElementsAsLabel(LTS lts) {
@@ -94,9 +91,11 @@ class DefaultParallelInterleavingTest {
     // Assert A, E are the only outgoing transition labels of start:
     LTSTestingUtils.assertSameStartOutgoingLabel(originalLTS, interleavedLTS);
 
-    allValidPathsForBranchingLTS().forEach(path -> LTSTestingUtils.assertPathExists(interleavedLTS, path));
+    allValidPathsForBranchingLTS()
+        .forEach(path -> LTSTestingUtils.assertPathExists(interleavedLTS, path));
 
-    assertTrue(LTSTestingUtils.pathOfLabel(interleavedLTS, elements).isEmpty(),
+    assertTrue(
+        LTSTestingUtils.pathOfLabel(interleavedLTS, elements).isEmpty(),
         "C and D cant be in the same path.");
 
     assertUsingAllElementsAsLabel(interleavedLTS);
@@ -104,12 +103,11 @@ class DefaultParallelInterleavingTest {
     // Assert that all terminal states have only G or F incoming transitions.
     Assertions.assertTrue(
         interleavedLTS.getTerminalStates().stream()
-            .allMatch(terminal ->
-                interleavedLTS.getIncoming(terminal)
-                    .stream()
-                    .map(Transition::getLabel)
-                    .allMatch(label -> label.equals("G") || label.equals("F"))
-            ));
+            .allMatch(
+                terminal ->
+                    interleavedLTS.getIncoming(terminal).stream()
+                        .map(Transition::getLabel)
+                        .allMatch(label -> label.equals("G") || label.equals("F"))));
   }
 
   @Test
@@ -134,7 +132,8 @@ class DefaultParallelInterleavingTest {
   void testNoParallelPaths() {
     var originalLTS = new LTS();
     var aTarget = new State();
-    originalLTS.addTransition(new Transition(originalLTS.getStart(), Collections.emptyList(), "A", aTarget));
+    originalLTS.addTransition(
+        new Transition(originalLTS.getStart(), Collections.emptyList(), "A", aTarget));
     originalLTS.addTransition(new Transition(aTarget, Collections.emptyList(), "B", new State()));
 
     var interleaved = DefaultParallelInterleaving.interleave(originalLTS);
@@ -143,4 +142,3 @@ class DefaultParallelInterleavingTest {
     assertEquals(1, interleaved.getTerminalStates().size());
   }
 }
-
