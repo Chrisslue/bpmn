@@ -3,13 +3,9 @@ package de.monticore.wf2lts.transformer;
 import de.monticore.wf2lts.datastructure.LTS;
 import de.monticore.wf2lts.datastructure.LTS.State;
 import de.monticore.wf2lts.datastructure.LTS.Transition;
-import java.util.ArrayDeque;
+import de.monticore.wf2lts.datastructure.LTSTraverser;
 import java.util.ArrayList;
-import java.util.Deque;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -82,26 +78,8 @@ public class DefaultSequentialInterleaving {
     lts.removeState(subLTS.getStart());
   }
 
-  /**
-   * Use depth-first-search to compute the reachable lts in lts The returned lts will have the exact
-   * same states and transitions (no copies).
-   *
-   * @param lts The lts for which the sub-lts should be computed.
-   * @param fromState The start point from which the search is started.
-   * @return the reachable part form lts starting fromState with fromState as start-state.
-   */
-  public static LTS subLTS(LTS lts, State fromState) {
-
-    ArrayList<State> visitedStates = new ArrayList<>();
-    depthFirstSearchLTS(lts, fromState, visitedStates::add);
-
-    LTS subLTS = new LTS(fromState);
-    visitedStates.forEach(state -> lts.getOutgoings(state).forEach(subLTS::addTransition));
-    return subLTS;
-  }
-
   public static LTS subLTS(LTS lts, Transition startTransition) {
-    var subLTSFromTarget = subLTS(lts, startTransition.getTarget());
+    var subLTSFromTarget = new LTSTraverser(lts).subLTS(startTransition.getTarget());
     var subLTS = new LTS(startTransition.getSource());
     subLTS.addTransition(startTransition);
     subLTS.addTransitionsOf(subLTSFromTarget);
@@ -116,8 +94,7 @@ public class DefaultSequentialInterleaving {
   public static List<State> reachableTerminalStates(LTS oldLTS, State state) {
 
     List<State> foundTerminalStates = new ArrayList<>();
-    depthFirstSearchLTS(
-        oldLTS,
+    new LTSTraverser(oldLTS).depthFirstSearchLTS(
         state,
         (s) -> {
           if (oldLTS.getOutgoings(s).isEmpty()) {
@@ -127,22 +104,4 @@ public class DefaultSequentialInterleaving {
     return foundTerminalStates;
   }
 
-  public static void depthFirstSearchLTS(LTS lts, State state, Consumer<State> visitingConsumer) {
-    Deque<State> queue = new ArrayDeque<>();
-    Set<State> visited = new HashSet<>();
-    queue.add(state);
-
-    while (!queue.isEmpty()) {
-      var currentState = queue.removeFirst();
-      if (visited.contains(currentState)) {
-        continue;
-      }
-      visited.add(currentState);
-
-      visitingConsumer.accept(currentState);
-
-      var outgoings = lts.getOutgoings(currentState);
-      outgoings.forEach(transition -> queue.addFirst(transition.getTarget()));
-    }
-  }
 }

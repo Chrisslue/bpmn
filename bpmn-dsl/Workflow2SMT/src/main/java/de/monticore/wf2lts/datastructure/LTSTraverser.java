@@ -2,9 +2,14 @@ package de.monticore.wf2lts.datastructure;
 
 import de.monticore.wf2lts.datastructure.LTS.State;
 import de.monticore.wf2lts.datastructure.LTS.Transition;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -27,6 +32,42 @@ public class LTSTraverser {
   public static Optional<Path> pathOfLabel(LTS lts, List<String> labels) {
     var traverser = new LTSTraverser(lts);
     return traverser.pathOfLabel(labels);
+  }
+
+  /**
+   * Use depth-first-search to compute the reachable part of the lts. The returned lts will have the exact same states
+   * and transitions (no copies).
+   *
+   * @param fromState The start point from which the search is started.
+   * @return A view of the reachable part of the lts starting at fromState.
+   */
+  public LTS subLTS(State fromState) {
+
+    ArrayList<State> visitedStates = new ArrayList<>();
+    depthFirstSearchLTS(fromState, visitedStates::add);
+
+    LTS subLTS = new LTS(fromState);
+    visitedStates.forEach(state -> lts.getOutgoings(state).forEach(subLTS::addTransition));
+    return subLTS;
+  }
+
+  public void depthFirstSearchLTS(State state, Consumer<State> visitingConsumer) {
+    Deque<State> queue = new ArrayDeque<>();
+    Set<State> visited = new HashSet<>();
+    queue.add(state);
+
+    while (!queue.isEmpty()) {
+      var currentState = queue.removeFirst();
+      if (visited.contains(currentState)) {
+        continue;
+      }
+      visited.add(currentState);
+
+      visitingConsumer.accept(currentState);
+
+      var outgoings = lts.getOutgoings(currentState);
+      outgoings.forEach(transition -> queue.addFirst(transition.getTarget()));
+    }
   }
 
   public List<Transition> outgoingsWith(State state, String label) {
