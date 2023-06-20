@@ -9,6 +9,7 @@ import de.monticore.wf2lts.Utils;
 import de.monticore.wf2lts.datastructure.LTS;
 import de.monticore.wf2lts.datastructure.LTS.State;
 import de.monticore.wf2lts.datastructure.LTS.Transition;
+import de.monticore.wf2lts.datastructure.LTSTraverser;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -95,7 +96,7 @@ class DefaultParallelInterleavingTest {
         .forEach(path -> LTSTestingUtils.assertPathExists(interleavedLTS, path));
 
     assertTrue(
-        LTSTestingUtils.pathOfLabel(interleavedLTS, elements).isEmpty(),
+        LTSTraverser.pathOfLabel(interleavedLTS, elements).isEmpty(),
         "C and D cant be in the same path.");
 
     assertUsingAllElementsAsLabel(interleavedLTS);

@@ -4,6 +4,7 @@ import de.monticore.wf2lts.LTSTestingUtils;
 import de.monticore.wf2lts.datastructure.LTS;
 import de.monticore.wf2lts.datastructure.LTS.State;
 import de.monticore.wf2lts.datastructure.LTS.Transition;
+import de.monticore.wf2lts.datastructure.LTSTraverser;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -42,8 +43,8 @@ class DefaultSequentialInterleavingTest {
 
     LTSTestingUtils.assertPathExists(interleaved, List.of("A", "B", "C", "D"));
     LTSTestingUtils.assertPathExists(interleaved, List.of("C", "D", "A", "B"));
-    Assertions.assertFalse(LTSTestingUtils.pathOfLabel(interleaved, List.of("A", "C")).isPresent());
-    Assertions.assertFalse(LTSTestingUtils.pathOfLabel(interleaved, List.of("C", "A")).isPresent());
+    Assertions.assertFalse(LTSTraverser.pathOfLabel(interleaved, List.of("A", "C")).isPresent());
+    Assertions.assertFalse(LTSTraverser.pathOfLabel(interleaved, List.of("C", "A")).isPresent());
 
     LTSTestingUtils.assertSameStartOutgoingLabel(lts, interleaved);
   }
@@ -108,9 +109,9 @@ class DefaultSequentialInterleavingTest {
 
     // Assert backlink is indeed pointing back.
     Assertions.assertEquals(2, interleaved.getTransitionsForLabel("Z").size());
-    var pathToZ = LTSTestingUtils.pathOfLabel(interleaved, List.of("A", "B", "Z")).orElseThrow();
+    var pathToZ = LTSTraverser.pathOfLabel(interleaved, List.of("A", "B", "Z")).orElseThrow();
     // The target of the Z transition is the source of the B transition
-    Assertions.assertEquals(pathToZ.get(1).getSource(), pathToZ.get(2).getTarget());
+    Assertions.assertEquals(pathToZ.getTransitions().get(1).getSource(), pathToZ.getTransitions().get(2).getTarget());
   }
 
   @Test

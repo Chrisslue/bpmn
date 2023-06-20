@@ -5,44 +5,19 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import de.monticore.wf2lts.datastructure.LTS;
 import de.monticore.wf2lts.datastructure.LTS.State;
 import de.monticore.wf2lts.datastructure.LTS.Transition;
+import de.monticore.wf2lts.datastructure.LTSTraverser;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class LTSTestingUtils {
 
-  /**
-   * Traverse a lst given a list of transition label. NOTE Uses the first transition it finds, not
-   * suited for non-deterministic lts.
-   *
-   * @param lts The lts to be traversed.
-   * @param labels List of transition label.
-   * @return The visited transitions if a path could be found else empty.
-   */
-  public static Optional<List<Transition>> pathOfLabel(LTS lts, List<String> labels) {
-    var transitions = new ArrayList<Transition>();
-
-    for (int idx = 0; idx < labels.size(); idx++) {
-      var lastState = idx == 0 ? lts.getStart() : transitions.get(idx - 1).getTarget();
-      int indexCopy = idx;
-      var nextTransition =
-          lts.getOutgoings(lastState).stream()
-              .filter(transition -> transition.getLabel().equals(labels.get(indexCopy)))
-              .findFirst();
-      if (nextTransition.isEmpty()) {
-        return Optional.empty();
-      }
-      transitions.add(nextTransition.get());
-    }
-    return Optional.of(transitions);
-  }
 
   public static void assertPathExists(LTS lts, List<String> labels) {
-    assertTrue(pathOfLabel(lts, labels).isPresent(), "Path of labels doesnt exist" + labels);
+    assertTrue(LTSTraverser.pathOfLabel(lts, labels).isPresent(), "Path of labels doesnt exist" + labels);
   }
 
   public static void assertPathsExists(LTS lts, List<List<String>> paths) {
