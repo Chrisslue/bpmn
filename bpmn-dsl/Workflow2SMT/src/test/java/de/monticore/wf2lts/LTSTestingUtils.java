@@ -20,6 +20,14 @@ public class LTSTestingUtils {
     assertTrue(LTSTraverser.pathOfLabel(lts, labels).isPresent(), "Path of labels doesnt exist" + labels);
   }
 
+  public static void assertTerminatingPathExists(LTS lts, List<String> labels) {
+    var optPath = LTSTraverser.pathOfLabel(lts, labels);
+    assertTrue(
+        optPath.isPresent() && optPath.get().endsInTerminal()
+        , "Path of labels either doesn't exist or does not end in terminal state" + optPath);
+  }
+
+
   public static void assertPathsExists(LTS lts, List<List<String>> paths) {
     for (var path : paths) {
       assertPathExists(lts, path);
@@ -82,5 +90,16 @@ public class LTSTestingUtils {
   public static void addTransition(
       State source, String label, Map<String, State> targets, LTS lts) {
     lts.addTransition(new Transition(source, Collections.emptyList(), label, targets.get(label)));
+  }
+
+  public static List<Transition> toPath(State start, List<String> labelList) {
+    var transitions = new ArrayList<Transition>();
+    var lastState = start;
+    for (String label : labelList) {
+      var next = new State();
+      transitions.add(new Transition(lastState, Collections.emptyList(), label, next));
+      lastState = next;
+    }
+    return transitions;
   }
 }

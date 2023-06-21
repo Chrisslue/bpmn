@@ -4,6 +4,7 @@ import de.monticore.wf2lts.datastructure.LTS.State;
 import de.monticore.wf2lts.datastructure.LTS.Transition;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
@@ -70,96 +71,138 @@ public class LTSTraverser {
     }
   }
 
-  public List<Transition> outgoingsWith(State state, String label) {
-    return streamOutgoingsWith(state, label)
-        .collect(Collectors.toList());
+  /**
+   * Generate all paths starting from source and ending in target. This method is not optimized and can result in
+   * OutOfMemory exceptions for huge lts.
+   */
+  public List<Path> pathsBetween(State source, State target) {
+    var foundPaths = new ArrayList<Path>();
+    new Path(source).pathsBetweenRecursive(target, Collections.emptyList(), foundPaths);
+    return foundPaths;
   }
 
-  protected Stream<Transition> streamOutgoingsWith(State state, String label) {
-    return lts.getOutgoings(state)
-        .stream()
-        .filter(transition -> transition.getLabel().equals(label));
-  }
-
-  public Optional<Path> pathOfLabel(List<String> labels) {
-    var path = new Path();
+  public Optional<Path> pathOfLabel(State from, List<String> labels) {
+    var path = new Path(from);
 
     String[] reversed = new String[labels.size()];
     for (int i = 1; i <= labels.size(); i++) {
       reversed[labels.size() - i] = labels.get(i - 1);
     }
-    return path.findPathRecursive(reversed, reversed.length);
+
+    return path.findPathOfLabelRecursive(reversed, reversed.length);
+  }
+
+  public Optional<Path> pathOfLabel(List<String> labels) {
+    return pathOfLabel(lts.getStart(), labels);
   }
 
   public class Path {
 
     private final List<Transition> transitions;
 
+    private final State lastState;
+
     public Path() {
-      this(new ArrayList<>());
+      this(new ArrayList<>(), lts.getStart());
+    }
+
+    public Path(State lastState) {
+      this(new ArrayList<>(), lastState);
+    }
+
+    public Path(List<Transition> transitions) {
+      this(transitions, transitions.get(transitions.size() - 1).getTarget());
+    }
+
+    protected Path(List<Transition> transitions, State lastState) {
+      this.transitions = transitions;
+      this.lastState = lastState;
     }
 
     public List<Transition> getTransitions() {
       return transitions;
     }
 
-    public Path(List<Transition> transitions) {
-      this.transitions = transitions;
+    public State getLastState() {
+      return lastState;
     }
 
-    public Path(Path old, Transition next) {
-      this.transitions = new ArrayList<>(old.transitions);
-      if (!transitions.isEmpty() && transitions.get(transitions.size() - 1).getTarget() != next.getSource()) {
+    public Stream<Transition> stream() {
+      return getTransitions().stream();
+    }
+
+    public List<String> asLabel() {
+      return stream()
+          .map(Transition::getLabel)
+          .collect(Collectors.toList());
+    }
+
+    public Path advancedBy(Transition transition) {
+      if (!transitions.isEmpty() && getLastState() != transition.getSource()) {
         throw new IllegalArgumentException("Transition is not a continuation of path");
       }
-      transitions.add(next);
+      var nextTransitions = new ArrayList<>(this.transitions);
+
+      nextTransitions.add(transition);
+      return new Path(nextTransitions);
     }
 
-    public Optional<State> getCurrentState() {
-      return transitions.isEmpty() ? Optional.empty()
-          : Optional.of(transitions.get(transitions.size() - 1).getTarget());
+    public List<Transition> outgoingsWith(String label) {
+      return outgoingsWithStream(label)
+          .collect(Collectors.toList());
     }
 
-    public Optional<Path> takeFirst(String label) {
-      return getCurrentState()
-          .flatMap(s -> outgoingsWith(s, label).stream().findFirst())
-          .map(nextState -> new Path(this, nextState));
+    public Stream<Transition> outgoingsWithStream(String label) {
+      return outgoings()
+          .stream()
+          .filter(transition -> transition.getLabel().equals(label));
+    }
+
+    public List<Transition> outgoings() {
+      return lts.getOutgoings(getLastState());
     }
 
     public boolean endsInTerminal() {
-      return getCurrentState().map(s -> lts.getTerminalStates().contains(s)).orElse(false);
+      return lts.getTerminalStates().contains(getLastState());
     }
+    //
 
-    private Optional<Path> findPathRecursive(String[] remainingLabel, int size) {
+    private Optional<Path> findPathOfLabelRecursive(String[] remainingLabel, int size) {
       if (size == 0) {
         return Optional.of(this);
       }
       var nextLabel = remainingLabel[size - 1];
 
-      var state = getCurrentState().isEmpty() ? lts.getStart() : getCurrentState().get();
+      return this.outgoingsWithStream(nextLabel)
+          .map(nextTransition -> this.advancedBy(nextTransition).findPathOfLabelRecursive(remainingLabel, size - 1))
+          .filter(Optional::isPresent)
+          .map(Optional::get)
+          .findAny();
+    }
 
-      List<Transition> continuations = outgoingsWith(state, nextLabel);
+    private void pathsBetweenRecursive(
+        State target,
+        List<State> visited,
+        List<Path> foundPaths) {
 
-      for (var nextTransition : continuations) {
-        var optResult = new Path(this, nextTransition).findPathRecursive(remainingLabel, size - 1);
-        if (optResult.isPresent()) {
-          return optResult;
+      for (var transition : this.outgoings()) {
+        if (transition.getTarget().equals(target)) {
+          foundPaths.add(this.advancedBy(transition));
+          return;
         }
+        if (visited.contains(transition.getTarget())) {
+          continue;
+        }
+        var nextVisited = new ArrayList<>(visited);
+        nextVisited.add(transition.getTarget());
+        this.advancedBy(transition)
+            .pathsBetweenRecursive(target, nextVisited, foundPaths);
       }
-      return Optional.empty();
+    }
 
-      /* Written with streams:
-       * return continuations
-       *           .stream()
-       *           .map(transition ->new Path(this, transition).findPathRecursive(remainingLabel, size - 1))
-       *           .filter(Optional::isPresent)
-       *           .findAny()
-       *           .flatMap(Function.identity());
-       *
-       */
-
+    public boolean labelOccurred(String label) {
+      return this.transitions.stream().anyMatch(transition -> transition.getLabel().equals(label));
     }
 
   }
-
 }

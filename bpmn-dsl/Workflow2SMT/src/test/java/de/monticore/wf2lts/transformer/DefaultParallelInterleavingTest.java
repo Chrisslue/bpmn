@@ -1,5 +1,6 @@
 package de.monticore.wf2lts.transformer;
 
+import static de.monticore.wf2lts.LTSTestingUtils.toPath;
 import static java.util.Map.entry;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Assertions;
@@ -141,5 +143,69 @@ class DefaultParallelInterleavingTest {
     assertEquals(1, interleaved.getOutgoings(interleaved.getStart()).size());
     LTSTestingUtils.assertPathExists(interleaved, List.of("A", "B"));
     assertEquals(1, interleaved.getTerminalStates().size());
+  }
+
+  @Test
+  void testCycle() {
+    var lts = new LTS();
+    var upperPath = toPath(lts.getStart(), List.of("A", "B", "C", "D"));
+    var lowerPath = toPath(lts.getStart(), List.of("E", "F"));
+    upperPath.forEach(lts::addTransition);
+    lowerPath.forEach(lts::addTransition);
+    var cTransition = lts.getTransitionsForLabel("C").get(0);
+    lts.addTransition(new Transition(cTransition.getTarget(), Collections.emptyList(), "B", cTransition.getSource()));
+
+    var interleaved = DefaultParallelInterleaving.interleave(lts);
+    var interleavedTraverser = new LTSTraverser(interleaved);
+    LTSTestingUtils.assertSameOutgoingLabel(lts, lts.getStart(), interleaved, interleaved.getStart());
+
+    // Assert that "B" after "C" transition is a simple backlink
+    var simpleCycle = LTSTraverser.pathOfLabel(interleaved, List.of("A", "B", "C")).orElseThrow();
+    var interleavedCTransition = simpleCycle.getTransitions().get(simpleCycle.getTransitions().size() - 1);
+    var optBacklink = simpleCycle.outgoingsWith("B");
+    Assertions.assertFalse(optBacklink.size() != 1,
+        "Expected outgoing transition with B but found: " + simpleCycle.outgoingsWith("B"));
+    var backLink = optBacklink.get(0);
+    Assertions.assertEquals(interleavedCTransition.getSource(), backLink.getTarget());
+
+    // Assert that no second "E" can be reached after one "E"
+    Consumer<State> assertNoOutgoingWithE = (s) -> Assertions.assertFalse(
+        interleaved.getOutgoings(s).stream().anyMatch(t -> t.getLabel().equals("E")));
+    var eTransitions = interleaved.getTransitionsForLabel("E");
+    eTransitions.forEach(
+        eTransition -> interleavedTraverser.depthFirstSearchLTS(
+            eTransition.getTarget(),
+            assertNoOutgoingWithE
+        )
+    );
+
+    // Assert after every "E", for which a "C" but no "D" occurred previously, "B" is an outgoing transition..
+    var traverser = new LTSTraverser(interleaved);
+    var badWitness = interleaved.getTransitionsForLabel("E").stream()
+        .filter(eTransition -> traverser // "C" but not "D" occurred on the path from start to "E"
+            .pathsBetween(interleaved.getStart(), eTransition.getSource())
+            .stream()
+            .anyMatch(pathToE -> pathToE.labelOccurred("C") && !pathToE.labelOccurred("D"))
+        )
+        .filter(eTransition -> interleaved
+            .getOutgoings(eTransition.getTarget())
+            .stream()
+            .noneMatch(successor -> successor.getLabel().equals("B"))
+        ).findFirst();
+    Assertions.assertTrue(badWitness.isEmpty());
+
+    // Assert that no "E" for which a "D" occurred before has an outgoing with "B"
+    var bOutgoingAfterEWithPreviousD = interleaved.getTransitionsForLabel("E").stream()
+        .filter(eTransition -> traverser //"D" occurred on the path from start to "E"
+            .pathsBetween(interleaved.getStart(), eTransition.getSource())
+            .stream()
+            .anyMatch(pathToE -> pathToE.labelOccurred("D"))
+        )
+        .filter(eTransition -> interleaved
+            .getOutgoings(eTransition.getTarget())
+            .stream()
+            .anyMatch(successor -> successor.getLabel().equals("B"))
+        ).findFirst();
+    Assertions.assertTrue(bOutgoingAfterEWithPreviousD.isEmpty());
   }
 }
