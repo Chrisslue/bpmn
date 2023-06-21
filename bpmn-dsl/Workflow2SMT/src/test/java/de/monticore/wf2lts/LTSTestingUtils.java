@@ -9,7 +9,6 @@ import de.monticore.wf2lts.datastructure.LTSTraverser;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
@@ -87,12 +86,11 @@ public class LTSTestingUtils {
     Utils.assertEqualIgnoreOrder(outgoingLabel1, outgoingLabel2);
   }
 
-  public static void addTransition(
-      State source, String label, Map<String, State> targets, LTS lts) {
-    lts.addTransition(new Transition(source, Collections.emptyList(), label, targets.get(label)));
+  public static void addPathOfLabelFromStart(LTS lts, List<String> labelList) {
+    toTransitions(lts.getStart(), labelList).forEach(lts::addTransition);
   }
 
-  public static List<Transition> toPath(State start, List<String> labelList) {
+  public static List<Transition> toTransitions(State start, List<String> labelList) {
     var transitions = new ArrayList<Transition>();
     var lastState = start;
     for (String label : labelList) {

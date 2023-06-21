@@ -7,8 +7,6 @@ import de.monticore.wf2lts.datastructure.LTS.Transition;
 import de.monticore.wf2lts.datastructure.LTSTraverser;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -18,20 +16,14 @@ class DefaultSequentialInterleavingTest {
   private static LTS buildSimpleLTS() {
     var labels = List.of("A", "B", "C", "D");
     var lts = new LTS();
-    Map<String, State> targets =
-        labels.stream().collect(Collectors.toMap(Function.identity(), (x) -> new LTS.State()));
-    LTSTestingUtils.addTransition(lts.getStart(), "A", targets, lts);
-    LTSTestingUtils.addTransition(lts.getStart(), "C", targets, lts);
-    LTSTestingUtils.addTransition(targets.get("A"), "B", targets, lts);
-    LTSTestingUtils.addTransition(targets.get("C"), "D", targets, lts);
+    LTSTestingUtils.addPathOfLabelFromStart(lts, List.of("A", "B"));
+    LTSTestingUtils.addPathOfLabelFromStart(lts, List.of("C", "D"));
     return lts;
   }
 
   private static LTS buildThreePaths() {
     var lts = buildSimpleLTS();
-    var eTarget = new State();
-    lts.addTransition(new Transition(lts.getStart(), Collections.emptyList(), "E", eTarget));
-    lts.addTransition(new Transition(eTarget, Collections.emptyList(), "F", new State()));
+    LTSTestingUtils.addPathOfLabelFromStart(lts, List.of("E", "F"));
     return lts;
   }
 
@@ -52,10 +44,9 @@ class DefaultSequentialInterleavingTest {
   @Test
   void testOnlyOnePath() {
     var lts = new LTS();
-    var aTarget = new State();
-    lts.addTransition(new Transition(lts.getStart(), Collections.emptyList(), "A", aTarget));
-    lts.addTransition(new Transition(aTarget, Collections.emptyList(), "B", new State()));
-    lts.addTransition(new Transition(aTarget, Collections.emptyList(), "C", new State()));
+    LTSTestingUtils.addPathOfLabelFromStart(lts, List.of("A", "B"));
+    lts.addTransition(
+        new Transition(lts.getTransitionsForLabel("A").get(0).getTarget(), Collections.emptyList(), "C", new State()));
 
     var interleaved = DefaultSequentialInterleaving.interleave(lts);
 
@@ -89,7 +80,7 @@ class DefaultSequentialInterleavingTest {
   void testBackLinks() {
     var lts = buildSimpleLTS();
     var bTransition = lts.getTransitionsForLabel("B").get(0);
-    lts.addTransition(
+    lts.addTransition( // Create cycle by transition from target of B, labeled Z, to source of B.
         new Transition(
             bTransition.getTarget(), Collections.emptyList(), "Z", bTransition.getSource()));
     lts.addTransition(

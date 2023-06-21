@@ -1,6 +1,6 @@
 package de.monticore.wf2lts.transformer;
 
-import static de.monticore.wf2lts.LTSTestingUtils.toPath;
+
 import static java.util.Map.entry;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -14,10 +14,7 @@ import de.monticore.wf2lts.datastructure.LTSTraverser;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -28,33 +25,20 @@ class DefaultParallelInterleavingTest {
   private LTS buildBranchingLTS() {
     // Use lts.toMermaid().build() to visualize the lts
     var lts = new LTS();
-    Map<String, State> targets =
-        elements.stream().collect(Collectors.toMap(Function.identity(), (x) -> new LTS.State()));
-    targets.values().forEach(lts::addState);
-    LTSTestingUtils.addTransition(lts.getStart(), "A", targets, lts);
-    LTSTestingUtils.addTransition(targets.get("A"), "B", targets, lts);
-    LTSTestingUtils.addTransition(targets.get("B"), "C", targets, lts);
-    // addTransition(targets.get("C"), "B", targets, lts); TODO test backlinks if implemented
-    LTSTestingUtils.addTransition(targets.get("C"), "G", targets, lts);
-    LTSTestingUtils.addTransition(targets.get("B"), "D", targets, lts);
-    LTSTestingUtils.addTransition(targets.get("D"), "G", targets, lts);
-    LTSTestingUtils.addTransition(targets.get("E"), "F", targets, lts);
-    LTSTestingUtils.addTransition(lts.getStart(), "E", targets, lts);
+    var abTransitions = LTSTestingUtils.toTransitions(lts.getStart(), List.of("A", "B"));
+    var bTarget = abTransitions.get(abTransitions.size() - 1).getTarget();
+    abTransitions.forEach(lts::addTransition);
+    LTSTestingUtils.toTransitions(bTarget, List.of("C", "G")).forEach(lts::addTransition);
+    LTSTestingUtils.toTransitions(bTarget, List.of("D", "G")).forEach(lts::addTransition);
+    LTSTestingUtils.addPathOfLabelFromStart(lts, List.of("E", "F"));
     return lts;
   }
 
   private LTS buildThreeOptionsLTS() {
     var lts = new LTS();
-    Map<String, State> targets =
-        elements.stream().collect(Collectors.toMap(Function.identity(), (x) -> new LTS.State()));
-    targets.values().forEach(lts::addState);
-    LTSTestingUtils.addTransition(lts.getStart(), "A", targets, lts);
-    LTSTestingUtils.addTransition(targets.get("A"), "B", targets, lts);
-    LTSTestingUtils.addTransition(targets.get("B"), "C", targets, lts);
-    LTSTestingUtils.addTransition(lts.getStart(), "D", targets, lts);
-    LTSTestingUtils.addTransition(targets.get("D"), "E", targets, lts);
-    LTSTestingUtils.addTransition(lts.getStart(), "F", targets, lts);
-    LTSTestingUtils.addTransition(targets.get("F"), "G", targets, lts);
+    LTSTestingUtils.addPathOfLabelFromStart(lts, List.of("A", "B", "C"));
+    LTSTestingUtils.addPathOfLabelFromStart(lts, List.of("D", "E"));
+    LTSTestingUtils.addPathOfLabelFromStart(lts, List.of("F", "G"));
     return lts;
   }
 
@@ -148,10 +132,8 @@ class DefaultParallelInterleavingTest {
   @Test
   void testCycle() {
     var lts = new LTS();
-    var upperPath = toPath(lts.getStart(), List.of("A", "B", "C", "D"));
-    var lowerPath = toPath(lts.getStart(), List.of("E", "F"));
-    upperPath.forEach(lts::addTransition);
-    lowerPath.forEach(lts::addTransition);
+    LTSTestingUtils.addPathOfLabelFromStart(lts, List.of("A", "B", "C", "D"));
+    LTSTestingUtils.addPathOfLabelFromStart(lts, List.of("E", "F"));
     var cTransition = lts.getTransitionsForLabel("C").get(0);
     lts.addTransition(new Transition(cTransition.getTarget(), Collections.emptyList(), "B", cTransition.getSource()));
 
