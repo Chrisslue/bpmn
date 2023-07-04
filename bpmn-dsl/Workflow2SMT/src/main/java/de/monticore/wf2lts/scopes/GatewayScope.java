@@ -4,16 +4,14 @@ import de.monticore.bpmn.workflow._ast.ASTGateway;
 import de.monticore.bpmn.workflow._ast.ASTGatewayType;
 import de.monticore.bpmn.workflow._ast.ASTInlineGateway;
 import de.monticore.bpmn.workflow._ast.ASTNamedGateway;
-import de.monticore.bpmn.workflow._ast.SequenceFlow;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
 import de.monticore.wf2lts.GraphBuildingTraverser;
 import java.util.Optional;
 
 /**
- * Encapsulate a block of sequences between two matching gateways (split -> ... -> merge). Or paths
- * from split that end in an end event. Build the internal graph connecting both gateways. Might
- * include other nested GatewayScopes or SubprocessScopes. When created (using the constructor) the
- * intermediate graph is build immediately.
+ * Encapsulate a block of sequences between two matching gateways (split -> ... -> merge). Or paths from split that end
+ * in an end event. Build the internal graph connecting both gateways. Might include other nested GatewayScopes or
+ * SubprocessScopes. When created (using the constructor) the intermediate graph is build immediately.
  */
 public class GatewayScope extends GraphBuildingTraverser {
 
@@ -60,9 +58,7 @@ public class GatewayScope extends GraphBuildingTraverser {
     gatewayType = GatewayType.of(startElement.getType());
 
     addOutgoingsAsEdges(startElement);
-    for (SequenceFlow sequenceFlow : startElement.getOutgoingsList()) {
-      sequenceFlow.getTarget().accept(getTraverser());
-    }
+    super.traverseOutgoingTargets(startElement);
   }
 
   public GatewayType getGatewayType() {
@@ -76,6 +72,9 @@ public class GatewayScope extends GraphBuildingTraverser {
   }
 
   private void handleDiverging(ASTGateway gateway) {
+    if (this.getGraph().getStart() == gateway) {
+      return;
+    }
     GatewayScope nestedScopeCollector = new GatewayScope(getTraverser(), gateway);
     getGraph().getGatewayScopes().add(nestedScopeCollector);
 
@@ -83,26 +82,32 @@ public class GatewayScope extends GraphBuildingTraverser {
       return;
     }
     ASTGateway closingGateway = nestedScopeCollector.getClosingGateway().get();
-    addOutgoingsAsEdges(gateway);
+    addOutgoingsAsEdges(closingGateway);
     getTraverser().setWorkflowHandler(this);
-    for (SequenceFlow outgoingFlow : closingGateway.getOutgoingsList()) {
-      outgoingFlow.accept(getTraverser());
-    }
+    super.traverseOutgoingTargets(closingGateway);
   }
 
   private void handleGateway(ASTGateway gateway) {
     if (gateway.isDiverging()) {
       handleDiverging(gateway);
+      return;
     }
     if (gateway.isConverging() && gatewayType == GatewayType.of(gateway.getType())) {
       // We found the matching merge gateway.
       // Closing the gateway scope -> No further traversing..
+
+      // There might be multiple paths to the closing gateway.
+      // Therefore, this point might be reached multiple times.
+      // This is way we have to test for equality too.
+      if (this.closingGateway != null && this.closingGateway != gateway) {
+        throw new IllegalArgumentException(
+            "Closing gateway was already set: " + this.closingGateway.getName()
+                + " and was about to be overriden by: " + gateway.getName());
+      }
       this.closingGateway = gateway;
     } else { // Continue traversing graph.
       addOutgoingsAsEdges(gateway);
-      for (SequenceFlow outgoingFlow : gateway.getOutgoingsList()) {
-        outgoingFlow.accept(getTraverser());
-      }
+      super.traverseOutgoingTargets(gateway);
     }
   }
 

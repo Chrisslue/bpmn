@@ -21,13 +21,17 @@ import de.monticore.wf2lts.scopes.GatewayScope;
 import de.monticore.wf2lts.scopes.SubProcessScope;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class GraphBuildingTraverser implements WorkflowHandler, WorkflowVisitor2 {
 
   protected final IntermediateGraphWithScopes graph;
 
   protected WorkflowTraverser traverser;
+
+  protected Set<ASTFlowNode> visited;
 
   public GraphBuildingTraverser(WorkflowTraverser traverser, ASTFlowNode startElement) {
     this(traverser, new IntermediateGraphWithScopes(startElement));
@@ -37,6 +41,7 @@ public class GraphBuildingTraverser implements WorkflowHandler, WorkflowVisitor2
     traverser.setWorkflowHandler(this);
     traverser.getWorkflowVisitorList().add(this);
     this.graph = graph;
+    this.visited = new HashSet<>();
   }
 
   public static IntermediateGraphWithScopes graphOf(ASTEvent startEvent) {
@@ -103,9 +108,7 @@ public class GraphBuildingTraverser implements WorkflowHandler, WorkflowVisitor2
     } else {
       continueFrom = gateway;
     }
-    for (SequenceFlow sequenceFlow : continueFrom.getOutgoingsList()) {
-      sequenceFlow.getTarget().accept(getTraverser());
-    }
+    traverseOutgoingTargets(continueFrom);
   }
 
   @Override
@@ -148,9 +151,12 @@ public class GraphBuildingTraverser implements WorkflowHandler, WorkflowVisitor2
    * Traverse through the diagram by moving along the outgoing SequenceFlows.
    */
 
-  private void traverseOutgoingTargets(ASTFlowNode node) {
+  protected final void traverseOutgoingTargets(ASTFlowNode node) {
     for (SequenceFlow sequenceFlow : node.getOutgoingsList()) {
-      sequenceFlow.getTarget().accept(getTraverser());
+      if (!visited.contains(sequenceFlow.getTarget())) {
+        visited.add(sequenceFlow.getTarget());
+        sequenceFlow.getTarget().accept(getTraverser());
+      }
     }
   }
 
