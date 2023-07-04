@@ -61,5 +61,6 @@ public class GraphBuildingTraverserTest {
     var graph = GraphBuildingTraverser.graphOf(startEvent);
     assertEquals(1, graph.getGatewayScopes().size());
     assertEquals(0, graph.getGatewayScopes().get(0).getGraph().getGatewayScopes().size());
+    // TODO Adapt lts logic to handle this case
   }
 }

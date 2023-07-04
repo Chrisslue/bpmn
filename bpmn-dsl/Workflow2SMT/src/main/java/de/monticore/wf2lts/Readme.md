@@ -37,10 +37,10 @@ s3 --> s4
 
 | Component                     | Implemented | Tested |
 |-------------------------------|-------------|--------|
-| GraphBuildingTransformer      | x           |        |
+| GraphBuildingTraverser        | x           | WIP    |
 | IntermediateGraph             | x           | -      |
 | IntermediateGraphWithScopes   | x           |        |
-| LTS                           | x           |        |
+| LTS                           | x           | WIP    |
 | GatewayScope                  | x           |        |
 | SubprocessScope               | x           |        |
 | NamingStrategy                | x           | -      |
@@ -51,14 +51,19 @@ s3 --> s4
 | DefaultGatewayTransformer     | x           | x      |
 | DefaultSubprocessTransformer  | x           | WIP    |
 | DefaultGraph2LTSTransformer   | x           | x      |
-| DefaultGatewayInterleaving    |             |        |
-| DefaultParallelInterleaving   | WIP         | x      |
-| DefaultSequentialInterleaving | WIP         | x      |
+| DefaultGatewayInterleaving    | x           | -      |
+| DefaultParallelInterleaving   | x           | x      |
+| DefaultSequentialInterleaving | x           | x      |
 
 #### Problems
 
-- Cycle are not yet handled in `DefaultParallelInterleaving`
 - `DefaultSequentialInterleaving` depends on some implicit assumptions like
   - There are no links between the subgraph of each start-transition
   - There is no cycle back to the start node
   - From terminal-state (no outgoing transition) one can take the next path
+- `DefaultGatewayTransformer` cant handle a gateway which is on a cycle
+  - See `src/test/resources/de/monticore/wf2lts/CyclicGateway.wfm`
+- `DefaultSubprocessTrasformer` does not handle boundary events
+  - The graph outgoing from the boundary event might be connected to the external graph
+  - There is no clear separation between external graph (surrounding the gateway) and internal graph
+- `Split -> {A,B}` branching flow construct is not yet supported

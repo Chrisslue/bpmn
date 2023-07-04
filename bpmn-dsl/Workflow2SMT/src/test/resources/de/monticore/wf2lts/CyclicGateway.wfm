@@ -1,6 +1,6 @@
 package de.monticore.wf2lts;
 
-process Cyclic {
+process CyclicGateway {
 
 
   task A;
