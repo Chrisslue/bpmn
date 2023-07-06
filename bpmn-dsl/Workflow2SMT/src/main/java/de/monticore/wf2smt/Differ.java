@@ -161,10 +161,10 @@ public class Differ {
     var result = solver.check(indexOfFinalAssertions, isTraceInFirst, traceNotInSecond);
     if (result == Status.SATISFIABLE) {
       var indexOfFinalEvaluation = evaluationOfInt(solver.getModel(), indexOfFinal);
-      var labelEvaluation = Differ.evaluationOfList(solver.getModel(), label, label2Enum, indexOfFinalEvaluation);
+      var labelEvaluation = Differ.evaluationOfList(solver.getModel(), label, label2Enum, indexOfFinalEvaluation + 1);
       // indexOfFinalEvaluation + 1 because there are two states for on label in a transition.
       var statesEvaluation = evaluationOfList(
-          solver.getModel(), statesInFirst, first.getState2Enum(), indexOfFinalEvaluation + 1);
+          solver.getModel(), statesInFirst, first.getState2Enum(), indexOfFinalEvaluation + 2);
       var resolvedPath = new LTSTraverser(first.getUnderlyingLTS()).pathOfLabelAndStates(labelEvaluation,
           statesEvaluation);
       if (resolvedPath.isEmpty()) {
@@ -174,8 +174,10 @@ public class Differ {
         );
       }
       return resolvedPath;
-    } else {
+    } else if (result == Status.UNSATISFIABLE) {
       return Optional.empty();
+    } else {
+      throw new IllegalStateException("Could not determine result with z3.");
     }
   }
 
