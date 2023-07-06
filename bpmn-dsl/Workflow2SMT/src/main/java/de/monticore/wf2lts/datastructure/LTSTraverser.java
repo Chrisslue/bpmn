@@ -96,6 +96,22 @@ public class LTSTraverser {
     return pathOfLabel(lts.getStart(), labels);
   }
 
+  public Optional<Path> pathOfLabelAndStates(List<String> labels, List<State> states) {
+    if (states.size() != labels.size() + 1) {
+      throw new IllegalArgumentException("State list should be one larger than labels");
+    }
+
+    var path = new Path();
+    for (int i = 0; i < labels.size(); i++) {
+      var optNext = path.outgoingWith(labels.get(i), states.get(i + 1));
+      if (optNext.isEmpty()) {
+        return Optional.empty();
+      }
+      path = path.advancedBy(optNext.get());
+    }
+    return Optional.of(path);
+  }
+
   public class Path {
 
     private final List<Transition> transitions;
@@ -150,6 +166,12 @@ public class LTSTraverser {
     public List<Transition> outgoingsWith(String label) {
       return outgoingsWithStream(label)
           .collect(Collectors.toList());
+    }
+
+    public Optional<Transition> outgoingWith(String label, State target) {
+      return outgoingsWithStream(label)
+          .filter(transition -> transition.getTarget().equals(target))
+          .findFirst();
     }
 
     public Stream<Transition> outgoingsWithStream(String label) {
