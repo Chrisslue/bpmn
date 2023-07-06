@@ -19,12 +19,14 @@ public class LTS2SMTEncoding {
   private final Map<String, Expr<EnumSort<String>>> label2Enum;
 
   private final TransitionRelation<Expr<EnumSort<State>>, Expr<EnumSort<String>>> transitionRelation;
+  private final LTS underlyingLTS;
 
   public LTS2SMTEncoding(LTS lts, Map<String, Expr<EnumSort<String>>> label2Enum, Context ctx) {
     this(lts, label2Enum, ctx, lts.toString());
   }
 
   public LTS2SMTEncoding(LTS lts, Map<String, Expr<EnumSort<String>>> label2Enum, Context ctx, String stateEnumName) {
+    this.underlyingLTS = lts;
     var stateEnumWithMap = Z3Helper.toEnum(ctx, stateEnumName, lts.getStates());
     this.stateEnum = stateEnumWithMap.getKey();
     this.state2Enum = stateEnumWithMap.getValue();
@@ -55,6 +57,10 @@ public class LTS2SMTEncoding {
 
   public TransitionRelation<Expr<EnumSort<State>>, Expr<EnumSort<String>>> getTransitionRelation() {
     return transitionRelation;
+  }
+
+  public LTS getUnderlyingLTS() {
+    return underlyingLTS;
   }
 
   public static <E extends EnumSort<?>, S extends EnumSort<?>> TransitionRelation<Expr<S>, Expr<E>> buildTransitionRelation(

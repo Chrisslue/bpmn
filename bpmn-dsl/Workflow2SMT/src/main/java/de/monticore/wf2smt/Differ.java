@@ -8,13 +8,17 @@ import com.microsoft.z3.Context;
 import com.microsoft.z3.EnumSort;
 import com.microsoft.z3.Expr;
 import com.microsoft.z3.IntExpr;
+import com.microsoft.z3.IntNum;
 import com.microsoft.z3.Model;
 import com.microsoft.z3.Status;
 import de.monticore.wf2lts.datastructure.LTS;
 import de.monticore.wf2lts.datastructure.LTS.State;
+import de.monticore.wf2lts.datastructure.LTSTraverser;
+import de.monticore.wf2lts.datastructure.LTSTraverser.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -97,35 +101,42 @@ public class Differ {
     );
   }
 
-  private void printEvaluation(
+  private static <T> List<T> evaluationOfList(
       Model model,
-      List<Expr<EnumSort<String>>> labelList,
-      List<Expr<EnumSort<State>>> stateList,
-      IntExpr indexOfFinal
+      List<Expr<EnumSort<T>>> symbolList,
+      Map<T, Expr<EnumSort<T>>> bijectiveLookup,
+      int size
   ) {
-    var finalIndex = Integer.valueOf(model.evaluate(indexOfFinal, false).toString());
-    System.out.println(finalIndex);
-    var evalLabels = labelList
-        .subList(0, finalIndex + 1)
+    return symbolList
+        .subList(0, size)
         .stream()
-        .map(l -> model.evaluate(l, false))
+        .map(symbolExpr -> model.evaluate(symbolExpr, true))
+        .map(symbolEval -> bijectiveLookup
+            .entrySet()
+            .stream()
+            .filter(entry -> entry.getValue().equals(symbolEval))
+            .map(Entry::getKey)
+            .findFirst()
+            .orElseThrow())
         .collect(Collectors.toList());
-    System.out.println(evalLabels);
-    var evalStates = stateList
-        .subList(0, finalIndex + 2)
-        .stream()
-        .map(s -> model.evaluate(s, false))
-        .collect(Collectors.toList());
-    System.out.println(evalStates);
   }
 
-  public void findWitness(
+  private static int evaluationOfInt(Model model, IntExpr indexOfFinal) {
+    var evalIndex = model.evaluate(indexOfFinal, true);
+    if (!evalIndex.isIntNum()) {
+      throw new IllegalArgumentException(indexOfFinal.toString() + "is not evaluated to an int.");
+    }
+    return ((IntNum) evalIndex).getInt();
+  }
+
+  public Optional<Path> findWitness(
+      LTS2SMTEncoding first,
+      LTS2SMTEncoding second,
       int maxSize
   ) {
-
     var indexOfFinalEntry = createIndexOfFinal(maxSize);
-    var indexOfFinal = indexOfFinalEntry.getKey();
-    var indexOfFinalAssertions = indexOfFinalEntry.getValue();
+    IntExpr indexOfFinal = indexOfFinalEntry.getKey();
+    BoolExpr indexOfFinalAssertions = indexOfFinalEntry.getValue();
 
     List<Expr<EnumSort<String>>> label = IntStream
         .range(0, maxSize)
@@ -134,22 +145,62 @@ public class Differ {
 
     List<Expr<EnumSort<State>>> statesInFirst = IntStream
         .range(0, maxSize + 1)
-        .mapToObj(i -> ctx.mkConst(Z3Helper.gn("s" + i), encodedFirst.getStateEnum()))
+        .mapToObj(i -> ctx.mkConst(Z3Helper.gn("s" + i), first.getStateEnum()))
         .collect(Collectors.toList());
 
-    var statesInSecond = IntStream
+    List<Expr<EnumSort<State>>> statesInSecond = IntStream
         .range(0, maxSize + 1)
-        .mapToObj(i -> ctx.mkConst(Z3Helper.gn("s" + i), encodedSecond.getStateEnum()))
+        .mapToObj(i -> ctx.mkConst(Z3Helper.gn("s" + i), second.getStateEnum()))
         .collect(Collectors.toList());
+    var isTraceInFirst = isValidTraceOver(first, label, statesInFirst, indexOfFinal);
 
-    var isTraceInFirst = isValidTraceOver(encodedFirst, label, statesInFirst, indexOfFinal);
-
+    var traceNotInSecond = ctx.mkForall(statesInSecond.toArray(Expr[]::new),
+        ctx.mkNot(isValidTraceOver(second, label, statesInSecond, indexOfFinal)),
+        1, null, null, ctx.mkSymbol(Z3Helper.gn("ForAll")), ctx.mkSymbol(Z3Helper.gn("")));
     var solver = ctx.mkSolver();
-    solver.add(indexOfFinalAssertions, isTraceInFirst);
-    var result = solver.check();
+    var result = solver.check(indexOfFinalAssertions, isTraceInFirst, traceNotInSecond);
     if (result == Status.SATISFIABLE) {
-      printEvaluation(solver.getModel(), label, statesInFirst, indexOfFinal);
+      var indexOfFinalEvaluation = evaluationOfInt(solver.getModel(), indexOfFinal);
+      var labelEvaluation = Differ.evaluationOfList(solver.getModel(), label, label2Enum, indexOfFinalEvaluation);
+      // indexOfFinalEvaluation + 1 because there are two states for on label in a transition.
+      var statesEvaluation = evaluationOfList(
+          solver.getModel(), statesInFirst, first.getState2Enum(), indexOfFinalEvaluation + 1);
+      var resolvedPath = new LTSTraverser(first.getUnderlyingLTS()).pathOfLabelAndStates(labelEvaluation,
+          statesEvaluation);
+      if (resolvedPath.isEmpty()) {
+        throw new IllegalStateException(
+            "Could not resolve found witness " + statesEvaluation
+                + " with label " + labelEvaluation
+        );
+      }
+      return resolvedPath;
+    } else {
+      return Optional.empty();
     }
   }
 
+  public void diff(int maxSize) {
+
+    System.out.println("Testing traces(first) subset of traces(second)");
+    findWitness(encodedFirst, encodedSecond, maxSize);
+
+    System.out.println("Testing traces(second) subset of traces(first)");
+    findWitness(encodedSecond, encodedFirst, maxSize);
+  }
+
+  public LTS2SMTEncoding getEncodedFirst() {
+    return encodedFirst;
+  }
+
+  public LTS2SMTEncoding getEncodedSecond() {
+    return encodedSecond;
+  }
+
+  public EnumSort<String> getLabelEnum() {
+    return labelEnum;
+  }
+
+  public Map<String, Expr<EnumSort<String>>> getLabel2Enum() {
+    return label2Enum;
+  }
 }
