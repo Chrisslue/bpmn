@@ -2,6 +2,7 @@ package de.monticore.wf2lts.transformer;
 
 import de.monticore.bpmn.workflow._ast.ASTEvent;
 import de.monticore.bpmn.workflow._ast.ASTFlowCondition;
+import de.monticore.bpmn.workflow._ast.IFlowNode;
 import de.monticore.bpmn.workflow._util.WorkflowTypeDispatcher;
 import de.monticore.wf2lts.NamingStrategy;
 import de.monticore.wf2lts.datastructure.LTS;
@@ -140,7 +141,7 @@ public class DefaultSubprocessTransformer implements SubprocessTransformer {
   }
 
   private static List<String> getEventNames(
-      Stream<ASTEvent> events, NamingStrategy namingStrategy) {
+      Stream<ASTEvent> events, NamingStrategy<IFlowNode> namingStrategy) {
     return events.map(namingStrategy).collect(Collectors.toList());
   }
 
@@ -154,7 +155,7 @@ public class DefaultSubprocessTransformer implements SubprocessTransformer {
   public void transform(
       SubProcessScope subProcessScope,
       LTS externalGraph,
-      NamingStrategy namingStrategy,
+      NamingStrategy<IFlowNode> namingStrategy,
       Graph2LTSTransformer graphTransformer) {
     var processName = namingStrategy.apply(subProcessScope.getSubProcess());
     var parameterPack =
@@ -177,7 +178,7 @@ public class DefaultSubprocessTransformer implements SubprocessTransformer {
 
   private static class ParameterPack {
 
-    private final NamingStrategy namingStrategy;
+    private final NamingStrategy<IFlowNode> namingStrategy;
 
     private final SubProcessScope subProcessScope;
 
@@ -186,7 +187,7 @@ public class DefaultSubprocessTransformer implements SubprocessTransformer {
     private final String newEndName;
 
     public ParameterPack(
-        NamingStrategy namingStrategy,
+        NamingStrategy<IFlowNode> namingStrategy,
         SubProcessScope subProcessScope,
         String newStartName,
         String newEndName) {
@@ -196,7 +197,7 @@ public class DefaultSubprocessTransformer implements SubprocessTransformer {
       this.newEndName = newEndName;
     }
 
-    public NamingStrategy getNamingStrategy() {
+    public NamingStrategy<IFlowNode> getNamingStrategy() {
       return namingStrategy;
     }
 

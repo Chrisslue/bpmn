@@ -12,8 +12,10 @@ import de.monticore.bpmn.workflow._ast.ASTNamedGatewayBuilder;
 import de.monticore.bpmn.workflow._ast.ASTSubProcessBuilder;
 import de.monticore.bpmn.workflow._ast.ASTSubProcessType;
 import de.monticore.bpmn.workflow._ast.ASTTaskBuilder;
+import de.monticore.bpmn.workflow._ast.IFlowNode;
 import de.monticore.bpmn.workflow._ast.SequenceFlow;
 import de.monticore.bpmn.workflow._ast.SequenceFlowBuilder;
+import de.monticore.wf2lts.DefaultNamingStrategy;
 import de.monticore.wf2lts.NamingStrategy;
 import de.monticore.wf2lts.datastructure.IntermediateGraphWithScopes;
 import de.monticore.wf2lts.datastructure.LTS;
@@ -148,7 +150,7 @@ class DefaultSubprocessTransformerTest {
     String termEventName = "termEvent";
     String subprocessName = "T";
 
-    NamingStrategy namingStrategy = new NamingStrategy() {};
+    NamingStrategy<IFlowNode> namingStrategy = new DefaultNamingStrategy();
 
     var externalLTS = buildExternalLTS(subprocessName);
     var internalLTS =

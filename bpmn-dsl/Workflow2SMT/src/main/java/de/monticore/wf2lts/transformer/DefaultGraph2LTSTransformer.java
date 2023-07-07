@@ -1,6 +1,7 @@
 package de.monticore.wf2lts.transformer;
 
 import de.monticore.bpmn.workflow._ast.ASTFlowNode;
+import de.monticore.bpmn.workflow._ast.IFlowNode;
 import de.monticore.wf2lts.NamingStrategy;
 import de.monticore.wf2lts.datastructure.EdgeTo;
 import de.monticore.wf2lts.datastructure.IntermediateGraphWithScopes;
@@ -14,12 +15,12 @@ import java.util.Map;
 
 public class DefaultGraph2LTSTransformer implements Graph2LTSTransformer {
 
-  private final NamingStrategy namingStrategy;
+  private final NamingStrategy<IFlowNode> namingStrategy;
   private final GatewayTransformer gatewayTransformer;
   private final SubprocessTransformer subprocessTransformer;
 
   public DefaultGraph2LTSTransformer(
-      NamingStrategy namingStrategy,
+      NamingStrategy<IFlowNode> namingStrategy,
       GatewayTransformer gatewayTransformer,
       SubprocessTransformer subprocessTransformer) {
     this.namingStrategy = namingStrategy;

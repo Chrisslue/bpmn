@@ -1,5 +1,6 @@
 package de.monticore.wf2lts.transformer;
 
+import de.monticore.bpmn.workflow._ast.IFlowNode;
 import de.monticore.bpmn.workflow._util.WorkflowTypeDispatcher;
 import de.monticore.wf2lts.NamingStrategy;
 import de.monticore.wf2lts.datastructure.LTS;
@@ -145,7 +146,7 @@ public class DefaultGatewayTransformer implements GatewayTransformer {
   public void transform(
       GatewayScope gatewayScope,
       LTS externalLTS,
-      NamingStrategy namingStrategy,
+      NamingStrategy<IFlowNode> namingStrategy,
       Graph2LTSTransformer subprocessTransformer) {
 
     if (!new WorkflowTypeDispatcher().isASTGateway(gatewayScope.getGraph().getStart())) {

@@ -11,8 +11,8 @@ import de.monticore.bpmn.workflow._ast.ASTNamedEventBuilder;
 import de.monticore.bpmn.workflow._ast.ASTNamedGatewayBuilder;
 import de.monticore.bpmn.workflow._ast.ASTTaskBuilder;
 import de.monticore.bpmn.workflow._ast.SequenceFlowBuilder;
+import de.monticore.wf2lts.DefaultNamingStrategy;
 import de.monticore.wf2lts.DoNothingInterleaving;
-import de.monticore.wf2lts.NamingStrategy;
 import de.monticore.wf2lts.datastructure.LTS;
 import de.monticore.wf2lts.datastructure.LTS.State;
 import de.monticore.wf2lts.datastructure.LTS.Transition;
@@ -103,8 +103,7 @@ class DefaultGatewayTransformerTest {
       externalLTS.addTransition(
           new Transition(gatewayClosingState, emptyList(), "@Next" + i, postStates.get(i)));
     }
-    var namingStrategy = new NamingStrategy() { // Default uses the name
-        };
+    var namingStrategy = new DefaultNamingStrategy();
     LTS internalLTS = internalGraph(splitName, mergingName);
     Graph2LTSTransformer graphTransformer = graph -> internalLTS;
 

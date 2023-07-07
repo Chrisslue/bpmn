@@ -13,7 +13,9 @@ import de.monticore.bpmn.workflow._ast.ASTSubProcessBuilder;
 import de.monticore.bpmn.workflow._ast.ASTSubProcessType;
 import de.monticore.bpmn.workflow._ast.ASTTask;
 import de.monticore.bpmn.workflow._ast.ASTTaskBuilder;
+import de.monticore.bpmn.workflow._ast.IFlowNode;
 import de.monticore.bpmn.workflow._ast.SequenceFlowBuilder;
+import de.monticore.wf2lts.DefaultNamingStrategy;
 import de.monticore.wf2lts.NamingStrategy;
 import de.monticore.wf2lts.datastructure.EdgeTo;
 import de.monticore.wf2lts.datastructure.IntermediateGraphWithScopes;
@@ -58,7 +60,7 @@ class DefaultGraph2LTSTransformerTest {
       public void transform(
           GatewayScope gatewayScope,
           LTS externalGraph,
-          NamingStrategy namingStrategy,
+          NamingStrategy<IFlowNode> namingStrategy,
           Graph2LTSTransformer graphTransformer) {}
     };
   }
@@ -69,7 +71,7 @@ class DefaultGraph2LTSTransformerTest {
       public void transform(
           SubProcessScope subProcessScope,
           LTS externalGraph,
-          NamingStrategy namingStrategy,
+          NamingStrategy<IFlowNode> namingStrategy,
           Graph2LTSTransformer graphTransformer) {}
     };
   }
@@ -114,7 +116,7 @@ class DefaultGraph2LTSTransformerTest {
     String startEventName = "Start";
     String endEventName = "End";
 
-    var namingStrategy = new NamingStrategy() {};
+    var namingStrategy = new DefaultNamingStrategy();
 
     var graphTransformer =
         new DefaultGraph2LTSTransformer(
