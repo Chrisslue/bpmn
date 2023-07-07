@@ -15,6 +15,7 @@ import de.monticore.bpmn.workflow._ast.ASTTask;
 import de.monticore.bpmn.workflow._ast.ASTTaskBuilder;
 import de.monticore.bpmn.workflow._ast.IFlowNode;
 import de.monticore.bpmn.workflow._ast.SequenceFlowBuilder;
+import de.monticore.lts.LTS2Mermaid;
 import de.monticore.wf2lts.DefaultNamingStrategy;
 import de.monticore.wf2lts.NamingStrategy;
 import de.monticore.wf2lts.datastructure.EdgeTo;
@@ -136,6 +137,6 @@ class DefaultGraph2LTSTransformerTest {
         List.of(aTaskName, bTaskName, cTaskName, startEventName, endEventName)) {
       Assertions.assertTrue(lts.isLabelPresent(existingLabel), existingLabel + " not present.");
     }
-    var asMermaid = lts.toMermaid().build(); // optionally look at result in https://mermaid.live/
+    var asMermaid = lts.toModel(new LTS2Mermaid()).build(); // optionally look at result in https://mermaid.live/
   }
 }

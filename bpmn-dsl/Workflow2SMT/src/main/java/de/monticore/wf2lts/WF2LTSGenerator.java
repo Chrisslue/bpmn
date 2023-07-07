@@ -13,6 +13,7 @@ import de.monticore.bpmn.workflow._ast.ASTWorkflowCompilationUnit;
 import de.monticore.bpmn.workflow._symboltable.WorkflowSTCompleter;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverserImplementation;
+import de.monticore.lts.LTSBuilder;
 import de.monticore.wf2lts.collector.StartEventCollector;
 import de.monticore.wf2lts.datastructure.IntermediateGraphWithScopes;
 import de.monticore.wf2lts.datastructure.LTS;
@@ -48,10 +49,10 @@ public class WF2LTSGenerator {
    * 5. Use the LTLBuilder Interface for further usage.
    */
 
-  public static ASTWorkflowCompilationUnit loadBPMN(String file) {
+  public static ASTWorkflowCompilationUnit loadBPMN(String modelFile) {
     // Setup
     WorkflowTool tool = new WorkflowTool();
-    ASTWorkflowCompilationUnit ast = tool.parse(file);
+    ASTWorkflowCompilationUnit ast = tool.parse(modelFile);
     WorkflowMill.scopesGenitorDelegator().createFromAST(ast);
     new AddNameToInlineFlowNodes().transform(ast);
     new AddSequenceFlowToFlowNodes().transform(ast);
@@ -67,15 +68,22 @@ public class WF2LTSGenerator {
     return ast;
   }
 
-  public static LTS ltsOfWorkflow(String file) {
-    var ast = loadBPMN(file);
+  public static LTS workflow2LTS(String modelFile) {
+    return workflow2LTS(loadBPMN(modelFile));
+  }
 
+  public static LTS workflow2LTS(ASTWorkflowCompilationUnit ast) {
     var startEvent = getStartEvent(ast);
     // 1. Building the intermediate graph.
     IntermediateGraphWithScopes graph = GraphBuildingTraverser.graphOf(startEvent);
     var lts = transformToLTS(graph);
     removeUnreachable(lts);
     return lts;
+  }
+
+  public static <S, L, Builder extends LTSBuilder<S, L>> Builder workflow2LTS(ASTWorkflowCompilationUnit ast,
+      Builder builder) {
+    return workflow2LTS(ast).toModel(builder);
   }
 
   private static void removeUnreachable(LTS lts) {
@@ -89,7 +97,7 @@ public class WF2LTSGenerator {
   }
 
   protected static LTS transformToLTS(IntermediateGraphWithScopes graph) {
-    var defaultNaming = new NamingStrategy() {};
+    var defaultNaming = new DefaultNamingStrategy();
 
     var graphTransformer =
         new DefaultGraph2LTSTransformer(

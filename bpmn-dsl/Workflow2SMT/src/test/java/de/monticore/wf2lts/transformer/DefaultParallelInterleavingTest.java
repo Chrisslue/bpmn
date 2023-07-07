@@ -23,7 +23,7 @@ class DefaultParallelInterleavingTest {
   private final List<String> elements = List.of("A", "B", "C", "D", "E", "F", "G");
 
   private LTS buildBranchingLTS() {
-    // Use lts.toMermaid().build() to visualize the lts
+    // Use lts.toModel(new LTS2Mermaid()).build() to visualize the lts
     var lts = new LTS();
     var abTransitions = LTSTestingUtils.toTransitions(lts.getStart(), List.of("A", "B"));
     var bTarget = abTransitions.get(abTransitions.size() - 1).getTarget();

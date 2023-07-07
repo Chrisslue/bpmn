@@ -1,13 +1,15 @@
 package de.monticore.wf2lts.datastructure;
 
 import de.monticore.bpmn.workflow._ast.ASTFlowCondition;
-import de.monticore.lts.LTS2Mermaid;
+import de.monticore.lts.LTSBuilder;
+import de.monticore.wf2lts.NamingStrategy;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class LTS extends IntermediateGraph<LTS.State, LTS.Transition> {
@@ -172,29 +174,68 @@ public class LTS extends IntermediateGraph<LTS.State, LTS.Transition> {
     return new ArrayList<>(transitionMap.getOrDefault(label, new ArrayList<>()));
   }
 
-  public LTS2Mermaid toMermaid() {
-    Map<LTS.State, LTS2Mermaid.State> stateLookup = new HashMap<>();
-    var mermaid = new LTS2Mermaid();
+  public <S, L, B extends LTSBuilder<S, L>> B toModel(B builder) {
+    return toModel(builder, getNamingStrategy());
+  }
+
+  public <S, L, B extends LTSBuilder<S, L>> B toModel(B builder, NamingStrategy<LTS.State> namingStrategy) {
+    Map<State, S> stateLookup = new HashMap<>();
+    Map<String, L> labelLookup = new HashMap<>();
     getEdges()
         .keySet()
         .forEach(
             state -> {
               if (state != getStart()) {
-                stateLookup.put(state, mermaid.addState());
+                stateLookup.put(state, builder.addInitialState(namingStrategy.apply(state)));
               } else {
-                stateLookup.put(state, mermaid.addInitialState());
+                stateLookup.put(state, builder.addInitialState(namingStrategy.apply(state)));
               }
             });
+
+    this.allUsedLabels().forEach(label ->
+        labelLookup.put(label, builder.addLabel(label)));
+
     getEdges().values().stream()
         .flatMap(List::stream)
         .forEach(
             transition ->
-                mermaid.addTransition(
+                builder.addTransition(
                     stateLookup.get(transition.getSource()),
                     stateLookup.get(transition.getTarget()),
-                    transition.getLabel()));
+                    labelLookup.get(transition.getLabel())
+                    //transition.getConditions() TODO
+                )
+        );
 
-    return mermaid;
+    return builder;
+  }
+
+  private NamingStrategy<LTS.State> getNamingStrategy() {
+    return new NamingStrategy<>() {
+      private final Map<State, String> lookup;
+      private int counter;
+
+      private int nextId() {
+        var next = counter;
+        counter++;
+        return next;
+      }
+
+      {
+        lookup = LTS.this.getStates()
+            .stream()
+            .collect(Collectors.toMap(
+                    Function.identity(),
+                    state -> "s" + nextId()
+                )
+            );
+      }
+
+      @Override
+      public String apply(State state) {
+        return lookup.get(state);
+      }
+    };
   }
 
   public static class State {}
