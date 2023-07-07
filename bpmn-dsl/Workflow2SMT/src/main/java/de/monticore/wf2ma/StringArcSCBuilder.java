@@ -2,29 +2,36 @@ package de.monticore.wf2ma;
 
 import arcautomaton._ast.ASTArcStatechart;
 import arcbasis._ast.ASTArcFieldDeclaration;
+import arcbasis._ast.ASTComponentInterface;
+import arcbasis._ast.ASTPortDeclaration;
+import de.monticore.cd.facade.MCQualifiedNameFacade;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
-import de.monticore.lts.LTSBuilder;
 import de.monticore.scbasis._ast.ASTSCState;
 import de.monticore.scbasis._ast.ASTSCTransition;
 import de.monticore.sctransitions4code._ast.ASTTransitionAction;
 import de.monticore.statements.mcstatementsbasis._ast.ASTMCBlockStatement;
+import de.monticore.types.MCTypeFacade;
 import de.monticore.types.mcbasictypes._ast.ASTMCQualifiedType;
 import de.se_rwth.commons.logging.Log;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import montiarc.MontiArcMill;
 import montiarc._ast.ASTMACompilationUnit;
 
-public class MASCBuilder implements LTSBuilder<ASTSCState, ASTTransitionAction> {
+public class StringArcSCBuilder implements ArcSCBuilder {
 
-  Set<ASTSCState> states;
-  Set<ASTSCTransition> transitions;
-  Set<ASTArcFieldDeclaration> variables;
-  String out;
+  protected Set<ASTSCState> states = new HashSet<>();
+  protected Set<ASTSCTransition> transitions = new HashSet<>();
+  protected Set<ASTArcFieldDeclaration> variables = new HashSet<>();
+  protected String out;
 
-  public MASCBuilder(String outPortName) {
-    out = outPortName;
+  public StringArcSCBuilder(String outPortName) {
+    char[] outName = outPortName.toCharArray();
+    outName[0] = Character.toUpperCase(outName[0]);
+    out = new String(outName);
   }
 
   @Override
@@ -40,7 +47,7 @@ public class MASCBuilder implements LTSBuilder<ASTSCState, ASTTransitionAction> 
   public ASTTransitionAction addLabel(String label) {
     try {
       Optional<ASTMCBlockStatement> statement =
-          MontiArcMill.parser().parse_StringMCBlockStatement(out + " = " + label + ";");
+          MontiArcMill.parser().parse_StringMCBlockStatement(out + " = \"" + label + "\";");
       assert statement.isPresent();
       return MontiArcMill.transitionActionBuilder().setMCBlockStatement(statement.get()).build();
     } catch (IOException e) {
@@ -128,7 +135,24 @@ public class MASCBuilder implements LTSBuilder<ASTSCState, ASTTransitionAction> 
   }
 
   public ASTMACompilationUnit buildMA(String name) {
+
+    ASTPortDeclaration outPort =
+        MontiArcMill.portDeclarationBuilder()
+            .addPort(out)
+            .setMCType(MCTypeFacade.getInstance().createStringType())
+            .setPortDirection(MontiArcMill.portDirectionBuilder().setOut(true).setIn(false).build())
+            .build();
+
+    ASTComponentInterface compInterface =
+        MontiArcMill.componentInterfaceBuilder().setPortDeclarationsList(List.of(outPort)).build();
+
     return MontiArcMill.mACompilationUnitBuilder()
+        .setImportStatementList(
+            List.of(
+                MontiArcMill.mCImportStatementBuilder()
+                    .setMCQualifiedName(
+                        MCQualifiedNameFacade.createQualifiedName("java.lang.String"))
+                    .build()))
         .setComponentType(
             MontiArcMill.componentTypeBuilder()
                 .setName(name)
@@ -137,6 +161,7 @@ public class MASCBuilder implements LTSBuilder<ASTSCState, ASTTransitionAction> 
                     MontiArcMill.componentBodyBuilder()
                         .addAllArcElements(variables)
                         .addArcElement(buildSC())
+                        .addArcElement(compInterface)
                         .build())
                 .build())
         .build();
