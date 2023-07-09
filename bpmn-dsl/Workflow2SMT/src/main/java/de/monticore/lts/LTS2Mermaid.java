@@ -5,21 +5,35 @@ import de.monticore.types.mcbasictypes._ast.ASTMCQualifiedType;
 import de.se_rwth.commons.logging.Log;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class LTS2Mermaid implements LTSBuilder<String, String> {
 
   private final Set<String> initialStates;
   private final Set<String> states;
+
+  private final Map<String, Integer> state2Id;
+
+  private int stateIdCounter;
   private final Set<Transition> transitions;
 
 
   public LTS2Mermaid() {
     this.states = new HashSet<>();
+    this.state2Id = new HashMap<>();
+    this.stateIdCounter = 0;
     this.transitions = new HashSet<>();
     this.initialStates = new HashSet<>();
+  }
+
+  private int nextId() {
+    var next = stateIdCounter;
+    stateIdCounter++;
+    return next;
   }
 
   @Override
@@ -35,6 +49,7 @@ public class LTS2Mermaid implements LTSBuilder<String, String> {
   @Override
   public String addState(String name) {
     states.add(name);
+    state2Id.put(name, nextId());
     return name;
   }
 
@@ -50,15 +65,27 @@ public class LTS2Mermaid implements LTSBuilder<String, String> {
     return state;
   }
 
+  private void addStateIfAbsent(String state) {
+    if (!states.contains(state)) {
+      addState(state);
+    }
+  }
 
   @Override
   public void addTransition(String source, String target, String label) {
-    transitions.add(new Transition(source, target, label, Collections.emptyList()));
+    addTransition(source, target, label, Collections.emptyList());
   }
 
   @Override
   public void addTransition(String source, String target, String label, ASTExpression condition) {
-    transitions.add(new Transition(source, target, label, List.of(condition)));
+    addTransition(source, target, label, List.of(condition));
+  }
+
+  private void addTransition(String source, String target, String label, List<ASTExpression> condition) {
+    addStateIfAbsent(source);
+    addStateIfAbsent(target);
+
+    transitions.add(new Transition(source, target, label, condition));
   }
 
   public String build() {
@@ -69,19 +96,19 @@ public class LTS2Mermaid implements LTSBuilder<String, String> {
     StringBuilder diagram = new StringBuilder().append("stateDiagram-v2\n");
     diagram.append("\t").append(direction).append("\n");
     for (var state : states) {
-      // Declare all states with id = toString and their name as description.
+      // Declare all states with id = state and their name as description.
       // This allows for spaces in state-names.
-      diagram.append("\t").append(state).append(" : ").append(state).append("\n");
+      diagram.append("\t").append(state2Id.get(state)).append(" : ").append(state).append("\n");
     }
     for (String initialState : initialStates) {
-      diagram.append("\t").append("[*]").append(" --> ").append(initialState).append("\n");
+      diagram.append("\t").append("[*]").append(" --> ").append(state2Id.get(initialState)).append("\n");
     }
     for (Transition transition : transitions) {
       diagram
           .append("\t")
-          .append(transition.source)
+          .append(state2Id.get(transition.source))
           .append(" --> ")
-          .append(transition.target)
+          .append(state2Id.get(transition.target))
           .append(" : ")
           .append(transition.label);
       if (transition.conditions.isEmpty()) {

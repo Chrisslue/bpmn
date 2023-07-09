@@ -186,7 +186,7 @@ public class LTS extends IntermediateGraph<LTS.State, LTS.Transition> {
         .forEach(
             state -> {
               if (state != getStart()) {
-                stateLookup.put(state, builder.addInitialState(namingStrategy.apply(state)));
+                stateLookup.put(state, builder.addState(namingStrategy.apply(state)));
               } else {
                 stateLookup.put(state, builder.addInitialState(namingStrategy.apply(state)));
               }
