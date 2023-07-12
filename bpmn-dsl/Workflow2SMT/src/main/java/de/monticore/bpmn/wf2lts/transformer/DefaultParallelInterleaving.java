@@ -5,42 +5,48 @@ import de.monticore.bpmn.wf2lts.datastructure.LTS.State;
 import de.monticore.bpmn.wf2lts.datastructure.LTS.Transition;
 import de.monticore.bpmn.wf2lts.datastructure.LTSTraverser;
 import de.monticore.bpmn.wf2lts.datastructure.LTSTraverser.Path;
+import de.monticore.bpmn.wf2lts.datastructure.LTSWithFinalStates;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
+import java.util.stream.Stream;
 
 public class DefaultParallelInterleaving {
 
-  protected final LTS oldLTs;
+  protected final LTSWithFinalStates oldLTS;
 
-  protected final LTS lts;
+
+  protected final LTSWithFinalStates lts;
+
 
   protected final MetaState metaRoot;
 
   protected List<DetectedCycle> detectedCycles;
 
-  public DefaultParallelInterleaving(LTS oldLTS) {
+  public DefaultParallelInterleaving(LTSWithFinalStates oldLTSWithFinalStates) {
+    this.oldLTS = oldLTSWithFinalStates;
     var initialParallelTransitions = oldLTS.getOutgoings(oldLTS.getStart());
 
-    this.lts = new LTS();
+    this.lts = new LTSWithFinalStates();
     this.metaRoot =
         new MetaState(
             initialParallelTransitions,
             Collections.emptyList(),
-            Collections.emptyMap(),
-            lts.getStart());
-    this.oldLTs = oldLTS;
+            Collections.emptySet(),
+            lts.getStart(),
+            oldLTS.isFinalState(oldLTS.getStart())
+        );
     this.detectedCycles = new ArrayList<>();
   }
 
-  public static LTS interleave(LTS lts) {
+  public static LTSWithFinalStates interleave(LTSWithFinalStates lts) {
     return new DefaultParallelInterleaving(lts).interleave();
   }
 
-  protected LTS interleave() {
+  protected LTSWithFinalStates interleave() {
     metaRoot.recursiveExpand();
     resolveCycle();
     return lts;
@@ -74,25 +80,32 @@ public class DefaultParallelInterleaving {
 
     protected final List<LTS.State> ltsReferences;
 
-    protected final Map<String, LTS.State> previous;
+    protected final Set<LTS.State> visitedStates;
 
     protected final LTS.State ltsState;
+
+    protected final boolean potentialFinalState;
 
     /**
      * @param initialParallelTransitions The outgoings of the start-state form the oldLts that were not yet visited.
      * @param ltsReferences              The other places in the oldLts where a transition could be chosen next.
-     * @param previous                   Previously seen transition-label, kept in order to detect back references.
+     * @param visitedStates              Previously seen transition-label, kept in order to detect back references.
      * @param ltsState                   The corresponding lts state in the newly build interleaved lts.
+     * @param potentialFinalState        If the transition expanded led to a final state ind oldLTS mark this as
+     *                                   potential final state.
      */
     protected MetaState(
         List<LTS.Transition> initialParallelTransitions,
         List<LTS.State> ltsReferences,
-        Map<String, LTS.State> previous,
-        LTS.State ltsState) {
+        Set<State> visitedStates,
+        LTS.State ltsState,
+        boolean potentialFinalState
+    ) {
       this.initialParallelTransitions = initialParallelTransitions;
       this.ltsReferences = ltsReferences;
-      this.previous = previous;
+      this.visitedStates = visitedStates;
       this.ltsState = ltsState;
+      this.potentialFinalState = potentialFinalState;
     }
 
     /**
@@ -102,12 +115,26 @@ public class DefaultParallelInterleaving {
      */
     public void recursiveExpand() {
 
+      // When the corresponding state in the old lts was marked final:
+      if (this.potentialFinalState) {
+        // If we have no more outgoing transitions, that we have to visit, mark it as a final state.
+        boolean isFinalState =
+            Stream.concat(
+                ltsReferences.stream().flatMap(state -> oldLTS.getOutgoings(state).stream()),
+                initialParallelTransitions.stream()
+            ).allMatch(this::isCycle);
+        if (isFinalState) {
+          lts.addAsFinalState(this.ltsState);
+        }
+      }
+
       ltsReferences.forEach(this::expandReference);
       initialParallelTransitions.forEach(this::expandInitialParallelTransition);
     }
 
     protected void expandInitialParallelTransition(LTS.Transition transition) {
-      if (handleIfExists(transition)) {
+      if (isCycle(transition)) {
+        handleCyclicTransition(transition);
         return;
       }
       var nextInitial = new ArrayList<>(initialParallelTransitions);
@@ -115,21 +142,28 @@ public class DefaultParallelInterleaving {
       var nextReferences = new ArrayList<>(ltsReferences);
       nextReferences.add(transition.getTarget());
       var nextMeta =
-          new MetaState(nextInitial, nextReferences, new HashMap<>(previous), new LTS.State());
-      nextMeta.previous.put(transition.getLabel(), nextMeta.ltsState);
+          new MetaState(
+              nextInitial,
+              nextReferences,
+              new HashSet<>(visitedStates),
+              new LTS.State(),
+              oldLTS.isFinalState(transition.getTarget())
+          );
+      nextMeta.visitedStates.add(transition.getTarget());
       lts.addTransition(transition.changedSource(this.ltsState).changedTarget(nextMeta.ltsState));
       nextMeta.recursiveExpand();
     }
 
     protected void expandReference(LTS.State stateReference) {
-      for (var transition : oldLTs.getOutgoings(stateReference)) {
-        if (handleIfExists(transition)) {
+      for (var transition : oldLTS.getOutgoings(stateReference)) {
+        if (isCycle(transition)) {
+          handleCyclicTransition(transition);
           continue;
         }
         var nextMeta = this.advancedBy(stateReference, transition);
         lts.addTransition(transition.changedSource(this.ltsState).changedTarget(nextMeta.ltsState));
         // Mark the nextState as target of future back-links.
-        nextMeta.previous.put(transition.getLabel(), nextMeta.ltsState);
+        nextMeta.visitedStates.add(transition.getTarget());
         nextMeta.recursiveExpand();
       }
     }
@@ -138,35 +172,39 @@ public class DefaultParallelInterleaving {
       List<LTS.State> nextReferences = new ArrayList<>(this.ltsReferences);
       nextReferences.remove(expandedReference);
       nextReferences.add(transition.getTarget());
-      var nextPreviousSeen = new HashMap<>(previous);
+      var nextVisitedStates = new HashSet<>(visitedStates);
       var nextState = new LTS.State();
-      return new MetaState(initialParallelTransitions, nextReferences, nextPreviousSeen, nextState);
+      return new MetaState(
+          initialParallelTransitions,
+          nextReferences,
+          nextVisitedStates,
+          nextState,
+          oldLTS.isFinalState(transition.getTarget())
+      );
     }
 
-    protected boolean handleIfExists(LTS.Transition transition) {
+    protected boolean isCycle(LTS.Transition transition) {
+      return transition.getSource().equals(transition.getTarget())
+          || visitedStates.contains(transition.getTarget());
+    }
+
+    protected void handleCyclicTransition(LTS.Transition transition) {
       if (transition.getSource().equals(transition.getTarget())) {
         lts.addTransition(transition.changedSource(ltsState).changedTarget(ltsState));
-        return true;
-      } else if (previous.containsKey(transition.getLabel())) { // Mark transition as detected cycle
-        handleCycle(transition);
-        return true;
-      } else {
-        return false;
+      } else if (visitedStates.contains(transition.getTarget())) { // Mark transition as detected cycle
+        var cycleInOld = findCycleInOld(transition);
+        detectedCycles.add(new DetectedCycle(cycleInOld, this.ltsState, transition));
       }
     }
 
-    protected void handleCycle(LTS.Transition cycleClosingTransitionOfOldLTS) {
-      var cycleInOld = findCycleInOld(cycleClosingTransitionOfOldLTS);
-      detectedCycles.add(new DetectedCycle(cycleInOld, this.ltsState, cycleClosingTransitionOfOldLTS));
-    }
 
     protected Path findCycleInOld(LTS.Transition cycleClosingTransitionOfOldLTS) {
-      var oldTraverser = new LTSTraverser(oldLTs);
+      var oldTraverser = new LTSTraverser(oldLTS);
       var cycleInOldLTS = oldTraverser.pathsBetween(cycleClosingTransitionOfOldLTS.getTarget(),
           cycleClosingTransitionOfOldLTS.getSource());
       if (cycleInOldLTS.size() != 1) {
         throw new IllegalStateException(
-            "Detected cycle with " + cycleClosingTransitionOfOldLTS + " but could not recreate it in " + oldLTs
+            "Detected cycle with " + cycleClosingTransitionOfOldLTS + " but could not recreate it in " + oldLTS
                 + " found " + cycleInOldLTS.size() + " cycle.");
       }
       return cycleInOldLTS.get(0).advancedBy(cycleClosingTransitionOfOldLTS);

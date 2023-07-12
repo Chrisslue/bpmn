@@ -96,6 +96,10 @@ public class LTSTraverser {
     return pathOfLabel(lts.getStart(), labels);
   }
 
+  public Path pathFrom(State state) {
+    return new Path(state);
+  }
+
   public class Path {
 
     private final List<Transition> transitions;
