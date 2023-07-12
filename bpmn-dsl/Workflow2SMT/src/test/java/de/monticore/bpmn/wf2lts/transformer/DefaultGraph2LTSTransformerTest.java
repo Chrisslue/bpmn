@@ -58,11 +58,13 @@ class DefaultGraph2LTSTransformerTest {
       }
 
       @Override
-      public void transform(
+      public LTS transform(
           GatewayScope gatewayScope,
-          LTS externalGraph,
-          NamingStrategy<IFlowNode> namingStrategy,
-          Graph2LTSTransformer graphTransformer) {}
+          LTS externalLTS,
+          Graph2LTSTransformer graph2LTSTransformer
+      ) {
+        return externalLTS;
+      }
     };
   }
 

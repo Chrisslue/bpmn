@@ -87,7 +87,7 @@ public class DefaultGraph2LTSTransformer implements Graph2LTSTransformer {
         .getGatewayScopes()
         .forEach(
             gatewayScope ->
-                gatewayTransformer.transform(gatewayScope, externalLTS, namingStrategy, this));
+                gatewayTransformer.transform(gatewayScope, externalLTS, this));
     graph
         .getSubProcessScopes()
         .forEach(

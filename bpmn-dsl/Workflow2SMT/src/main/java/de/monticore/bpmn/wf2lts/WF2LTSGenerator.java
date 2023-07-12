@@ -102,7 +102,7 @@ public class WF2LTSGenerator {
     var graphTransformer =
         new DefaultGraph2LTSTransformer(
             defaultNaming,
-            new DefaultGatewayTransformer(new DefaultGatewayInterleaving()),
+            new DefaultGatewayTransformer(new DefaultGatewayInterleaving(), defaultNaming),
             new DefaultSubprocessTransformer());
     return graphTransformer.transform(graph);
   }

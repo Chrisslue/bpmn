@@ -1,38 +1,38 @@
 package de.monticore.bpmn.wf2lts.transformer;
 
-import de.monticore.bpmn.wf2lts.datastructure.LTS;
+import de.monticore.bpmn.wf2lts.datastructure.LTSWithFinalStates;
 import de.monticore.bpmn.wf2lts.scopes.GatewayScope;
 
 public interface GatewayInterleavingStrategy {
 
-  default LTS interleave(GatewayScope.GatewayType type, LTS graph) {
+  default LTSWithFinalStates interleave(GatewayScope.GatewayType type, LTSWithFinalStates ltsWithFinalStates) {
     switch (type) {
       case XOR:
-        return interleaveExclusive(graph);
+        return interleaveExclusive(ltsWithFinalStates);
       case IOR:
-        return interleaveInclusive(graph);
+        return interleaveInclusive(ltsWithFinalStates);
       case PARALLEL:
-        return interleaveParallel(graph);
+        return interleaveParallel(ltsWithFinalStates);
       case EVENT_PARALLEL:
-        return interleaveEventBasedParallel(graph);
+        return interleaveEventBasedParallel(ltsWithFinalStates);
       case EVENT_XOR:
-        return interleaveEventBasedExclusive(graph);
+        return interleaveEventBasedExclusive(ltsWithFinalStates);
       case COMPLEX:
-        return interleaveComplex(graph);
+        return interleaveComplex(ltsWithFinalStates);
       default:
         throw new IllegalArgumentException("Passed unexpected GatewayType: " + type);
     }
   }
 
-  LTS interleaveExclusive(LTS graph);
+  LTSWithFinalStates interleaveExclusive(LTSWithFinalStates ltsWithFinalStates);
 
-  LTS interleaveParallel(LTS graph);
+  LTSWithFinalStates interleaveParallel(LTSWithFinalStates ltsWithFinalStates);
 
-  LTS interleaveInclusive(LTS graph);
+  LTSWithFinalStates interleaveInclusive(LTSWithFinalStates ltsWithFinalStates);
 
-  LTS interleaveEventBasedParallel(LTS graph);
+  LTSWithFinalStates interleaveEventBasedParallel(LTSWithFinalStates ltsWithFinalStates);
 
-  LTS interleaveEventBasedExclusive(LTS graph);
+  LTSWithFinalStates interleaveEventBasedExclusive(LTSWithFinalStates ltsWithFinalStates);
 
-  LTS interleaveComplex(LTS graph);
+  LTSWithFinalStates interleaveComplex(LTSWithFinalStates ltsWithFinalStates);
 }

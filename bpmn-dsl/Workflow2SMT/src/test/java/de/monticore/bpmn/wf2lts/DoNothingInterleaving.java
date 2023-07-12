@@ -1,43 +1,43 @@
 package de.monticore.bpmn.wf2lts;
 
-import de.monticore.bpmn.wf2lts.datastructure.LTS;
+import de.monticore.bpmn.wf2lts.datastructure.LTSWithFinalStates;
 import de.monticore.bpmn.wf2lts.scopes.GatewayScope.GatewayType;
 import de.monticore.bpmn.wf2lts.transformer.GatewayInterleavingStrategy;
 
 public class DoNothingInterleaving implements GatewayInterleavingStrategy {
 
   @Override
-  public LTS interleave(GatewayType type, LTS graph) {
-    return graph;
+  public LTSWithFinalStates interleave(GatewayType type, LTSWithFinalStates lts) {
+    return lts;
   }
 
   @Override
-  public LTS interleaveExclusive(LTS graph) {
-    return graph;
+  public LTSWithFinalStates interleaveExclusive(LTSWithFinalStates lts) {
+    return lts;
   }
 
   @Override
-  public LTS interleaveParallel(LTS graph) {
-    return graph;
+  public LTSWithFinalStates interleaveParallel(LTSWithFinalStates lts) {
+    return lts;
   }
 
   @Override
-  public LTS interleaveInclusive(LTS graph) {
-    return graph;
+  public LTSWithFinalStates interleaveInclusive(LTSWithFinalStates lts) {
+    return lts;
   }
 
   @Override
-  public LTS interleaveEventBasedParallel(LTS graph) {
-    return graph;
+  public LTSWithFinalStates interleaveEventBasedParallel(LTSWithFinalStates lts) {
+    return lts;
   }
 
   @Override
-  public LTS interleaveEventBasedExclusive(LTS graph) {
-    return graph;
+  public LTSWithFinalStates interleaveEventBasedExclusive(LTSWithFinalStates lts) {
+    return lts;
   }
 
   @Override
-  public LTS interleaveComplex(LTS graph) {
-    return graph;
+  public LTSWithFinalStates interleaveComplex(LTSWithFinalStates lts) {
+    return lts;
   }
 }
