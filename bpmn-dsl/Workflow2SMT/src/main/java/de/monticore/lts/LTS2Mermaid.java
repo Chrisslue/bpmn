@@ -13,13 +13,15 @@ import java.util.Set;
 
 public class LTS2Mermaid implements LTSBuilder<String, String> {
 
-  private final Set<String> initialStates;
-  private final Set<String> states;
+  protected final Set<String> initialStates;
+  protected final Set<String> finalStates;
 
-  private final Map<String, Integer> state2Id;
+  protected final Set<String> states;
 
-  private int stateIdCounter;
-  private final Set<Transition> transitions;
+  protected final Map<String, Integer> state2Id;
+
+  protected int stateIdCounter;
+  protected final Set<Transition> transitions;
 
 
   public LTS2Mermaid() {
@@ -28,6 +30,7 @@ public class LTS2Mermaid implements LTSBuilder<String, String> {
     this.stateIdCounter = 0;
     this.transitions = new HashSet<>();
     this.initialStates = new HashSet<>();
+    this.finalStates = new HashSet<>();
   }
 
   private int nextId() {
@@ -55,7 +58,9 @@ public class LTS2Mermaid implements LTSBuilder<String, String> {
 
   @Override
   public String addFinalState(String name) {
-    return addState(name);
+    var state = addState(name);
+    this.finalStates.add(state);
+    return state;
   }
 
   @Override
@@ -103,6 +108,10 @@ public class LTS2Mermaid implements LTSBuilder<String, String> {
     for (String initialState : initialStates) {
       diagram.append("\t").append("[*]").append(" --> ").append(state2Id.get(initialState)).append("\n");
     }
+    for (String finalState : finalStates) {
+      diagram.append("\t").append(state2Id.get(finalState)).append(" --> ").append("[*]").append("\n");
+    }
+
     for (Transition transition : transitions) {
       diagram
           .append("\t")
