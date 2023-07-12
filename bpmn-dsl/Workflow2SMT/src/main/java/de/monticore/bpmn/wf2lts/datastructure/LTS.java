@@ -27,12 +27,16 @@ public class LTS extends IntermediateGraph<LTS.State, LTS.Transition> {
   }
 
   /**
-   * Create a deep copy of another lts. The new lts is 'isomorphic' to the given one with different
-   * states and transitions.
+   * Create a deep copy of another lts. The new lts is 'isomorphic' to the given one with different states and
+   * transitions.
    */
   public LTS(LTS toBeCloned) {
     this(); // Creates a new start state.
     var lookup = new HashMap<State, State>();
+    copyStatesAndTransitionsIntoNew(lookup, toBeCloned);
+  }
+
+  protected void copyStatesAndTransitionsIntoNew(Map<State, State> lookup, LTS toBeCloned) {
     lookup.put(toBeCloned.getStart(), this.start);
     toBeCloned
         .getEdges()
@@ -110,7 +114,7 @@ public class LTS extends IntermediateGraph<LTS.State, LTS.Transition> {
     return new ArrayList<>(getEdges().keySet());
   }
 
-  private List<Transition> getOutgoingsAddIfAbsent(State state) {
+  protected List<Transition> getOutgoingsAddIfAbsent(State state) {
     if (!getEdges().containsKey(state)) {
       addState(state);
     }
@@ -121,13 +125,13 @@ public class LTS extends IntermediateGraph<LTS.State, LTS.Transition> {
     return new ArrayList<>(getOutgoingsInPlace(state));
   }
 
-  private void requireStateIsInLTS(State state) {
+  protected void requireStateIsInLTS(State state) {
     if (!getEdges().containsKey(state)) {
       throw new IllegalArgumentException("State " + state + " is not part of the lts.");
     }
   }
 
-  private List<Transition> getOutgoingsInPlace(State state) {
+  protected List<Transition> getOutgoingsInPlace(State state) {
     requireStateIsInLTS(state);
     return getEdges().get(state);
   }
@@ -181,6 +185,19 @@ public class LTS extends IntermediateGraph<LTS.State, LTS.Transition> {
   public <S, L, B extends LTSBuilder<S, L>> B toModel(B builder, NamingStrategy<LTS.State> namingStrategy) {
     Map<State, S> stateLookup = new HashMap<>();
     Map<String, L> labelLookup = new HashMap<>();
+    addStatesToBuilder(builder, namingStrategy, stateLookup);
+    addFinalStatesToBuilder(builder, namingStrategy, stateLookup);
+    this.allUsedLabels().forEach(label ->
+        labelLookup.put(label, builder.addLabel(label)));
+    addTransitionsToBuilder(builder, stateLookup, labelLookup);
+
+    return builder;
+  }
+
+  protected <B extends LTSBuilder<S, L>, S, L> void addStatesToBuilder(
+      B builder,
+      NamingStrategy<State> namingStrategy,
+      Map<State, S> stateLookup) {
     getEdges()
         .keySet()
         .forEach(
@@ -191,10 +208,12 @@ public class LTS extends IntermediateGraph<LTS.State, LTS.Transition> {
                 stateLookup.put(state, builder.addInitialState(namingStrategy.apply(state)));
               }
             });
+  }
 
-    this.allUsedLabels().forEach(label ->
-        labelLookup.put(label, builder.addLabel(label)));
-
+  protected <B extends LTSBuilder<S, L>, S, L> void addTransitionsToBuilder(
+      B builder,
+      Map<State, S> stateLookup,
+      Map<String, L> labelLookup) {
     getEdges().values().stream()
         .flatMap(List::stream)
         .forEach(
@@ -206,11 +225,16 @@ public class LTS extends IntermediateGraph<LTS.State, LTS.Transition> {
                     //transition.getConditions() TODO
                 )
         );
-
-    return builder;
   }
 
-  private NamingStrategy<LTS.State> getNamingStrategy() {
+  protected <B extends LTSBuilder<S, L>, S, L> void addFinalStatesToBuilder(
+      B builder,
+      NamingStrategy<State> namingStrategy,
+      Map<State, S> stateLookup) {
+  }
+
+
+  protected NamingStrategy<LTS.State> getNamingStrategy() {
     return new NamingStrategy<>() {
       private final Map<State, String> lookup;
       private int counter;
@@ -238,7 +262,9 @@ public class LTS extends IntermediateGraph<LTS.State, LTS.Transition> {
     };
   }
 
-  public static class State {}
+  public static class State {
+
+  }
 
   public static class Transition extends EdgeTo<State> {
 
