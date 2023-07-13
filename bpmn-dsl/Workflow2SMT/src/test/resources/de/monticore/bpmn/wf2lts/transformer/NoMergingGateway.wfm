@@ -1,0 +1,20 @@
+package de.monticore.bpmn.wf2lts.transformer;
+
+process NoMergingGateway {
+
+event start Start;
+event end End;
+event end Term terminate;
+
+task A;
+task B;
+task C;
+task D;
+split xor Split;
+
+Start -> A -> Split;
+Split -> B;
+Split -> D;
+B -> C -> End;
+D -> Term;
+}

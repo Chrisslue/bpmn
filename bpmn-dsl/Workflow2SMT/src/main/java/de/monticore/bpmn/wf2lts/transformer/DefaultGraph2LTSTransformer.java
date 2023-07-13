@@ -1,5 +1,6 @@
 package de.monticore.bpmn.wf2lts.transformer;
 
+import de.monticore.bpmn.wf2lts.DefaultNamingStrategy;
 import de.monticore.bpmn.wf2lts.NamingStrategy;
 import de.monticore.bpmn.wf2lts.datastructure.EdgeTo;
 import de.monticore.bpmn.wf2lts.datastructure.IntermediateGraphWithScopes;
@@ -18,6 +19,15 @@ public class DefaultGraph2LTSTransformer implements Graph2LTSTransformer {
   private final NamingStrategy<IFlowNode> namingStrategy;
   private final GatewayTransformer gatewayTransformer;
   private final SubprocessTransformer subprocessTransformer;
+
+
+  public DefaultGraph2LTSTransformer() {
+    this(
+        new DefaultNamingStrategy(),
+        new DefaultGatewayTransformer(new DefaultGatewayInterleaving(), new DefaultNamingStrategy()),
+        new DefaultSubprocessTransformer()
+    );
+  }
 
   public DefaultGraph2LTSTransformer(
       NamingStrategy<IFlowNode> namingStrategy,
@@ -60,10 +70,10 @@ public class DefaultGraph2LTSTransformer implements Graph2LTSTransformer {
             node ->
                 node != graph.getStart()
                     && graph.getEdges().values().stream()
-                        .noneMatch(
-                            transitionList ->
-                                transitionList.stream()
-                                    .anyMatch(transition -> transition.getTarget() == node)))
+                    .noneMatch(
+                        transitionList ->
+                            transitionList.stream()
+                                .anyMatch(transition -> transition.getTarget() == node)))
         .forEach(
             node ->
                 lts.addTransition(

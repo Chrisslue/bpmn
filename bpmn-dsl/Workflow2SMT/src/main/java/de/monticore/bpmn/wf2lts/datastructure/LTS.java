@@ -101,13 +101,18 @@ public class LTS extends IntermediateGraph<LTS.State, LTS.Transition> {
     getOutgoingsInPlace(state).removeAll(toBeRemoved);
   }
 
-  public void removeTargetIfNoIncomings(List<Transition> transitions) {
-    transitions.stream()
-        .map(Transition::getTarget)
-        .filter(state -> this.getIncoming(state).isEmpty())
-        .distinct() // We don't want to remove states twice.
-        .collect(Collectors.toList()) // Trigger lazy execution before removing.
-        .forEach(this::removeState);
+
+  public void removeStateIfNoIncomingRecursively(State state) {
+    if (!this.getIncoming(state).isEmpty()) {
+      return;
+    }
+    var nextTargets =
+        this.getOutgoings(state).stream()
+            .map(Transition::getTarget)
+            .distinct()
+            .collect(Collectors.toList());
+    this.removeState(state);
+    nextTargets.forEach(this::removeStateIfNoIncomingRecursively);
   }
 
   public List<State> getStates() {

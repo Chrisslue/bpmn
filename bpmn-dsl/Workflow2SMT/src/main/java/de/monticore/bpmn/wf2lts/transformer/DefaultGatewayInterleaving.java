@@ -1,36 +1,36 @@
 package de.monticore.bpmn.wf2lts.transformer;
 
-import de.monticore.bpmn.wf2lts.datastructure.LTS;
+import de.monticore.bpmn.wf2lts.datastructure.LTSWithFinalStates;
 
 public class DefaultGatewayInterleaving implements GatewayInterleavingStrategy {
 
   @Override
-  public LTS interleaveExclusive(LTS lts) {
+  public LTSWithFinalStates interleaveExclusive(LTSWithFinalStates lts) {
     return lts; // Noting to do
   }
 
   @Override
-  public LTS interleaveParallel(LTS lts) {
+  public LTSWithFinalStates interleaveParallel(LTSWithFinalStates lts) {
     return DefaultParallelInterleaving.interleave(lts);
   }
 
   @Override
-  public LTS interleaveInclusive(LTS lts) {
+  public LTSWithFinalStates interleaveInclusive(LTSWithFinalStates lts) {
     return DefaultSequentialInterleaving.interleave(lts);
   }
 
   @Override
-  public LTS interleaveEventBasedParallel(LTS lts) {
+  public LTSWithFinalStates interleaveEventBasedParallel(LTSWithFinalStates lts) {
     return DefaultParallelInterleaving.interleave(lts);
   }
 
   @Override
-  public LTS interleaveEventBasedExclusive(LTS lts) {
+  public LTSWithFinalStates interleaveEventBasedExclusive(LTSWithFinalStates lts) {
     return lts; // Nothing to do.
   }
 
   @Override
-  public LTS interleaveComplex(LTS lts) {
+  public LTSWithFinalStates interleaveComplex(LTSWithFinalStates lts) {
     throw new UnsupportedOperationException("interleaveComplex is not yet implemented");
   }
 }

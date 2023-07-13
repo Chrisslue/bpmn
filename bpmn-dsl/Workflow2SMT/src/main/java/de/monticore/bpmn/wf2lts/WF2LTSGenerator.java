@@ -8,10 +8,7 @@ import de.monticore.bpmn.trafos.SetSubProcessTriggeredByEvent;
 import de.monticore.bpmn.wf2lts.collector.StartEventCollector;
 import de.monticore.bpmn.wf2lts.datastructure.IntermediateGraphWithScopes;
 import de.monticore.bpmn.wf2lts.datastructure.LTS;
-import de.monticore.bpmn.wf2lts.transformer.DefaultGatewayInterleaving;
-import de.monticore.bpmn.wf2lts.transformer.DefaultGatewayTransformer;
 import de.monticore.bpmn.wf2lts.transformer.DefaultGraph2LTSTransformer;
-import de.monticore.bpmn.wf2lts.transformer.DefaultSubprocessTransformer;
 import de.monticore.bpmn.workflow.WorkflowMill;
 import de.monticore.bpmn.workflow.WorkflowTool;
 import de.monticore.bpmn.workflow._ast.ASTEvent;
@@ -72,11 +69,13 @@ public class WF2LTSGenerator {
     return workflow2LTS(loadBPMN(modelFile));
   }
 
-  public static LTS workflow2LTS(ASTWorkflowCompilationUnit ast) {
+  public static IntermediateGraphWithScopes transformToGraph(ASTWorkflowCompilationUnit ast) {
     var startEvent = getStartEvent(ast);
-    // 1. Building the intermediate graph.
-    IntermediateGraphWithScopes graph = GraphBuildingTraverser.graphOf(startEvent);
-    var lts = transformToLTS(graph);
+    return GraphBuildingTraverser.graphOf(startEvent);
+  }
+
+  public static LTS workflow2LTS(ASTWorkflowCompilationUnit ast) {
+    var lts = transformToLTS(transformToGraph(ast));
     removeUnreachable(lts);
     return lts;
   }
@@ -97,13 +96,9 @@ public class WF2LTSGenerator {
   }
 
   protected static LTS transformToLTS(IntermediateGraphWithScopes graph) {
-    var defaultNaming = new DefaultNamingStrategy();
 
     var graphTransformer =
-        new DefaultGraph2LTSTransformer(
-            defaultNaming,
-            new DefaultGatewayTransformer(new DefaultGatewayInterleaving(), defaultNaming),
-            new DefaultSubprocessTransformer());
+        new DefaultGraph2LTSTransformer();
     return graphTransformer.transform(graph);
   }
 }
