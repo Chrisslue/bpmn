@@ -1,4 +1,4 @@
-package de.monticore.wf2lts;
+package de.monticore.bpmn.wf2lts;
 
 process CyclicGateway {
 

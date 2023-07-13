@@ -1,4 +1,4 @@
-package de.monticore.wf2smt;
+package de.monticore.bpmn;
 
 process Prototype {
 

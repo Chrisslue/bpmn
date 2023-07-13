@@ -4,6 +4,7 @@ import de.monticore.bpmn.workflow.WorkflowMill;
 import de.monticore.lts.LTS2Mermaid;
 import de.monticore.symbols.basicsymbols.BasicSymbolsMill;
 import de.se_rwth.commons.logging.Log;
+import java.util.Objects;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,7 +20,8 @@ public class WF2LTSGeneratorTest {
     BasicSymbolsMill.initializePrimitives();
   }
 
-  private static String diagramFile = "src/test/resources/de/monticore/wf2smt/Prototype.wfm";
+  private static String diagramFile = Objects.requireNonNull(WF2LTSGenerator.class.getResource("../Prototype.wfm"))
+      .getPath();
 
   @Test
   public void testLoading() {
@@ -29,6 +31,7 @@ public class WF2LTSGeneratorTest {
 
   @Test
   public void testComplete() {
+
     var lts = WF2LTSGenerator.workflow2LTS(diagramFile);
     System.out.println(lts.toModel(new LTS2Mermaid()).build());
     Assertions.assertEquals(1, lts.getOutgoings(lts.getStart()).size());
