@@ -41,10 +41,10 @@ s3 --> s4
 | IntermediateGraph             | x           | -      |
 | IntermediateGraphWithScopes   | x           |        |
 | LTS                           | x           | WIP    |
-| GatewayScope                  | x           |        |
+| GatewayScope                  | x           | x      |
 | SubprocessScope               | x           |        |
 | NamingStrategy                | x           | -      |
-| GatewayTransformer            | x           | -      |
+| GatewayTransformer            | x           | x      |
 | SubprocessTransformer         | x           | -      |
 | GatewayInterleavingStrategy   | x           | -      |
 | Graph2LTSTransformer          | x           | -      |
