@@ -2,6 +2,8 @@ package de.monticore.bpmn.wf2lts.transformer;
 
 import static java.util.Collections.emptyList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import de.monticore.bpmn.wf2lts.DefaultNamingStrategy;
 import de.monticore.bpmn.wf2lts.DoNothingInterleaving;
@@ -224,6 +226,38 @@ class DefaultGatewayTransformerTest {
     Assertions.assertTrue(allStates.isEmpty(), "LTS has unreachable states");
 
     LTSTestingUtils.assertPathsExist(lts, possiblePaths);
+  }
+
+  @Test
+  void testCyclicGateway() {
+    var diagramName = "../CyclicGateway";
+    var possiblePaths = List.of(
+        List.of("Start", "A", "B", "C", "End"),
+        List.of("Start", "A", "B", "B", "B", "C", "End"));
+    var graph = setupGraphWithScope(diagramName, GatewayType.XOR);
+
+    var naming = new DefaultNamingStrategy();
+    LTS lts = new DefaultGraph2LTSTransformer(
+        naming,
+        new DefaultGatewayTransformer(new DefaultGatewayInterleaving(), naming),
+        new DefaultSubprocessTransformer()
+    ).transform(graph);
+
+    var ltsTraverser = new LTSTraverser(lts);
+
+    var allStates = lts.getStates();
+    ltsTraverser.depthFirstSearchLTS(lts.getStart(), allStates::remove);
+    Assertions.assertTrue(allStates.isEmpty(), "LTS has unreachable states");
+
+    LTSTestingUtils.assertPathsExist(lts, possiblePaths);
+    LTSTestingUtils.assertPathDoesNotExists(lts, List.of("Start", "A", "C", "End"));
+
+    // Assert b is on a cycle
+    var bTransitions = lts.getTransitionsForLabel("B");
+    assertFalse(bTransitions.isEmpty());
+    assertTrue(bTransitions.stream().anyMatch(bTransition ->
+        !ltsTraverser.pathFrom(bTransition.getTarget()).outgoingsWith("B").isEmpty()
+    ));
   }
 
   private IntermediateGraphWithScopes setupGraphWithScope(String diagramName, GatewayType type) {

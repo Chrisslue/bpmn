@@ -31,16 +31,16 @@ public class DefaultGatewayTransformer implements GatewayTransformer {
     return interleavingStrategy;
   }
 
-  private LTSWithFinalStates removeSplitAndMerge(
+  private LTSWithFinalStates removeInternalSplitAndMerge(
       LTS internalLTS,
       String splitName,
-      Optional<String> mergeName
+      Optional<String> optMergeName
   ) {
     removeInternalSplitTransitions(internalLTS, splitName);
     LTSWithFinalStates ltsWithFinalStates = new LTSWithFinalStates(internalLTS, Collections.emptyList());
 
     // Remove internal merge transitions, for each mark the source state as final state
-    mergeName.ifPresent(s ->
+    optMergeName.ifPresent(s ->
         removeInternalMergeTransition(ltsWithFinalStates, s).forEach(mergeTransition ->
             ltsWithFinalStates.addAsFinalState(mergeTransition.getSource()))
     );
@@ -148,7 +148,27 @@ public class DefaultGatewayTransformer implements GatewayTransformer {
         .collect(Collectors.toList());
 
     for (var finalState : internalLTS.getFinalStates()) {
-      externalSuccessors.forEach(transition -> externalLTS.addTransition(transition.changedSource(finalState)));
+      externalSuccessors.forEach(transition -> internalLTS.addTransition(transition.changedSource(finalState)));
+    }
+    rewireExternalIncomingMergeTransitions(externalLTS, mergeName);
+  }
+
+  private static void rewireExternalIncomingMergeTransitions(
+      LTS externalLTS,
+      String mergeName
+  ) {
+    // If the mergeName is part of the externalLTS there is possible a cycle.
+    // In that case pass incoming transitions to the merge-transition through to the outgoing transitions.
+    // For example for every s0 - A -> s1 - Merge -> s2 - b -> s3 rewire it to:
+    // s0 - A -> s2 - b -> s3
+    for (var externalMergeTransition : externalLTS.getTransitionsForLabel(mergeName)) {
+      for (Transition incomingTransition : externalLTS.getIncoming(externalMergeTransition.getSource())) {
+        externalLTS.removeTransition(incomingTransition);
+        externalLTS.addTransition(incomingTransition
+            .changedTarget(externalMergeTransition.getTarget())
+            .withAddedConditions(externalMergeTransition.getConditions())
+        );
+      }
     }
   }
 
@@ -181,21 +201,26 @@ public class DefaultGatewayTransformer implements GatewayTransformer {
 
     LTS transformedInternalLTS = graph2LTSTransformer.transform(gatewayScope.getGraph());
 
-    LTSWithFinalStates strippedInternalLTS = removeSplitAndMerge(transformedInternalLTS, splitName, optMergeName);
+    LTSWithFinalStates strippedInternalLTS =
+        removeInternalSplitAndMerge(transformedInternalLTS, splitName, optMergeName);
 
     LTSWithFinalStates interleavedLTS = getGatewayInterleavingStrategy()
         .interleave(gatewayScope.getGatewayType(), strippedInternalLTS);
 
-    rewireExternalSplitTransitions(externalLTS, splitName, interleavedLTS);
-    removeTransitionsLabeled(splitName, externalLTS);
     if (optMergeName.isPresent()) {
       var mergeName = optMergeName.get();
       rewireExternalMergeTransitions(externalLTS, mergeName, interleavedLTS);
-      removeTransitionsLabeled(mergeName, externalLTS);
     }
+    // We have to rewire merge transitions first!
+    rewireExternalSplitTransitions(externalLTS, splitName, interleavedLTS);
 
     externalLTS.addTransitionsOf(interleavedLTS);
+
+    removeTransitionsLabeled(splitName, externalLTS);
+    optMergeName.ifPresent(s -> removeTransitionsLabeled(s, externalLTS));
+
     externalLTS.removeState(interleavedLTS.getStart());
+
     return externalLTS;
   }
 }
