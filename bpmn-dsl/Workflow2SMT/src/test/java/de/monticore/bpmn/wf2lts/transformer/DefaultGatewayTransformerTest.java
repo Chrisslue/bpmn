@@ -152,7 +152,7 @@ class DefaultGatewayTransformerTest {
           List.of("Start", "A", "B", "C", "D", "End"),
           List.of("Start", "A", "C", "B", "D", "End"));
     }
-    throw new IllegalArgumentException("No paths defined for gatewaytype: " + gatewayType);
+    throw new IllegalArgumentException("No paths defined for gatewayType: " + gatewayType);
   }
 
   private static List<List<String>> pathsForNoMerging(GatewayType gatewayType) {
@@ -176,7 +176,7 @@ class DefaultGatewayTransformerTest {
           .map(pathStream -> pathStream.collect(Collectors.toList()))
           .collect(Collectors.toList());
     }
-    throw new IllegalArgumentException("No paths defined for gatewaytype: " + gatewayType);
+    throw new IllegalArgumentException("No paths defined for gatewayType: " + gatewayType);
   }
 
   private static List<List<String>> pathsForMergingAndEnd(GatewayType gatewayType) {
@@ -207,13 +207,12 @@ class DefaultGatewayTransformerTest {
               Stream.concat(path.stream(), Stream.of("E", "End")).collect(Collectors.toList()))
           .collect(Collectors.toList());
     }
-    throw new IllegalArgumentException("No paths defined for gatewaytype: " + gatewayType);
+    throw new IllegalArgumentException("No paths defined for gatewayType: " + gatewayType);
   }
 
   @ParameterizedTest
   @MethodSource("methodArgumentProvider")
   void testDiagram(String diagramName, GatewayType type, List<List<String>> possiblePaths) {
-    var naming = new DefaultNamingStrategy();
     var graphWithScope = setupGraphWithScope(diagramName, type);
 
     LTS lts = new DefaultGraph2LTSTransformer().transform(graphWithScope);
@@ -224,7 +223,7 @@ class DefaultGatewayTransformerTest {
     ltsTraverser.depthFirstSearchLTS(lts.getStart(), allStates::remove);
     Assertions.assertTrue(allStates.isEmpty(), "LTS has unreachable states");
 
-    LTSTestingUtils.assertPathsExists(lts, possiblePaths);
+    LTSTestingUtils.assertPathsExist(lts, possiblePaths);
   }
 
   private IntermediateGraphWithScopes setupGraphWithScope(String diagramName, GatewayType type) {

@@ -97,7 +97,7 @@ class DefaultSequentialInterleavingTest {
             .map(x -> x.stream().flatMap(List::stream).collect(Collectors.toList()))
             .collect(Collectors.toList());
 
-    LTSTestingUtils.assertPathsExists(interleaved, threePathsLTSValidPaths);
+    LTSTestingUtils.assertPathsExist(interleaved, threePathsLTSValidPaths);
     var expectedFinalStates = Stream.of("B", "D", "F")
         .flatMap(label -> interleaved.getTransitionsForLabel(label).stream())
         .map(Transition::getTarget)

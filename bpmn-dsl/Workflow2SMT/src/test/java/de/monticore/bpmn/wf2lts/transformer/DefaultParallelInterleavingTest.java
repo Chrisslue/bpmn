@@ -114,7 +114,7 @@ class DefaultParallelInterleavingTest {
 
     LTSTestingUtils.assertSameStartOutgoingLabel(originalLTS, interleaved);
 
-    LTSTestingUtils.assertPathsExists(interleaved, allValidPathForThreeOptionsLTS());
+    LTSTestingUtils.assertPathsExist(interleaved, allValidPathForThreeOptionsLTS());
     // All terminal states should be final states as we don't have cycle in the originalLTS.
     assertTerminalAreFinal(interleaved);
   }
