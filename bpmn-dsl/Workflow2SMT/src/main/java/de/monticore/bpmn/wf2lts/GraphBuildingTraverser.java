@@ -4,6 +4,7 @@ import de.monticore.bpmn.wf2lts.datastructure.EdgeTo;
 import de.monticore.bpmn.wf2lts.datastructure.IntermediateGraphWithScopes;
 import de.monticore.bpmn.wf2lts.scopes.GatewayScope;
 import de.monticore.bpmn.wf2lts.scopes.SubProcessScope;
+import de.monticore.bpmn.workflow.WorkflowMill;
 import de.monticore.bpmn.workflow._ast.ASTEvent;
 import de.monticore.bpmn.workflow._ast.ASTFlowCondition;
 import de.monticore.bpmn.workflow._ast.ASTFlowNode;
@@ -17,7 +18,6 @@ import de.monticore.bpmn.workflow._ast.ASTTask;
 import de.monticore.bpmn.workflow._ast.SequenceFlow;
 import de.monticore.bpmn.workflow._visitor.WorkflowHandler;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
-import de.monticore.bpmn.workflow._visitor.WorkflowTraverserImplementation;
 import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -49,7 +49,7 @@ public class GraphBuildingTraverser implements WorkflowHandler, WorkflowVisitor2
       throw new IllegalArgumentException("startEvent has to be a start event");
     }
     GraphBuildingTraverser handler =
-        new GraphBuildingTraverser(new WorkflowTraverserImplementation(), startEvent);
+        new GraphBuildingTraverser(WorkflowMill.traverser(), startEvent);
     startEvent.accept(handler.getTraverser());
     return handler.getGraph();
   }
@@ -97,8 +97,7 @@ public class GraphBuildingTraverser implements WorkflowHandler, WorkflowVisitor2
   private void addAndHandleGatewayScope(ASTGateway gateway) {
     ASTFlowNode continueFrom;
     if (gateway.isDiverging()) {
-      WorkflowTraverserImplementation traverser = new WorkflowTraverserImplementation();
-      GatewayScope gatewayScope = new GatewayScope(traverser, gateway);
+      GatewayScope gatewayScope = new GatewayScope(WorkflowMill.traverser(), gateway);
       getGraph().getGatewayScopes().add(gatewayScope);
       if (gatewayScope.getClosingGateway().isEmpty()) {
         return;

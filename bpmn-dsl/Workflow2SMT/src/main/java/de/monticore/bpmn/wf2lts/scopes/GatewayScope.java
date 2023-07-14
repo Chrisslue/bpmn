@@ -1,6 +1,7 @@
 package de.monticore.bpmn.wf2lts.scopes;
 
 import de.monticore.bpmn.wf2lts.GraphBuildingTraverser;
+import de.monticore.bpmn.workflow.WorkflowMill;
 import de.monticore.bpmn.workflow._ast.ASTGateway;
 import de.monticore.bpmn.workflow._ast.ASTGatewayType;
 import de.monticore.bpmn.workflow._ast.ASTInlineGateway;
@@ -75,7 +76,7 @@ public class GatewayScope extends GraphBuildingTraverser {
     if (this.getGraph().getStart() == gateway) {
       return;
     }
-    GatewayScope nestedScopeCollector = new GatewayScope(getTraverser(), gateway);
+    GatewayScope nestedScopeCollector = new GatewayScope(WorkflowMill.traverser(), gateway);
     getGraph().getGatewayScopes().add(nestedScopeCollector);
 
     if (nestedScopeCollector.getClosingGateway().isEmpty()) {

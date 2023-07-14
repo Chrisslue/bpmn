@@ -16,14 +16,13 @@ import de.monticore.bpmn.workflow._ast.ASTFlowElement;
 import de.monticore.bpmn.workflow._ast.ASTWorkflowCompilationUnit;
 import de.monticore.bpmn.workflow._symboltable.WorkflowSTCompleter;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
-import de.monticore.bpmn.workflow._visitor.WorkflowTraverserImplementation;
 import de.monticore.lts.LTSBuilder;
 
 public class WF2LTSGenerator {
 
   private static ASTEvent getStartEvent(ASTWorkflowCompilationUnit ast) {
 
-    var traverser = new WorkflowTraverserImplementation();
+    var traverser = WorkflowMill.traverser();
     var startEventCollector = new StartEventCollector(traverser);
     for (ASTFlowElement astFlowElement : ast.getProcess().getFlowElementList()) {
       astFlowElement.accept(traverser);
