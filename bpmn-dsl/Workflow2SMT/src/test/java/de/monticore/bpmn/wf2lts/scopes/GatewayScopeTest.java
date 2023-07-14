@@ -1,9 +1,9 @@
 package de.monticore.bpmn.wf2lts.scopes;
 
+import static java.util.Map.entry;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import de.monticore.bpmn.wf2lts.DefaultNamingStrategy;
 import de.monticore.bpmn.wf2lts.Utils;
 import de.monticore.bpmn.wf2lts.WF2LTSGenerator;
 import de.monticore.bpmn.wf2lts.scopes.GatewayScope.GatewayType;
@@ -16,7 +16,6 @@ import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 
 class GatewayScopeTest {
@@ -37,14 +36,29 @@ class GatewayScopeTest {
     assertEquals(outerGateway, outerGatewayGraph.getStart());
     assertEquals(1, outerGatewayGraph.getGatewayScopes().size());
 
-    // 2 from GatewaySplit, one from "A", one from InnerGatewayMerge, one form "E"
-    assertEquals(5, outerGatewayGraph.getEdges().values().stream().mapToLong(List::size).sum());
+    var expectedOuterGatewayEdges = List.of(
+        entry("GatewaySplit", "A"),
+        entry("A", "GatewayMerge"),
+        entry("GatewaySplit", "InnerGatewaySplit"),
+        entry("InnerGatewayMerge", "E"),
+        entry("E", "GatewayMerge")
+    );
+    Utils.assertSameEdges(outerGatewayGraph, expectedOuterGatewayEdges);
 
     var innerGatewayScope = outerGatewayGraph.getGatewayScopes().get(0);
     assertEquals(GatewayType.XOR, innerGatewayScope.getGatewayType());
     assertTrue(innerGatewayScope.getClosingGateway().isPresent());
     assertEquals(0, innerGatewayScope.getGraph().getGatewayScopes().size());
     var innerGatewayGraph = innerGatewayScope.getGraph();
+    var expectedInnerGatewayEdges = List.of(
+        entry("InnerGatewaySplit", "B"),
+        entry("B", "InnerGatewayEnd"),
+        entry("InnerGatewaySplit", "C"),
+        entry("C", "InnerGatewayMerge"),
+        entry("InnerGatewaySplit", "D"),
+        entry("D", "InnerGatewayMerge"));
+    Utils.assertSameEdges(innerGatewayGraph, expectedInnerGatewayEdges);
+
     var startEdges = innerGatewayGraph.getEdges().get(innerGatewayGraph.getStart());
     assertEquals(3, startEdges.size());
   }
@@ -61,22 +75,13 @@ class GatewayScopeTest {
     assertEquals(GatewayType.XOR, scope.getGatewayType());
     assertTrue(scope.getClosingGateway().isPresent());
 
+    var expectedEdges = List.of(
+        entry("GatewaySplit", "GatewayMerge"),
+        entry("GatewaySplit", "C"),
+        entry("C", "End")
+    );
     var gatewayGraph = scope.getGraph();
-    var naming = new DefaultNamingStrategy();
-    List<String> sourceNames = gatewayGraph.getEdges()
-        .keySet()
-        .stream()
-        .map(naming)
-        .collect(Collectors.toList());
-    Utils.assertEqualIgnoreOrder(List.of("GatewaySplit", "C"), sourceNames);
-
-    List<String> targetNames = gatewayGraph.getEdges()
-        .values()
-        .stream()
-        .flatMap(List::stream)
-        .map(edge -> naming.apply(edge.getTarget()))
-        .collect(Collectors.toList());
-    Utils.assertEqualIgnoreOrder(List.of("GatewayMerge", "C", "End"), targetNames);
+    Utils.assertSameEdges(gatewayGraph, expectedEdges);
 
     assertEquals(outerGateway, gatewayGraph.getStart());
     assertEquals(0, gatewayGraph.getGatewayScopes().size());
