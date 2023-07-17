@@ -6,11 +6,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import de.monticore.bpmn.wf2lts.LTSTestingUtils;
 import de.monticore.bpmn.wf2lts.datastructure.LTS;
 import de.monticore.bpmn.wf2lts.datastructure.LTS.Transition;
+import de.monticore.bpmn.wf2lts.datastructure.LTSTraverser;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-class DifferTest {
+class SMTDiffTest {
 
   private LTS getComplexLTS() {
     var lts = new LTS();
@@ -31,25 +32,27 @@ class DifferTest {
     var second = new LTS();
     LTSTestingUtils.addPathOfLabelFromStart(second, List.of("A", "End"));
     LTSTestingUtils.addPathOfLabelFromStart(second, List.of("B", "End"));
-    var differ = new Differ(first, second);
-    var witnessForFirst = differ.findWitness(differ.getEncodedFirst(), differ.getEncodedSecond(), 4);
+    var differ = WF2SMTDiffGenerator.generateDiffer(first, second, "End");
+    var witnessForFirst = differ.firstSubsetOfSecond(4);
     assertTrue(witnessForFirst.isEmpty());
-    var witnessForSecond = differ.findWitness(differ.getEncodedSecond(), differ.getEncodedFirst(), 4);
+    var witnessForSecond = differ.secondSubsetOfFirst(4);
     assertTrue(witnessForSecond.isPresent());
-    var transitions = witnessForSecond.get().getTransitions();
-    assertEquals(2, transitions.size());
-    assertEquals(second.getTransitionsForLabel("B").get(0), transitions.get(0));
-    assertEquals("End", transitions.get(1).getLabel());
-    assertTrue(witnessForSecond.get().endsInTerminal());
+    var labelList = witnessForSecond.get();
+    var witnessPath = new LTSTraverser(second).pathOfLabel(labelList).orElseThrow();
+    assertEquals(2, labelList.size());
+
+    assertEquals(second.getTransitionsForLabel("B").get(0), witnessPath.getTransitions().get(0));
+    assertEquals("End", witnessPath.getTransitions().get(1).getLabel());
+    assertTrue(witnessPath.endsInTerminal());
   }
 
   @Test
   void findWitnessReflexive() {
     var lts = getComplexLTS();
 
-    var differ = new Differ(lts, lts);
-    assertTrue(differ.findWitness(differ.getEncodedFirst(), differ.getEncodedSecond(), 3).isEmpty());
-    assertTrue(differ.findWitness(differ.getEncodedSecond(), differ.getEncodedFirst(), 3).isEmpty());
+    var differ = WF2SMTDiffGenerator.generateDiffer(lts, lts, "End");
+    assertTrue(differ.firstSubsetOfSecond(3).isEmpty());
+    assertTrue(differ.firstSubsetOfSecond(3).isEmpty());
   }
 
   @Test
@@ -65,15 +68,17 @@ class DifferTest {
         .changedSource(aTarget)
         .changedTarget(second.getStart());
     second.addTransition(cycle);
-    var differ = new Differ(first, second);
-    var witnessForFirst = differ.findWitness(differ.getEncodedFirst(), differ.getEncodedSecond(), 10);
+    var differ = WF2SMTDiffGenerator.generateDiffer(first, second, "End");
+    var witnessForFirst = differ.firstSubsetOfSecond(10);
     assertTrue(witnessForFirst.isEmpty());
-    var witnessForSecond = differ.findWitness(differ.getEncodedSecond(), differ.getEncodedFirst(), 10);
-    assertTrue(witnessForSecond.isPresent());
-    assertTrue(witnessForSecond.get().getTransitions().size() >= 7);
-    assertTrue(witnessForSecond.get().endsInTerminal());
+    var optWitnessForSecond = differ.secondSubsetOfFirst(10);
+    assertTrue(optWitnessForSecond.isPresent());
+    var witnessForSecond = new LTSTraverser(second).pathOfLabel(optWitnessForSecond.get()).orElseThrow();
 
-    var shortWitness = differ.findWitness(differ.getEncodedSecond(), differ.getEncodedFirst(), 5);
+    assertTrue(witnessForSecond.getTransitions().size() >= 7);
+    assertTrue(witnessForSecond.endsInTerminal());
+
+    var shortWitness = differ.secondSubsetOfFirst(5);
     assertTrue(shortWitness.isEmpty());
 
   }

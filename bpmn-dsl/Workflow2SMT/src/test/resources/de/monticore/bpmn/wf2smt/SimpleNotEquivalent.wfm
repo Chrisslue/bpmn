@@ -1,0 +1,17 @@
+package de.monticore.bpmn.wf2smt;
+
+process SimpleNotEquivalent {
+
+
+  task A;
+  task B;
+
+  event start Start;
+  event end End;
+  split xor Split;
+  merge xor Merge;
+
+  Start -> Split -> A -> B -> End;
+  Split -> End;
+
+}

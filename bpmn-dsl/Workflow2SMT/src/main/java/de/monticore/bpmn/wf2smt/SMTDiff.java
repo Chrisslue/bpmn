@@ -11,43 +11,33 @@ import com.microsoft.z3.IntExpr;
 import com.microsoft.z3.IntNum;
 import com.microsoft.z3.Model;
 import com.microsoft.z3.Status;
-import de.monticore.bpmn.wf2lts.datastructure.LTS;
-import de.monticore.bpmn.wf2lts.datastructure.LTS.State;
-import de.monticore.bpmn.wf2lts.datastructure.LTSTraverser;
-import de.monticore.bpmn.wf2lts.datastructure.LTSTraverser.Path;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
-public class Differ {
+public class SMTDiff {
 
+  private final EnumSort<String> labelSort;
+  private final Expr<EnumSort<String>> finalSymbol;
   private final LTS2SMTEncoding encodedFirst;
   private final LTS2SMTEncoding encodedSecond;
-  private final EnumSort<String> labelEnum;
-  private final Map<String, Expr<EnumSort<String>>> label2Enum;
 
   private final Context ctx;
 
 
-  public Differ(LTS first, LTS second) {
-    this.ctx = new Context();
-    String[] allLabel = Stream.concat(
-            first.allUsedLabels().stream(),
-            second.allUsedLabels().stream())
-        .distinct().toArray(String[]::new);
-    this.labelEnum = ctx.mkEnumSort("LabelSort", allLabel);
-    this.label2Enum = IntStream.range(0, allLabel.length)
-        .boxed()
-        .collect(Collectors.toMap(
-            index -> allLabel[index],
-            index -> labelEnum.getConsts()[index])
-        );
-    this.encodedFirst = new LTS2SMTEncoding(first, label2Enum, ctx, "FirstStateSort");
-    this.encodedSecond = new LTS2SMTEncoding(second, label2Enum, ctx, "SecondStateSort");
+  public SMTDiff(Context ctx,
+      EnumSort<String> labelSort,
+      Expr<EnumSort<String>> finalSymbol,
+      LTS2SMTEncoding first,
+      LTS2SMTEncoding second
+  ) {
+    this.ctx = ctx;
+    this.labelSort = labelSort;
+    this.finalSymbol = finalSymbol;
+    this.encodedFirst = first;
+    this.encodedSecond = second;
   }
 
 
@@ -63,12 +53,11 @@ public class Differ {
   public Expr<BoolSort> isValidTraceOver(
       LTS2SMTEncoding encodedLTS,
       List<Expr<EnumSort<String>>> labelList,
-      List<Expr<EnumSort<State>>> stateList,
+      List<Expr<EnumSort<String>>> stateList,
       IntExpr indexOfFinal
   ) {
     Expr<BoolSort> conformsTransitionRelation = Z3Helper.BigAnd(ctx,
-        IntStream
-            .range(0, labelList.size())
+        IntStream.range(0, labelList.size())
             .mapToObj(
                 idx -> ctx.mkImplies(ctx.mkLe(ctx.mkInt(idx), indexOfFinal),
                     encodedLTS.getTransitionRelation()
@@ -85,7 +74,7 @@ public class Differ {
   public Expr<BoolSort> traceHasCorrectStartAndEnd(
       LTS2SMTEncoding ltsEncoding,
       List<Expr<EnumSort<String>>> labelList,
-      List<Expr<EnumSort<State>>> stateList,
+      List<Expr<EnumSort<String>>> stateList,
       IntExpr indexOfFinal
   ) {
     return ctx.mkAnd(
@@ -94,30 +83,22 @@ public class Differ {
             IntStream
                 .range(0, labelList.size())
                 .mapToObj(idx -> ctx.mkImplies(ctx.mkEq(indexOfFinal, ctx.mkInt(idx)),
-                    ctx.mkEq(labelList.get(idx), label2Enum.get("End")) // TODO
+                    ctx.mkEq(labelList.get(idx), finalSymbol) // TODO
                 ))
                 .collect(Collectors.toList())
         )
     );
   }
 
-  private static <T> List<T> evaluationOfList(
+  private static <T> List<String> evaluationOfList(
       Model model,
       List<Expr<EnumSort<T>>> symbolList,
-      Map<T, Expr<EnumSort<T>>> bijectiveLookup,
       int size
   ) {
     return symbolList
         .subList(0, size)
         .stream()
-        .map(symbolExpr -> model.evaluate(symbolExpr, true))
-        .map(symbolEval -> bijectiveLookup
-            .entrySet()
-            .stream()
-            .filter(entry -> entry.getValue().equals(symbolEval))
-            .map(Entry::getKey)
-            .findFirst()
-            .orElseThrow())
+        .map(symbolExpr -> model.evaluate(symbolExpr, true).toString())
         .collect(Collectors.toList());
   }
 
@@ -129,7 +110,15 @@ public class Differ {
     return ((IntNum) evalIndex).getInt();
   }
 
-  public Optional<Path> findWitness(
+  public Optional<List<String>> firstSubsetOfSecond(int maxSize) {
+    return findWitness(this.encodedFirst, this.encodedSecond, maxSize);
+  }
+
+  public Optional<List<String>> secondSubsetOfFirst(int maxSize) {
+    return findWitness(this.encodedSecond, this.encodedFirst, maxSize);
+  }
+
+  private Optional<List<String>> findWitness(
       LTS2SMTEncoding first,
       LTS2SMTEncoding second,
       int maxSize
@@ -138,56 +127,37 @@ public class Differ {
     IntExpr indexOfFinal = indexOfFinalEntry.getKey();
     BoolExpr indexOfFinalAssertions = indexOfFinalEntry.getValue();
 
-    List<Expr<EnumSort<String>>> label = IntStream
+    List<Expr<EnumSort<String>>> labelList = IntStream
         .range(0, maxSize)
-        .mapToObj(i -> ctx.mkConst(Z3Helper.gn("l" + i), this.labelEnum))
+        .mapToObj(i -> ctx.mkConst(Z3Helper.gn("l" + i), this.labelSort))
         .collect(Collectors.toList());
 
-    List<Expr<EnumSort<State>>> statesInFirst = IntStream
+    List<Expr<EnumSort<String>>> statesInFirst = IntStream
         .range(0, maxSize + 1)
         .mapToObj(i -> ctx.mkConst(Z3Helper.gn("s" + i), first.getStateEnum()))
         .collect(Collectors.toList());
 
-    List<Expr<EnumSort<State>>> statesInSecond = IntStream
+    List<Expr<EnumSort<String>>> statesInSecond = IntStream
         .range(0, maxSize + 1)
         .mapToObj(i -> ctx.mkConst(Z3Helper.gn("s" + i), second.getStateEnum()))
         .collect(Collectors.toList());
-    var isTraceInFirst = isValidTraceOver(first, label, statesInFirst, indexOfFinal);
+    var isTraceInFirst = isValidTraceOver(first, labelList, statesInFirst, indexOfFinal);
 
     var traceNotInSecond = ctx.mkForall(statesInSecond.toArray(Expr[]::new),
-        ctx.mkNot(isValidTraceOver(second, label, statesInSecond, indexOfFinal)),
+        ctx.mkNot(isValidTraceOver(second, labelList, statesInSecond, indexOfFinal)),
         1, null, null, ctx.mkSymbol(Z3Helper.gn("ForAll")), ctx.mkSymbol(Z3Helper.gn("")));
     var solver = ctx.mkSolver();
     var result = solver.check(indexOfFinalAssertions, isTraceInFirst, traceNotInSecond);
     if (result == Status.SATISFIABLE) {
       var indexOfFinalEvaluation = evaluationOfInt(solver.getModel(), indexOfFinal);
-      var labelEvaluation = Differ.evaluationOfList(solver.getModel(), label, label2Enum, indexOfFinalEvaluation + 1);
-      // indexOfFinalEvaluation + 1 because there are two states for on label in a transition.
-      var statesEvaluation = evaluationOfList(
-          solver.getModel(), statesInFirst, first.getState2Enum(), indexOfFinalEvaluation + 2);
-      var resolvedPath = new LTSTraverser(first.getUnderlyingLTS()).pathOfLabelAndStates(labelEvaluation,
-          statesEvaluation);
-      if (resolvedPath.isEmpty()) {
-        throw new IllegalStateException(
-            "Could not resolve found witness " + statesEvaluation
-                + " with label " + labelEvaluation
-        );
-      }
-      return resolvedPath;
+      var labelEvaluation = SMTDiff.evaluationOfList(solver.getModel(), labelList, indexOfFinalEvaluation + 1);
+      return Optional.of(labelEvaluation);
+
     } else if (result == Status.UNSATISFIABLE) {
       return Optional.empty();
     } else {
       throw new IllegalStateException("Could not determine result with z3.");
     }
-  }
-
-  public void diff(int maxSize) {
-
-    System.out.println("Testing traces(first) subset of traces(second)");
-    findWitness(encodedFirst, encodedSecond, maxSize);
-
-    System.out.println("Testing traces(second) subset of traces(first)");
-    findWitness(encodedSecond, encodedFirst, maxSize);
   }
 
   public LTS2SMTEncoding getEncodedFirst() {
@@ -198,11 +168,4 @@ public class Differ {
     return encodedSecond;
   }
 
-  public EnumSort<String> getLabelEnum() {
-    return labelEnum;
-  }
-
-  public Map<String, Expr<EnumSort<String>>> getLabel2Enum() {
-    return label2Enum;
-  }
 }

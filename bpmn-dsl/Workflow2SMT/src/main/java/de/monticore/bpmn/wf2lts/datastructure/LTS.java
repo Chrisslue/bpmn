@@ -184,7 +184,7 @@ public class LTS extends IntermediateGraph<LTS.State, LTS.Transition> {
   }
 
   public <S, L, B extends LTSBuilder<S, L>> B toModel(B builder) {
-    return toModel(builder, getNamingStrategy());
+    return toModel(builder, getNamingStrategy("s"));
   }
 
   public <S, L, B extends LTSBuilder<S, L>> B toModel(B builder, NamingStrategy<LTS.State> namingStrategy) {
@@ -239,7 +239,7 @@ public class LTS extends IntermediateGraph<LTS.State, LTS.Transition> {
   }
 
 
-  protected NamingStrategy<LTS.State> getNamingStrategy() {
+  public NamingStrategy<LTS.State> getNamingStrategy(String prefix) {
     return new NamingStrategy<>() {
       private final Map<State, String> lookup;
       private int counter;
@@ -253,11 +253,7 @@ public class LTS extends IntermediateGraph<LTS.State, LTS.Transition> {
       {
         lookup = LTS.this.getStates()
             .stream()
-            .collect(Collectors.toMap(
-                    Function.identity(),
-                    state -> "s" + nextId()
-                )
-            );
+            .collect(Collectors.toMap(Function.identity(), state -> prefix + nextId()));
       }
 
       @Override
