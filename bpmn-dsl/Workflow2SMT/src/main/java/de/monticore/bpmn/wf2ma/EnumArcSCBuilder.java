@@ -2,29 +2,49 @@ package de.monticore.bpmn.wf2ma;
 
 import arcautomaton._ast.ASTArcStatechart;
 import arcbasis._ast.ASTArcFieldDeclaration;
+import arcbasis._ast.ASTArcParameter;
+import arcbasis._ast.ASTComponentInterface;
+import arcbasis._ast.ASTPortDeclaration;
+import arcbasis._symboltable.SymbolService;
+import de.monticore.cd4code.CD4CodeMill;
+import de.monticore.cd4code._symboltable.CD4CodeSymbolTableCompleter;
+import de.monticore.cdbasis._ast.ASTCDCompilationUnit;
+import de.monticore.cdinterfaceandenum._ast.ASTCDEnum;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
-import de.monticore.lts.LTSBuilder;
 import de.monticore.scbasis._ast.ASTSCState;
 import de.monticore.scbasis._ast.ASTSCTransition;
 import de.monticore.sctransitions4code._ast.ASTTransitionAction;
 import de.monticore.statements.mcstatementsbasis._ast.ASTMCBlockStatement;
+import de.monticore.types.MCTypeFacade;
 import de.monticore.types.mcbasictypes._ast.ASTMCQualifiedType;
 import de.se_rwth.commons.logging.Log;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import montiarc.MontiArcMill;
 import montiarc._ast.ASTMACompilationUnit;
 
-public class MASCBuilder implements LTSBuilder<ASTSCState, ASTTransitionAction> {
+// todo: fix me
+public class EnumArcSCBuilder implements ArcSCBuilder {
 
-  Set<ASTSCState> states;
-  Set<ASTSCTransition> transitions;
-  Set<ASTArcFieldDeclaration> variables;
-  String out;
+  protected Set<ASTSCState> states = new HashSet<>();
+  protected Set<ASTSCTransition> transitions = new HashSet<>();
+  protected Set<ASTArcFieldDeclaration> variables = new HashSet<>();
+  protected String out;
+  protected ASTCDEnum outType;
 
-  public MASCBuilder(String outPortName) {
-    out = outPortName;
+  public EnumArcSCBuilder(String outPortName) {
+    char[] outName = outPortName.toCharArray();
+    outName[0] = Character.toUpperCase(outName[0]);
+    outType =
+        CD4CodeMill.cDEnumBuilder()
+            .setName(new String(outName))
+            .setModifier(CD4CodeMill.modifierBuilder().build())
+            .build();
+    outName[0] = Character.toLowerCase(outName[0]);
+    out = new String(outName);
   }
 
   @Override
@@ -38,15 +58,24 @@ public class MASCBuilder implements LTSBuilder<ASTSCState, ASTTransitionAction> 
 
   @Override
   public ASTTransitionAction addLabel(String label) {
+    initLabel(label);
     try {
       Optional<ASTMCBlockStatement> statement =
-          MontiArcMill.parser().parse_StringMCBlockStatement(out + " = " + label + ";");
+          MontiArcMill.parser()
+              .parse_StringMCBlockStatement(out + " = " + outType.getName() + "." + label + ";");
       assert statement.isPresent();
       return MontiArcMill.transitionActionBuilder().setMCBlockStatement(statement.get()).build();
     } catch (IOException e) {
       Log.error(e.getMessage());
     }
     return null;
+  }
+
+  protected void initLabel(String label) {
+    if (outType.getCDEnumConstantList().stream().noneMatch(con -> con.getName().equals(label))) {
+      outType.addCDEnumConstant(
+          CD4CodeMill.cD4CodeEnumConstantBuilder().setName(label).setArgumentsAbsent().build());
+    }
   }
 
   @Override
@@ -128,6 +157,44 @@ public class MASCBuilder implements LTSBuilder<ASTSCState, ASTTransitionAction> 
   }
 
   public ASTMACompilationUnit buildMA(String name) {
+
+    ASTCDCompilationUnit cd =
+        CD4CodeMill.cDCompilationUnitBuilder()
+            .setCDDefinition(
+                CD4CodeMill.cDDefinitionBuilder()
+                    .setName(name + "CD")
+                    .setCDElementsList(List.of(outType))
+                    .set_SourcePositionStartAbsent()
+                    .set_SourcePositionEndAbsent()
+                    .setModifier(CD4CodeMill.modifierBuilder().build())
+                    .build())
+            .set_SourcePositionStartAbsent()
+            .set_SourcePositionEndAbsent()
+            .setMCPackageDeclarationAbsent()
+            .build();
+
+    CD4CodeMill.scopesGenitorDelegator().createFromAST(cd);
+    cd.accept(new CD4CodeSymbolTableCompleter(cd).getTraverser());
+    CD4CodeMill.globalScope().removeSubScope(cd.getEnclosingScope());
+    outType.getSymbol().setSpannedScope(MontiArcMill.scope());
+    SymbolService.link(MontiArcMill.globalScope(), outType.getSymbol());
+
+    ASTPortDeclaration outPort =
+        MontiArcMill.portDeclarationBuilder()
+            .addPort(out)
+            .setMCType(MCTypeFacade.getInstance().createQualifiedType(outType.getName()))
+            .setPortDirection(MontiArcMill.portDirectionBuilder().setOut(true).setIn(false).build())
+            .build();
+
+    ASTComponentInterface compInterface =
+        MontiArcMill.componentInterfaceBuilder().setPortDeclarationsList(List.of(outPort)).build();
+
+    ASTArcParameter param =
+        MontiArcMill.arcParameterBuilder()
+            .setName(out)
+            .setMCType(MCTypeFacade.getInstance().createQualifiedType(outType.getName()))
+            .build();
+
     return MontiArcMill.mACompilationUnitBuilder()
         .setComponentType(
             MontiArcMill.componentTypeBuilder()
@@ -137,6 +204,7 @@ public class MASCBuilder implements LTSBuilder<ASTSCState, ASTTransitionAction> 
                     MontiArcMill.componentBodyBuilder()
                         .addAllArcElements(variables)
                         .addArcElement(buildSC())
+                        .addArcElement(compInterface)
                         .build())
                 .build())
         .build();
