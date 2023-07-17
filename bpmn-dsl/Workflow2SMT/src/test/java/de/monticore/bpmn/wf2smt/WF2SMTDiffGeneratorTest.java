@@ -38,7 +38,7 @@ class WF2SMTDiffGeneratorTest {
     var second = new LTS();
     LTSTestingUtils.addPathOfLabelFromStart(second, List.of("A", "B", "C"));
     LTSTestingUtils.addPathOfLabelFromStart(second, List.of("B", "C", "A"));
-    var differ = WF2SMTDiffGenerator.generateDiffer(first, second, "C");
+    var differ = WF2SMTDiffGenerator.generateDiffer(first, second, List.of("C"));
     assertTrue(differ.firstSubsetOfSecond(10).isEmpty());
     assertTrue(differ.secondSubsetOfFirst(10).isEmpty());
   }

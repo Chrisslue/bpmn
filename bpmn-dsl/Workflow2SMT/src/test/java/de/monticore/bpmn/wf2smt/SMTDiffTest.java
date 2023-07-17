@@ -32,7 +32,7 @@ class SMTDiffTest {
     var second = new LTS();
     LTSTestingUtils.addPathOfLabelFromStart(second, List.of("A", "End"));
     LTSTestingUtils.addPathOfLabelFromStart(second, List.of("B", "End"));
-    var differ = WF2SMTDiffGenerator.generateDiffer(first, second, "End");
+    var differ = WF2SMTDiffGenerator.generateDiffer(first, second, List.of("End"));
     var witnessForFirst = differ.firstSubsetOfSecond(4);
     assertTrue(witnessForFirst.isEmpty());
     var witnessForSecond = differ.secondSubsetOfFirst(4);
@@ -50,7 +50,7 @@ class SMTDiffTest {
   void findWitnessReflexive() {
     var lts = getComplexLTS();
 
-    var differ = WF2SMTDiffGenerator.generateDiffer(lts, lts, "End");
+    var differ = WF2SMTDiffGenerator.generateDiffer(lts, lts, List.of("End"));
     assertTrue(differ.firstSubsetOfSecond(3).isEmpty());
     assertTrue(differ.firstSubsetOfSecond(3).isEmpty());
   }
@@ -68,7 +68,7 @@ class SMTDiffTest {
         .changedSource(aTarget)
         .changedTarget(second.getStart());
     second.addTransition(cycle);
-    var differ = WF2SMTDiffGenerator.generateDiffer(first, second, "End");
+    var differ = WF2SMTDiffGenerator.generateDiffer(first, second, List.of("End"));
     var witnessForFirst = differ.firstSubsetOfSecond(10);
     assertTrue(witnessForFirst.isEmpty());
     var optWitnessForSecond = differ.secondSubsetOfFirst(10);

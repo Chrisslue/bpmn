@@ -1,5 +1,7 @@
 package de.monticore.bpmn.wf2smt;
 
+import static de.monticore.bpmn.wf2smt.Z3Helper.allIndicesMatch;
+import static de.monticore.bpmn.wf2smt.Z3Helper.matchesAny;
 import static java.util.Map.entry;
 
 import com.microsoft.z3.BoolExpr;
@@ -8,8 +10,6 @@ import com.microsoft.z3.Context;
 import com.microsoft.z3.EnumSort;
 import com.microsoft.z3.Expr;
 import com.microsoft.z3.IntExpr;
-import com.microsoft.z3.IntNum;
-import com.microsoft.z3.Model;
 import com.microsoft.z3.Status;
 import java.util.List;
 import java.util.Map.Entry;
@@ -20,7 +20,7 @@ import java.util.stream.IntStream;
 public class SMTDiff {
 
   private final EnumSort<String> labelSort;
-  private final Expr<EnumSort<String>> finalSymbol;
+  private final List<Expr<EnumSort<String>>> finalSymbols;
   private final LTS2SMTEncoding encodedFirst;
   private final LTS2SMTEncoding encodedSecond;
 
@@ -29,13 +29,13 @@ public class SMTDiff {
 
   public SMTDiff(Context ctx,
       EnumSort<String> labelSort,
-      Expr<EnumSort<String>> finalSymbol,
+      List<Expr<EnumSort<String>>> finalSymbols,
       LTS2SMTEncoding first,
       LTS2SMTEncoding second
   ) {
     this.ctx = ctx;
     this.labelSort = labelSort;
-    this.finalSymbol = finalSymbol;
+    this.finalSymbols = finalSymbols;
     this.encodedFirst = first;
     this.encodedSecond = second;
   }
@@ -43,6 +43,7 @@ public class SMTDiff {
 
   private Entry<IntExpr, BoolExpr> createIndexOfFinal(int maxSize) {
     var indexOfFinal = ctx.mkIntConst(Z3Helper.gn("IndexOfFinal"));
+    // The "real" trace length has to be >= 0 and smaller than the maxSize.
     var indexOfFinalAssertions = ctx.mkAnd(
         ctx.mkGe(indexOfFinal, ctx.mkInt(0)),
         ctx.mkLt(indexOfFinal, ctx.mkInt(maxSize))
@@ -56,19 +57,16 @@ public class SMTDiff {
       List<Expr<EnumSort<String>>> stateList,
       IntExpr indexOfFinal
   ) {
-    Expr<BoolSort> conformsTransitionRelation = Z3Helper.BigAnd(ctx,
-        IntStream.range(0, labelList.size())
-            .mapToObj(
-                idx -> ctx.mkImplies(ctx.mkLe(ctx.mkInt(idx), indexOfFinal),
-                    encodedLTS.getTransitionRelation()
-                        .isTransition(stateList.get(idx), labelList.get(idx), stateList.get(idx + 1))))
-            .collect(Collectors.toList()));
-    return ctx.mkAnd(conformsTransitionRelation, traceHasCorrectStartAndEnd(
-        encodedLTS,
-        labelList,
-        stateList,
-        indexOfFinal
-    ));
+    // For all 0 <= i <= indexOfFinal the transition relation has to hold.
+    Expr<BoolSort> conformsTransitionRelation =
+        allIndicesMatch(ctx, labelList,
+            idx -> ctx.mkImplies(ctx.mkLe(ctx.mkInt(idx), indexOfFinal),
+                encodedLTS.getTransitionRelation()
+                    .isTransition(stateList.get(idx), labelList.get(idx), stateList.get(idx + 1)))
+        );
+    return ctx.mkAnd(conformsTransitionRelation,
+        traceHasCorrectStartAndEnd(encodedLTS, labelList, stateList, indexOfFinal
+        ));
   }
 
   public Expr<BoolSort> traceHasCorrectStartAndEnd(
@@ -78,36 +76,14 @@ public class SMTDiff {
       IntExpr indexOfFinal
   ) {
     return ctx.mkAnd(
-        ctx.mkEq(stateList.get(0), ltsEncoding.getStartState()),
-        Z3Helper.BigAnd(ctx,
-            IntStream
-                .range(0, labelList.size())
-                .mapToObj(idx -> ctx.mkImplies(ctx.mkEq(indexOfFinal, ctx.mkInt(idx)),
-                    ctx.mkEq(labelList.get(idx), finalSymbol) // TODO
-                ))
-                .collect(Collectors.toList())
-        )
-    );
-  }
-
-  private static <T> List<String> evaluationOfList(
-      Model model,
-      List<Expr<EnumSort<T>>> symbolList,
-      int size
-  ) {
-    return symbolList
-        .subList(0, size)
-        .stream()
-        .map(symbolExpr -> model.evaluate(symbolExpr, true).toString())
-        .collect(Collectors.toList());
-  }
-
-  private static int evaluationOfInt(Model model, IntExpr indexOfFinal) {
-    var evalIndex = model.evaluate(indexOfFinal, true);
-    if (!evalIndex.isIntNum()) {
-      throw new IllegalArgumentException(indexOfFinal.toString() + "is not evaluated to an int.");
-    }
-    return ((IntNum) evalIndex).getInt();
+        ctx.mkEq(stateList.get(0), ltsEncoding.getStartState()), // Trace starts with start state.
+        // If idx == indexOfFinal => the label at idx has to be a final symbol.
+        // That normally means the trace has to end with a label of an end event.
+        allIndicesMatch(ctx, labelList,
+            idx -> ctx.mkImplies(
+                ctx.mkEq(indexOfFinal, ctx.mkInt(idx)),
+                matchesAny(ctx, labelList.get(idx), finalSymbols)
+            )));
   }
 
   public Optional<List<String>> firstSubsetOfSecond(int maxSize) {
@@ -127,6 +103,10 @@ public class SMTDiff {
     IntExpr indexOfFinal = indexOfFinalEntry.getKey();
     BoolExpr indexOfFinalAssertions = indexOfFinalEntry.getValue();
 
+    // The trace is defined by the [state0, label0, state1, ..., label_n, state_n+1 ].
+    // We require the labelList and statesInFirst to be a valid trace in the first diagram.
+    // If no combination of states (length =n+1) can be created for second, which would allow the same
+    // trace of label than this is a witness for a trace that is possible in first but not in second.
     List<Expr<EnumSort<String>>> labelList = IntStream
         .range(0, maxSize)
         .mapToObj(i -> ctx.mkConst(Z3Helper.gn("l" + i), this.labelSort))
@@ -143,14 +123,16 @@ public class SMTDiff {
         .collect(Collectors.toList());
     var isTraceInFirst = isValidTraceOver(first, labelList, statesInFirst, indexOfFinal);
 
+    // There is no combination of states such that those would allow the same path of label in second.
     var traceNotInSecond = ctx.mkForall(statesInSecond.toArray(Expr[]::new),
         ctx.mkNot(isValidTraceOver(second, labelList, statesInSecond, indexOfFinal)),
         1, null, null, ctx.mkSymbol(Z3Helper.gn("ForAll")), ctx.mkSymbol(Z3Helper.gn("")));
+
     var solver = ctx.mkSolver();
     var result = solver.check(indexOfFinalAssertions, isTraceInFirst, traceNotInSecond);
     if (result == Status.SATISFIABLE) {
-      var indexOfFinalEvaluation = evaluationOfInt(solver.getModel(), indexOfFinal);
-      var labelEvaluation = SMTDiff.evaluationOfList(solver.getModel(), labelList, indexOfFinalEvaluation + 1);
+      var indexOfFinalEvaluation = Z3Helper.evaluationOfInt(solver.getModel(), indexOfFinal);
+      var labelEvaluation = Z3Helper.evaluationOfList(solver.getModel(), labelList, indexOfFinalEvaluation + 1);
       return Optional.of(labelEvaluation);
 
     } else if (result == Status.UNSATISFIABLE) {
