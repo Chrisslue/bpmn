@@ -1,0 +1,29 @@
+package de.monticore.bpmn.wf2lts;
+
+process NestedGateway {
+
+
+  task A;
+  task B;
+  task C;
+  task D;
+  task E;
+  event end InnerGatewayEnd;
+  event start Start;
+  event end End;
+  split and GatewaySplit;
+  merge and GatewayMerge;
+  split xor InnerGatewaySplit;
+  merge xor InnerGatewayMerge;
+
+  Start -> GatewaySplit;
+  GatewaySplit -> A -> GatewayMerge;
+  GatewaySplit -> InnerGatewaySplit;
+  InnerGatewaySplit -> B -> InnerGatewayEnd;
+  InnerGatewaySplit -> C -> InnerGatewayMerge;
+  InnerGatewaySplit -> D -> InnerGatewayMerge;
+  InnerGatewayMerge -> E -> GatewayMerge;
+
+  GatewayMerge -> End;
+
+}
