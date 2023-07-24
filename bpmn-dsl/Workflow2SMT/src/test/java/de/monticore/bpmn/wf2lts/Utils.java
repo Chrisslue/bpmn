@@ -3,7 +3,7 @@ package de.monticore.bpmn.wf2lts;
 import static java.util.Map.entry;
 
 import de.monticore.bpmn.wf2lts.datastructure.IntermediateGraphWithScopes;
-import de.monticore.bpmn.workflow._ast.IFlowNode;
+import de.monticore.bpmn.workflow._ast.ASTFlowNode;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
@@ -51,7 +51,7 @@ public class Utils {
 
   public static void assertSameEdges(
       IntermediateGraphWithScopes graph,
-      NamingStrategy<IFlowNode> naming,
+      NamingStrategy<ASTFlowNode> naming,
       List<Entry<String, String>> expectedEdges
   ) {
     List<Entry<String, String>> allEdges = graph.getEdges()

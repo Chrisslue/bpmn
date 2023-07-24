@@ -9,6 +9,7 @@ import de.monticore.bpmn.wf2lts.collector.StartEventCollector;
 import de.monticore.bpmn.wf2lts.datastructure.IntermediateGraphWithScopes;
 import de.monticore.bpmn.wf2lts.datastructure.LTS;
 import de.monticore.bpmn.wf2lts.transformer.DefaultGraph2LTSTransformer;
+import de.monticore.bpmn.wf2lts.transformer.Graph2LTSTransformer;
 import de.monticore.bpmn.workflow.WorkflowMill;
 import de.monticore.bpmn.workflow.WorkflowTool;
 import de.monticore.bpmn.workflow._ast.ASTEvent;
@@ -74,13 +75,19 @@ public class WF2LTSGenerator {
   }
 
   public static LTS workflow2LTS(ASTWorkflowCompilationUnit ast) {
-    var lts = transformToLTS(transformToGraph(ast));
+    return workflow2LTS(ast, new DefaultGraph2LTSTransformer());
+  }
+
+  public static LTS workflow2LTS(ASTWorkflowCompilationUnit ast, Graph2LTSTransformer graph2LTSTransformer) {
+    var lts = graph2LTSTransformer.transform(transformToGraph(ast));
     removeUnreachable(lts);
     return lts;
   }
 
-  public static <S, L, Builder extends LTSBuilder<S, L>> Builder workflow2LTS(ASTWorkflowCompilationUnit ast,
-      Builder builder) {
+  public static <S, L, Builder extends LTSBuilder<S, L>> Builder workflow2LTS(
+      ASTWorkflowCompilationUnit ast,
+      Builder builder
+  ) {
     return workflow2LTS(ast).toModel(builder);
   }
 
@@ -94,10 +101,4 @@ public class WF2LTSGenerator {
     } while (lts.getStates().size() != stateSize);
   }
 
-  protected static LTS transformToLTS(IntermediateGraphWithScopes graph) {
-
-    var graphTransformer =
-        new DefaultGraph2LTSTransformer();
-    return graphTransformer.transform(graph);
-  }
 }

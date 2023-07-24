@@ -8,7 +8,6 @@ import de.monticore.bpmn.wf2lts.datastructure.LTS;
 import de.monticore.bpmn.wf2lts.datastructure.LTS.State;
 import de.monticore.bpmn.wf2lts.datastructure.LTS.Transition;
 import de.monticore.bpmn.workflow._ast.ASTFlowNode;
-import de.monticore.bpmn.workflow._ast.IFlowNode;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -16,7 +15,7 @@ import java.util.Map;
 
 public class DefaultGraph2LTSTransformer implements Graph2LTSTransformer {
 
-  private final NamingStrategy<IFlowNode> namingStrategy;
+  private final NamingStrategy<ASTFlowNode> namingStrategy;
   private final GatewayTransformer gatewayTransformer;
   private final SubprocessTransformer subprocessTransformer;
 
@@ -30,7 +29,7 @@ public class DefaultGraph2LTSTransformer implements Graph2LTSTransformer {
   }
 
   public DefaultGraph2LTSTransformer(
-      NamingStrategy<IFlowNode> namingStrategy,
+      NamingStrategy<ASTFlowNode> namingStrategy,
       GatewayTransformer gatewayTransformer,
       SubprocessTransformer subprocessTransformer) {
     this.namingStrategy = namingStrategy;

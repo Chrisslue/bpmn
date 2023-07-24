@@ -3,25 +3,21 @@ package de.monticore.bpmn.wf2smt;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.EnumSort;
 import com.microsoft.z3.Expr;
-import de.monticore.bpmn.wf2lts.DefaultNamingStrategy;
+import de.monticore.bpmn.wf2lts.UniqueStartAndEndEventNaming;
 import de.monticore.bpmn.wf2lts.WF2LTSGenerator;
 import de.monticore.bpmn.wf2lts.datastructure.LTS;
-import de.monticore.bpmn.workflow.WorkflowMill;
-import de.monticore.bpmn.workflow._ast.ASTEventType;
-import de.monticore.bpmn.workflow._ast.ASTInlineEvent;
-import de.monticore.bpmn.workflow._ast.ASTNamedEvent;
+import de.monticore.bpmn.wf2lts.transformer.DefaultGatewayInterleaving;
+import de.monticore.bpmn.wf2lts.transformer.DefaultGatewayTransformer;
+import de.monticore.bpmn.wf2lts.transformer.DefaultGraph2LTSTransformer;
+import de.monticore.bpmn.wf2lts.transformer.DefaultSubprocessTransformer;
 import de.monticore.bpmn.workflow._ast.ASTWorkflowCompilationUnit;
-import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
-import de.se_rwth.commons.logging.Log;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class WF2SMTDiffGenerator {
 
@@ -29,56 +25,43 @@ public class WF2SMTDiffGenerator {
 
   }
 
-  public static SMTDiff generateDiffer(String firstModelName, String secondModelName) {
+  public static SMTDiff generateDiffer(String firstModelName, String secondModelName
+      , String startName, String endName, String terminatingName) {
     ASTWorkflowCompilationUnit firstAST = WF2LTSGenerator.loadBPMN(firstModelName);
     ASTWorkflowCompilationUnit secondAST = WF2LTSGenerator.loadBPMN(secondModelName);
 
-    var namingStrategy = new DefaultNamingStrategy();
-    Set<String> endEvents = new HashSet<>();
-    var allPossibleEndEventVisitor = new WorkflowVisitor2() {
-      @Override
-      public void visit(ASTInlineEvent node) {
-        if (node.getType() == ASTEventType.END) {
-          endEvents.add(namingStrategy.apply(node));
-        }
-      }
+    var namingStrategy = new UniqueStartAndEndEventNaming(startName, endName, terminatingName);
 
-      @Override
-      public void visit(ASTNamedEvent node) {
-        if (node.getType() == ASTEventType.END) {
-          endEvents.add(namingStrategy.apply(node));
-        }
-      }
-    };
-    var traverser = WorkflowMill.traverser();
-    traverser.add4Workflow(allPossibleEndEventVisitor);
-    firstAST.accept(traverser);
-    secondAST.accept(traverser);
+    var graphTransformer = new DefaultGraph2LTSTransformer(
+        namingStrategy,
+        new DefaultGatewayTransformer(new DefaultGatewayInterleaving(), namingStrategy),
+        new DefaultSubprocessTransformer()
+    );
 
-    if (endEvents.isEmpty()) {
-      Log.error("Could not find end events. Neither in " + firstModelName + " nor in " + secondModelName);
-    }
-
-    var firstLTS = WF2LTSGenerator.workflow2LTS(firstAST);
-    var secondLTS = WF2LTSGenerator.workflow2LTS(secondAST);
+    var firstLTS = WF2LTSGenerator.workflow2LTS(firstAST, graphTransformer);
+    var secondLTS = WF2LTSGenerator.workflow2LTS(secondAST, graphTransformer);
 
     return generateDiffer(
         firstLTS,
         secondLTS,
-        new ArrayList<>(endEvents));
+        List.of(namingStrategy.getEndName(), namingStrategy.getTerminatingName()));
   }
 
   public static SMTDiff generateDiffer(LTS firstLTS, LTS secondLTS, List<String> finalSymbols) {
     return generateDiffer(
         (x) -> firstLTS.toModel(x, firstLTS.getNamingStrategy("p")),
         (y) -> secondLTS.toModel(y, secondLTS.getNamingStrategy("q")),
-        Stream.concat(
-                firstLTS.allUsedLabels().stream(),
-                secondLTS.allUsedLabels().stream())
-            .distinct()
-            .collect(Collectors.toList()),
+        allUsedLabel(firstLTS, secondLTS, finalSymbols),
         finalSymbols
     );
+  }
+
+  private static List<String> allUsedLabel(LTS first, LTS second, List<String> finalSymbols) {
+    var allUsedLabel = new HashSet<String>();
+    allUsedLabel.addAll(first.allUsedLabels());
+    allUsedLabel.addAll(second.allUsedLabels());
+    allUsedLabel.addAll(finalSymbols);
+    return new ArrayList<>(allUsedLabel);
   }
 
   public static SMTDiff generateDiffer(

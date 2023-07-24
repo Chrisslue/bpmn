@@ -12,22 +12,27 @@ import org.junit.jupiter.api.Test;
 
 class WF2SMTDiffGeneratorTest {
 
+  private final String startName = "Start";
+  private final String endName = "End";
+  private final String terminatingName = "Term";
+
   @Test
   void testGenerateDifferModels() {
     var firstPath = getClass().getResource("Simple.wfm").getPath();
     var pathOfEquivalent = getClass().getResource("SimpleEquivalent.wfm").getPath();
-    var differ = WF2SMTDiffGenerator.generateDiffer(firstPath, pathOfEquivalent);
+    var differ = WF2SMTDiffGenerator.generateDiffer(firstPath, pathOfEquivalent, startName, endName, terminatingName);
     assertTrue(differ.firstSubsetOfSecond(5).isEmpty());
     assertTrue(differ.secondSubsetOfFirst(5).isEmpty());
     var pathOfUnequal = getClass().getResource("SimpleNotEquivalent.wfm").getPath();
-    differ = WF2SMTDiffGenerator.generateDiffer(firstPath, pathOfUnequal);
+    differ = WF2SMTDiffGenerator.generateDiffer(firstPath, pathOfUnequal, startName, endName, terminatingName);
     assertTrue(differ.firstSubsetOfSecond(5).isEmpty());
     var optWitness = differ.secondSubsetOfFirst(5);
     assertTrue(optWitness.isPresent());
-    assertEquals(List.of("Start", "End"), optWitness.get());
+    assertEquals(List.of(startName, endName), optWitness.get());
 
     // Test invalid model
-    assertThrows(MCFatalError.class, () -> WF2SMTDiffGenerator.generateDiffer(firstPath, "Invalid path"));
+    assertThrows(MCFatalError.class,
+        () -> WF2SMTDiffGenerator.generateDiffer(firstPath, "Invalid path", startName, endName, terminatingName));
   }
 
   @Test

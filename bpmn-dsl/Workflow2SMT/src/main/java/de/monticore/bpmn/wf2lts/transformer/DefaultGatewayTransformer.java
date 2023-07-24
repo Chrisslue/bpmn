@@ -5,7 +5,7 @@ import de.monticore.bpmn.wf2lts.datastructure.LTS;
 import de.monticore.bpmn.wf2lts.datastructure.LTS.Transition;
 import de.monticore.bpmn.wf2lts.datastructure.LTSWithFinalStates;
 import de.monticore.bpmn.wf2lts.scopes.GatewayScope;
-import de.monticore.bpmn.workflow._ast.IFlowNode;
+import de.monticore.bpmn.workflow._ast.ASTFlowNode;
 import de.monticore.bpmn.workflow._util.WorkflowTypeDispatcher;
 import java.util.Collections;
 import java.util.List;
@@ -16,11 +16,11 @@ import java.util.stream.Stream;
 public class DefaultGatewayTransformer implements GatewayTransformer {
 
   private final GatewayInterleavingStrategy interleavingStrategy;
-  private final NamingStrategy<IFlowNode> namingStrategy;
+  private final NamingStrategy<ASTFlowNode> namingStrategy;
 
   public DefaultGatewayTransformer(
       GatewayInterleavingStrategy interleavingStrategy,
-      NamingStrategy<IFlowNode> namingStrategy
+      NamingStrategy<ASTFlowNode> namingStrategy
   ) {
     this.interleavingStrategy = interleavingStrategy;
     this.namingStrategy = namingStrategy;

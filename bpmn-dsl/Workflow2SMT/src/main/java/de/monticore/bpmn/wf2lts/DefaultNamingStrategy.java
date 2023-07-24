@@ -1,11 +1,11 @@
 package de.monticore.bpmn.wf2lts;
 
-import de.monticore.bpmn.workflow._ast.IFlowNode;
+import de.monticore.bpmn.workflow._ast.ASTFlowNode;
 
-public class DefaultNamingStrategy implements NamingStrategy<IFlowNode> {
+public class DefaultNamingStrategy implements NamingStrategy<ASTFlowNode> {
 
   @Override
-  public String apply(IFlowNode node) {
+  public String apply(ASTFlowNode node) {
     return node.getName();
   }
 }

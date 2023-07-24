@@ -20,7 +20,6 @@ import de.monticore.bpmn.workflow._ast.ASTSubProcessBuilder;
 import de.monticore.bpmn.workflow._ast.ASTSubProcessType;
 import de.monticore.bpmn.workflow._ast.ASTTask;
 import de.monticore.bpmn.workflow._ast.ASTTaskBuilder;
-import de.monticore.bpmn.workflow._ast.IFlowNode;
 import de.monticore.bpmn.workflow._ast.SequenceFlowBuilder;
 import de.monticore.lts.LTS2Mermaid;
 import java.util.Collections;
@@ -74,7 +73,7 @@ class DefaultGraph2LTSTransformerTest {
       public void transform(
           SubProcessScope subProcessScope,
           LTS externalGraph,
-          NamingStrategy<IFlowNode> namingStrategy,
+          NamingStrategy<ASTFlowNode> namingStrategy,
           Graph2LTSTransformer graphTransformer) {}
     };
   }

@@ -6,7 +6,7 @@ import de.monticore.bpmn.wf2lts.datastructure.LTS.Transition;
 import de.monticore.bpmn.wf2lts.scopes.SubProcessScope;
 import de.monticore.bpmn.workflow._ast.ASTEvent;
 import de.monticore.bpmn.workflow._ast.ASTFlowCondition;
-import de.monticore.bpmn.workflow._ast.IFlowNode;
+import de.monticore.bpmn.workflow._ast.ASTFlowNode;
 import de.monticore.bpmn.workflow._util.WorkflowTypeDispatcher;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -142,7 +142,7 @@ public class DefaultSubprocessTransformer implements SubprocessTransformer {
   }
 
   private static List<String> getEventNames(
-      Stream<ASTEvent> events, NamingStrategy<IFlowNode> namingStrategy) {
+      Stream<ASTEvent> events, NamingStrategy<ASTFlowNode> namingStrategy) {
     return events.map(namingStrategy).collect(Collectors.toList());
   }
 
@@ -156,7 +156,7 @@ public class DefaultSubprocessTransformer implements SubprocessTransformer {
   public void transform(
       SubProcessScope subProcessScope,
       LTS externalGraph,
-      NamingStrategy<IFlowNode> namingStrategy,
+      NamingStrategy<ASTFlowNode> namingStrategy,
       Graph2LTSTransformer graphTransformer) {
     var processName = namingStrategy.apply(subProcessScope.getSubProcess());
     var parameterPack =
@@ -179,7 +179,7 @@ public class DefaultSubprocessTransformer implements SubprocessTransformer {
 
   private static class ParameterPack {
 
-    private final NamingStrategy<IFlowNode> namingStrategy;
+    private final NamingStrategy<ASTFlowNode> namingStrategy;
 
     private final SubProcessScope subProcessScope;
 
@@ -188,7 +188,7 @@ public class DefaultSubprocessTransformer implements SubprocessTransformer {
     private final String newEndName;
 
     public ParameterPack(
-        NamingStrategy<IFlowNode> namingStrategy,
+        NamingStrategy<ASTFlowNode> namingStrategy,
         SubProcessScope subProcessScope,
         String newStartName,
         String newEndName) {
@@ -198,7 +198,7 @@ public class DefaultSubprocessTransformer implements SubprocessTransformer {
       this.newEndName = newEndName;
     }
 
-    public NamingStrategy<IFlowNode> getNamingStrategy() {
+    public NamingStrategy<ASTFlowNode> getNamingStrategy() {
       return namingStrategy;
     }
 
