@@ -81,7 +81,7 @@ class DefaultParallelInterleavingTest {
   @Test
   void interleaveTest() {
     var originalLTS = buildBranchingLTS();
-    var interleavedLTS = DefaultParallelInterleaving.interleave(LTSWithFinalStates.ofTerminalStates(originalLTS));
+    var interleavedLTS = DefaultParallelInterleaving.interleave(originalLTS);
     // Assert A, E are the only outgoing transition labels of start:
     LTSTestingUtils.assertSameStartOutgoingLabel(originalLTS, interleavedLTS);
 
@@ -109,8 +109,7 @@ class DefaultParallelInterleavingTest {
   @Test
   void threeParallelPaths() {
     var originalLTS = buildThreeOptionsLTS();
-    var interleaved = DefaultParallelInterleaving.interleave(
-        LTSWithFinalStates.ofTerminalStates(originalLTS));
+    var interleaved = DefaultParallelInterleaving.interleave(originalLTS);
 
     LTSTestingUtils.assertSameStartOutgoingLabel(originalLTS, interleaved);
 
@@ -137,8 +136,7 @@ class DefaultParallelInterleavingTest {
     originalLTS.addTransition(new Transition(aTarget, Collections.emptyList(), "B", new State()));
     originalLTS.getTerminalStates().forEach(originalLTS::addAsFinalState);
 
-    var interleaved = DefaultParallelInterleaving.interleave(
-        LTSWithFinalStates.ofTerminalStates(originalLTS));
+    var interleaved = DefaultParallelInterleaving.interleave(originalLTS);
     assertEquals(1, interleaved.getOutgoings(interleaved.getStart()).size());
     LTSTestingUtils.assertPathExists(interleaved, List.of("A", "B"));
     assertEquals(1, interleaved.getTerminalStates().size());
