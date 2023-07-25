@@ -22,6 +22,7 @@ import de.monticore.bpmn.workflow._ast.ASTSubProcessType;
 import de.monticore.bpmn.workflow._ast.ASTTaskBuilder;
 import de.monticore.bpmn.workflow._ast.SequenceFlow;
 import de.monticore.bpmn.workflow._ast.SequenceFlowBuilder;
+import de.se_rwth.commons.logging.Log;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,7 +33,9 @@ import org.junit.jupiter.api.Test;
 class DefaultSubprocessTransformerTest {
 
   @BeforeEach
-  void setUp() {}
+  void setUp() {
+    Log.init();
+  }
 
   private SubProcessScope buildSubProcessScope(
       String startEventName,

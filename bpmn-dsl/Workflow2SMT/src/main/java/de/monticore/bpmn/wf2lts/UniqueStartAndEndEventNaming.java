@@ -32,12 +32,15 @@ public class UniqueStartAndEndEventNaming implements NamingStrategy<ASTFlowNode>
 
   @Override
   public String apply(ASTFlowNode flowNode) {
-    if (flowNode.getName().equals(startName) || flowNode.getName().equals(endName) || flowNode.getName()
-        .equals(terminatingName)) {
-      Log.warn("Name of flowNode clashes with fixed event name: " + flowNode.getName());
+    flowNode.accept(traverser);
+    if (!map.containsKey(flowNode)) {
+      // If flowNode is not a key it is not a start or end event.
+      if (flowNode.getName().equals(startName) || flowNode.getName().equals(endName) || flowNode.getName()
+          .equals(terminatingName)) {
+        Log.warn("Name of flowNode clashes with fixed event name: " + flowNode.getName());
+      }
     }
     map.putIfAbsent(flowNode, flowNode.getName());
-    flowNode.accept(traverser);
     return map.get(flowNode);
   }
 

@@ -22,13 +22,20 @@ import de.monticore.bpmn.workflow._ast.ASTTask;
 import de.monticore.bpmn.workflow._ast.ASTTaskBuilder;
 import de.monticore.bpmn.workflow._ast.SequenceFlowBuilder;
 import de.monticore.lts.LTS2Mermaid;
+import de.se_rwth.commons.logging.Log;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class DefaultGraph2LTSTransformerTest {
+
+  @BeforeEach
+  void setUp() {
+    Log.init();
+  }
 
   private ASTSubProcess buildSubprocess(String subProcessName, String gTaskName) {
     var start = new ASTInlineEventBuilder().setType(ASTEventType.START).build();

@@ -8,15 +8,22 @@ import de.monticore.bpmn.wf2lts.datastructure.LTS.State;
 import de.monticore.bpmn.wf2lts.datastructure.LTS.Transition;
 import de.monticore.bpmn.wf2lts.datastructure.LTSTraverser;
 import de.monticore.bpmn.wf2lts.datastructure.LTSWithFinalStates;
+import de.se_rwth.commons.logging.Log;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class DefaultSequentialInterleavingTest {
+
+  @BeforeEach
+  void setUp() {
+    Log.init();
+  }
 
   private static LTSWithFinalStates buildSimpleLTS() {
     var lts = new LTSWithFinalStates();

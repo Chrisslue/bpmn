@@ -7,11 +7,18 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import de.monticore.bpmn.Resources;
 import de.monticore.bpmn.wf2lts.LTSTestingUtils;
 import de.monticore.bpmn.wf2lts.datastructure.LTS;
+import de.se_rwth.commons.logging.Log;
 import de.se_rwth.commons.logging.MCFatalError;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class WF2SMTDiffGeneratorTest {
+
+  @BeforeEach
+  void setUp() {
+    Log.init();
+  }
 
   private final String startName = "Start";
   private final String endName = "End";

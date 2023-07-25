@@ -7,11 +7,18 @@ import de.monticore.bpmn.wf2lts.LTSTestingUtils;
 import de.monticore.bpmn.wf2lts.datastructure.LTS;
 import de.monticore.bpmn.wf2lts.datastructure.LTS.Transition;
 import de.monticore.bpmn.wf2lts.datastructure.LTSTraverser;
+import de.se_rwth.commons.logging.Log;
 import java.util.Collections;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class SMTDiffTest {
+
+  @BeforeEach
+  void setUp() {
+    Log.init();
+  }
 
   private LTS getComplexLTS() {
     var lts = new LTS();

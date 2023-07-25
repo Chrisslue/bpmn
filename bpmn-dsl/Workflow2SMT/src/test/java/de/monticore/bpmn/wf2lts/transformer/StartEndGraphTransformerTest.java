@@ -11,9 +11,15 @@ import de.se_rwth.commons.logging.Log;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class StartEndGraphTransformerTest {
+
+  @BeforeEach
+  void setUp() {
+    Log.init();
+  }
 
   @Test
   void testPrototype() {
@@ -33,7 +39,7 @@ class StartEndGraphTransformerTest {
     new LTSTraverser(lts).depthFirstSearchLTS(lts.getStart(), allStates::remove);
     Assertions.assertTrue(allStates.isEmpty(), "LTS has unreachable states");
 
-    assertEquals(0, Log.getErrorCount());
+    assertEquals(0, Log.getErrorCount(), () -> Log.getFindings().toString());
     var upperBranch = List.of("A_S", "A_E", "T_Start", "G_S", "G_E", "T_End");
     var validPaths = new ArrayList<List<String>>();
     // B can occur at any point especially in between start and end of another task.

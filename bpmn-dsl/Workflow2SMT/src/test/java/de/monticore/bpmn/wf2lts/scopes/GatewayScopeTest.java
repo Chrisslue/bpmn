@@ -14,11 +14,18 @@ import de.monticore.bpmn.workflow._ast.ASTInlineGateway;
 import de.monticore.bpmn.workflow._ast.ASTNamedGateway;
 import de.monticore.bpmn.workflow._ast.ASTWorkflowCompilationUnit;
 import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
+import de.se_rwth.commons.logging.Log;
 import java.util.ArrayList;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class GatewayScopeTest {
+
+  @BeforeEach
+  void setUp() {
+    Log.init();
+  }
 
   @Test
   void testNestedGateway() {

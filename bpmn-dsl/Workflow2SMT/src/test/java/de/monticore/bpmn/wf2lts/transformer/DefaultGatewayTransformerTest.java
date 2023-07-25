@@ -23,16 +23,23 @@ import de.monticore.bpmn.workflow._ast.ASTInlineGateway;
 import de.monticore.bpmn.workflow._ast.ASTNamedGateway;
 import de.monticore.bpmn.workflow._ast.ASTWorkflowCompilationUnit;
 import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
+import de.se_rwth.commons.logging.Log;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 class DefaultGatewayTransformerTest {
+
+  @BeforeEach
+  void setUp() {
+    Log.init();
+  }
 
   private GatewayScope buildGatewayScope(String splitName, String mergingName) {
     var graph = setupGraphWithScope(Resources.MULTIPLE_INCOMING_OUTGOING, GatewayType.XOR);
