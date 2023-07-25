@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import de.monticore.bpmn.Resources;
 import de.monticore.bpmn.wf2lts.LTSTestingUtils;
 import de.monticore.bpmn.wf2lts.datastructure.LTS;
 import de.se_rwth.commons.logging.MCFatalError;
@@ -18,13 +19,12 @@ class WF2SMTDiffGeneratorTest {
 
   @Test
   void testGenerateDifferModels() {
-    var firstPath = getClass().getResource("Simple.wfm").getPath();
-    var pathOfEquivalent = getClass().getResource("SimpleEquivalent.wfm").getPath();
-    var differ = WF2SMTDiffGenerator.generateDiffer(firstPath, pathOfEquivalent, startName, endName, terminatingName);
+    var differ = WF2SMTDiffGenerator.generateDiffer(Resources.SIMPLE, Resources.SIMPLE_EQUIVALENT, startName, endName,
+        terminatingName);
     assertTrue(differ.firstSubsetOfSecond(5).isEmpty());
     assertTrue(differ.secondSubsetOfFirst(5).isEmpty());
-    var pathOfUnequal = getClass().getResource("SimpleNotEquivalent.wfm").getPath();
-    differ = WF2SMTDiffGenerator.generateDiffer(firstPath, pathOfUnequal, startName, endName, terminatingName);
+    differ = WF2SMTDiffGenerator.generateDiffer(Resources.SIMPLE, Resources.SIMPLE_NOT_EQUIVALENT, startName, endName,
+        terminatingName);
     assertTrue(differ.firstSubsetOfSecond(5).isEmpty());
     var optWitness = differ.secondSubsetOfFirst(5);
     assertTrue(optWitness.isPresent());
@@ -32,7 +32,8 @@ class WF2SMTDiffGeneratorTest {
 
     // Test invalid model
     assertThrows(MCFatalError.class,
-        () -> WF2SMTDiffGenerator.generateDiffer(firstPath, "Invalid path", startName, endName, terminatingName));
+        () -> WF2SMTDiffGenerator.generateDiffer(Resources.SIMPLE, "Invalid path", startName, endName,
+            terminatingName));
   }
 
   @Test

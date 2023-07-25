@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import de.monticore.bpmn.Resources;
 import de.monticore.bpmn.wf2lts.DefaultNamingStrategy;
 import de.monticore.bpmn.wf2lts.DoNothingInterleaving;
 import de.monticore.bpmn.wf2lts.LTSTestingUtils;
@@ -23,7 +24,6 @@ import de.monticore.bpmn.workflow._ast.ASTNamedGateway;
 import de.monticore.bpmn.workflow._ast.ASTWorkflowCompilationUnit;
 import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
@@ -35,7 +35,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 class DefaultGatewayTransformerTest {
 
   private GatewayScope buildGatewayScope(String splitName, String mergingName) {
-    var graph = setupGraphWithScope("MultipleIncomingOutgoing", GatewayType.XOR);
+    var graph = setupGraphWithScope(Resources.MULTIPLE_INCOMING_OUTGOING, GatewayType.XOR);
     var scope = graph.getGatewayScopes().get(0);
     if (!scope.getGraph().getStart().getName().equals(splitName)) {
       Assertions.fail("Expected " + splitName + " as name of split-gateway");
@@ -116,17 +116,17 @@ class DefaultGatewayTransformerTest {
     var gatewayTypes = List.of(GatewayType.XOR, GatewayType.IOR, GatewayType.PARALLEL);
     Stream<Arguments> withMergingGateway = gatewayTypes.stream()
         .map(type -> Arguments.of(
-            "WithMergingGateway",
+            Resources.WITH_MERGING_GATEWAY,
             type,
             pathsForWithMerging(type)));
     Stream<Arguments> noMergingGateway = gatewayTypes.stream()
         .map(type -> Arguments.of(
-            "NoMergingGateway",
+            Resources.NO_MERGING_GATEWAY,
             type,
             pathsForNoMerging(type)));
     Stream<Arguments> mergingAndEndGateway = gatewayTypes.stream()
         .map(type -> Arguments.of(
-            "MergingAndEndGateway",
+            Resources.MERGING_AND_END_GATEWAY,
             type,
             pathsForMergingAndEnd(type)));
 
@@ -230,11 +230,10 @@ class DefaultGatewayTransformerTest {
 
   @Test
   void testCyclicGateway() {
-    var diagramName = "../CyclicGateway";
     var possiblePaths = List.of(
         List.of("Start", "A", "B", "C", "End"),
         List.of("Start", "A", "B", "B", "B", "C", "End"));
-    var graph = setupGraphWithScope(diagramName, GatewayType.XOR);
+    var graph = setupGraphWithScope(Resources.CYCLIC_GATEWAY, GatewayType.XOR);
 
     var naming = new DefaultNamingStrategy();
     LTS lts = new DefaultGraph2LTSTransformer(
@@ -261,9 +260,7 @@ class DefaultGatewayTransformerTest {
   }
 
   private IntermediateGraphWithScopes setupGraphWithScope(String diagramName, GatewayType type) {
-    var testDiagram = Objects.requireNonNull(getClass()
-        .getResource(diagramName + ".wfm")).getPath();
-    var ast = WF2LTSGenerator.loadBPMN(testDiagram);
+    var ast = WF2LTSGenerator.loadBPMN(diagramName);
     var graph = WF2LTSGenerator.transformToGraph(setGatewayType(ast, type));
     assertEquals(1, graph.getGatewayScopes().size());
     return graph;

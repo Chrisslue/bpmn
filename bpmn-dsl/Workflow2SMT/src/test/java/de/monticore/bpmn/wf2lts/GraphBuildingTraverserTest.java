@@ -3,12 +3,12 @@ package de.monticore.bpmn.wf2lts;
 import static java.util.Map.entry;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import de.monticore.bpmn.Resources;
 import de.monticore.bpmn.wf2lts.collector.StartEventCollector;
 import de.monticore.bpmn.workflow.WorkflowMill;
 import de.monticore.symbols.basicsymbols.BasicSymbolsMill;
 import de.se_rwth.commons.logging.Log;
 import java.util.List;
-import java.util.Objects;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -25,8 +25,7 @@ public class GraphBuildingTraverserTest {
 
   @Test
   public void testNestedGateway() {
-    var diagramPath = Objects.requireNonNull(getClass().getResource("NestedGateway.wfm")).getPath();
-    var diagramASt = WF2LTSGenerator.loadBPMN(diagramPath);
+    var diagramASt = WF2LTSGenerator.loadBPMN(Resources.NESTED_GATEWAY);
     var startEvent = StartEventCollector.of(diagramASt.getProcess().getFlowElementList())
         .stream().filter(event -> event.getName().equals("Start")).findFirst().orElseThrow();
     var graph = GraphBuildingTraverser.graphOf(startEvent);
@@ -40,8 +39,7 @@ public class GraphBuildingTraverserTest {
 
   @Test
   public void testCyclic() {
-    var diagramPath = Objects.requireNonNull(getClass().getResource("Cyclic.wfm")).getPath();
-    var diagramASt = WF2LTSGenerator.loadBPMN(diagramPath);
+    var diagramASt = WF2LTSGenerator.loadBPMN(Resources.CYCLIC);
     var startEvent = StartEventCollector.of(diagramASt.getProcess().getFlowElementList())
         .stream().filter(event -> event.getName().equals("Start")).findFirst().orElseThrow();
     var graph = GraphBuildingTraverser.graphOf(startEvent);
@@ -58,8 +56,7 @@ public class GraphBuildingTraverserTest {
 
   @Test
   public void testCyclicGateway() {
-    var diagramPath = Objects.requireNonNull(getClass().getResource("CyclicGateway.wfm")).getPath();
-    var diagramASt = WF2LTSGenerator.loadBPMN(diagramPath);
+    var diagramASt = WF2LTSGenerator.loadBPMN(Resources.CYCLIC_GATEWAY);
     var startEvent = StartEventCollector.of(diagramASt.getProcess().getFlowElementList())
         .stream().filter(event -> event.getName().equals("Start")).findFirst().orElseThrow();
     var graph = GraphBuildingTraverser.graphOf(startEvent);

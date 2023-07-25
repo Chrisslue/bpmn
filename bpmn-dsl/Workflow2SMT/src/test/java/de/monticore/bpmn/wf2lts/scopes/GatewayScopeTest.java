@@ -4,6 +4,7 @@ import static java.util.Map.entry;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import de.monticore.bpmn.Resources;
 import de.monticore.bpmn.wf2lts.Utils;
 import de.monticore.bpmn.wf2lts.WF2LTSGenerator;
 import de.monticore.bpmn.wf2lts.scopes.GatewayScope.GatewayType;
@@ -15,15 +16,13 @@ import de.monticore.bpmn.workflow._ast.ASTWorkflowCompilationUnit;
 import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import org.junit.jupiter.api.Test;
 
 class GatewayScopeTest {
 
   @Test
   void testNestedGateway() {
-
-    var ast = WF2LTSGenerator.loadBPMN(resolveDiagram("../NestedGateway"));
+    var ast = WF2LTSGenerator.loadBPMN(Resources.NESTED_GATEWAY);
     var gateways = collectGateways(ast);
     var outerGateway = gateways.stream()
         .filter(ASTGateway::isDiverging)
@@ -65,7 +64,7 @@ class GatewayScopeTest {
 
   @Test
   void testCyclicGateway() {
-    var ast = WF2LTSGenerator.loadBPMN(resolveDiagram("../CyclicGateway"));
+    var ast = WF2LTSGenerator.loadBPMN(Resources.CYCLIC_GATEWAY);
     var gateways = collectGateways(ast);
     var outerGateway = gateways.stream()
         .filter(ASTGateway::isDiverging)
@@ -85,10 +84,6 @@ class GatewayScopeTest {
 
     assertEquals(outerGateway, gatewayGraph.getStart());
     assertEquals(0, gatewayGraph.getGatewayScopes().size());
-  }
-
-  private String resolveDiagram(String diagramName) {
-    return Objects.requireNonNull(getClass().getResource(diagramName + ".wfm")).getPath();
   }
 
   private List<ASTGateway> collectGateways(ASTWorkflowCompilationUnit ast) {
