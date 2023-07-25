@@ -15,9 +15,9 @@ import java.util.Map;
 
 public class DefaultGraph2LTSTransformer implements Graph2LTSTransformer {
 
-  private final NamingStrategy<ASTFlowNode> namingStrategy;
-  private final GatewayTransformer gatewayTransformer;
-  private final SubprocessTransformer subprocessTransformer;
+  protected final NamingStrategy<ASTFlowNode> namingStrategy;
+  protected final GatewayTransformer gatewayTransformer;
+  protected final SubprocessTransformer subprocessTransformer;
 
 
   public DefaultGraph2LTSTransformer() {
@@ -46,7 +46,7 @@ public class DefaultGraph2LTSTransformer implements Graph2LTSTransformer {
     return new Transition(source, conditions, label, target);
   }
 
-  private LTS nodeBasedToTransitionBased(IntermediateGraphWithScopes graph) {
+  protected LTS nodeBasedToTransitionBased(IntermediateGraphWithScopes graph) {
     Map<ASTFlowNode, LTS.State> nodeToState = new HashMap<>();
     var startState = new LTS.State();
     var lts = new LTS(startState);
@@ -91,7 +91,7 @@ public class DefaultGraph2LTSTransformer implements Graph2LTSTransformer {
     return lts;
   }
 
-  private LTS transformMetaElements(LTS externalLTS, IntermediateGraphWithScopes graph) {
+  protected LTS transformMetaElements(LTS externalLTS, IntermediateGraphWithScopes graph) {
     graph
         .getGatewayScopes()
         .forEach(
