@@ -1,0 +1,16 @@
+package de.monticore.bpmn.wf2lts;
+
+process Cyclic {
+
+
+  task A;
+  task B;
+
+  event start Start;
+  event end End;
+
+  Start -> A -> B;
+  B -> A;
+  A -> End;
+
+}

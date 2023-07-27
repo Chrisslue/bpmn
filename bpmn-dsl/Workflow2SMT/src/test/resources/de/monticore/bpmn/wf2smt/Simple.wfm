@@ -1,0 +1,14 @@
+package de.monticore.bpmn.wf2smt;
+
+process Simple {
+
+
+  task A;
+  task B;
+
+  event start Start;
+  event end End;
+
+  Start -> A -> B -> End;
+
+}

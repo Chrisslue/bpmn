@@ -1,0 +1,21 @@
+package de.monticore.bpmn;
+
+process Prototype {
+
+  task A;
+  task B;
+  split and GatewaySplit;
+  merge and GatewayJoin;
+  event start Start;
+  event end End;
+  Start -> GatewaySplit;
+  GatewaySplit -> A -> T -> GatewayJoin;
+  GatewaySplit -> B -> GatewayJoin;
+  GatewayJoin -> End;
+
+  subprocess T {
+      task G;
+      event start -> G -> event end;
+  }
+
+}

@@ -1,34 +1,42 @@
 package de.monticore.lts;
 
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
-import de.monticore.lts.LTS2Mermaid.State;
 import de.monticore.types.mcbasictypes._ast.ASTMCQualifiedType;
 import de.se_rwth.commons.logging.Log;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-public class LTS2Mermaid implements LTSBuilder<State, String> {
+public class LTS2Mermaid implements LTSBuilder<String, String> {
 
-  private final Set<State> initialStates;
-  private final Set<State> states;
-  private final Set<Transition> transitions;
+  protected final Set<String> initialStates;
+  protected final Set<String> finalStates;
 
-  private int counter;
+  protected final Set<String> states;
+
+  protected final Map<String, Integer> state2Id;
+
+  protected int stateIdCounter;
+  protected final Set<Transition> transitions;
+
 
   public LTS2Mermaid() {
     this.states = new HashSet<>();
+    this.state2Id = new HashMap<>();
+    this.stateIdCounter = 0;
     this.transitions = new HashSet<>();
     this.initialStates = new HashSet<>();
-    this.counter = 0;
+    this.finalStates = new HashSet<>();
   }
 
-  private String getCounterName() {
-    var name = "s" + counter;
-    counter++;
-    return name;
-  }
-
-  public State addState() {
-    return addState(getCounterName());
+  private int nextId() {
+    var next = stateIdCounter;
+    stateIdCounter++;
+    return next;
   }
 
   @Override
@@ -42,36 +50,47 @@ public class LTS2Mermaid implements LTSBuilder<State, String> {
   }
 
   @Override
-  public State addState(String name) {
-    var state = new State(name);
-    states.add(state);
+  public String addState(String name) {
+    states.add(name);
+    state2Id.put(name, nextId());
+    return name;
+  }
+
+  @Override
+  public String addFinalState(String name) {
+    var state = addState(name);
+    this.finalStates.add(state);
     return state;
   }
 
   @Override
-  public State addFinalState(String name) {
-    return addState(name);
-  }
-
-  @Override
-  public State addInitialState(String name) {
+  public String addInitialState(String name) {
     var state = addState(name);
     initialStates.add(state);
     return state;
   }
 
-  public State addInitialState() {
-    return addInitialState(getCounterName());
+  private void addStateIfAbsent(String state) {
+    if (!states.contains(state)) {
+      addState(state);
+    }
   }
 
   @Override
-  public void addTransition(State source, State target, String label) {
-    transitions.add(new Transition(source, target, label, Collections.emptyList()));
+  public void addTransition(String source, String target, String label) {
+    addTransition(source, target, label, Collections.emptyList());
   }
 
   @Override
-  public void addTransition(State source, State target, String label, ASTExpression condition) {
-    transitions.add(new Transition(source, target, label, List.of(condition)));
+  public void addTransition(String source, String target, String label, ASTExpression condition) {
+    addTransition(source, target, label, List.of(condition));
+  }
+
+  private void addTransition(String source, String target, String label, List<ASTExpression> condition) {
+    addStateIfAbsent(source);
+    addStateIfAbsent(target);
+
+    transitions.add(new Transition(source, target, label, condition));
   }
 
   public String build() {
@@ -82,19 +101,23 @@ public class LTS2Mermaid implements LTSBuilder<State, String> {
     StringBuilder diagram = new StringBuilder().append("stateDiagram-v2\n");
     diagram.append("\t").append(direction).append("\n");
     for (var state : states) {
-      // Declare all states with id = toString and their name as description.
+      // Declare all states with id = state and their name as description.
       // This allows for spaces in state-names.
-      diagram.append("\t").append(state).append(" : ").append(state.name).append("\n");
+      diagram.append("\t").append(state2Id.get(state)).append(" : ").append(state).append("\n");
     }
-    for (State initialState : initialStates) {
-      diagram.append("\t").append("[*]").append(" --> ").append(initialState).append("\n");
+    for (String initialState : initialStates) {
+      diagram.append("\t").append("[*]").append(" --> ").append(state2Id.get(initialState)).append("\n");
     }
+    for (String finalState : finalStates) {
+      diagram.append("\t").append(state2Id.get(finalState)).append(" --> ").append("[*]").append("\n");
+    }
+
     for (Transition transition : transitions) {
       diagram
           .append("\t")
-          .append(transition.source)
+          .append(state2Id.get(transition.source))
           .append(" --> ")
-          .append(transition.target)
+          .append(state2Id.get(transition.target))
           .append(" : ")
           .append(transition.label);
       if (transition.conditions.isEmpty()) {
@@ -106,25 +129,16 @@ public class LTS2Mermaid implements LTSBuilder<State, String> {
     return diagram.toString();
   }
 
-  public static class State {
-
-    private String name;
-
-    public State(String name) {
-      this.name = name;
-    }
-  }
-
   public static class Transition {
 
-    State source;
-    State target;
+    String source;
+    String target;
     String label;
 
     Collection<ASTExpression> conditions;
 
     public Transition(
-        State source, State target, String label, Collection<ASTExpression> conditions) {
+        String source, String target, String label, Collection<ASTExpression> conditions) {
       this.source = source;
       this.target = target;
       this.label = label;

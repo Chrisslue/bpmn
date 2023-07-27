@@ -1,0 +1,26 @@
+package de.monticore.bpmn.wf2lts.transformer;
+
+process MergingAndEndGateway {
+
+event start Start;
+event end End;
+
+task A;
+task B;
+task C;
+task D;
+task E;
+split xor Split;
+merge xor Merge;
+event end Term terminate;
+
+Start -> A -> Split;
+Split -> B;
+Split -> C;
+Split -> D;
+B -> Merge;
+C -> Merge;
+D -> Term;
+Merge -> E -> End;
+
+}
