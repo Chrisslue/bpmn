@@ -32,7 +32,12 @@ public class DefaultSequentialInterleaving {
   }
 
   private LTSWithFinalStates interleave() {
-    // TODO What about transitions back to oldLTS.getStart()?
+    if (!oldLTS.getIncoming(oldLTS.getStart()).isEmpty()) {
+      throw new IllegalArgumentException(
+          "Start state " + oldLTS.getStart() + " of lts " + oldLTS + "had incoming transitions."
+              + " see the Readme section about assumptions over interleaving strategies."
+      );
+    }
     var startTransitions = oldLTS.getOutgoings(oldLTS.getStart());
 
     // Get the part of the old lts induced by the initial transition from start.

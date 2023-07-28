@@ -47,6 +47,12 @@ public class DefaultParallelInterleaving {
   }
 
   protected LTSWithFinalStates interleave() {
+    if (!oldLTS.getIncoming(oldLTS.getStart()).isEmpty()) {
+      throw new IllegalArgumentException(
+          "Start state " + oldLTS.getStart() + " of lts " + oldLTS + "had incoming transitions."
+              + " see the Readme section about assumptions over interleaving strategies."
+      );
+    }
     metaRoot.recursiveExpand();
     resolveCycle();
     return lts;
