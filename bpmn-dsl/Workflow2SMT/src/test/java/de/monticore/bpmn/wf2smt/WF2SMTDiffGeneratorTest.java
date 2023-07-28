@@ -10,8 +10,11 @@ import de.monticore.bpmn.wf2lts.datastructure.LTS;
 import de.se_rwth.commons.logging.Log;
 import de.se_rwth.commons.logging.MCFatalError;
 import java.util.List;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 class WF2SMTDiffGeneratorTest {
 
@@ -54,5 +57,22 @@ class WF2SMTDiffGeneratorTest {
     var differ = WF2SMTDiffGenerator.generateDiffer(first, second, List.of("C"));
     assertTrue(differ.firstSubsetOfSecond(10).isEmpty());
     assertTrue(differ.secondSubsetOfFirst(10).isEmpty());
+  }
+
+  public static Stream<String> reflexiveArgumentProvider() {
+    return Resources.allValidModel()
+        .stream()
+        .filter(diagram -> !diagram.equals(Resources.NESTED_GATEWAY))  // TODO add when #1 fixed
+        .filter(diagram -> !diagram.equals(Resources.MULTIPLE_INCOMING_OUTGOING)); // FIXME
+  }
+
+  @ParameterizedTest
+  @MethodSource("reflexiveArgumentProvider")
+  void testReflexive(String diagramName) {
+    var differ = WF2SMTDiffGenerator.generateDiffer(diagramName, diagramName, startName, endName,
+        terminatingName);
+    assertTrue(differ.firstSubsetOfSecond(15).isEmpty());
+    assertTrue(differ.secondSubsetOfFirst(15).isEmpty());
+
   }
 }
