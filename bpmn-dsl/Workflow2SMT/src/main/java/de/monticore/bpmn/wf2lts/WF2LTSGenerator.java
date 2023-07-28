@@ -8,6 +8,7 @@ import de.monticore.bpmn.trafos.SetSubProcessTriggeredByEvent;
 import de.monticore.bpmn.wf2lts.collector.StartEventCollector;
 import de.monticore.bpmn.wf2lts.datastructure.IntermediateGraphWithScopes;
 import de.monticore.bpmn.wf2lts.datastructure.LTS;
+import de.monticore.bpmn.wf2lts.datastructure.LTSWithFinalStates;
 import de.monticore.bpmn.wf2lts.transformer.DefaultGraph2LTSTransformer;
 import de.monticore.bpmn.wf2lts.transformer.Graph2LTSTransformer;
 import de.monticore.bpmn.workflow.WorkflowMill;
@@ -82,6 +83,14 @@ public class WF2LTSGenerator {
     var lts = graph2LTSTransformer.transform(transformToGraph(ast));
     removeUnreachable(lts);
     return lts;
+  }
+
+  public static LTSWithFinalStates workflow2LTSWithFinalStates(
+      ASTWorkflowCompilationUnit ast,
+      Graph2LTSTransformer graph2LTSTransformer
+  ) {
+    // Mark every terminal state as final state assuming terminal states are those where and end events points to.
+    return LTSWithFinalStates.ofTerminalStates(workflow2LTS(ast, graph2LTSTransformer));
   }
 
   public static <S, L, Builder extends LTSBuilder<S, L>> Builder workflow2LTS(
