@@ -72,7 +72,7 @@ public class LTSWithFinalStates extends LTS {
   }
 
   @Override
-  protected <B extends LTSBuilder<S, L>, S, L> void addFinalStatesToBuilder(B builder,
+  protected <S, L, B extends LTSBuilder<S, L>> void addFinalStatesToBuilder(B builder,
       NamingStrategy<State> namingStrategy, Map<State, S> stateLookup) {
     finalStates.forEach(s -> stateLookup.put(s, builder.addFinalState(namingStrategy.apply(s))));
   }
