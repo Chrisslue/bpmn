@@ -50,7 +50,7 @@ public class LTS2SMTBuilder implements LTSBuilder<Symbol, Expr<EnumSort<String>>
     if (stateEncoding.containsKey(name)) {
       return stateEncoding.get(name);
     }
-    var sym = ctx.mkSymbol(Z3Helper.gn(name));
+    var sym = ctx.mkSymbol(Z3Helper.uniqueName(name));
     stateEncoding.put(name, sym);
     return sym;
   }
@@ -83,7 +83,7 @@ public class LTS2SMTBuilder implements LTSBuilder<Symbol, Expr<EnumSort<String>>
   }
 
   public LTS2SMTEncoding build() {
-    return build(Z3Helper.gn("StateEnum"));
+    return build(Z3Helper.uniqueName("StateEnum"));
   }
 
   public LTS2SMTEncoding build(String stateEnumName) {
