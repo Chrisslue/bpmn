@@ -86,14 +86,21 @@ public class SMTDiff {
             )));
   }
 
-  public Optional<List<String>> firstSubsetOfSecond(int maxSize) {
+  public Optional<List<String>> firstIncludesTracesOfSecond(int maxSize) {
     return findWitness(this.encodedFirst, this.encodedSecond, maxSize);
   }
 
-  public Optional<List<String>> secondSubsetOfFirst(int maxSize) {
+  public Optional<List<String>> secondIncludesTracesOfFirst(int maxSize) {
     return findWitness(this.encodedSecond, this.encodedFirst, maxSize);
   }
 
+  /**
+   * Test whether all traces of first are also possible in second. A trace is defined by the list of transition-label
+   * that are on a path through the lts.
+   *
+   * @param maxSize The maximum size a possible witness can have.
+   * @return An optional witness (list of label) that is possible in first but not second.
+   */
   private Optional<List<String>> findWitness(
       LTS2SMTEncoding first,
       LTS2SMTEncoding second,
