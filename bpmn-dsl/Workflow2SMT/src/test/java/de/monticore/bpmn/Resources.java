@@ -1,5 +1,7 @@
 package de.monticore.bpmn;
 
+import java.util.List;
+
 public class Resources {
 
   private Resources() {
@@ -22,4 +24,9 @@ public class Resources {
   public static final String SIMPLE_EQUIVALENT = bpmnLocation + "wf2smt/SimpleEquivalent.wfm";
   public static final String SIMPLE_NOT_EQUIVALENT = bpmnLocation + "wf2smt/SimpleNotEquivalent.wfm";
   public static final String PROTOTYPE = bpmnLocation + "Prototype.wfm";
+
+  public static List<String> allValidModel() {
+    return List.of(CYCLIC, CYCLIC_GATEWAY, NESTED_GATEWAY, MERGING_AND_END_GATEWAY, MULTIPLE_INCOMING_OUTGOING,
+        NO_MERGING_GATEWAY, WITH_MERGING_GATEWAY, SIMPLE, SIMPLE_EQUIVALENT, SIMPLE_NOT_EQUIVALENT, PROTOTYPE);
+  }
 }

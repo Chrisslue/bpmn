@@ -1,8 +1,10 @@
 package de.monticore.bpmn.wf2lts.datastructure;
 
+import de.monticore.bpmn.wf2lts.ExpressionHelper;
 import de.monticore.bpmn.wf2lts.NamingStrategy;
 import de.monticore.bpmn.workflow._ast.ASTFlowCondition;
 import de.monticore.lts.LTSBuilder;
+import de.se_rwth.commons.logging.Log;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -199,7 +201,7 @@ public class LTS extends IntermediateGraph<LTS.State, LTS.Transition> {
     return builder;
   }
 
-  protected <B extends LTSBuilder<S, L>, S, L> void addStatesToBuilder(
+  protected <S, L, B extends LTSBuilder<S, L>> void addStatesToBuilder(
       B builder,
       NamingStrategy<State> namingStrategy,
       Map<State, S> stateLookup) {
@@ -215,27 +217,40 @@ public class LTS extends IntermediateGraph<LTS.State, LTS.Transition> {
             });
   }
 
-  protected <B extends LTSBuilder<S, L>, S, L> void addTransitionsToBuilder(
+  protected <S, L, B extends LTSBuilder<S, L>> void addTransitionsToBuilder(
       B builder,
       Map<State, S> stateLookup,
       Map<String, L> labelLookup) {
     getEdges().values().stream()
         .flatMap(List::stream)
-        .forEach(
-            transition ->
-                builder.addTransition(
-                    stateLookup.get(transition.getSource()),
-                    stateLookup.get(transition.getTarget()),
-                    labelLookup.get(transition.getLabel())
-                    //transition.getConditions() TODO
-                )
-        );
+        .forEach(transition -> addTransitionToBuilder(transition, builder, stateLookup, labelLookup));
   }
 
-  protected <B extends LTSBuilder<S, L>, S, L> void addFinalStatesToBuilder(
+  protected static <S, L, B extends LTSBuilder<S, L>> void addTransitionToBuilder(
+      Transition transition,
+      B builder,
+      Map<State, S> stateLookup,
+      Map<String, L> labelLookup
+  ) {
+    if (transition.getConditions().isEmpty()) {
+      builder.addTransition(
+          stateLookup.get(transition.getSource()),
+          stateLookup.get(transition.getTarget()),
+          labelLookup.get(transition.getLabel()));
+    } else {
+      builder.addTransition(
+          stateLookup.get(transition.getSource()),
+          stateLookup.get(transition.getTarget()),
+          labelLookup.get(transition.getLabel()),
+          ExpressionHelper.mergeConditions(transition.getConditions()));
+    }
+  }
+
+  protected <S, L, B extends LTSBuilder<S, L>> void addFinalStatesToBuilder(
       B builder,
       NamingStrategy<State> namingStrategy,
       Map<State, S> stateLookup) {
+    Log.warn("Final states are not implemented in LTS");
   }
 
 

@@ -42,7 +42,7 @@ public class SMTDiff {
 
 
   private Entry<IntExpr, BoolExpr> createIndexOfFinal(int maxSize) {
-    var indexOfFinal = ctx.mkIntConst(Z3Helper.gn("IndexOfFinal"));
+    var indexOfFinal = ctx.mkIntConst(Z3Helper.uniqueName("IndexOfFinal"));
     // The "real" trace length has to be >= 0 and smaller than the maxSize.
     var indexOfFinalAssertions = ctx.mkAnd(
         ctx.mkGe(indexOfFinal, ctx.mkInt(0)),
@@ -86,14 +86,21 @@ public class SMTDiff {
             )));
   }
 
-  public Optional<List<String>> firstSubsetOfSecond(int maxSize) {
+  public Optional<List<String>> firstIncludesTracesOfSecond(int maxSize) {
     return findWitness(this.encodedFirst, this.encodedSecond, maxSize);
   }
 
-  public Optional<List<String>> secondSubsetOfFirst(int maxSize) {
+  public Optional<List<String>> secondIncludesTracesOfFirst(int maxSize) {
     return findWitness(this.encodedSecond, this.encodedFirst, maxSize);
   }
 
+  /**
+   * Test whether all traces of first are also possible in second. A trace is defined by the list of transition-label
+   * that are on a path through the lts.
+   *
+   * @param maxSize The maximum size a possible witness can have.
+   * @return An optional witness (list of label) that is possible in first but not second.
+   */
   private Optional<List<String>> findWitness(
       LTS2SMTEncoding first,
       LTS2SMTEncoding second,
@@ -109,24 +116,24 @@ public class SMTDiff {
     // trace of label than this is a witness for a trace that is possible in first but not in second.
     List<Expr<EnumSort<String>>> labelList = IntStream
         .range(0, maxSize)
-        .mapToObj(i -> ctx.mkConst(Z3Helper.gn("l" + i), this.labelSort))
+        .mapToObj(i -> ctx.mkConst(Z3Helper.uniqueName("l" + i), this.labelSort))
         .collect(Collectors.toList());
 
     List<Expr<EnumSort<String>>> statesInFirst = IntStream
         .range(0, maxSize + 1)
-        .mapToObj(i -> ctx.mkConst(Z3Helper.gn("s" + i), first.getStateEnum()))
+        .mapToObj(i -> ctx.mkConst(Z3Helper.uniqueName("s" + i), first.getStateEnum()))
         .collect(Collectors.toList());
 
     List<Expr<EnumSort<String>>> statesInSecond = IntStream
         .range(0, maxSize + 1)
-        .mapToObj(i -> ctx.mkConst(Z3Helper.gn("s" + i), second.getStateEnum()))
+        .mapToObj(i -> ctx.mkConst(Z3Helper.uniqueName("s" + i), second.getStateEnum()))
         .collect(Collectors.toList());
     var isTraceInFirst = isValidTraceOver(first, labelList, statesInFirst, indexOfFinal);
 
     // There is no combination of states such that those would allow the same path of label in second.
     var traceNotInSecond = ctx.mkForall(statesInSecond.toArray(Expr[]::new),
         ctx.mkNot(isValidTraceOver(second, labelList, statesInSecond, indexOfFinal)),
-        1, null, null, ctx.mkSymbol(Z3Helper.gn("ForAll")), ctx.mkSymbol(Z3Helper.gn("")));
+        1, null, null, ctx.mkSymbol(Z3Helper.uniqueName("ForAll")), ctx.mkSymbol(Z3Helper.uniqueName("")));
 
     var solver = ctx.mkSolver();
     var result = solver.check(indexOfFinalAssertions, isTraceInFirst, traceNotInSecond);

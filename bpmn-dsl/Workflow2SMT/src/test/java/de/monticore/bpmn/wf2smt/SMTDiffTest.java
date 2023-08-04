@@ -40,9 +40,9 @@ class SMTDiffTest {
     LTSTestingUtils.addPathOfLabelFromStart(second, List.of("A", "End"));
     LTSTestingUtils.addPathOfLabelFromStart(second, List.of("B", "End"));
     var differ = WF2SMTDiffGenerator.generateDiffer(first, second, List.of("End"));
-    var witnessForFirst = differ.firstSubsetOfSecond(4);
+    var witnessForFirst = differ.firstIncludesTracesOfSecond(4);
     assertTrue(witnessForFirst.isEmpty());
-    var witnessForSecond = differ.secondSubsetOfFirst(4);
+    var witnessForSecond = differ.secondIncludesTracesOfFirst(4);
     assertTrue(witnessForSecond.isPresent());
     var labelList = witnessForSecond.get();
     var witnessPath = new LTSTraverser(second).pathOfLabel(labelList).orElseThrow();
@@ -58,8 +58,8 @@ class SMTDiffTest {
     var lts = getComplexLTS();
 
     var differ = WF2SMTDiffGenerator.generateDiffer(lts, lts, List.of("End"));
-    assertTrue(differ.firstSubsetOfSecond(3).isEmpty());
-    assertTrue(differ.firstSubsetOfSecond(3).isEmpty());
+    assertTrue(differ.firstIncludesTracesOfSecond(3).isEmpty());
+    assertTrue(differ.firstIncludesTracesOfSecond(3).isEmpty());
   }
 
   @Test
@@ -76,16 +76,16 @@ class SMTDiffTest {
         .changedTarget(second.getStart());
     second.addTransition(cycle);
     var differ = WF2SMTDiffGenerator.generateDiffer(first, second, List.of("End"));
-    var witnessForFirst = differ.firstSubsetOfSecond(10);
+    var witnessForFirst = differ.firstIncludesTracesOfSecond(10);
     assertTrue(witnessForFirst.isEmpty());
-    var optWitnessForSecond = differ.secondSubsetOfFirst(10);
+    var optWitnessForSecond = differ.secondIncludesTracesOfFirst(10);
     assertTrue(optWitnessForSecond.isPresent());
     var witnessForSecond = new LTSTraverser(second).pathOfLabel(optWitnessForSecond.get()).orElseThrow();
 
     assertTrue(witnessForSecond.getTransitions().size() >= 7);
     assertTrue(witnessForSecond.endsInTerminal());
 
-    var shortWitness = differ.secondSubsetOfFirst(5);
+    var shortWitness = differ.secondIncludesTracesOfFirst(5);
     assertTrue(shortWitness.isEmpty());
 
   }
