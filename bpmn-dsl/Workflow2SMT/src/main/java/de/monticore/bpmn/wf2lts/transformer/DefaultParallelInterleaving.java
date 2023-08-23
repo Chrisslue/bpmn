@@ -6,12 +6,9 @@ import de.monticore.bpmn.wf2lts.datastructure.LTS.Transition;
 import de.monticore.bpmn.wf2lts.datastructure.LTSTraverser;
 import de.monticore.bpmn.wf2lts.datastructure.LTSTraverser.Path;
 import de.monticore.bpmn.wf2lts.datastructure.LTSWithFinalStates;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import org.apache.commons.lang3.tuple.Pair;
+
+import java.util.*;
 import java.util.stream.Stream;
 
 public class DefaultParallelInterleaving {
@@ -35,8 +32,7 @@ public class DefaultParallelInterleaving {
         new MetaState(
             initialParallelTransitions,
             Collections.emptyList(),
-            Collections.emptySet(),
-            lts.getStart(),
+            Collections.emptySet(), Collections.emptySet(), lts.getStart(),
             oldLTS.isFinalState(oldLTS.getStart())
         );
     this.detectedCycles = new ArrayList<>();
@@ -88,28 +84,35 @@ public class DefaultParallelInterleaving {
 
     protected final Set<LTS.State> visitedStates;
 
+    protected final Set<Pair<LTS.State,LTS.State>> visitedTransition;
+
     protected final LTS.State ltsState;
 
     protected final boolean potentialFinalState;
 
     /**
-     * @param initialParallelTransitions The outgoings of the start-state form the oldLts that were not yet visited.
-     * @param ltsReferences              The other places in the oldLts where a transition could be chosen next.
-     * @param visitedStates              Previously seen transition-label, kept in order to detect back references.
-     * @param ltsState                   The corresponding lts state in the newly build interleaved lts.
-     * @param potentialFinalState        If the transition expanded led to a final state ind oldLTS mark this as
-     *                                   potential final state.
+     * @param initialParallelTransitions The outgoings of the start-state form the oldLts that were
+     *                                   not yet visited.
+     * @param ltsReferences              The other places in the oldLts where a transition could be
+     *                                   chosen next.
+     * @param visitedStates              Previously seen transition-label, kept in order to detect
+     *                                   back references.
+     * @param visitedTransition
+     * @param ltsState                   The corresponding lts state in the newly build interleaved
+     *                                   lts.
+     * @param potentialFinalState        If the transition expanded led to a final state ind oldLTS
+     *                                   mark this as potential final state.
      */
     protected MetaState(
-        List<LTS.Transition> initialParallelTransitions,
-        List<LTS.State> ltsReferences,
-        Set<State> visitedStates,
-        LTS.State ltsState,
+        List<Transition> initialParallelTransitions,
+        List<State> ltsReferences,
+        Set<State> visitedStates, Set<Pair<State, State>> visitedTransition, State ltsState,
         boolean potentialFinalState
     ) {
       this.initialParallelTransitions = initialParallelTransitions;
       this.ltsReferences = ltsReferences;
       this.visitedStates = visitedStates;
+      this.visitedTransition = visitedTransition;
       this.ltsState = ltsState;
       this.potentialFinalState = potentialFinalState;
     }
@@ -151,11 +154,11 @@ public class DefaultParallelInterleaving {
           new MetaState(
               nextInitial,
               nextReferences,
-              new HashSet<>(visitedStates),
-              new LTS.State(),
+              new HashSet<>(visitedStates), new HashSet<>(visitedTransition), new LTS.State(),
               oldLTS.isFinalState(transition.getTarget())
           );
       nextMeta.visitedStates.add(transition.getTarget());
+      nextMeta.visitedTransition.add(Pair.of(transition.getSource(),transition.getTarget()));
       lts.addTransition(transition.changedSource(this.ltsState).changedTarget(nextMeta.ltsState));
       nextMeta.recursiveExpand();
     }
@@ -170,6 +173,7 @@ public class DefaultParallelInterleaving {
         lts.addTransition(transition.changedSource(this.ltsState).changedTarget(nextMeta.ltsState));
         // Mark the nextState as target of future back-links.
         nextMeta.visitedStates.add(transition.getTarget());
+        nextMeta.visitedTransition.add(Pair.of(transition.getSource(),transition.getTarget()));
         nextMeta.recursiveExpand();
       }
     }
@@ -183,15 +187,16 @@ public class DefaultParallelInterleaving {
       return new MetaState(
           initialParallelTransitions,
           nextReferences,
-          nextVisitedStates,
-          nextState,
+          nextVisitedStates, visitedTransition, nextState,
           oldLTS.isFinalState(transition.getTarget())
       );
     }
 
     protected boolean isCycle(LTS.Transition transition) {
       return transition.getSource().equals(transition.getTarget())
-          || visitedStates.contains(transition.getTarget());
+          || (visitedStates.contains(transition.getTarget())
+          && visitedTransition.stream().anyMatch(p -> p.getLeft().equals(transition.getSource())
+          && p.getRight().equals(transition.getTarget())));
     }
 
     protected void handleCyclicTransition(LTS.Transition transition) {
@@ -251,7 +256,7 @@ public class DefaultParallelInterleaving {
       List<String> pathInNewWithoutCycle = new ArrayList<>();
       int cycleIndex = 0;
       for (String label : pathLabelInNew) {
-        if (cycleLabel.get(cycleIndex).equals(label)) {
+        if (cycleIndex < cycleLabel.size() && cycleLabel.get(cycleIndex).equals(label)) {
           cycleIndex++;
         } else if (cycleIndex != 0 && cycleIndex != cycleLabel.size() - 1) {
           throw new IllegalStateException("Cycle in old lts not contained in path of new lts."
