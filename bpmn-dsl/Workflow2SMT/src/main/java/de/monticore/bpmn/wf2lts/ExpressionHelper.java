@@ -11,17 +11,11 @@ public class ExpressionHelper {
   private ExpressionHelper() {
   }
 
-  public static ASTExpression toExpression(ASTFlowCondition condition) {
-    return WorkflowMill
-        .typeDispatcher()
-        .asASTConditionExpression(condition.getCondition()).getExpression();
-  }
-
   public static ASTExpression mergeConditions(List<ASTFlowCondition> conditions) {
     return conditions.stream()
-        .map(ExpressionHelper::toExpression)
-        .reduce((astCondition, astCondition2) ->
-            WorkflowMill.binaryAndExpressionBuilder().setLeft(astCondition).setRight(astCondition2).setOperator("&&")
+        .map(ASTFlowCondition::getExpression)
+        .reduce((astExpression, nextExpression) ->
+            WorkflowMill.binaryAndExpressionBuilder().setLeft(astExpression).setRight(nextExpression).setOperator("&&")
                 .build()).orElseGet(() -> {
               Log.error("Could not combine List<ASTExpression>");
               return null;

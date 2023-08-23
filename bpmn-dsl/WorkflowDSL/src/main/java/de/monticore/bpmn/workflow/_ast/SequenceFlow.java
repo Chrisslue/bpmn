@@ -39,7 +39,7 @@ public class SequenceFlow {
   }
 
   public boolean isConditional() {
-    return conditions.stream().anyMatch(ASTFlowCondition::isPresentCondition);
+    return conditions.stream().anyMatch(ASTFlowCondition::isPresentExpression);
   }
 
   public boolean isDefault() {

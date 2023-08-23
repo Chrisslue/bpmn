@@ -21,7 +21,7 @@ public class StartEventOutgoingFlowHasNoCondition implements WorkflowASTEventCoC
           .streamOutgoings()
           .map(SequenceFlow::getConditions)
           .flatMap(Collection::stream)
-          .filter(ASTFlowCondition::isPresentCondition)
+          .filter(ASTFlowCondition::isPresentExpression)
           .forEach(
               condition ->
                   Log.error(
