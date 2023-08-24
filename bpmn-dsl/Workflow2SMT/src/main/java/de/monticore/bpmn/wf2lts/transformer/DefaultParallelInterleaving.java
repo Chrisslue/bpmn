@@ -6,6 +6,7 @@ import de.monticore.bpmn.wf2lts.datastructure.LTS.Transition;
 import de.monticore.bpmn.wf2lts.datastructure.LTSTraverser;
 import de.monticore.bpmn.wf2lts.datastructure.LTSTraverser.Path;
 import de.monticore.bpmn.wf2lts.datastructure.LTSWithFinalStates;
+import de.monticore.bpmn.wf2lts.datastructure.PartialOrder;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
@@ -32,7 +33,7 @@ public class DefaultParallelInterleaving {
         new MetaState(
             initialParallelTransitions,
             Collections.emptyList(),
-            Collections.emptySet(), Collections.emptySet(), lts.getStart(),
+            Collections.emptySet(), new PartialOrder<>(), lts.getStart(),
             oldLTS.isFinalState(oldLTS.getStart())
         );
     this.detectedCycles = new ArrayList<>();
@@ -84,7 +85,7 @@ public class DefaultParallelInterleaving {
 
     protected final Set<LTS.State> visitedStates;
 
-    protected final Set<Pair<LTS.State,LTS.State>> visitedTransition;
+    protected final PartialOrder<State> stateOrder;
 
     protected final LTS.State ltsState;
 
@@ -97,7 +98,7 @@ public class DefaultParallelInterleaving {
      *                                   chosen next.
      * @param visitedStates              Previously seen transition-label, kept in order to detect
      *                                   back references.
-     * @param visitedTransition
+     * @param stateOrder                 Partial order of states, kept in order to detect cycles.
      * @param ltsState                   The corresponding lts state in the newly build interleaved
      *                                   lts.
      * @param potentialFinalState        If the transition expanded led to a final state ind oldLTS
@@ -106,13 +107,13 @@ public class DefaultParallelInterleaving {
     protected MetaState(
         List<Transition> initialParallelTransitions,
         List<State> ltsReferences,
-        Set<State> visitedStates, Set<Pair<State, State>> visitedTransition, State ltsState,
+        Set<State> visitedStates, PartialOrder<State> stateOrder, State ltsState,
         boolean potentialFinalState
     ) {
       this.initialParallelTransitions = initialParallelTransitions;
       this.ltsReferences = ltsReferences;
       this.visitedStates = visitedStates;
-      this.visitedTransition = visitedTransition;
+      this.stateOrder = stateOrder;
       this.ltsState = ltsState;
       this.potentialFinalState = potentialFinalState;
     }
@@ -154,11 +155,11 @@ public class DefaultParallelInterleaving {
           new MetaState(
               nextInitial,
               nextReferences,
-              new HashSet<>(visitedStates), new HashSet<>(visitedTransition), new LTS.State(),
+              new HashSet<>(visitedStates), new PartialOrder<>(stateOrder), new LTS.State(),
               oldLTS.isFinalState(transition.getTarget())
           );
       nextMeta.visitedStates.add(transition.getTarget());
-      nextMeta.visitedTransition.add(Pair.of(transition.getSource(),transition.getTarget()));
+      nextMeta.stateOrder.addPredecessorTo(transition.getSource(),transition.getTarget());
       lts.addTransition(transition.changedSource(this.ltsState).changedTarget(nextMeta.ltsState));
       nextMeta.recursiveExpand();
     }
@@ -173,7 +174,7 @@ public class DefaultParallelInterleaving {
         lts.addTransition(transition.changedSource(this.ltsState).changedTarget(nextMeta.ltsState));
         // Mark the nextState as target of future back-links.
         nextMeta.visitedStates.add(transition.getTarget());
-        nextMeta.visitedTransition.add(Pair.of(transition.getSource(),transition.getTarget()));
+        nextMeta.stateOrder.addPredecessorTo(transition.getSource(),transition.getTarget());
         nextMeta.recursiveExpand();
       }
     }
@@ -187,7 +188,7 @@ public class DefaultParallelInterleaving {
       return new MetaState(
           initialParallelTransitions,
           nextReferences,
-          nextVisitedStates, visitedTransition, nextState,
+          nextVisitedStates, new PartialOrder<>(stateOrder), nextState,
           oldLTS.isFinalState(transition.getTarget())
       );
     }
@@ -195,8 +196,7 @@ public class DefaultParallelInterleaving {
     protected boolean isCycle(LTS.Transition transition) {
       return transition.getSource().equals(transition.getTarget())
           || (visitedStates.contains(transition.getTarget())
-          && visitedTransition.stream().anyMatch(p -> p.getLeft().equals(transition.getSource())
-          && p.getRight().equals(transition.getTarget())));
+          && stateOrder.isPredecessor(transition.getTarget(),transition.getSource()));
     }
 
     protected void handleCyclicTransition(LTS.Transition transition) {
