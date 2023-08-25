@@ -111,6 +111,7 @@ public class DefaultGatewayTransformer implements GatewayTransformer {
     if (internalLTS.isLabelPresent(splitName)) {
       throw new IllegalStateException("Internal LTS should not contain transitions with splitName");
     }
+    //todo: add epsilon-transition?
     List<Transition> internalStartTransitions = internalLTS.getOutgoings(internalLTS.getStart());
     for (LTS.Transition oldTransition : oldTransitions) {
       for (LTS.Transition internalStartTransition : internalStartTransitions) {
@@ -142,6 +143,7 @@ public class DefaultGatewayTransformer implements GatewayTransformer {
     }
 
     // All outgoing transitions of all external-merging-targets..
+    //todo: add epsilon-transition?
     var externalSuccessors = externalMerging.stream()
         .map(Transition::getTarget)
         .flatMap(externalMergingTarget -> externalLTS.getOutgoings(externalMergingTarget).stream())
@@ -161,6 +163,7 @@ public class DefaultGatewayTransformer implements GatewayTransformer {
     // In that case pass incoming transitions to the merge-transition through to the outgoing transitions.
     // For example for every s0 - A -> s1 - Merge -> s2 - b -> s3 rewire it to:
     // s0 - A -> s2 - b -> s3
+    //todo: add epsilon-transition?
     for (var externalMergeTransition : externalLTS.getTransitionsForLabel(mergeName)) {
       for (Transition incomingTransition : externalLTS.getIncoming(externalMergeTransition.getSource())) {
         externalLTS.removeTransition(incomingTransition);
