@@ -7,13 +7,7 @@ grammar Workflow
 
   start WorkflowCompilationUnit;
 
-  /* Condition Language, e. g. OCL */
-
-  interface Condition;
-  scope ConditionExpression implements Condition = Expression;
-
-  interface Timer;
-  scope TimerExpression implements Timer = TimeExpression;
+  /* Expression Language, e. g. OCL */
 
   WorkflowCompilationUnit =
       MCPackageDeclaration?
@@ -101,7 +95,7 @@ grammar Workflow
     ;
 
   AdHocCharacteristics =
-      ("until" ":" "[" completionCondition:Condition "]")
+      ("until" ":" "[" completionCondition:Expression "]")
       (   "parallel" (waitForRemainingInstances:["noninterrupt"])?
         | ["sequential"]
       )?
@@ -169,14 +163,14 @@ grammar Workflow
   interface LoopCharacteristics;
 
   StandardLoop implements LoopCharacteristics =
-      (testBefore:["while"] | "until") ":" "[" loopCondition:Condition "]"
+      (testBefore:["while"] | "until") ":" "[" loopCondition:Expression "]"
       ("max" ":" loopMaximum:NatLiteral)?
     ;
 
   MILoop implements LoopCharacteristics =
       "count" ":" LoopCardinality
       ("parallel" | ["sequential"])?
-      ("until" ":" "[" completionCondition:Condition "]")?
+      ("until" ":" "[" completionCondition:Expression "]")?
       ("implicit" ":" implicitBehavior:MIImplicitEventBehavior)?
       ("event" ":"    implicitEventDef:EventTrigger           )?
     ;
@@ -190,12 +184,12 @@ grammar Workflow
       ["none"]
     | ["first"]
     | ["every"]
-    | "[" complexCondition:Condition "]"
+    | "[" complexCondition:Expression "]"
     ;
 
   LoopCardinality =
       count:NatLiteral
-    | ("[" expression:Condition "]")
+    | ("[" expression:Expression "]")
     | collection:Name
     ;
 
@@ -213,14 +207,14 @@ grammar Workflow
       direction:GatewayDirection
       type:GatewayType
       Name
-      ("[" activationCondition:Condition "]")?  // complex gateway
+      ("[" activationCondition:Expression "]")?  // complex gateway
       ";"
     ;
 
   InlineGateway implements Gateway, InlineFlowNode =
       direction:GatewayDirection
       type:GatewayType
-      ("[" activationCondition:Condition "]")?  // complex gateway
+      ("[" activationCondition:Expression "]")?  // complex gateway
     ;
 
   enum GatewayDirection =
@@ -277,13 +271,13 @@ grammar Workflow
 
   EventTriggerCancel       implements EventTrigger = "cancel";
   EventTriggerCompensate   implements EventTrigger = "compensate" (":" activity:Name)? ["async"]?;
-  EventTriggerConditional  implements EventTrigger = "when"        ":" "[" Condition "]";
+  EventTriggerConditional  implements EventTrigger = "when"        ":" "[" Expression "]";
   EventTriggerError        implements EventTrigger = "error"       ":" error:Name@Error;
   EventTriggerEscalate     implements EventTrigger = "escalate"    ":" escalate:Name@Escalation;
   EventTriggerMessage      implements EventTrigger = "message"     ":" message:Name@Message;
   EventTriggerSignal       implements EventTrigger = "signal"      ":" signal:Name@Signal;
   EventTriggerTerminate    implements EventTrigger = "terminate";
-  EventTriggerTimer        implements EventTrigger = "timer"       ":" "[" expression:Timer "]";
+  EventTriggerTimer        implements EventTrigger = "timer"       ":" "[" expression:TimeExpression "]";
   EventTriggerMultiple     implements EventTrigger = ("one" | parallelMultiple:["all"]) "{" trigger:(EventTrigger || ",")+ "}";
 
 
@@ -314,7 +308,7 @@ grammar Workflow
     ;
 
   FlowCondition =
-      "[" Condition "]"
+      "[" Expression "]"
     | default:["<<default>>"]
     ;
 

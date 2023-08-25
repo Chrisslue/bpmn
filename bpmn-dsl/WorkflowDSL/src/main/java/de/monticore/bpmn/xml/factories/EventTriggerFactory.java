@@ -109,7 +109,7 @@ public class EventTriggerFactory implements WorkflowVisitor2, WorkflowHandler {
     TTimerEventDefinition tDefinition =
         createTrigger(factory::createTTimerEventDefinition, factory::createTimerEventDefinition);
 
-    ASTTimeExpression timer = ((ASTTimerExpression) trigger.getExpression()).getTimeExpression();
+    ASTTimeExpression timer = trigger.getExpression();
     if (timer instanceof ASTDateExpr) {
       ASTDateExpr dateExpr = (ASTDateExpr) timer;
       buildTimerExpression(tDefinition::setTimeDate, dateExpr.printISO8601());

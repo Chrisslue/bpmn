@@ -1,9 +1,9 @@
 package de.monticore.bpmn.cocos.activities;
 
 import de.monticore.bpmn.Messages;
-import de.monticore.bpmn.workflow._ast.ASTConditionExpression;
 import de.monticore.bpmn.workflow._ast.ASTLoopCardinality;
 import de.monticore.bpmn.workflow._cocos.WorkflowASTLoopCardinalityCoCo;
+import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.ocl.types.check.OCLDeriver;
 import de.monticore.ocl.types.check.OCLSynthesizer;
 import de.monticore.types.check.SymTypeExpression;
@@ -21,11 +21,10 @@ public class LoopCountExpressionReturnsIntegerNumber implements WorkflowASTLoopC
   @Override
   public void check(final ASTLoopCardinality loopCardinality) {
     if (loopCardinality.isPresentExpression()) {
-      ASTConditionExpression loopExpression =
-          (ASTConditionExpression) loopCardinality.getExpression();
+      ASTExpression loopExpression = loopCardinality.getExpression();
       TypeCalculator calculator =
           new TypeCalculator(new OCLSynthesizer(), new OCLDeriver(), new TypeRelations());
-      SymTypeExpression type = calculator.typeOf(loopExpression.getExpression());
+      SymTypeExpression type = calculator.typeOf(loopExpression);
 
       if (type == null) {
         Log.warn(Messages.get("0xWFM1009"));
