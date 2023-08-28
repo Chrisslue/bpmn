@@ -103,22 +103,18 @@ public class DefaultGraph2LTSTransformer implements Graph2LTSTransformer {
 
   protected LTS removeEpsilonTransitions(LTS lts) {
     List<Transition> epsilonTransitions = new ArrayList<>(lts.getTransitionsForLabel(""));
+    Set<State> possiblyDanglingStates = new HashSet<>();
     while (!epsilonTransitions.isEmpty()) {
       Transition transition = epsilonTransitions.get(0);
       List<Transition> successors = lts.getOutgoings(transition.getTarget());
       successors.remove(transition);
       successors.forEach(
           successor -> lts.addTransition(successor.changedSource(transition.getSource())));
-      List<State> possiblyDanglingStates =
-          successors.stream()
-              .map(Transition::getSource)
-              .filter(state -> state != lts.getStart())
-              .collect(Collectors.toList());
       lts.removeTransition(transition);
-      successors.stream().distinct().forEach(lts::removeTransition);
-      possiblyDanglingStates.stream().distinct().forEach(lts::removeStateIfNoIncomingRecursively);
+      possiblyDanglingStates.add(transition.getTarget());
       epsilonTransitions = new ArrayList<>(lts.getTransitionsForLabel(""));
     }
+    possiblyDanglingStates.stream().distinct().forEach(lts::removeStateIfNoIncomingRecursively);
     return lts;
   }
 

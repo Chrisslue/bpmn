@@ -139,8 +139,7 @@ public class DefaultGatewayTransformer implements GatewayTransformer {
     }
 
     LTS.State connectorState = new LTS.State();
-    externalLTS.addState(connectorState);
-    internalLTS.getFinalStates().forEach(state -> externalLTS.addTransition(new Transition(state,
+    internalLTS.getFinalStates().forEach(state -> internalLTS.addTransition(new Transition(state,
         new ArrayList<>(),"",connectorState)));
 
     // All outgoing transitions of all external-merging-targets..
