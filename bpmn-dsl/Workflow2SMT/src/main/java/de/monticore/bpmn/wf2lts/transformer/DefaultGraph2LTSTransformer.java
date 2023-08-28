@@ -8,10 +8,8 @@ import de.monticore.bpmn.wf2lts.datastructure.LTS;
 import de.monticore.bpmn.wf2lts.datastructure.LTS.State;
 import de.monticore.bpmn.wf2lts.datastructure.LTS.Transition;
 import de.monticore.bpmn.workflow._ast.ASTFlowNode;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class DefaultGraph2LTSTransformer implements Graph2LTSTransformer {
 
@@ -19,13 +17,12 @@ public class DefaultGraph2LTSTransformer implements Graph2LTSTransformer {
   protected final GatewayTransformer gatewayTransformer;
   protected final SubprocessTransformer subprocessTransformer;
 
-
   public DefaultGraph2LTSTransformer() {
     this(
         new DefaultNamingStrategy(),
-        new DefaultGatewayTransformer(new DefaultGatewayInterleaving(), new DefaultNamingStrategy()),
-        new DefaultSubprocessTransformer()
-    );
+        new DefaultGatewayTransformer(
+            new DefaultGatewayInterleaving(), new DefaultNamingStrategy()),
+        new DefaultSubprocessTransformer());
   }
 
   public DefaultGraph2LTSTransformer(
@@ -69,10 +66,10 @@ public class DefaultGraph2LTSTransformer implements Graph2LTSTransformer {
             node ->
                 node != graph.getStart()
                     && graph.getEdges().values().stream()
-                    .noneMatch(
-                        transitionList ->
-                            transitionList.stream()
-                                .anyMatch(transition -> transition.getTarget() == node)))
+                        .noneMatch(
+                            transitionList ->
+                                transitionList.stream()
+                                    .anyMatch(transition -> transition.getTarget() == node)))
         .forEach(
             node ->
                 lts.addTransition(
@@ -94,9 +91,7 @@ public class DefaultGraph2LTSTransformer implements Graph2LTSTransformer {
   protected LTS transformMetaElements(LTS externalLTS, IntermediateGraphWithScopes graph) {
     graph
         .getGatewayScopes()
-        .forEach(
-            gatewayScope ->
-                gatewayTransformer.transform(gatewayScope, externalLTS, this));
+        .forEach(gatewayScope -> gatewayTransformer.transform(gatewayScope, externalLTS, this));
     graph
         .getSubProcessScopes()
         .forEach(
@@ -104,6 +99,27 @@ public class DefaultGraph2LTSTransformer implements Graph2LTSTransformer {
                 subprocessTransformer.transform(
                     subProcessScope, externalLTS, namingStrategy, this));
     return externalLTS;
+  }
+
+  protected LTS removeEpsilonTransitions(LTS lts) {
+    List<Transition> epsilonTransitions = new ArrayList<>(lts.getTransitionsForLabel(""));
+    while (!epsilonTransitions.isEmpty()) {
+      Transition transition = epsilonTransitions.get(0);
+      List<Transition> successors = lts.getOutgoings(transition.getTarget());
+      successors.remove(transition);
+      successors.forEach(
+          successor -> lts.addTransition(successor.changedSource(transition.getSource())));
+      List<State> possiblyDanglingStates =
+          successors.stream()
+              .map(Transition::getSource)
+              .filter(state -> state != lts.getStart())
+              .collect(Collectors.toList());
+      lts.removeTransition(transition);
+      successors.stream().distinct().forEach(lts::removeTransition);
+      possiblyDanglingStates.stream().distinct().forEach(lts::removeStateIfNoIncomingRecursively);
+      epsilonTransitions = new ArrayList<>(lts.getTransitionsForLabel(""));
+    }
+    return lts;
   }
 
   /**
@@ -114,6 +130,6 @@ public class DefaultGraph2LTSTransformer implements Graph2LTSTransformer {
   @Override
   public LTS transform(IntermediateGraphWithScopes graph) {
     LTS transitionBased = nodeBasedToTransitionBased(graph);
-    return transformMetaElements(transitionBased, graph);
+    return removeEpsilonTransitions(transformMetaElements(transitionBased, graph));
   }
 }
