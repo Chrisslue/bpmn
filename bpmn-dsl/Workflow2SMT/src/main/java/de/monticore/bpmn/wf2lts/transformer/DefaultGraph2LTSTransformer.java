@@ -103,7 +103,6 @@ public class DefaultGraph2LTSTransformer implements Graph2LTSTransformer {
 
   protected LTS removeEpsilonTransitions(LTS lts) {
     List<Transition> epsilonTransitions = new ArrayList<>(lts.getTransitionsForLabel(""));
-    Set<State> possiblyDanglingStates = new HashSet<>();
     while (!epsilonTransitions.isEmpty()) {
       Transition transition = epsilonTransitions.get(0);
       List<Transition> successors = lts.getOutgoings(transition.getTarget());
@@ -111,10 +110,8 @@ public class DefaultGraph2LTSTransformer implements Graph2LTSTransformer {
       successors.forEach(
           successor -> lts.addTransition(successor.changedSource(transition.getSource())));
       lts.removeTransition(transition);
-      possiblyDanglingStates.add(transition.getTarget());
       epsilonTransitions = new ArrayList<>(lts.getTransitionsForLabel(""));
     }
-    possiblyDanglingStates.stream().distinct().forEach(lts::removeStateIfNoIncomingRecursively);
     return lts;
   }
 
@@ -126,6 +123,13 @@ public class DefaultGraph2LTSTransformer implements Graph2LTSTransformer {
   @Override
   public LTS transform(IntermediateGraphWithScopes graph) {
     LTS transitionBased = nodeBasedToTransitionBased(graph);
-    return removeEpsilonTransitions(transformMetaElements(transitionBased, graph));
+    return transformMetaElements(transitionBased, graph);
   }
+
+  @Override
+  public LTS transformAndReduce(IntermediateGraphWithScopes graph) {
+    // todo: merge redundant states
+    return removeEpsilonTransitions(transform(graph));
+  }
+
 }
