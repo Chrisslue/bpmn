@@ -80,7 +80,7 @@ public class WF2LTSGenerator {
   }
 
   public static LTS workflow2LTS(ASTWorkflowCompilationUnit ast, Graph2LTSTransformer graph2LTSTransformer) {
-    var lts = graph2LTSTransformer.transform(transformToGraph(ast));
+    var lts = graph2LTSTransformer.transformAndReduce(transformToGraph(ast));
     removeUnreachable(lts);
     return lts;
   }
