@@ -1,45 +1,32 @@
 package de.monticore.bpmn.prettyprint;
 
-import de.monticore.bpmn.cocos.AbstractCoCoTest;
-import de.monticore.bpmn.cocos.WorkflowCoCos;
+import de.monticore.bpmn.AbstractTest;
+import de.monticore.bpmn.workflow.WorkflowMill;
 import de.monticore.bpmn.workflow._ast.ASTWorkflowCompilationUnit;
-import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
-import de.monticore.bpmn.workflow._prettyprint.WorkflowFullPrettyPrinter;
-import de.monticore.prettyprint.IndentPrinter;
-import de.se_rwth.commons.logging.Log;
-import de.se_rwth.commons.logging.LogStub;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-@Disabled
-public class WorkflowPrettyPrinterTest extends AbstractCoCoTest {
+import java.io.IOException;
+import java.util.Optional;
 
-  @BeforeAll
-  public static void init() {
-    AbstractCoCoTest.init();
-    LogStub.init();
-  }
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-  @Override
-  protected WorkflowCoCoChecker getChecker() {
-    return WorkflowCoCos.getFullChecker();
-  }
+public class WorkflowPrettyPrinterTest extends AbstractTest {
+
 
   @Test
-  void prettyPrintRequestHoliday() {
-    String modelName = "de.monticore.bpmn.examples.RequestHoliday";
+  @Disabled // RequestHoliday cannot be parsed
+  void prettyPrintRequestHoliday() throws IOException {
+    String modelName = "de.monticore.bpmn.examples.RequestHoliday.wfm";
+    ASTWorkflowCompilationUnit cu = parseModel(modelName);
 
-    ASTWorkflowCompilationUnit cu = testModelNoErrors(modelName);
+    // print AST
+    String content = WorkflowMill.prettyPrint(cu, true);
 
-    IndentPrinter ppi = new IndentPrinter();
+    // parse printed AST
+    Optional<ASTWorkflowCompilationUnit> printedCu = WorkflowMill.parser().parse_String(content);
+    assertTrue(printedCu.isPresent());
 
-    WorkflowFullPrettyPrinter pp = new WorkflowFullPrettyPrinter(ppi);
-
-    String content = pp.prettyprint(cu);
-    // TODO Check actual against expected output.
-
-    Log.info("Pretty printing the parsed Workflow:", WorkflowPrettyPrinterTest.class.getName());
-    Log.info(content, WorkflowPrettyPrinterTest.class.getName());
+    assertTrue(cu.deepEquals(printedCu.get()));
   }
 }

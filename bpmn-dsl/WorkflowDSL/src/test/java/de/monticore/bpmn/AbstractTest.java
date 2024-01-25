@@ -8,6 +8,9 @@ package de.monticore.bpmn;
 import static de.se_rwth.commons.Names.getPathFromQualifiedName;
 import static de.se_rwth.commons.Names.getSimpleName;
 import static java.nio.file.Paths.get;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import com.google.common.collect.Lists;
 import de.monticore.bpmn.cocos.flow.SequenceFlowNodeReferencesExist;
@@ -17,6 +20,7 @@ import de.monticore.bpmn.workflow.WorkflowMill;
 import de.monticore.bpmn.workflow.WorkflowTool;
 import de.monticore.bpmn.workflow._ast.ASTWorkflowCompilationUnit;
 import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
+import de.monticore.bpmn.workflow._parser.WorkflowParser;
 import de.monticore.bpmn.workflow._symboltable.IWorkflowGlobalScope;
 import de.monticore.bpmn.workflow._symboltable.WorkflowSTCompleter;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
@@ -27,6 +31,9 @@ import de.se_rwth.commons.Names;
 import de.se_rwth.commons.logging.Log;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Optional;
+
+import de.se_rwth.commons.logging.LogStub;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 
@@ -47,7 +54,7 @@ public abstract class AbstractTest {
 
   @BeforeAll
   public static void init() {
-    // LogStub.init();
+    Log.init();
     Log.enableFailQuick(false);
     WorkflowMill.init();
     WorkflowMill.globalScope().clear();
@@ -66,13 +73,32 @@ public abstract class AbstractTest {
    * @param qualifiedModelName the fully qualified name of the model.
    * @return the root of the parsed model.
    */
+  protected ASTWorkflowCompilationUnit parseModel(final String qualifiedModelName) {
+    WorkflowParser parser = WorkflowMill.parser();
+    Optional<ASTWorkflowCompilationUnit> ast = null;
+    try {
+      ast = parser.parse(
+              MODEL_DIR
+                      + Names.getPathFromPackage(qualifiedModelName).replaceAll("\\\\", "/")
+                      + ".wfm");
+    } catch (IOException e) {
+      fail("Cannot parse " + qualifiedModelName);
+      return null;
+    }
+    assertTrue(ast.isPresent());
+    assertFalse(parser.hasErrors());
+
+    return ast.get();
+  }
+
+  /**
+   * Parses a model and ensures that the root node is present.
+   *
+   * @param qualifiedModelName the fully qualified name of the model.
+   * @return the root of the parsed model.
+   */
   protected ASTWorkflowCompilationUnit loadModel(final String qualifiedModelName) {
-    WorkflowTool tool = new WorkflowTool();
-    ASTWorkflowCompilationUnit ast =
-        tool.parse(
-            MODEL_DIR
-                + Names.getPathFromPackage(qualifiedModelName).replaceAll("\\\\", "/")
-                + ".wfm");
+    ASTWorkflowCompilationUnit ast = parseModel(qualifiedModelName);
     new AddMoreImports(Lists.newArrayList(OCL_TYPES)).transform(ast);
     WorkflowMill.scopesGenitorDelegator().createFromAST(ast);
     WorkflowCoCoChecker checker = new WorkflowCoCoChecker();

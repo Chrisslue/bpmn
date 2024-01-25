@@ -8,9 +8,12 @@ package de.monticore.bpmn.parser;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import de.monticore.bpmn.AbstractTest;
 import de.monticore.bpmn.cocos.AbstractCoCoTest;
 import de.monticore.bpmn.cocos.WorkflowCoCos;
+import de.monticore.bpmn.workflow.WorkflowMill;
 import de.monticore.bpmn.workflow._ast.ASTTask;
+import de.monticore.bpmn.workflow._ast.ASTWorkflowCompilationUnit;
 import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
 import de.monticore.bpmn.workflow._parser.WorkflowParser;
 import java.io.IOException;
@@ -20,24 +23,18 @@ import org.antlr.v4.runtime.RecognitionException;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-@Disabled
-public class RequestVacationParserTest extends AbstractCoCoTest {
-
-  @Override
-  protected WorkflowCoCoChecker getChecker() {
-    return WorkflowCoCos.getFullChecker();
-  }
+public class RequestVacationParserTest extends AbstractTest {
 
   @Test
-  public void testRequestVacation() {
-    String modelName = "de.monticore.bpmn.examples.vacation.RequestVacation";
-
-    testModelNoErrors(modelName);
+  @Disabled // RequestHoliday cannot be parsed
+  public void testRequestVacation() throws IOException {
+    String modelName = "de.monticore.bpmn.examples.RequestHoliday.wfm";
+    parseModel(modelName);
   }
 
   @Test
   public void testTask() throws RecognitionException, IOException {
-    WorkflowParser parser = new WorkflowParser();
+    WorkflowParser parser = WorkflowMill.parser();
 
     Optional<ASTTask> task =
         parser.parseTask(

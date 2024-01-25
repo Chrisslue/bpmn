@@ -6,34 +6,28 @@ import de.monticore.bpmn.cocos.AbstractCoCoTest;
 import de.monticore.bpmn.cocos.WorkflowCoCos;
 import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
 import de.se_rwth.commons.logging.Finding;
-import de.se_rwth.commons.logging.Log;
-import java.util.Collection;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-class SequenceFlowNodeReferencesExistTest extends AbstractCoCoTest {
+import java.util.Collection;
+import java.util.NoSuchElementException;
 
-  @BeforeAll
-  public static void init() {
-    Log.clearFindings();
-    Log.enableFailQuick(true);
-  }
+class SequenceFlowNodeReferencesExistTest extends AbstractCoCoTest {
 
   @Override
   protected WorkflowCoCoChecker getChecker() {
     return WorkflowCoCos.getSequenceFlowChecker();
   }
 
-  @Disabled
+
   @Test
   void invalidSourcesAndTargets() {
     String modelName = "de.monticore.bpmn.cocos.flows.invalid.SequenceFlowNodeReferencesExist";
 
     Collection<Finding> expectedErrors =
-        Lists.newArrayList(Finding.error(Messages.get("0xWFM1004", "T2")));
+        Lists.newArrayList(Finding.error(Messages.get("0xWFM1004", "T2")),
+                Finding.error(Messages.get("0xWFM1004", "T2")));
+      testModelForErrors(modelName, expectedErrors, NoSuchElementException.class);
 
-    testModelForErrors(modelName, expectedErrors);
   }
 
   @Test

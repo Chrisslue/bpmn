@@ -27,7 +27,6 @@ class ProcessNetIsSoundTest extends AbstractCoCoTest {
     testModelForErrors(modelName, Lists.newArrayList(), expectedWarnings);
   }
 
-  @Disabled
   @Test
   void unsafe() {
     String modelName = "de.monticore.bpmn.cocos.analysis.invalid.Unsafe";

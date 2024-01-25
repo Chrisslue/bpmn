@@ -1,6 +1,7 @@
 package de.monticore.bpmn.cocos;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.google.common.collect.Lists;
 import de.monticore.bpmn.AbstractTest;
@@ -17,6 +18,7 @@ import de.se_rwth.commons.Names;
 import de.se_rwth.commons.logging.Finding;
 import de.se_rwth.commons.logging.Log;
 import java.util.Collection;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 /**
@@ -72,6 +74,18 @@ public abstract class AbstractCoCoTest extends AbstractTest {
     return cu;
   }
 
+  protected void testModelForErrors(
+          String qualifiedModelName, Collection<Finding> expectedErrors, Class exception) {
+    assertThrows(exception, () -> {
+      loadModel(qualifiedModelName);
+    });
+
+    Collection<Finding> errors =
+            Log.getFindings().stream().filter(Finding::isError).collect(Collectors.toList());
+    Assert.assertEqualErrorCounts(expectedErrors, errors);
+    Assert.assertErrorMsg(expectedErrors, errors);
+  }
+
   /**
    * Asserts that no error occurred when the {@link WorkflowCoCoChecker} run the given modelName.
    *
@@ -82,6 +96,14 @@ public abstract class AbstractCoCoTest extends AbstractTest {
     ASTWorkflowCompilationUnit cu = loadModel(qualifiedModelName);
     assertEquals(0, Log.getFindings().stream().filter(Finding::isError).count());
     assertEquals(0, Log.getFindings().stream().filter(Finding::isWarning).count());
+
+    return cu;
+  }
+
+  protected ASTWorkflowCompilationUnit testModelNoErrors(String qualifiedModelName, int noOfWarnings) {
+    ASTWorkflowCompilationUnit cu = loadModel(qualifiedModelName);
+    assertEquals(0, Log.getFindings().stream().filter(Finding::isError).count());
+    assertEquals(noOfWarnings, Log.getFindings().stream().filter(Finding::isWarning).count());
 
     return cu;
   }
