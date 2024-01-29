@@ -105,13 +105,16 @@ grammar Workflow
       triggeredByEvent:boolean
     ;
 
-  interface AtomicActivity extends Activity =
+  interface symbol scope AtomicActivity extends Activity =
       Name
       IOSpecification?
       (boundaryEvent:NamedEvent)*
     ;
 
-  symbol scope CallActivity implements AtomicActivity =
+    symbolrule AtomicActivity =
+      iOSpecification: de.monticore.bpmn.workflow._ast.io.IOSpecification?; // TODO:DeSer implementieren
+
+  CallActivity implements AtomicActivity =
       "task"
       Name
       "template" ":" template:Name  // @CallableElement
@@ -125,7 +128,7 @@ grammar Workflow
       )
     ;
 
-  symbol scope Task implements AtomicActivity =
+  Task implements AtomicActivity =
       "task"
       type:TaskType?
       Name
