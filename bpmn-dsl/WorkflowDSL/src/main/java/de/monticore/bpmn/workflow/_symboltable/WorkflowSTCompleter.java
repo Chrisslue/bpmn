@@ -19,32 +19,16 @@ public class WorkflowSTCompleter implements WorkflowVisitor2 {
   }
 
   @Override
-  public void visit(ASTError node) {
+  public void visit(ASTNotification node) {
     SymTypeExpression typeSymbolRef = createTypeSymbolRef(node.getMCType());
 
     node.getSymbol().setType(typeSymbolRef);
+    node.getSymbol().setIsError(node.getKind()==ASTConstantsWorkflow.ERROR);
+    node.getSymbol().setIsMessage(node.getKind()==ASTConstantsWorkflow.MESSAGE);
+    node.getSymbol().setIsSignal(node.getKind()==ASTConstantsWorkflow.SIGNAL);
+    node.getSymbol().setIsEscalation(node.getKind()==ASTConstantsWorkflow.ESCALATION);
   }
 
-  @Override
-  public void visit(ASTEscalation node) {
-    SymTypeExpression typeSymbolRef = createTypeSymbolRef(node.getMCType());
-
-    node.getSymbol().setType(typeSymbolRef);
-  }
-
-  @Override
-  public void visit(ASTMessage node) {
-    SymTypeExpression typeSymbolRef = createTypeSymbolRef(node.getMCType());
-
-    node.getSymbol().setType(typeSymbolRef);
-  }
-
-  @Override
-  public void visit(ASTSignal node) {
-    SymTypeExpression typeSymbolRef = createTypeSymbolRef(node.getMCType());
-
-    node.getSymbol().setType(typeSymbolRef);
-  }
 
   protected SymTypeExpression createTypeSymbolRef(ASTMCType astType) {
     TypeCalculator calculator =
