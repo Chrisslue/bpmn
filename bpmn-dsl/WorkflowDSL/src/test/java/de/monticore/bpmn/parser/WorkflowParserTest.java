@@ -9,12 +9,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import de.monticore.bpmn.AbstractTest;
-import de.monticore.bpmn.cocos.AbstractCoCoTest;
-import de.monticore.bpmn.cocos.WorkflowCoCos;
 import de.monticore.bpmn.workflow.WorkflowMill;
 import de.monticore.bpmn.workflow._ast.ASTTask;
-import de.monticore.bpmn.workflow._ast.ASTWorkflowCompilationUnit;
-import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
 import de.monticore.bpmn.workflow._parser.WorkflowParser;
 import java.io.IOException;
 import java.io.StringReader;
@@ -23,17 +19,41 @@ import org.antlr.v4.runtime.RecognitionException;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-public class RequestVacationParserTest extends AbstractTest {
+public class WorkflowParserTest extends AbstractTest {
 
   @Test
-  @Disabled // RequestHoliday cannot be parsed
   public void testRequestVacation() throws IOException {
-    String modelName = "de.monticore.bpmn.examples.RequestHoliday.wfm";
+    String modelName = "de.monticore.bpmn.examples.RequestHoliday";
     parseModel(modelName);
   }
 
   @Test
-  public void testTask() throws RecognitionException, IOException {
+  public void testOnlineStore() throws IOException {
+    String modelName = "de.monticore.bpmn.examples.OnlineStore";
+    parseModel(modelName);
+  }
+
+  @Test
+  public void testTask() throws IOException {
+    String modelName = "de.monticore.bpmn.petrinet.Task";
+    parseModel(modelName);
+  }
+
+  @Test
+  public void testTimer() throws IOException {
+    String modelName = "de.monticore.bpmn.timer.TemporalExpressions";
+    parseModel(modelName);
+  }
+
+  @Test
+  public void testXml() throws IOException {
+    String modelName = "de.monticore.bpmn.xml.Example";
+    parseModel(modelName);
+  }
+
+
+  @Test
+  public void testSimpleTask() throws RecognitionException, IOException {
     WorkflowParser parser = WorkflowMill.parser();
 
     Optional<ASTTask> task =

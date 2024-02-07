@@ -6,21 +6,21 @@ import de.monticore.bpmn.cds.Domain.*;
 process RequestHoliday {
 
   lane Requester {
-    CoordinateInternally,
-    FillHolidayCardEntry,
-    SubmitHolidayRequest,
-    ChooseToComplain,
-    ChooseToRetry
+    CoordinateInternally;
+    FillHolidayCardEntry;
+    SubmitHolidayRequest;
+    ChooseToComplain;
+    ChooseToRetry;
   }
 
   lane Superior {
-    CheckHolidayRequest,
-    AcknowledgeHolidayRequest
+    CheckHolidayRequest;
+    AcknowledgeHolidayRequest;
   }
 
   data holidayCard:HolidayCard;
 
-  event Start <<start>>;
+  event start Start;
 
   Start -> CoordinateInternally;
 
@@ -42,11 +42,11 @@ process RequestHoliday {
   subprocess CheckHolidayRequest {
     data contract:Contract;
 
-    event Start <<start>>;
+    event start Start;
 
     Start -> ValidateLeaveDaysAndCheckWaitingPeriod;
 
-    split parallel ValidateLeaveDaysAndCheckWaitingPeriod; // naming parallel gateways is awkward
+    split and ValidateLeaveDaysAndCheckWaitingPeriod; // naming parallel gateways is awkward
 
     ValidateLeaveDaysAndCheckWaitingPeriod -> ValidateLeaveDays;
     ValidateLeaveDaysAndCheckWaitingPeriod -> CheckWaitingPeriod;
@@ -57,12 +57,12 @@ process RequestHoliday {
 
     ValidateLeaveDays -> IsRequestValid;
 
-    split exclusive IsRequestValid;
+    split xor IsRequestValid;
 
-    IsRequestValid -> ValidateLeaveDaysAndCheckWaitingPeriodJoin [true];
-    IsRequestValid -> Terminate1 [false];
+    IsRequestValid -> [true] ValidateLeaveDaysAndCheckWaitingPeriodJoin ;
+    IsRequestValid -> [false] Terminate1 ;
 
-    event Terminate1 throw terminate <<end>>;
+    event Terminate1 send terminate;
 
     task CheckWaitingPeriod {
       io: {contract} -> {};
@@ -70,26 +70,26 @@ process RequestHoliday {
 
     CheckWaitingPeriod -> IsRequesterEligibleForHoliday;
 
-    split exclusive IsRequesterEligibleForHoliday;
+    split xor IsRequesterEligibleForHoliday;
 
-    IsRequesterEligibleForHoliday -> ValidateLeaveDaysAndCheckWaitingPeriodJoin [true];
-    IsRequesterEligibleForHoliday -> Terminate2 [false];
+    IsRequesterEligibleForHoliday -> [true] ValidateLeaveDaysAndCheckWaitingPeriodJoin;
+    IsRequesterEligibleForHoliday -> [false] Terminate2;
 
-    event Terminate2 throw terminate <<end>>;
+    event Terminate2 send terminate;
 
-    join parallel ValidateLeaveDaysAndCheckWaitingPeriodJoin;
+    merge and ValidateLeaveDaysAndCheckWaitingPeriodJoin;
 
     ValidateLeaveDaysAndCheckWaitingPeriodJoin -> End;
 
-    event End <<end>>;
+    event end End;
   }
 
   CheckHolidayRequest -> IsHolidayRequestAccepted;
 
-  split exclusive IsHolidayRequestAccepted;
+  split xor IsHolidayRequestAccepted;
 
-  IsHolidayRequestAccepted -> AcknowledgeHolidayRequest [true];
-  IsHolidayRequestAccepted -> ChooseToRetry [false];
+  IsHolidayRequestAccepted -> [true] AcknowledgeHolidayRequest;
+  IsHolidayRequestAccepted -> [false] ChooseToRetry;
 
   task AcknowledgeHolidayRequest {
     io: {holidayCard} -> {holidayCard};
@@ -97,44 +97,44 @@ process RequestHoliday {
 
   AcknowledgeHolidayRequest -> End1;
 
-  event End1 <<end>>;
+  event end End1;
 
   task ChooseToRetry;
 
   ChooseToRetry -> Retry;
 
-  split exclusive Retry;
+  split xor Retry;
 
-  Retry -> End2 [false];
-  Retry -> IsEscalationPossible [true];
+  Retry -> [false] End2;
+  Retry -> [true] IsEscalationPossible;
 
-  event End2 <<end>>;
+  event end End2;
 
-  split exclusive IsEscalationPossible;
+  split xor IsEscalationPossible;
 
   IsEscalationPossible -> CoordinateInternally;
-  IsEscalationPossible -> ChooseToComplain [3 > 3];
+  IsEscalationPossible -> [3 > 3] ChooseToComplain;
 
   task ChooseToComplain;
 
   ChooseToComplain -> Complain;
 
-  split exclusive Complain;
+  split xor Complain;
 
-  Complain -> CoordinateInternally [false];
-  Complain -> SendComplaint [true];
+  Complain -> [false] CoordinateInternally;
+  Complain -> [true] SendComplaint;
 
-  task send:complaint SendComplaint;
+  task send SendComplaint compensate:complaint;
 
   message complaint:Complaint;
 
   SendComplaint -> ReceiveAnswer;
 
-  task receive:answerToComplaint ReceiveAnswer;
+  task receive ReceiveAnswer compensate:answerToComplaint;
 
   message answerToComplaint:ComplaintResponse;
 
   ReceiveAnswer -> End3;
 
-  event End3 <<end>>;
+  event end End3;
 }

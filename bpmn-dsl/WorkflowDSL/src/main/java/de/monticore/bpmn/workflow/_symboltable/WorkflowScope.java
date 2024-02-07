@@ -3,6 +3,7 @@ package de.monticore.bpmn.workflow._symboltable;
 import de.monticore.bpmn.workflow._ast.ASTActivity;
 import de.monticore.bpmn.workflow._ast.ASTCallableElement;
 import de.monticore.bpmn.workflow._ast.ASTFlowNode;
+
 import java.util.Optional;
 
 /** This class should be refactored once MC 6 is released */
@@ -29,18 +30,10 @@ public class WorkflowScope extends WorkflowScopeTOP {
         return Optional.empty();
       }
     }
-    Optional<TaskSymbol> taskSymbol = resolveTaskDown(name);
+    Optional<AtomicActivitySymbol> taskSymbol = resolveAtomicActivityDown(name);
     if (taskSymbol.isPresent()) {
       if (taskSymbol.get().isPresentAstNode()) {
         return Optional.of(taskSymbol.get().getAstNode());
-      } else {
-        return Optional.empty();
-      }
-    }
-    Optional<CallActivitySymbol> callActivitySymbol = resolveCallActivityDown(name);
-    if (callActivitySymbol.isPresent()) {
-      if (callActivitySymbol.get().isPresentAstNode()) {
-        return Optional.of(callActivitySymbol.get().getAstNode());
       } else {
         return Optional.empty();
       }
@@ -85,18 +78,10 @@ public class WorkflowScope extends WorkflowScopeTOP {
         return Optional.empty();
       }
     }
-    Optional<TaskSymbol> taskSymbol = resolveTaskLocally(name);
+    Optional<AtomicActivitySymbol> taskSymbol = resolveAtomicActivityLocally(name);
     if (taskSymbol.isPresent()) {
       if (taskSymbol.get().isPresentAstNode()) {
         return Optional.of(taskSymbol.get().getAstNode());
-      } else {
-        return Optional.empty();
-      }
-    }
-    Optional<CallActivitySymbol> callActivitySymbol = resolveCallActivityLocally(name);
-    if (callActivitySymbol.isPresent()) {
-      if (callActivitySymbol.get().isPresentAstNode()) {
-        return Optional.of(callActivitySymbol.get().getAstNode());
       } else {
         return Optional.empty();
       }

@@ -2,7 +2,7 @@ package de.monticore.bpmn.petrinet;
 
 process Process01 {
 
-    start event -> split xor {
+    event start -> split xor {
       [true]: task Task1;
       [true]: task Task2;
     } merge and -> end event;

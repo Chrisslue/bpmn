@@ -31,7 +31,7 @@ public class CreateIOSpecification extends WorkflowTransformation implements Wor
     if (callActivity.isPresentIOSpecification()) {
       callActivity
           .getSymbol()
-          .setIoSpecification(
+          .setIOSpecification(
               IOSpecification.from(
                   callActivity.getIOSpecification(), callActivity.getEnclosingScope()));
     }
@@ -41,7 +41,7 @@ public class CreateIOSpecification extends WorkflowTransformation implements Wor
   public void visit(final ASTTask task) {
     if (task.isPresentIOSpecification()) {
       task.getSymbol()
-          .setIoSpecification(
+          .setIOSpecification(
               IOSpecification.from(task.getIOSpecification(), task.getEnclosingScope()));
     }
   }

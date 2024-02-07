@@ -1,13 +1,21 @@
 package de.monticore.bpmn.xml.factories;
 
-import de.monticore.bpmn.workflow._ast.*;
+import de.monticore.bpmn.workflow._ast.ASTAtomicActivity;
+import de.monticore.bpmn.workflow._ast.ASTCallActivity;
+import de.monticore.bpmn.workflow._ast.ASTTask;
+import de.monticore.bpmn.workflow._ast.ASTTaskSendReceiveTypeAttributes;
 import de.monticore.bpmn.workflow._visitor.WorkflowHandler;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
 import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
 import de.monticore.bpmn.xml.WorkflowXmlUtils;
 import jakarta.xml.bind.JAXBElement;
+import org.omg.spec.bpmn._20100524.model.TActivity;
+import org.omg.spec.bpmn._20100524.model.TCallActivity;
+import org.omg.spec.bpmn._20100524.model.TInputOutputSpecification;
+import org.omg.spec.bpmn._20100524.model.TReceiveTask;
+import org.omg.spec.bpmn._20100524.model.TSendTask;
+
 import javax.xml.namespace.QName;
-import org.omg.spec.bpmn._20100524.model.*;
 
 public class AtomicActivityFactory extends XmlFactory<ASTAtomicActivity, TActivity>
     implements WorkflowVisitor2, WorkflowHandler {
@@ -55,10 +63,10 @@ public class AtomicActivityFactory extends XmlFactory<ASTAtomicActivity, TActivi
     String key = WorkflowXmlUtils.getAsResourceKey(callActivity.getTemplate());
     t.setCalledElement(new QName(key));
 
-    if (callActivity.getSymbol().getIoSpecification().isPresent()) {
+    if (callActivity.getSymbol().isPresentIOSpecification()) {
       TInputOutputSpecification xmlIoSpec =
           IOSpecificationFactory.makeXml(
-              callActivity.getSymbol().getIoSpecification().get(), callActivity.getName());
+              callActivity.getSymbol().getIOSpecification(), callActivity.getName());
       t.setIoSpecification(xmlIoSpec);
     }
   }
@@ -123,10 +131,10 @@ public class AtomicActivityFactory extends XmlFactory<ASTAtomicActivity, TActivi
       create(factory::createTTask, factory::createTask);
     }
 
-    if (task.getSymbol().getIoSpecification().isPresent()) {
+    if (task.getSymbol().isPresentIOSpecification()) {
       TInputOutputSpecification xmlIoSpec =
           IOSpecificationFactory.makeXml(
-              task.getSymbol().getIoSpecification().get(), task.getName());
+              task.getSymbol().getIOSpecification(), task.getName());
       val.setIoSpecification(xmlIoSpec);
     }
   }

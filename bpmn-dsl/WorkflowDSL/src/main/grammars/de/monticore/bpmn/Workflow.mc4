@@ -105,13 +105,16 @@ grammar Workflow
       triggeredByEvent:boolean
     ;
 
-  interface AtomicActivity extends Activity =
+  interface symbol scope AtomicActivity extends Activity =
       Name
       IOSpecification?
       (boundaryEvent:NamedEvent)*
     ;
 
-  symbol scope CallActivity implements AtomicActivity =
+    symbolrule AtomicActivity =
+      iOSpecification: de.monticore.bpmn.workflow._ast.io.IOSpecification?; // TODO:DeSer implementieren
+
+  CallActivity implements AtomicActivity =
       "task"
       Name
       "template" ":" template:Name  // @CallableElement
@@ -125,7 +128,7 @@ grammar Workflow
       )
     ;
 
-  symbol scope Task implements AtomicActivity =
+  Task implements AtomicActivity =
       "task"
       type:TaskType?
       Name
@@ -153,7 +156,7 @@ grammar Workflow
   interface TaskTypeAttributes;
 
   TaskSendReceiveTypeAttributes implements TaskTypeAttributes =
-      "message" ":" message:Name@Message
+      "message" ":" message:Name@Notification
     ;
 
   CompensationHandler =
@@ -272,10 +275,10 @@ grammar Workflow
   EventTriggerCancel       implements EventTrigger = "cancel";
   EventTriggerCompensate   implements EventTrigger = "compensate" (":" activity:Name)? ["async"]?;
   EventTriggerConditional  implements EventTrigger = "when"        ":" "[" Expression "]";
-  EventTriggerError        implements EventTrigger = "error"       ":" error:Name@Error;
-  EventTriggerEscalate     implements EventTrigger = "escalate"    ":" escalate:Name@Escalation;
-  EventTriggerMessage      implements EventTrigger = "message"     ":" message:Name@Message;
-  EventTriggerSignal       implements EventTrigger = "signal"      ":" signal:Name@Signal;
+  EventTriggerError        implements EventTrigger = "error"       ":" error:Name@Notification;
+  EventTriggerEscalate     implements EventTrigger = "escalate"    ":" escalate:Name@Notification;
+  EventTriggerMessage      implements EventTrigger = "message"     ":" message:Name@Notification;
+  EventTriggerSignal       implements EventTrigger = "signal"      ":" signal:Name@Notification;
   EventTriggerTerminate    implements EventTrigger = "terminate";
   EventTriggerTimer        implements EventTrigger = "timer"       ":" "[" expression:TimeExpression "]";
   EventTriggerMultiple     implements EventTrigger = ("one" | parallelMultiple:["all"]) "{" trigger:(EventTrigger || ",")+ "}";
@@ -357,11 +360,14 @@ grammar Workflow
   /*================================ MISC ==================================*/
   /*========================================================================*/
 
+  symbol Notification implements FlowElement, Variable =
+    kind:["error"|"escalation"|"message"|"signal"] Name ":" MCType ";" ;
 
-  symbol Error      implements FlowElement, Variable = "error"       Name ":" MCType ";" ;
-  symbol Escalation implements FlowElement, Variable = "escalation"  Name ":" MCType ";" ;
-  symbol Message    implements FlowElement, Variable = "message"     Name ":" MCType ";" ;
-  symbol Signal     implements FlowElement, Variable = "signal"      Name ":" MCType ";" ;
+  symbolrule Notification =
+    isError: boolean
+    isEscalation: boolean
+    isMessage: boolean
+    isSignal: boolean;
 
   nokeyword "timer";
 
