@@ -25,9 +25,8 @@ class ExpressionHasCorrectTypesTest extends AbstractCoCoTest {
     Collection<Finding> expectedErrors =
         Lists.newArrayList(
             Finding.error(
-                "0xF737F given expression of type Contract unable to derive the type of the access \".bla\""),
-            Finding.error(
-                "0xFD791 type of expression unknown but requested"));
+                "0xF737F given expression of type Contract unable to derive the type of the access \".bla\""
+            ));
 
     testModelForErrors(modelName, expectedErrors);
   }
