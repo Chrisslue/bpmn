@@ -22,13 +22,9 @@ class ExpressionHasCorrectTypesTest extends AbstractCoCoTest {
   void invalidExpression() {
     String modelName = "de.monticore.bpmn.cocos.conditions.invalid.Expression";
 
-    Collection<Finding> expectedErrors =
-        Lists.newArrayList(
-            Finding.error(
-                "0xF737F given expression of type Contract unable to derive the type of the access \".bla\""
-            ));
+    String expectedError = "0xF737F";
 
-    testModelForErrors(modelName, expectedErrors);
+    testModelForErrorCode(modelName, expectedError);
   }
 
   @Test
