@@ -76,10 +76,9 @@ public class Assert {
             + actualErrorsJoined);
   }
 
-  public static void assertHasErrorCodes(Collection<Finding> codes) {
-    codes.forEach(code ->
+  public static void assertHasErrorCode(String code) {
       assertTrue(
-          getAllErrorCodes().stream().anyMatch(msg -> msg.equals(code.getMsg())),
+          getAllErrorCodes().stream().anyMatch(code::equals),
           "Error \"" + code + "\" expected, "
               + "but instead the errors are:"
               + System.lineSeparator()
@@ -87,7 +86,6 @@ public class Assert {
               .map(Finding::buildMsg)
               .collect(Collectors.joining(System.lineSeparator()))
               + System.lineSeparator()
-      )
     );
   }
 

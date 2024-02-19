@@ -47,8 +47,19 @@ public abstract class AbstractCoCoTest extends AbstractTest {
       String qualifiedModelName, Collection<Finding> expectedErrors) {
     ASTWorkflowCompilationUnit cu = loadModel(qualifiedModelName);
 
- //   Assert.assertEqualErrorCounts(expectedErrors, errors);
-    Assert.assertHasErrorCodes(expectedErrors);
+    Collection<Finding> errors =
+        Log.getFindings().stream().filter(Finding::isError).collect(Collectors.toList());
+    Assert.assertEqualErrorCounts(expectedErrors, errors);
+    Assert.assertErrorMsg(expectedErrors, errors);
+
+    return cu;
+  }
+
+  protected ASTWorkflowCompilationUnit testModelForErrorCode(
+      String qualifiedModelName, String expectedError) {
+    ASTWorkflowCompilationUnit cu = loadModel(qualifiedModelName);
+
+    Assert.assertHasErrorCode(expectedError);
 
     return cu;
   }
