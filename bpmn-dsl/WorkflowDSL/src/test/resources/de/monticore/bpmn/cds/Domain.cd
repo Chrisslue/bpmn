@@ -5,7 +5,7 @@ classdiagram Domain {
 
     class Contract {
       java.time.ZonedDateTime hiringDate;
-      int version;
+      public int version;
     }
 
     class DomainUser;

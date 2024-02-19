@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 //todo: reactivate when (de-)serialization of symbol tables is fixed
-@Disabled
 class ExpressionHasCorrectTypesTest extends AbstractCoCoTest {
 
   @Override
@@ -26,7 +25,9 @@ class ExpressionHasCorrectTypesTest extends AbstractCoCoTest {
     Collection<Finding> expectedErrors =
         Lists.newArrayList(
             Finding.error(
-                "0xA0241 No SymTypeExpression could be derived for the FieldAccessExpression contract.bla"));
+                "0xF737F given expression of type Contract unable to derive the type of the access \".bla\""),
+            Finding.error(
+                "0xFD791 type of expression unknown but requested"));
 
     testModelForErrors(modelName, expectedErrors);
   }
