@@ -55,6 +55,15 @@ public abstract class AbstractCoCoTest extends AbstractTest {
     return cu;
   }
 
+  protected ASTWorkflowCompilationUnit testModelForErrorCode(
+      String qualifiedModelName, String expectedError) {
+    ASTWorkflowCompilationUnit cu = loadModel(qualifiedModelName);
+
+    Assert.assertHasErrorCode(expectedError);
+
+    return cu;
+  }
+
   protected ASTWorkflowCompilationUnit testModelForErrors(
       String qualifiedModelName,
       Collection<Finding> expectedErrors,

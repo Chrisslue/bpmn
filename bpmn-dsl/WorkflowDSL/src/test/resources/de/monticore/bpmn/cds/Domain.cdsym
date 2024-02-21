@@ -39,6 +39,7 @@
           {
             "kind": "de.monticore.symbols.oosymbols._symboltable.FieldSymbol",
             "name": "version",
+            "isPublic":true,
             "type": {
               "kind": "de.monticore.types.check.SymTypePrimitive",
               "primitiveName": "int"

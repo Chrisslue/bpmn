@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 //todo: reactivate when (de-)serialization of symbol tables is fixed
-@Disabled
 class ExpressionHasCorrectTypesTest extends AbstractCoCoTest {
 
   @Override
@@ -23,12 +22,9 @@ class ExpressionHasCorrectTypesTest extends AbstractCoCoTest {
   void invalidExpression() {
     String modelName = "de.monticore.bpmn.cocos.conditions.invalid.Expression";
 
-    Collection<Finding> expectedErrors =
-        Lists.newArrayList(
-            Finding.error(
-                "0xA0241 No SymTypeExpression could be derived for the FieldAccessExpression contract.bla"));
+    String expectedError = "0xF737F";
 
-    testModelForErrors(modelName, expectedErrors);
+    testModelForErrorCode(modelName, expectedError);
   }
 
   @Test

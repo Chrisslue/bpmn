@@ -5,7 +5,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.google.common.base.Joiner;
 import de.se_rwth.commons.logging.Finding;
+import de.se_rwth.commons.logging.Log;
+
 import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /** Helpers for testing CoCos. */
 public class Assert {
@@ -71,4 +75,43 @@ public class Assert {
             + expectedErrorsJoined
             + actualErrorsJoined);
   }
+
+  public static void assertHasErrorCode(String code) {
+      assertTrue(
+          getAllErrorCodes().stream().anyMatch(code::equals),
+          "Error \"" + code + "\" expected, "
+              + "but instead the errors are:"
+              + System.lineSeparator()
+              + Log.getFindings().stream()
+              .map(Finding::buildMsg)
+              .collect(Collectors.joining(System.lineSeparator()))
+              + System.lineSeparator()
+    );
+  }
+
+  protected static List<String> getFirstErrorCodes(long n) {
+    List<String> errorsInLog = Log.getFindings().stream()
+        .filter(Finding::isError)
+        .map(err -> err.getMsg().split(" ")[0])
+        .limit(n)
+        .collect(Collectors.toList());
+    List<String> errorsToReturn;
+
+    if (errorsInLog.size() < n) {
+      errorsToReturn = errorsInLog;
+      for (int i = 0; i < n - errorsInLog.size(); i++) {
+        errorsToReturn.add("");
+      }
+    }
+    else {
+      errorsToReturn = errorsInLog.subList(0, (int) n);
+    }
+    return errorsToReturn;
+  }
+
+  protected static List<String> getAllErrorCodes() {
+    return getFirstErrorCodes(Log.getErrorCount());
+  }
+
+
 }
