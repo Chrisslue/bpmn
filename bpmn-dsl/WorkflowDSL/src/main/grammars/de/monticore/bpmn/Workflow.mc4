@@ -342,14 +342,13 @@ grammar Workflow
       ("as" alias:Name)?
     ;
 
-  InputSet  = input :DataIO | "{" input :(DataIO || ",")* "}" ;
-  OutputSet = output:DataIO | "{" output:(DataIO || ",")* "}" ;
+  DataSet  =  DataIO | "{" (DataIO || ",")* "}" ;
 
-  IRequirement implements IORequirement = "in"  ":" inputSet :InputSet  ";" ;
-  ORequirement implements IORequirement = "out" ":" outputSet:OutputSet ";" ;
+  IRequirement implements IORequirement = "in"  ":" inputSet :DataSet  ";" ;
+  ORequirement implements IORequirement = "out" ":" outputSet:DataSet ";" ;
 
   IORule implements IORequirement =
-      "io" (operationName:Name)? ":" inputSet:InputSet "->" outputSet:OutputSet ";"
+      "io" (operationName:Name)? ":" inputSet:DataSet "->" outputSet:DataSet ";"
     ;
 
 
