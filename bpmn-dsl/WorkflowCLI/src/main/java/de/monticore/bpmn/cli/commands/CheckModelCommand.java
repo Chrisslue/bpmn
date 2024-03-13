@@ -82,7 +82,6 @@ class CheckModelCommand implements Runnable {
     new AddNameToInlineFlowNodes().transform(ast);
     new AddSequenceFlowToFlowNodes().transform(ast);
     new AddReferenceToParentLane().transform(ast);
-    new CreateIOSpecification().transform(ast);
     new SetSubProcessTriggeredByEvent().transform(ast);
 
     WorkflowSTCompleter stCompleter = new WorkflowSTCompleter();

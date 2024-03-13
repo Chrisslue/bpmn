@@ -48,7 +48,7 @@ grammar Workflow
       "}"
     ;
   astrule Lane =
-      parentLane:Optional<String> // MC 5.0.2 does not yet support '?' // Optional<ASTLane> leads to circular dependencies in AST
+      parentLane:String?
     ;
 
 
@@ -62,8 +62,8 @@ grammar Workflow
   interface InlineFlowNode extends FlowNode ;
 
   astrule FlowNode astextends ASTFlowElement, IFlowNode = // IFlowNode provides additional default methods for predecessors/successors
-      parentRef:Optional<String>
-      laneRef:Optional<String>
+      parentRef:String?
+      laneRef:String?
       incomings:List<de.monticore.bpmn.workflow._ast.SequenceFlow>
       outgoings:List<de.monticore.bpmn.workflow._ast.SequenceFlow>
     ;
@@ -110,9 +110,6 @@ grammar Workflow
       IOSpecification?
       (boundaryEvent:NamedEvent)*
     ;
-
-    symbolrule AtomicActivity =
-      iOSpecification: de.monticore.bpmn.workflow._ast.io.IOSpecification?; // TODO:DeSer implementieren
 
   CallActivity implements AtomicActivity =
       "task"
