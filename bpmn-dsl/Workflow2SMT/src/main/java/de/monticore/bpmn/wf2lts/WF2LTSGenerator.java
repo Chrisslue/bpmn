@@ -3,7 +3,6 @@ package de.monticore.bpmn.wf2lts;
 import de.monticore.bpmn.trafos.AddNameToInlineFlowNodes;
 import de.monticore.bpmn.trafos.AddReferenceToParentLane;
 import de.monticore.bpmn.trafos.AddSequenceFlowToFlowNodes;
-import de.monticore.bpmn.trafos.CreateIOSpecification;
 import de.monticore.bpmn.trafos.SetSubProcessTriggeredByEvent;
 import de.monticore.bpmn.wf2lts.collector.StartEventCollector;
 import de.monticore.bpmn.wf2lts.datastructure.IntermediateGraphWithScopes;
@@ -55,7 +54,6 @@ public class WF2LTSGenerator {
     new AddNameToInlineFlowNodes().transform(ast);
     new AddSequenceFlowToFlowNodes().transform(ast);
     new AddReferenceToParentLane().transform(ast);
-    new CreateIOSpecification().transform(ast);
     new SetSubProcessTriggeredByEvent().transform(ast);
 
     WorkflowSTCompleter stCompleter = new WorkflowSTCompleter();

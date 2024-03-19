@@ -12,13 +12,12 @@ import picocli.CommandLine.Command;
  * The main command. Provides the sub-commands {@code verify} and {@code export}.
  *
  * @see CheckModelCommand
- * @see GenerateXmlCommand
  */
 @Command(
     name = "wftool",
     versionProvider = VersionProvider.class,
     synopsisSubcommandLabel = "COMMAND",
-    subcommands = {CheckModelCommand.class, GenerateXmlCommand.class},
+    subcommands = {CheckModelCommand.class},
     mixinStandardHelpOptions = true,
     header = {
       "@|green  _      __         __    _____             ______          __|@",

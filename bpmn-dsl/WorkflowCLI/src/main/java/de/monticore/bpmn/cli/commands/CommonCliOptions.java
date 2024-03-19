@@ -9,7 +9,6 @@ import picocli.CommandLine;
  * CLI options shared by multiple commands.
  *
  * @see CheckModelCommand
- * @see GenerateXmlCommand
  */
 class CommonCliOptions {
 

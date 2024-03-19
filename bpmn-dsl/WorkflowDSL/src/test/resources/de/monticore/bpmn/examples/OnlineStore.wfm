@@ -36,6 +36,7 @@ process OnlineStore {
         task ProcureArticle template:ProcureArticle;
 
         /* TODO
+        //TODO: add rollback concept to grammar?
         task service ReserveArticle rollback:RemoveReservation;
         rollback task service RemoveReservation;
 
@@ -151,7 +152,7 @@ process OnlineStore {
 
       message orderCancellation:OrderCancellationRequest;
       subprocess Bla2 {
-        // TODO event start rderCancellationRequested receive message:orderCancellation -> end event OrderCancelled send rollback;
+        // TODO event start orderCancellationRequested receive message:orderCancellation -> end event OrderCancelled send rollback;
       }
 
       message addressUpdate:ShippingAddressUpdateRequest;
@@ -271,11 +272,10 @@ process OnlineStore {
     signal newReviewAvailable:ReviewAvailableSignal;
     event ReviewCreated receive signal:newReviewAvailable;
 
-    /* TODO
-    task ReviewReport multi sequential count:3 until:[exists r in reviews: !r.accepted] implicit:all event:newReviewAvailable {
+    // TODO: Rename implicit:every to implicit:all
+    task ReviewReport count:3 sequential until:[exists r in reviews: !r.accepted] implicit:every event:signal:newReviewAvailable {
       io: report -> reviews[i];
     }
-    */
 
     task UpdateReport {
       io: report -> report;
