@@ -156,6 +156,7 @@ public class EnumArcSCBuilder implements ArcSCBuilder {
         .build();
   }
 
+  //todo: add dummy events to transitions
   public ASTMACompilationUnit buildMA(String name) {
 
     ASTCDCompilationUnit cd =
