@@ -196,7 +196,7 @@ public class DefaultGatewayTransformer implements GatewayTransformer {
       Graph2LTSTransformer graph2LTSTransformer
   ) {
 
-    if (!new WorkflowTypeDispatcher().isASTGateway(gatewayScope.getGraph().getStart())) {
+    if (!new WorkflowTypeDispatcher().isWorkflowASTGateway(gatewayScope.getGraph().getStart())) {
       throw new IllegalStateException("Start node of gatewayScope is not an ASTGateway");
     }
     String splitName = namingStrategy.apply(gatewayScope.getGraph().getStart());

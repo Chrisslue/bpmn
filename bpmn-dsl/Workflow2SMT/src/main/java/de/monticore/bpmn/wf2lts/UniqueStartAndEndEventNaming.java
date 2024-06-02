@@ -46,7 +46,7 @@ public class UniqueStartAndEndEventNaming implements NamingStrategy<ASTFlowNode>
 
   private void visitEvent(ASTEvent node) {
     if (node.isEnd()) {
-      if (node.isPresentTrigger() && new WorkflowTypeDispatcher().isASTEventTriggerTerminate(node.getTrigger())) {
+      if (node.isPresentTrigger() && new WorkflowTypeDispatcher().isWorkflowASTEventTriggerTerminate(node.getTrigger())) {
         map.put(node, terminatingName);
       } else {
         map.put(node, endName);
