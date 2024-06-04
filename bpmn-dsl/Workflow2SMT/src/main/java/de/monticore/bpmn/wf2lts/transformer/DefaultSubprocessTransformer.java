@@ -74,7 +74,7 @@ public class DefaultSubprocessTransformer implements SubprocessTransformer {
                 event ->
                     !event.isPresentTrigger()
                         || !new WorkflowTypeDispatcher()
-                            .isASTEventTriggerTerminate(event.getTrigger()));
+                            .isWorkflowASTEventTriggerTerminate(event.getTrigger()));
 
     var internalEndNames = getEventNames(plainEndEvents, parameterPack.getNamingStrategy());
     replaceInternalEndEvents(
@@ -109,7 +109,7 @@ public class DefaultSubprocessTransformer implements SubprocessTransformer {
                 event ->
                     event.isPresentTrigger()
                         && new WorkflowTypeDispatcher()
-                            .isASTEventTriggerTerminate(event.getTrigger()));
+                            .isWorkflowASTEventTriggerTerminate(event.getTrigger()));
 
     var internalTerminatingNames =
         getEventNames(terminatingEvents, parameterPack.getNamingStrategy());
