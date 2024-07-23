@@ -71,22 +71,25 @@ class SMTDiffTest {
     var second = new LTS();
     LTSTestingUtils.addPathOfLabelFromStart(second, List.of("A", "End"));
     var aTarget = second.getTransitionsForLabel("A").get(0).getTarget();
-    var cycle = second.getTransitionsForLabel("A").get(0)
-        .changedSource(aTarget)
-        .changedTarget(second.getStart());
+    var cycle =
+        second
+            .getTransitionsForLabel("A")
+            .get(0)
+            .changedSource(aTarget)
+            .changedTarget(second.getStart());
     second.addTransition(cycle);
     var differ = WF2SMTDiffGenerator.generateDiffer(first, second, List.of("End"));
     var witnessForFirst = differ.firstIncludesTracesOfSecond(10);
     assertTrue(witnessForFirst.isEmpty());
     var optWitnessForSecond = differ.secondIncludesTracesOfFirst(10);
     assertTrue(optWitnessForSecond.isPresent());
-    var witnessForSecond = new LTSTraverser(second).pathOfLabel(optWitnessForSecond.get()).orElseThrow();
+    var witnessForSecond =
+        new LTSTraverser(second).pathOfLabel(optWitnessForSecond.get()).orElseThrow();
 
     assertTrue(witnessForSecond.getTransitions().size() >= 7);
     assertTrue(witnessForSecond.endsInTerminal());
 
     var shortWitness = differ.secondIncludesTracesOfFirst(5);
     assertTrue(shortWitness.isEmpty());
-
   }
 }

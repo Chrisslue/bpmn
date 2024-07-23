@@ -8,19 +8,22 @@ import java.util.List;
 
 public class ExpressionHelper {
 
-  private ExpressionHelper() {
-  }
+  private ExpressionHelper() {}
 
   public static ASTExpression mergeConditions(List<ASTFlowCondition> conditions) {
     return conditions.stream()
         .map(ASTFlowCondition::getExpression)
-        .reduce((astExpression, nextExpression) ->
-            WorkflowMill.binaryAndExpressionBuilder().setLeft(astExpression).setRight(nextExpression).setOperator("&&")
-                .build()).orElseGet(() -> {
+        .reduce(
+            (astExpression, nextExpression) ->
+                WorkflowMill.binaryAndExpressionBuilder()
+                    .setLeft(astExpression)
+                    .setRight(nextExpression)
+                    .setOperator("&&")
+                    .build())
+        .orElseGet(
+            () -> {
               Log.error("Could not combine List<ASTExpression>");
               return null;
-            }
-        );
+            });
   }
-
 }

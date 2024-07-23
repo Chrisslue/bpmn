@@ -1,18 +1,16 @@
 package de.monticore.bpmn.prettyprint;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import de.monticore.bpmn.AbstractTest;
 import de.monticore.bpmn.workflow.WorkflowMill;
 import de.monticore.bpmn.workflow._ast.ASTWorkflowCompilationUnit;
+import java.io.IOException;
+import java.util.Optional;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 public class WorkflowPrettyPrinterTest extends AbstractTest {
-
 
   @Test
   @Disabled // RequestHoliday cannot be parsed

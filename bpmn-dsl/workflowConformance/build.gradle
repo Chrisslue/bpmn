@@ -1,0 +1,27 @@
+plugins {
+    id 'java'
+}
+
+group = 'com.monticore.workflowConformance'
+version = '7.6.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation project(':WorkflowDSL')
+    implementation project(':TimeExpressions')
+    implementation project(':Workflow2SMT')
+
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    implementation project(":WorkflowDSL")
+    implementation group: 'de.monticore', name: 'monticore-runtime', version: mc_version
+    implementation "de.monticore:monticore-grammar:$mc_version"
+    implementation "de.monticore.lang:ocl:$ocl_version"
+}
+
+test {
+    useJUnitPlatform()
+}

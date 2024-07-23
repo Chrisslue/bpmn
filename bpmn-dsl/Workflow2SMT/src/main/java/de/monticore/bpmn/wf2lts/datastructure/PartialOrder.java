@@ -20,8 +20,7 @@ public class PartialOrder<T> {
   public void addPredecessorTo(T predecessor, T element) {
     if (poMap.containsKey(element)) {
       poMap.get(element).add(predecessor);
-    }
-    else {
+    } else {
       poMap.put(element, new HashSet<>(Set.of(predecessor)));
     }
     poMap.get(element).addAll(getPredecessors(predecessor));
@@ -30,13 +29,10 @@ public class PartialOrder<T> {
   public Set<T> getPredecessors(T element) {
     if (poMap.containsKey(element)) {
       return poMap.get(element);
-    }
-    else
-      return new HashSet<>();
+    } else return new HashSet<>();
   }
 
   public boolean isPredecessor(T predecessor, T element) {
     return getPredecessors(element).contains(predecessor);
   }
-
 }

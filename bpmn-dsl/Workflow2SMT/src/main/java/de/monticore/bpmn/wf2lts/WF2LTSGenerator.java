@@ -77,24 +77,22 @@ public class WF2LTSGenerator {
     return workflow2LTS(ast, new DefaultGraph2LTSTransformer());
   }
 
-  public static LTS workflow2LTS(ASTWorkflowCompilationUnit ast, Graph2LTSTransformer graph2LTSTransformer) {
+  public static LTS workflow2LTS(
+      ASTWorkflowCompilationUnit ast, Graph2LTSTransformer graph2LTSTransformer) {
     var lts = graph2LTSTransformer.transformAndReduce(transformToGraph(ast));
     removeUnreachable(lts);
     return lts;
   }
 
   public static LTSWithFinalStates workflow2LTSWithFinalStates(
-      ASTWorkflowCompilationUnit ast,
-      Graph2LTSTransformer graph2LTSTransformer
-  ) {
-    // Mark every terminal state as final state assuming terminal states are those where and end events points to.
+      ASTWorkflowCompilationUnit ast, Graph2LTSTransformer graph2LTSTransformer) {
+    // Mark every terminal state as final state assuming terminal states are those where and end
+    // events points to.
     return LTSWithFinalStates.ofTerminalStates(workflow2LTS(ast, graph2LTSTransformer));
   }
 
   public static <S, L, Builder extends LTSBuilder<S, L>> Builder workflow2LTS(
-      ASTWorkflowCompilationUnit ast,
-      Builder builder
-  ) {
+      ASTWorkflowCompilationUnit ast, Builder builder) {
     return workflow2LTS(ast).toModel(builder);
   }
 
@@ -107,5 +105,4 @@ public class WF2LTSGenerator {
           .forEach(lts::removeState);
     } while (lts.getStates().size() != stateSize);
   }
-
 }

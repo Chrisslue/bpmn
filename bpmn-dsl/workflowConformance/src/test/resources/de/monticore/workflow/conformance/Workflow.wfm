@@ -1,0 +1,23 @@
+
+process Workflow {
+
+  event start Start;
+
+  Start -> XorSplit;
+  split xor XorSplit;
+  Retry -> [false] Part1;
+  Retry -> [true] Part2;
+
+  task Part1;
+  task Part2;
+
+  merge xor XorMerge ;
+
+  Part1 -> XorMerge;
+  Part2 -> XorMerge;
+
+  XorMerge -> End;
+
+  event end End;
+
+}

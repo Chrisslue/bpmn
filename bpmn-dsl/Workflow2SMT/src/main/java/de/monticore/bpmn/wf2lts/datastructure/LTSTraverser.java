@@ -23,10 +23,10 @@ public class LTSTraverser {
   private final LTS lts;
 
   /**
-   * Traverse a lst given a list of transition label. This works for deterministic as well as non-determinist lts
-   * (w.r.t. the outgoing transition-label).
+   * Traverse a lst given a list of transition label. This works for deterministic as well as
+   * non-determinist lts (w.r.t. the outgoing transition-label).
    *
-   * @param lts    The lts to be traversed.
+   * @param lts The lts to be traversed.
    * @param labels List of transition label.
    * @return The path of visited transitions if a path could be found else empty.
    */
@@ -36,8 +36,8 @@ public class LTSTraverser {
   }
 
   /**
-   * Use depth-first-search to compute the reachable part of the lts. The returned lts will have the exact same states
-   * and transitions (no copies).
+   * Use depth-first-search to compute the reachable part of the lts. The returned lts will have the
+   * exact same states and transitions (no copies).
    *
    * @param fromState The start point from which the search is started.
    * @return A view of the reachable part of the lts starting at fromState.
@@ -72,8 +72,8 @@ public class LTSTraverser {
   }
 
   /**
-   * Generate all paths starting from source and ending in target. This method is not optimized and can result in
-   * OutOfMemory exceptions for huge lts.
+   * Generate all paths starting from source and ending in target. This method is not optimized and
+   * can result in OutOfMemory exceptions for huge lts.
    */
   public List<Path> pathsBetween(State source, State target) {
     var foundPaths = new ArrayList<Path>();
@@ -152,9 +152,7 @@ public class LTSTraverser {
     }
 
     public List<String> asLabel() {
-      return stream()
-          .map(Transition::getLabel)
-          .collect(Collectors.toList());
+      return stream().map(Transition::getLabel).collect(Collectors.toList());
     }
 
     public Path advancedBy(Transition transition) {
@@ -168,8 +166,7 @@ public class LTSTraverser {
     }
 
     public List<Transition> outgoingsWith(String label) {
-      return outgoingsWithStream(label)
-          .collect(Collectors.toList());
+      return outgoingsWithStream(label).collect(Collectors.toList());
     }
 
     public Optional<Transition> outgoingWith(String label, State target) {
@@ -179,9 +176,7 @@ public class LTSTraverser {
     }
 
     public Stream<Transition> outgoingsWithStream(String label) {
-      return outgoings()
-          .stream()
-          .filter(transition -> transition.getLabel().equals(label));
+      return outgoings().stream().filter(transition -> transition.getLabel().equals(label));
     }
 
     public List<Transition> outgoings() {
@@ -200,16 +195,16 @@ public class LTSTraverser {
       var nextLabel = remainingLabel[size - 1];
 
       return this.outgoingsWithStream(nextLabel)
-          .map(nextTransition -> this.advancedBy(nextTransition).findPathOfLabelRecursive(remainingLabel, size - 1))
+          .map(
+              nextTransition ->
+                  this.advancedBy(nextTransition)
+                      .findPathOfLabelRecursive(remainingLabel, size - 1))
           .filter(Optional::isPresent)
           .map(Optional::get)
           .findAny();
     }
 
-    private void pathsBetweenRecursive(
-        State target,
-        List<State> visited,
-        List<Path> foundPaths) {
+    private void pathsBetweenRecursive(State target, List<State> visited, List<Path> foundPaths) {
 
       for (var transition : this.outgoings()) {
         if (transition.getTarget().equals(target)) {
@@ -221,14 +216,12 @@ public class LTSTraverser {
         }
         var nextVisited = new ArrayList<>(visited);
         nextVisited.add(transition.getTarget());
-        this.advancedBy(transition)
-            .pathsBetweenRecursive(target, nextVisited, foundPaths);
+        this.advancedBy(transition).pathsBetweenRecursive(target, nextVisited, foundPaths);
       }
     }
 
     public boolean labelOccurred(String label) {
       return this.transitions.stream().anyMatch(transition -> transition.getLabel().equals(label));
     }
-
   }
 }

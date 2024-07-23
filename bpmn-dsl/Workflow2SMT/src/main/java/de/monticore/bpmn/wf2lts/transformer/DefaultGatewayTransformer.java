@@ -7,7 +7,6 @@ import de.monticore.bpmn.wf2lts.datastructure.LTSWithFinalStates;
 import de.monticore.bpmn.wf2lts.scopes.GatewayScope;
 import de.monticore.bpmn.workflow._ast.ASTFlowNode;
 import de.monticore.bpmn.workflow._util.WorkflowTypeDispatcher;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -22,8 +21,7 @@ public class DefaultGatewayTransformer implements GatewayTransformer {
 
   public DefaultGatewayTransformer(
       GatewayInterleavingStrategy interleavingStrategy,
-      NamingStrategy<ASTFlowNode> namingStrategy
-  ) {
+      NamingStrategy<ASTFlowNode> namingStrategy) {
     this.interleavingStrategy = interleavingStrategy;
     this.namingStrategy = namingStrategy;
   }
@@ -34,27 +32,28 @@ public class DefaultGatewayTransformer implements GatewayTransformer {
   }
 
   private LTSWithFinalStates removeInternalSplitAndMerge(
-      LTS internalLTS,
-      String splitName,
-      Optional<String> optMergeName
-  ) {
+      LTS internalLTS, String splitName, Optional<String> optMergeName) {
     removeInternalSplitTransitions(internalLTS, splitName);
-    LTSWithFinalStates ltsWithFinalStates = new LTSWithFinalStates(internalLTS, Collections.emptyList());
+    LTSWithFinalStates ltsWithFinalStates =
+        new LTSWithFinalStates(internalLTS, Collections.emptyList());
 
     // Remove internal merge transitions, for each mark the source state as final state
-    optMergeName.ifPresent(s ->
-        removeInternalMergeTransition(ltsWithFinalStates, s).forEach(mergeTransition ->
-            ltsWithFinalStates.addAsFinalState(mergeTransition.getSource()))
-    );
+    optMergeName.ifPresent(
+        s ->
+            removeInternalMergeTransition(ltsWithFinalStates, s)
+                .forEach(
+                    mergeTransition ->
+                        ltsWithFinalStates.addAsFinalState(mergeTransition.getSource())));
     return ltsWithFinalStates;
   }
 
   /**
-   * Interleaving assumes that the outgoings of the start node are the successors of the split-gateway. Therefore, the
-   * splitName transitions have to be removed from the internal lts first.
+   * Interleaving assumes that the outgoings of the start node are the successors of the
+   * split-gateway. Therefore, the splitName transitions have to be removed from the internal lts
+   * first.
    *
    * @param internalLTS The internals of the gateway as lts.
-   * @param splitName   The name of the split-gateway produced by the naming strategy.
+   * @param splitName The name of the split-gateway produced by the naming strategy.
    */
   private static void removeInternalSplitTransitions(LTS internalLTS, String splitName) {
     List<Transition> internalSplitting = internalLTS.getTransitionsForLabel(splitName);
@@ -74,8 +73,12 @@ public class DefaultGatewayTransformer implements GatewayTransformer {
     if (optWitness.isPresent()) {
       throw new IllegalStateException(
           "Internal split transition had another source as start node."
-              + "Expected " + internalLTS.getStart() + " But source was " + optWitness.get().getSource()
-              + " for transition" + optWitness.get());
+              + "Expected "
+              + internalLTS.getStart()
+              + " But source was "
+              + optWitness.get().getSource()
+              + " for transition"
+              + optWitness.get());
     }
     for (var splitTransition : internalSplitting) {
       List<Transition> toBeChanged = internalLTS.getOutgoings(splitTransition.getTarget());
@@ -101,21 +104,22 @@ public class DefaultGatewayTransformer implements GatewayTransformer {
   }
 
   /**
-   * Add all outgoings of internal start to all sources of external transitions labeled with splitName. Assuming
-   * splitName is not part of the internal lts anymore.
+   * Add all outgoings of internal start to all sources of external transitions labeled with
+   * splitName. Assuming splitName is not part of the internal lts anymore.
    *
    * @param externalLTS The lts surrounding the GatewayScope.
-   * @param splitName   The name of the splitting gateway.
+   * @param splitName The name of the splitting gateway.
    * @param internalLTS The lts representing all transitions encapsulated by the GatewayScope.
    */
-  private static void rewireExternalSplitTransitions(LTS externalLTS, String splitName, LTS internalLTS) {
+  private static void rewireExternalSplitTransitions(
+      LTS externalLTS, String splitName, LTS internalLTS) {
     List<Transition> oldTransitions = externalLTS.getTransitionsForLabel(splitName);
     if (internalLTS.isLabelPresent(splitName)) {
       throw new IllegalStateException("Internal LTS should not contain transitions with splitName");
     }
     for (LTS.Transition oldTransition : oldTransitions) {
-        externalLTS.addTransition(
-            oldTransition.changedLabel("").changedTarget(internalLTS.getStart()));
+      externalLTS.addTransition(
+          oldTransition.changedLabel("").changedTarget(internalLTS.getStart()));
     }
   }
 
@@ -123,54 +127,60 @@ public class DefaultGatewayTransformer implements GatewayTransformer {
    * For every internal final state, add all outgoings of the external merge transitions.
    *
    * @param externalLTS The lts surrounding the GatewayScope.
-   * @param mergeName   The name of the merging gateway. Appearing both in the external and internal lts.
+   * @param mergeName The name of the merging gateway. Appearing both in the external and internal
+   *     lts.
    * @param internalLTS The lts representing everything between split and merge.
    */
   private static void rewireExternalMergeTransitions(
-      LTS externalLTS,
-      String mergeName,
-      LTSWithFinalStates internalLTS
-  ) {
+      LTS externalLTS, String mergeName, LTSWithFinalStates internalLTS) {
     List<Transition> externalMerging = externalLTS.getTransitionsForLabel(mergeName);
     if (externalMerging.isEmpty()) {
       throw new IllegalStateException(
           "No merging transitions in external lts. Expected to find "
-              + mergeName + ". In lts: " + externalLTS);
+              + mergeName
+              + ". In lts: "
+              + externalLTS);
     }
 
     LTS.State connectorState = new LTS.State();
-    internalLTS.getFinalStates().forEach(state -> internalLTS.addTransition(new Transition(state,
-        new ArrayList<>(),"",connectorState)));
+    internalLTS
+        .getFinalStates()
+        .forEach(
+            state ->
+                internalLTS.addTransition(
+                    new Transition(state, new ArrayList<>(), "", connectorState)));
 
     // All outgoing transitions of all external-merging-targets..
-    //todo: add epsilon-transition?
-    var externalSuccessors = externalMerging.stream()
-        .map(Transition::getTarget)
-        .flatMap(externalMergingTarget -> externalLTS.getOutgoings(externalMergingTarget).stream())
-        .collect(Collectors.toList());
+    // todo: add epsilon-transition?
+    var externalSuccessors =
+        externalMerging.stream()
+            .map(Transition::getTarget)
+            .flatMap(
+                externalMergingTarget -> externalLTS.getOutgoings(externalMergingTarget).stream())
+            .collect(Collectors.toList());
 
-    externalSuccessors.forEach(transition -> externalLTS.addTransition(transition.changedSource(connectorState)));
+    externalSuccessors.forEach(
+        transition -> externalLTS.addTransition(transition.changedSource(connectorState)));
 
     rewireExternalIncomingMergeTransitions(externalLTS, mergeName, connectorState);
   }
 
   private static void rewireExternalIncomingMergeTransitions(
-      LTS externalLTS,
-      String mergeName,
-      LTS.State connectorState
-  ) {
+      LTS externalLTS, String mergeName, LTS.State connectorState) {
     // If the mergeName is part of the externalLTS there is possible a cycle.
-    // In that case pass incoming transitions to the merge-transition through to the outgoing transitions.
+    // In that case pass incoming transitions to the merge-transition through to the outgoing
+    // transitions.
     // For example for every s0 - A -> s1 - Merge -> s2 - b -> s3 rewire it to:
     // s0 - A -> s2 - b -> s3
-    //todo: add epsilon-transition?
+    // todo: add epsilon-transition?
     for (var externalMergeTransition : externalLTS.getTransitionsForLabel(mergeName)) {
-      for (Transition incomingTransition : externalLTS.getIncoming(externalMergeTransition.getSource())) {
+      for (Transition incomingTransition :
+          externalLTS.getIncoming(externalMergeTransition.getSource())) {
         externalLTS.removeTransition(incomingTransition);
-        externalLTS.addTransition(incomingTransition
-            .changedTarget(connectorState)
-            .withAddedConditions(externalMergeTransition.getConditions())
-        );
+        externalLTS.addTransition(
+            incomingTransition
+                .changedTarget(connectorState)
+                .withAddedConditions(externalMergeTransition.getConditions()));
       }
     }
   }
@@ -178,23 +188,18 @@ public class DefaultGatewayTransformer implements GatewayTransformer {
   // Remove all transitions with name as label.
   public static void removeTransitionsLabeled(String name, LTS lts) {
     List<Transition> transitionsToBeRemoved = lts.getTransitionsForLabel(name);
-    var possiblyDanglingStates = transitionsToBeRemoved
-        .stream()
-        .flatMap(transition -> Stream.of(transition.getSource(), transition.getTarget()))
-        .filter(state -> lts.getStart() != state)
-        .collect(Collectors.toList());
+    var possiblyDanglingStates =
+        transitionsToBeRemoved.stream()
+            .flatMap(transition -> Stream.of(transition.getSource(), transition.getTarget()))
+            .filter(state -> lts.getStart() != state)
+            .collect(Collectors.toList());
     transitionsToBeRemoved.forEach(lts::removeTransition);
-    possiblyDanglingStates.stream()
-        .distinct()
-        .forEach(lts::removeStateIfNoIncomingRecursively);
+    possiblyDanglingStates.stream().distinct().forEach(lts::removeStateIfNoIncomingRecursively);
   }
 
   @Override
   public LTS transform(
-      GatewayScope gatewayScope,
-      LTS externalLTS,
-      Graph2LTSTransformer graph2LTSTransformer
-  ) {
+      GatewayScope gatewayScope, LTS externalLTS, Graph2LTSTransformer graph2LTSTransformer) {
 
     if (!new WorkflowTypeDispatcher().isWorkflowASTGateway(gatewayScope.getGraph().getStart())) {
       throw new IllegalStateException("Start node of gatewayScope is not an ASTGateway");
@@ -207,8 +212,9 @@ public class DefaultGatewayTransformer implements GatewayTransformer {
     LTSWithFinalStates strippedInternalLTS =
         removeInternalSplitAndMerge(transformedInternalLTS, splitName, optMergeName);
 
-    LTSWithFinalStates interleavedLTS = getGatewayInterleavingStrategy()
-        .interleave(gatewayScope.getGatewayType(), strippedInternalLTS);
+    LTSWithFinalStates interleavedLTS =
+        getGatewayInterleavingStrategy()
+            .interleave(gatewayScope.getGatewayType(), strippedInternalLTS);
 
     if (optMergeName.isPresent()) {
       var mergeName = optMergeName.get();
@@ -222,7 +228,7 @@ public class DefaultGatewayTransformer implements GatewayTransformer {
     removeTransitionsLabeled(splitName, externalLTS);
     optMergeName.ifPresent(s -> removeTransitionsLabeled(s, externalLTS));
 
-    //externalLTS.removeState(interleavedLTS.getStart());
+    // externalLTS.removeState(interleavedLTS.getStart());
 
     return externalLTS;
   }

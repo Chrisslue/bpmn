@@ -10,7 +10,6 @@ import de.monticore.bpmn.workflow._ast.ASTSubProcess;
 import de.monticore.bpmn.workflow._ast.ASTTask;
 import de.monticore.bpmn.workflow._visitor.WorkflowHandler;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,7 +60,6 @@ public class EventCollector implements WorkflowHandler {
   }
 
   /** Override all handle methods in order to prevent further traversing of the ast. */
-
   @Override
   public void handle(ASTProcess node) {}
 

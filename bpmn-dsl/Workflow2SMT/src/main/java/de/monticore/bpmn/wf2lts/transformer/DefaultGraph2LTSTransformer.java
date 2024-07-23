@@ -9,7 +9,6 @@ import de.monticore.bpmn.wf2lts.datastructure.LTS.State;
 import de.monticore.bpmn.wf2lts.datastructure.LTS.Transition;
 import de.monticore.bpmn.workflow._ast.ASTFlowNode;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class DefaultGraph2LTSTransformer implements Graph2LTSTransformer {
 
@@ -131,5 +130,4 @@ public class DefaultGraph2LTSTransformer implements Graph2LTSTransformer {
     // todo: merge redundant states
     return removeEpsilonTransitions(transform(graph));
   }
-
 }

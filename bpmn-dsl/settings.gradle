@@ -21,4 +21,5 @@ include(':TimeExpressions')
 include(':WorkflowCLI')
 include(':WorkflowDSL')
 include(':Workflow2SMT')
+include(':workflowConformance')
 

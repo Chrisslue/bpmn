@@ -1,6 +1,5 @@
 package de.monticore.bpmn.wf2lts.transformer;
 
-
 import static java.util.Map.entry;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -157,64 +156,74 @@ class DefaultParallelInterleavingTest {
     LTSTestingUtils.addPathOfLabelFromStart(lts, List.of("A", "B", "C", "D"));
     LTSTestingUtils.addPathOfLabelFromStart(lts, List.of("E", "F"));
     var cTransition = lts.getTransitionsForLabel("C").get(0);
-    lts.addTransition(new Transition(cTransition.getTarget(), Collections.emptyList(), "B", cTransition.getSource()));
+    lts.addTransition(
+        new Transition(
+            cTransition.getTarget(), Collections.emptyList(), "B", cTransition.getSource()));
     lts.getTerminalStates().forEach(lts::addAsFinalState);
 
     var interleaved = DefaultParallelInterleaving.interleave(lts);
     var interleavedTraverser = new LTSTraverser(interleaved);
-    LTSTestingUtils.assertSameOutgoingLabel(lts, lts.getStart(), interleaved, interleaved.getStart());
+    LTSTestingUtils.assertSameOutgoingLabel(
+        lts, lts.getStart(), interleaved, interleaved.getStart());
 
     // Assert that "B" after "C" transition is a simple backlink
     var simpleCycle = LTSTraverser.pathOfLabel(interleaved, List.of("A", "B", "C")).orElseThrow();
-    var interleavedCTransition = simpleCycle.getTransitions().get(simpleCycle.getTransitions().size() - 1);
+    var interleavedCTransition =
+        simpleCycle.getTransitions().get(simpleCycle.getTransitions().size() - 1);
     var optBacklink = simpleCycle.outgoingsWith("B");
-    Assertions.assertFalse(optBacklink.size() != 1,
+    Assertions.assertFalse(
+        optBacklink.size() != 1,
         "Expected outgoing transition with B but found: " + simpleCycle.outgoingsWith("B"));
     var backLink = optBacklink.get(0);
     Assertions.assertEquals(interleavedCTransition.getSource(), backLink.getTarget());
 
     // Assert that no second "E" can be reached after one "E"
-    Consumer<State> assertNoOutgoingWithE = (s) -> Assertions.assertFalse(
-        interleaved.getOutgoings(s).stream().anyMatch(t -> t.getLabel().equals("E")));
+    Consumer<State> assertNoOutgoingWithE =
+        (s) ->
+            Assertions.assertFalse(
+                interleaved.getOutgoings(s).stream().anyMatch(t -> t.getLabel().equals("E")));
     var eTransitions = interleaved.getTransitionsForLabel("E");
     eTransitions.forEach(
-        eTransition -> interleavedTraverser.depthFirstSearchLTS(
-            eTransition.getTarget(),
-            assertNoOutgoingWithE
-        )
-    );
+        eTransition ->
+            interleavedTraverser.depthFirstSearchLTS(
+                eTransition.getTarget(), assertNoOutgoingWithE));
 
-    // Assert after every "E", for which a "C" but no "D" occurred previously, "B" is an outgoing transition..
+    // Assert after every "E", for which a "C" but no "D" occurred previously, "B" is an outgoing
+    // transition..
     var traverser = new LTSTraverser(interleaved);
-    var badWitness = interleaved.getTransitionsForLabel("E").stream()
-        .filter(eTransition -> traverser // "C" but not "D" occurred on the path from start to "E"
-            .pathsBetween(interleaved.getStart(), eTransition.getSource())
-            .stream()
-            .anyMatch(pathToE -> pathToE.labelOccurred("C") && !pathToE.labelOccurred("D"))
-        )
-        .filter(eTransition -> interleaved
-            .getOutgoings(eTransition.getTarget())
-            .stream()
-            .noneMatch(successor -> successor.getLabel().equals("B"))
-        ).findFirst();
+    var badWitness =
+        interleaved.getTransitionsForLabel("E").stream()
+            .filter(
+                eTransition ->
+                    traverser // "C" but not "D" occurred on the path from start to "E"
+                        .pathsBetween(interleaved.getStart(), eTransition.getSource())
+                        .stream()
+                        .anyMatch(
+                            pathToE -> pathToE.labelOccurred("C") && !pathToE.labelOccurred("D")))
+            .filter(
+                eTransition ->
+                    interleaved.getOutgoings(eTransition.getTarget()).stream()
+                        .noneMatch(successor -> successor.getLabel().equals("B")))
+            .findFirst();
     Assertions.assertTrue(badWitness.isEmpty());
 
     // Assert that no "E" for which a "D" occurred before has an outgoing with "B"
-    var bOutgoingAfterEWithPreviousD = interleaved.getTransitionsForLabel("E").stream()
-        .filter(eTransition -> traverser //"D" occurred on the path from start to "E"
-            .pathsBetween(interleaved.getStart(), eTransition.getSource())
-            .stream()
-            .anyMatch(pathToE -> pathToE.labelOccurred("D"))
-        )
-        .filter(eTransition -> interleaved
-            .getOutgoings(eTransition.getTarget())
-            .stream()
-            .anyMatch(successor -> successor.getLabel().equals("B"))
-        ).findFirst();
+    var bOutgoingAfterEWithPreviousD =
+        interleaved.getTransitionsForLabel("E").stream()
+            .filter(
+                eTransition ->
+                    traverser // "D" occurred on the path from start to "E"
+                        .pathsBetween(interleaved.getStart(), eTransition.getSource())
+                        .stream()
+                        .anyMatch(pathToE -> pathToE.labelOccurred("D")))
+            .filter(
+                eTransition ->
+                    interleaved.getOutgoings(eTransition.getTarget()).stream()
+                        .anyMatch(successor -> successor.getLabel().equals("B")))
+            .findFirst();
     Assertions.assertTrue(bOutgoingAfterEWithPreviousD.isEmpty());
     // Cycle is not at final state: terminal == final
     assertTerminalAreFinal(interleaved);
-
   }
 
   @Test
@@ -224,8 +233,8 @@ class DefaultParallelInterleavingTest {
     LTSTestingUtils.addPathOfLabelFromStart(lts, List.of("E", "F"));
     var cTransition = lts.getTransitionsForLabel("C").get(0);
     lts.addTransition(
-        new Transition(cTransition.getTarget(), Collections.emptyList(), "D", cTransition.getTarget())
-    );
+        new Transition(
+            cTransition.getTarget(), Collections.emptyList(), "D", cTransition.getTarget()));
     // Add targets of "C" and "F" as final states.
     Stream.of("C", "F")
         .map(lts::getTransitionsForLabel)
@@ -235,16 +244,20 @@ class DefaultParallelInterleavingTest {
 
     var interleaved = DefaultParallelInterleaving.interleave(lts);
     var interleavedTraverser = new LTSTraverser(interleaved);
-    LTSTestingUtils.assertSameOutgoingLabel(lts, lts.getStart(), interleaved, interleaved.getStart());
+    LTSTestingUtils.assertSameOutgoingLabel(
+        lts, lts.getStart(), interleaved, interleaved.getStart());
 
     // Assert that every target of a "C" transition has a self-loop.
-    var cTargetWithoutSelfLoopUsingD = interleaved.getTransitionsForLabel("C")
-        .stream()
-        .map(Transition::getTarget)
-        .map(interleavedTraverser::pathFrom)
-        .map(path -> path.outgoingsWith("D"))
-        .filter(outgoings -> outgoings.size() != 1 || outgoings.get(0).getSource() != outgoings.get(0).getTarget())
-        .findFirst();
+    var cTargetWithoutSelfLoopUsingD =
+        interleaved.getTransitionsForLabel("C").stream()
+            .map(Transition::getTarget)
+            .map(interleavedTraverser::pathFrom)
+            .map(path -> path.outgoingsWith("D"))
+            .filter(
+                outgoings ->
+                    outgoings.size() != 1
+                        || outgoings.get(0).getSource() != outgoings.get(0).getTarget())
+            .findFirst();
 
     assertTrue(cTargetWithoutSelfLoopUsingD.isEmpty());
 
@@ -252,22 +265,26 @@ class DefaultParallelInterleavingTest {
     // We expect that every "C" transition where "F" occurred before and all
     // "F" transitions with "C" before as final states.
     var traverser = new LTSTraverser(interleaved);
-    var cTargetFinalStates = interleaved.getTransitionsForLabel("C")
-        .stream()
-        .filter(transition ->
-            traverser.pathsBetween(interleaved.getStart(), transition.getTarget())
-                .stream().allMatch(path -> path.labelOccurred("F"))
-        ).map(Transition::getTarget);
-    var fTargetFinalStates = interleaved.getTransitionsForLabel("F")
-        .stream()
-        .filter(transition ->
-            traverser.pathsBetween(interleaved.getStart(), transition.getTarget())
-                .stream().allMatch(path -> path.labelOccurred("C"))
-        ).map(Transition::getTarget);
+    var cTargetFinalStates =
+        interleaved.getTransitionsForLabel("C").stream()
+            .filter(
+                transition ->
+                    traverser.pathsBetween(interleaved.getStart(), transition.getTarget()).stream()
+                        .allMatch(path -> path.labelOccurred("F")))
+            .map(Transition::getTarget);
+    var fTargetFinalStates =
+        interleaved.getTransitionsForLabel("F").stream()
+            .filter(
+                transition ->
+                    traverser.pathsBetween(interleaved.getStart(), transition.getTarget()).stream()
+                        .allMatch(path -> path.labelOccurred("C")))
+            .map(Transition::getTarget);
 
-    var expectedFinalStates = Stream.concat(cTargetFinalStates, fTargetFinalStates).collect(Collectors.toSet());
+    var expectedFinalStates =
+        Stream.concat(cTargetFinalStates, fTargetFinalStates).collect(Collectors.toSet());
     assertEquals(expectedFinalStates, interleaved.getFinalStates());
-    assertFalse(expectedFinalStates.stream().anyMatch(s -> interleaved.getTerminalStates().contains(s)));
+    assertFalse(
+        expectedFinalStates.stream().anyMatch(s -> interleaved.getTerminalStates().contains(s)));
   }
 
   @Test
@@ -276,7 +293,9 @@ class DefaultParallelInterleavingTest {
     LTSTestingUtils.addPathOfLabelFromStart(lts, List.of("A", "B", "C"));
     LTSTestingUtils.addPathOfLabelFromStart(lts, List.of("E", "F"));
     var bTransition = lts.getTransitionsForLabel("C").get(0);
-    lts.addTransition(new Transition(bTransition.getTarget(), Collections.emptyList(), "D", bTransition.getSource()));
+    lts.addTransition(
+        new Transition(
+            bTransition.getTarget(), Collections.emptyList(), "D", bTransition.getSource()));
     Stream.of("C", "F")
         .map(lts::getTransitionsForLabel)
         .flatMap(List::stream)
@@ -288,23 +307,26 @@ class DefaultParallelInterleavingTest {
     // We expect that every "C" transition where "F" occurred before and all
     // "F" transitions with "C" before as final states.
     var traverser = new LTSTraverser(interleaved);
-    var cTargetFinalStates = interleaved.getTransitionsForLabel("C")
-        .stream()
-        .filter(transition ->
-            traverser.pathsBetween(interleaved.getStart(), transition.getTarget())
-                .stream().allMatch(path -> path.labelOccurred("F"))
-        ).map(Transition::getTarget);
-    var fTargetFinalStates = interleaved.getTransitionsForLabel("F")
-        .stream()
-        .filter(transition ->
-            traverser.pathsBetween(interleaved.getStart(), transition.getTarget())
-                .stream().allMatch(path -> path.labelOccurred("C"))
-        ).map(Transition::getTarget);
+    var cTargetFinalStates =
+        interleaved.getTransitionsForLabel("C").stream()
+            .filter(
+                transition ->
+                    traverser.pathsBetween(interleaved.getStart(), transition.getTarget()).stream()
+                        .allMatch(path -> path.labelOccurred("F")))
+            .map(Transition::getTarget);
+    var fTargetFinalStates =
+        interleaved.getTransitionsForLabel("F").stream()
+            .filter(
+                transition ->
+                    traverser.pathsBetween(interleaved.getStart(), transition.getTarget()).stream()
+                        .allMatch(path -> path.labelOccurred("C")))
+            .map(Transition::getTarget);
 
-    var expectedFinalStates = Stream.concat(cTargetFinalStates, fTargetFinalStates).collect(Collectors.toSet());
+    var expectedFinalStates =
+        Stream.concat(cTargetFinalStates, fTargetFinalStates).collect(Collectors.toSet());
     assertEquals(expectedFinalStates, interleaved.getFinalStates());
-    assertFalse(expectedFinalStates.stream().anyMatch(s -> interleaved.getTerminalStates().contains(s)));
-
+    assertFalse(
+        expectedFinalStates.stream().anyMatch(s -> interleaved.getTerminalStates().contains(s)));
   }
 
   // Helper method

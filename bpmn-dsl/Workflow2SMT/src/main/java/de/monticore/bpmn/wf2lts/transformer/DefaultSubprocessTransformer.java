@@ -15,10 +15,7 @@ import java.util.stream.Stream;
 public class DefaultSubprocessTransformer implements SubprocessTransformer {
 
   private static void collectAndReplaceStartEvents(
-      ParameterPack parameterPack,
-      Transition oldTransition,
-      LTS internalGraph,
-      LTS externalGraph) {
+      ParameterPack parameterPack, Transition oldTransition, LTS internalGraph, LTS externalGraph) {
 
     var internalStartNames =
         getEventNames(

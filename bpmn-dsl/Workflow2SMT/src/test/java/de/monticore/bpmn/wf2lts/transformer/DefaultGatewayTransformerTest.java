@@ -74,33 +74,39 @@ class DefaultGatewayTransformerTest {
     var postName = "@Post";
     for (int i = 0; i < 3; i++) {
       var preState = new State();
-      externalLTS.addTransition(new Transition(externalLTS.getStart(), emptyList(), "Start", preState));
-      externalLTS.addTransition(new Transition(preState, emptyList(), preName + i, gatewaySplitSource));
+      externalLTS.addTransition(
+          new Transition(externalLTS.getStart(), emptyList(), "Start", preState));
+      externalLTS.addTransition(
+          new Transition(preState, emptyList(), preName + i, gatewaySplitSource));
 
       var postState = new State();
-      externalLTS.addTransition(new Transition(gatewayMergeTarget, emptyList(), postName + i, postState));
+      externalLTS.addTransition(
+          new Transition(gatewayMergeTarget, emptyList(), postName + i, postState));
       externalLTS.addTransition(new Transition(postState, emptyList(), "End", new State()));
     }
 
-    externalLTS.addTransition(new Transition(gatewaySplitSource, emptyList(), splitName, new State()));
-    externalLTS.addTransition(new Transition(new State(), emptyList(), mergingName, gatewayMergeTarget));
+    externalLTS.addTransition(
+        new Transition(gatewaySplitSource, emptyList(), splitName, new State()));
+    externalLTS.addTransition(
+        new Transition(new State(), emptyList(), mergingName, gatewayMergeTarget));
 
     var namingStrategy = new DefaultNamingStrategy();
     // Finished initialization.
 
     // Convert gateway.
-    var lts = new DefaultGatewayTransformer(new DoNothingInterleaving(), namingStrategy)
-        .transform(
-            buildGatewayScope(splitName, mergingName),
-            externalLTS,
-            new DefaultGraph2LTSTransformer());
+    var lts =
+        new DefaultGatewayTransformer(new DoNothingInterleaving(), namingStrategy)
+            .transform(
+                buildGatewayScope(splitName, mergingName),
+                externalLTS,
+                new DefaultGraph2LTSTransformer());
 
     // Test possible paths with pre and post.
     for (var preIdx : List.of(0, 1, 2)) {
       for (var internal : List.of("A", "B")) {
         for (var postIdx : List.of(0, 1, 2)) {
-          LTSTestingUtils.assertPathExists(lts,
-              List.of("Start", preName + preIdx, internal, postName + postIdx, "End"));
+          LTSTestingUtils.assertPathExists(
+              lts, List.of("Start", preName + preIdx, internal, postName + postIdx, "End"));
         }
       }
     }
@@ -123,60 +129,49 @@ class DefaultGatewayTransformerTest {
 
   public static Stream<Arguments> methodArgumentProvider() {
     var gatewayTypes = List.of(GatewayType.XOR, GatewayType.IOR, GatewayType.PARALLEL);
-    Stream<Arguments> withMergingGateway = gatewayTypes.stream()
-        .map(type -> Arguments.of(
-            Resources.WITH_MERGING_GATEWAY,
-            type,
-            pathsForWithMerging(type)));
-    Stream<Arguments> noMergingGateway = gatewayTypes.stream()
-        .map(type -> Arguments.of(
-            Resources.NO_MERGING_GATEWAY,
-            type,
-            pathsForNoMerging(type)));
-    Stream<Arguments> mergingAndEndGateway = gatewayTypes.stream()
-        .map(type -> Arguments.of(
-            Resources.MERGING_AND_END_GATEWAY,
-            type,
-            pathsForMergingAndEnd(type)));
+    Stream<Arguments> withMergingGateway =
+        gatewayTypes.stream()
+            .map(
+                type ->
+                    Arguments.of(Resources.WITH_MERGING_GATEWAY, type, pathsForWithMerging(type)));
+    Stream<Arguments> noMergingGateway =
+        gatewayTypes.stream()
+            .map(type -> Arguments.of(Resources.NO_MERGING_GATEWAY, type, pathsForNoMerging(type)));
+    Stream<Arguments> mergingAndEndGateway =
+        gatewayTypes.stream()
+            .map(
+                type ->
+                    Arguments.of(
+                        Resources.MERGING_AND_END_GATEWAY, type, pathsForMergingAndEnd(type)));
 
     return Stream.concat(withMergingGateway, Stream.concat(noMergingGateway, mergingAndEndGateway));
-
-
   }
 
   private static List<List<String>> pathsForWithMerging(GatewayType gatewayType) {
     if (gatewayType == GatewayType.XOR) {
       return List.of(
-          List.of("Start", "A", "B", "D", "End"),
-          List.of("Start", "A", "C", "D", "End"));
+          List.of("Start", "A", "B", "D", "End"), List.of("Start", "A", "C", "D", "End"));
     }
     if (gatewayType == GatewayType.IOR) {
       return List.of(
           List.of("Start", "A", "B", "D", "End"),
           List.of("Start", "A", "B", "C", "D", "End"),
           List.of("Start", "A", "C", "D", "End"),
-          List.of("Start", "A", "C", "B", "D", "End")
-      );
+          List.of("Start", "A", "C", "B", "D", "End"));
     }
     if (gatewayType == GatewayType.PARALLEL) {
       return List.of(
-          List.of("Start", "A", "B", "C", "D", "End"),
-          List.of("Start", "A", "C", "B", "D", "End"));
+          List.of("Start", "A", "B", "C", "D", "End"), List.of("Start", "A", "C", "B", "D", "End"));
     }
     throw new IllegalArgumentException("No paths defined for gatewayType: " + gatewayType);
   }
 
   private static List<List<String>> pathsForNoMerging(GatewayType gatewayType) {
     if (gatewayType == GatewayType.XOR) {
-      return List.of(
-          List.of("Start", "A", "B", "C", "End"),
-          List.of("Start", "A", "D", "Term"));
+      return List.of(List.of("Start", "A", "B", "C", "End"), List.of("Start", "A", "D", "Term"));
     }
     if (gatewayType == GatewayType.IOR) {
-      return List.of(
-          List.of("Start", "A", "B", "C", "End"),
-          List.of("Start", "A", "D", "Term")
-      );
+      return List.of(List.of("Start", "A", "B", "C", "End"), List.of("Start", "A", "D", "Term"));
     }
     if (gatewayType == GatewayType.PARALLEL) {
       return LTSTestingUtils.generatePermutations(List.of("B", "C", "D", "End", "Term")).stream()
@@ -207,15 +202,21 @@ class DefaultGatewayTransformerTest {
           List.of("Start", "A", "B", "D", "Term"),
           List.of("Start", "A", "C", "D", "Term"),
           List.of("Start", "A", "B", "C", "E", "End"),
-          List.of("Start", "A", "C", "B", "E", "End")
-      );
+          List.of("Start", "A", "C", "B", "E", "End"));
     }
     if (gatewayType == GatewayType.PARALLEL) {
       return LTSTestingUtils.generatePermutations(List.of("B", "C", "D", "Term")).stream()
           .filter(path -> LTSTestingUtils.xComesBeforeY(path, "D", "Term"))
-          .map(path -> Stream.concat(Stream.of("Start", "A"), path.stream()).collect(Collectors.toList()))
-          .map(path -> path.get(path.size() - 1).equals("Term") ? path :
-              Stream.concat(path.stream(), Stream.of("E", "End")).collect(Collectors.toList()))
+          .map(
+              path ->
+                  Stream.concat(Stream.of("Start", "A"), path.stream())
+                      .collect(Collectors.toList()))
+          .map(
+              path ->
+                  path.get(path.size() - 1).equals("Term")
+                      ? path
+                      : Stream.concat(path.stream(), Stream.of("E", "End"))
+                          .collect(Collectors.toList()))
           .collect(Collectors.toList());
     }
     throw new IllegalArgumentException("No paths defined for gatewayType: " + gatewayType);
@@ -239,17 +240,19 @@ class DefaultGatewayTransformerTest {
 
   @Test
   void testCyclicGateway() {
-    var possiblePaths = List.of(
-        List.of("Start", "A", "B", "C", "End"),
-        List.of("Start", "A", "B", "B", "B", "C", "End"));
+    var possiblePaths =
+        List.of(
+            List.of("Start", "A", "B", "C", "End"),
+            List.of("Start", "A", "B", "B", "B", "C", "End"));
     var graph = setupGraphWithScope(Resources.CYCLIC_GATEWAY, GatewayType.XOR);
 
     var naming = new DefaultNamingStrategy();
-    LTS lts = new DefaultGraph2LTSTransformer(
-        naming,
-        new DefaultGatewayTransformer(new DefaultGatewayInterleaving(), naming),
-        new DefaultSubprocessTransformer()
-    ).transform(graph);
+    LTS lts =
+        new DefaultGraph2LTSTransformer(
+                naming,
+                new DefaultGatewayTransformer(new DefaultGatewayInterleaving(), naming),
+                new DefaultSubprocessTransformer())
+            .transform(graph);
 
     var ltsTraverser = new LTSTraverser(lts);
 
@@ -263,9 +266,11 @@ class DefaultGatewayTransformerTest {
     // Assert b is on a cycle
     var bTransitions = lts.getTransitionsForLabel("B");
     assertFalse(bTransitions.isEmpty());
-    assertTrue(bTransitions.stream().anyMatch(bTransition ->
-        !ltsTraverser.pathFrom(bTransition.getTarget()).outgoingsWith("B").isEmpty()
-    ));
+    assertTrue(
+        bTransitions.stream()
+            .anyMatch(
+                bTransition ->
+                    !ltsTraverser.pathFrom(bTransition.getTarget()).outgoingsWith("B").isEmpty()));
   }
 
   private IntermediateGraphWithScopes setupGraphWithScope(String diagramName, GatewayType type) {
@@ -275,10 +280,10 @@ class DefaultGatewayTransformerTest {
     return graph;
   }
 
-  private ASTWorkflowCompilationUnit setGatewayType(ASTWorkflowCompilationUnit ast, GatewayType type) {
+  private ASTWorkflowCompilationUnit setGatewayType(
+      ASTWorkflowCompilationUnit ast, GatewayType type) {
     var astGatewayTypeBuilder = new ASTGatewayTypeBuilder();
     switch (type) {
-
       case XOR:
         astGatewayTypeBuilder.setExclusive(true);
         break;
@@ -301,19 +306,19 @@ class DefaultGatewayTransformerTest {
     var astGatewayType = astGatewayTypeBuilder.build();
 
     var astTraverser = WorkflowMill.traverser();
-    astTraverser.add4Workflow(new WorkflowVisitor2() {
-      @Override
-      public void visit(ASTNamedGateway gateway) {
-        gateway.setType(astGatewayType);
-      }
+    astTraverser.add4Workflow(
+        new WorkflowVisitor2() {
+          @Override
+          public void visit(ASTNamedGateway gateway) {
+            gateway.setType(astGatewayType);
+          }
 
-      @Override
-      public void visit(ASTInlineGateway gateway) {
-        gateway.setType(astGatewayType);
-      }
-    });
+          @Override
+          public void visit(ASTInlineGateway gateway) {
+            gateway.setType(astGatewayType);
+          }
+        });
     ast.accept(astTraverser);
     return ast;
   }
-
 }

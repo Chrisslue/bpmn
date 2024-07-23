@@ -17,7 +17,6 @@ import de.monticore.bpmn.cocos.flow.SequenceFlowNodeReferencesExist;
 import de.monticore.bpmn.trafos.*;
 import de.monticore.bpmn.utils.AuxiliaryModelsWriter;
 import de.monticore.bpmn.workflow.WorkflowMill;
-import de.monticore.bpmn.workflow.WorkflowTool;
 import de.monticore.bpmn.workflow._ast.ASTWorkflowCompilationUnit;
 import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
 import de.monticore.bpmn.workflow._parser.WorkflowParser;
@@ -32,8 +31,6 @@ import de.se_rwth.commons.logging.Log;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Optional;
-
-import de.se_rwth.commons.logging.LogStub;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 
@@ -77,10 +74,11 @@ public abstract class AbstractTest {
     WorkflowParser parser = WorkflowMill.parser();
     Optional<ASTWorkflowCompilationUnit> ast = null;
     try {
-      ast = parser.parse(
+      ast =
+          parser.parse(
               MODEL_DIR
-                      + Names.getPathFromPackage(qualifiedModelName).replaceAll("\\\\", "/")
-                      + ".wfm");
+                  + Names.getPathFromPackage(qualifiedModelName).replaceAll("\\\\", "/")
+                  + ".wfm");
     } catch (IOException e) {
       fail("Cannot parse " + qualifiedModelName);
       return null;

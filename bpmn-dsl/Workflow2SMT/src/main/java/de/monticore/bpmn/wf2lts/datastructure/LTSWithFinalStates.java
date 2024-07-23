@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 
 public class LTSWithFinalStates extends LTS {
 
-
   private final Set<State> finalStates;
 
   public LTSWithFinalStates() {
@@ -72,8 +71,8 @@ public class LTSWithFinalStates extends LTS {
   }
 
   @Override
-  protected <S, L, B extends LTSBuilder<S, L>> void addFinalStatesToBuilder(B builder,
-      NamingStrategy<State> namingStrategy, Map<State, S> stateLookup) {
+  protected <S, L, B extends LTSBuilder<S, L>> void addFinalStatesToBuilder(
+      B builder, NamingStrategy<State> namingStrategy, Map<State, S> stateLookup) {
     finalStates.forEach(s -> stateLookup.put(s, builder.addFinalState(namingStrategy.apply(s))));
   }
 

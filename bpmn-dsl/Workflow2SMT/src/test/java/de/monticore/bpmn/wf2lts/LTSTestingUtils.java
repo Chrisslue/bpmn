@@ -15,18 +15,20 @@ import java.util.stream.Collectors;
 public class LTSTestingUtils {
 
   public static void assertPathExists(LTS lts, List<String> labels) {
-    assertTrue(LTSTraverser.pathOfLabel(lts, labels).isPresent(), "Path of labels doesnt exist" + labels);
+    assertTrue(
+        LTSTraverser.pathOfLabel(lts, labels).isPresent(), "Path of labels doesnt exist" + labels);
   }
 
   public static void assertTerminatingPathExists(LTS lts, List<String> labels) {
     var optPath = LTSTraverser.pathOfLabel(lts, labels);
     assertTrue(
-        optPath.isPresent() && optPath.get().endsInTerminal()
-        , "Path of labels either doesn't exist or does not end in terminal state" + optPath);
+        optPath.isPresent() && optPath.get().endsInTerminal(),
+        "Path of labels either doesn't exist or does not end in terminal state" + optPath);
   }
 
   public static void assertPathDoesNotExists(LTS lts, List<String> labels) {
-    assertTrue(LTSTraverser.pathOfLabel(lts, labels).isEmpty(),
+    assertTrue(
+        LTSTraverser.pathOfLabel(lts, labels).isEmpty(),
         "Path of labels exist" + labels + " but should not be possible.");
   }
 

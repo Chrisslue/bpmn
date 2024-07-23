@@ -9,7 +9,8 @@ public class LTS2SMTEncoding {
   private final Expr<EnumSort<String>> startState;
   private final EnumSort<String> stateEnum;
 
-  private final TransitionRelation<Expr<EnumSort<String>>, Expr<EnumSort<String>>> transitionRelation;
+  private final TransitionRelation<Expr<EnumSort<String>>, Expr<EnumSort<String>>>
+      transitionRelation;
 
   public LTS2SMTEncoding(
       Expr<EnumSort<String>> startState,
@@ -28,7 +29,8 @@ public class LTS2SMTEncoding {
     return stateEnum;
   }
 
-  public TransitionRelation<Expr<EnumSort<String>>, Expr<EnumSort<String>>> getTransitionRelation() {
+  public TransitionRelation<Expr<EnumSort<String>>, Expr<EnumSort<String>>>
+      getTransitionRelation() {
     return transitionRelation;
   }
 
@@ -36,5 +38,4 @@ public class LTS2SMTEncoding {
 
     Expr<BoolSort> isTransition(S source, L label, S target);
   }
-
 }

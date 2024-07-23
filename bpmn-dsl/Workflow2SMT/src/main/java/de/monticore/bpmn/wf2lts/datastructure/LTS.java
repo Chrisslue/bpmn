@@ -29,8 +29,8 @@ public class LTS extends IntermediateGraph<LTS.State, LTS.Transition> {
   }
 
   /**
-   * Create a deep copy of another lts. The new lts is 'isomorphic' to the given one with different states and
-   * transitions.
+   * Create a deep copy of another lts. The new lts is 'isomorphic' to the given one with different
+   * states and transitions.
    */
   public LTS(LTS toBeCloned) {
     this(); // Creates a new start state.
@@ -102,7 +102,6 @@ public class LTS extends IntermediateGraph<LTS.State, LTS.Transition> {
     transitionMap.get(label).removeAll(toBeRemoved);
     getOutgoingsInPlace(state).removeAll(toBeRemoved);
   }
-
 
   public void removeStateIfNoIncomingRecursively(State state) {
     if (!this.getIncoming(state).isEmpty()) {
@@ -189,22 +188,20 @@ public class LTS extends IntermediateGraph<LTS.State, LTS.Transition> {
     return toModel(builder, getNamingStrategy("s"));
   }
 
-  public <S, L, B extends LTSBuilder<S, L>> B toModel(B builder, NamingStrategy<LTS.State> namingStrategy) {
+  public <S, L, B extends LTSBuilder<S, L>> B toModel(
+      B builder, NamingStrategy<LTS.State> namingStrategy) {
     Map<State, S> stateLookup = new HashMap<>();
     Map<String, L> labelLookup = new HashMap<>();
     addStatesToBuilder(builder, namingStrategy, stateLookup);
     addFinalStatesToBuilder(builder, namingStrategy, stateLookup);
-    this.allUsedLabels().forEach(label ->
-        labelLookup.put(label, builder.addLabel(label)));
+    this.allUsedLabels().forEach(label -> labelLookup.put(label, builder.addLabel(label)));
     addTransitionsToBuilder(builder, stateLookup, labelLookup);
 
     return builder;
   }
 
   protected <S, L, B extends LTSBuilder<S, L>> void addStatesToBuilder(
-      B builder,
-      NamingStrategy<State> namingStrategy,
-      Map<State, S> stateLookup) {
+      B builder, NamingStrategy<State> namingStrategy, Map<State, S> stateLookup) {
     getEdges()
         .keySet()
         .forEach(
@@ -218,20 +215,15 @@ public class LTS extends IntermediateGraph<LTS.State, LTS.Transition> {
   }
 
   protected <S, L, B extends LTSBuilder<S, L>> void addTransitionsToBuilder(
-      B builder,
-      Map<State, S> stateLookup,
-      Map<String, L> labelLookup) {
+      B builder, Map<State, S> stateLookup, Map<String, L> labelLookup) {
     getEdges().values().stream()
         .flatMap(List::stream)
-        .forEach(transition -> addTransitionToBuilder(transition, builder, stateLookup, labelLookup));
+        .forEach(
+            transition -> addTransitionToBuilder(transition, builder, stateLookup, labelLookup));
   }
 
   protected static <S, L, B extends LTSBuilder<S, L>> void addTransitionToBuilder(
-      Transition transition,
-      B builder,
-      Map<State, S> stateLookup,
-      Map<String, L> labelLookup
-  ) {
+      Transition transition, B builder, Map<State, S> stateLookup, Map<String, L> labelLookup) {
     if (transition.getConditions().isEmpty()) {
       builder.addTransition(
           stateLookup.get(transition.getSource()),
@@ -247,12 +239,9 @@ public class LTS extends IntermediateGraph<LTS.State, LTS.Transition> {
   }
 
   protected <S, L, B extends LTSBuilder<S, L>> void addFinalStatesToBuilder(
-      B builder,
-      NamingStrategy<State> namingStrategy,
-      Map<State, S> stateLookup) {
+      B builder, NamingStrategy<State> namingStrategy, Map<State, S> stateLookup) {
     Log.warn("Final states are not implemented in LTS");
   }
-
 
   public NamingStrategy<LTS.State> getNamingStrategy(String prefix) {
     return new NamingStrategy<>() {
@@ -266,9 +255,9 @@ public class LTS extends IntermediateGraph<LTS.State, LTS.Transition> {
       }
 
       {
-        lookup = LTS.this.getStates()
-            .stream()
-            .collect(Collectors.toMap(Function.identity(), state -> prefix + nextId()));
+        lookup =
+            LTS.this.getStates().stream()
+                .collect(Collectors.toMap(Function.identity(), state -> prefix + nextId()));
       }
 
       @Override
@@ -278,9 +267,7 @@ public class LTS extends IntermediateGraph<LTS.State, LTS.Transition> {
     };
   }
 
-  public static class State {
-
-  }
+  public static class State {}
 
   public static class Transition extends EdgeTo<State> {
 

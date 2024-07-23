@@ -35,8 +35,9 @@ public class UniqueStartAndEndEventNaming implements NamingStrategy<ASTFlowNode>
     flowNode.accept(traverser);
     if (!map.containsKey(flowNode)) {
       // If flowNode is not a key it is not a start or end event.
-      if (flowNode.getName().equals(startName) || flowNode.getName().equals(endName) || flowNode.getName()
-          .equals(terminatingName)) {
+      if (flowNode.getName().equals(startName)
+          || flowNode.getName().equals(endName)
+          || flowNode.getName().equals(terminatingName)) {
         Log.warn("Name of flowNode clashes with fixed event name: " + flowNode.getName());
       }
     }
@@ -46,7 +47,8 @@ public class UniqueStartAndEndEventNaming implements NamingStrategy<ASTFlowNode>
 
   private void visitEvent(ASTEvent node) {
     if (node.isEnd()) {
-      if (node.isPresentTrigger() && new WorkflowTypeDispatcher().isWorkflowASTEventTriggerTerminate(node.getTrigger())) {
+      if (node.isPresentTrigger()
+          && new WorkflowTypeDispatcher().isWorkflowASTEventTriggerTerminate(node.getTrigger())) {
         map.put(node, terminatingName);
       } else {
         map.put(node, endName);

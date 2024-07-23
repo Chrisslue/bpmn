@@ -23,12 +23,11 @@ public class WorkflowSTCompleter implements WorkflowVisitor2 {
     SymTypeExpression typeSymbolRef = createTypeSymbolRef(node.getMCType());
 
     node.getSymbol().setType(typeSymbolRef);
-    node.getSymbol().setIsError(node.getKind()==ASTConstantsWorkflow.ERROR);
-    node.getSymbol().setIsMessage(node.getKind()==ASTConstantsWorkflow.MESSAGE);
-    node.getSymbol().setIsSignal(node.getKind()==ASTConstantsWorkflow.SIGNAL);
-    node.getSymbol().setIsEscalation(node.getKind()==ASTConstantsWorkflow.ESCALATION);
+    node.getSymbol().setIsError(node.getKind() == ASTConstantsWorkflow.ERROR);
+    node.getSymbol().setIsMessage(node.getKind() == ASTConstantsWorkflow.MESSAGE);
+    node.getSymbol().setIsSignal(node.getKind() == ASTConstantsWorkflow.SIGNAL);
+    node.getSymbol().setIsEscalation(node.getKind() == ASTConstantsWorkflow.ESCALATION);
   }
-
 
   protected SymTypeExpression createTypeSymbolRef(ASTMCType astType) {
     TypeCalculator calculator =

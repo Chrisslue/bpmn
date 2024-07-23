@@ -1,6 +1,5 @@
 package de.monticore.bpmn.wf2lts.transformer;
 
-
 import de.monticore.bpmn.wf2lts.NamingStrategy;
 import de.monticore.bpmn.wf2lts.datastructure.EdgeTo;
 import de.monticore.bpmn.wf2lts.datastructure.IntermediateGraphWithScopes;
@@ -24,9 +23,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Split every intermediate-event and task A, to A_Start and A_End. It is important that meta elements such as gateways
- * and subprocesses as well as non-intermediate events are not split as this would break other transformer. How the
- * split start and end elements should be named can be set through the startNameSuffix and endNameSuffix.
+ * Split every intermediate-event and task A, to A_Start and A_End. It is important that meta
+ * elements such as gateways and subprocesses as well as non-intermediate events are not split as
+ * this would break other transformer. How the split start and end elements should be named can be
+ * set through the startNameSuffix and endNameSuffix.
  */
 public class StartEndGraphTransformer extends DefaultGraph2LTSTransformer {
 
@@ -62,15 +62,16 @@ public class StartEndGraphTransformer extends DefaultGraph2LTSTransformer {
     return name + endNameSuffix;
   }
 
-
   private void convertNodes(GraphSpecificParameter parameter) {
     var graph = parameter.graph;
-    var allNodes = Stream.concat(
-        graph.getEdges().keySet().stream(),
-        graph.getEdges().values().stream()
-            .flatMap(Collection::stream)
-            .map(EdgeTo::getTarget)
-    ).distinct().collect(Collectors.toList());
+    var allNodes =
+        Stream.concat(
+                graph.getEdges().keySet().stream(),
+                graph.getEdges().values().stream()
+                    .flatMap(Collection::stream)
+                    .map(EdgeTo::getTarget))
+            .distinct()
+            .collect(Collectors.toList());
     var visitor = new NodeSplittingVisitor(parameter);
     var traverser = WorkflowMill.traverser();
     traverser.add4Workflow(visitor);
@@ -102,18 +103,13 @@ public class StartEndGraphTransformer extends DefaultGraph2LTSTransformer {
     return parameter.atomicNodes.get(node);
   }
 
-
   private Transition connectNonAtomicStartEnd(
-      ASTFlowNode node,
-      Map<ASTFlowNode, State> start,
-      Map<ASTFlowNode, State> end
-  ) {
+      ASTFlowNode node, Map<ASTFlowNode, State> start, Map<ASTFlowNode, State> end) {
     return new Transition(
         start.get(node),
         Collections.emptyList(),
         endName(super.namingStrategy.apply(node)),
-        end.get(node)
-    );
+        end.get(node));
   }
 
   private void addManualEdgeToDanglingNodes(GraphSpecificParameter params) {
@@ -121,18 +117,19 @@ public class StartEndGraphTransformer extends DefaultGraph2LTSTransformer {
     var lts = params.lts;
 
     // Collect all nodes that don't have any incoming edge.
-    var danglingNodes = Stream.concat(
-            graph.getEdges().keySet().stream(),
-            graph.getEdges().values().stream().flatMap(List::stream).map(EdgeTo::getTarget)
-        ).distinct()
-        .filter(node -> graph.predecessorNodes(node).isEmpty())
-        .collect(Collectors.toList());
+    var danglingNodes =
+        Stream.concat(
+                graph.getEdges().keySet().stream(),
+                graph.getEdges().values().stream().flatMap(List::stream).map(EdgeTo::getTarget))
+            .distinct()
+            .filter(node -> graph.predecessorNodes(node).isEmpty())
+            .collect(Collectors.toList());
 
     for (var dangling : danglingNodes) {
       // The start state of the graph has to be handled differently
       var sourceState = dangling == graph.getStart() ? lts.getStart() : new State();
-      params.lts.addTransition(convertToTransition(sourceState, dangling, Collections.emptyList(), params)
-      );
+      params.lts.addTransition(
+          convertToTransition(sourceState, dangling, Collections.emptyList(), params));
     }
   }
 
@@ -140,19 +137,13 @@ public class StartEndGraphTransformer extends DefaultGraph2LTSTransformer {
       State sourceState,
       ASTFlowNode target,
       List<ASTFlowCondition> conditions,
-      GraphSpecificParameter params
-  ) {
+      GraphSpecificParameter params) {
     var targetStart = getStart(target, params);
     var label = namingStrategy.apply(target);
     if (targetStart != getEnd(target, params)) {
       label = startName(label); // If the target is non-atomic we use the start-name
     }
-    return new Transition(
-        sourceState,
-        conditions,
-        label,
-        targetStart
-    );
+    return new Transition(sourceState, conditions, label, targetStart);
   }
 
   private void convertEdgeToTransition(GraphSpecificParameter params) {
@@ -161,8 +152,7 @@ public class StartEndGraphTransformer extends DefaultGraph2LTSTransformer {
       var sourceState = getEnd(entry.getKey(), params);
       for (var edgeTo : entry.getValue()) {
         params.lts.addTransition(
-            convertToTransition(sourceState, edgeTo.getTarget(), edgeTo.getConditions(), params)
-        );
+            convertToTransition(sourceState, edgeTo.getTarget(), edgeTo.getConditions(), params));
       }
     }
   }
@@ -175,12 +165,10 @@ public class StartEndGraphTransformer extends DefaultGraph2LTSTransformer {
 
     // Connect the non-atomic nodes (create the transition from start to end)
     for (var task : params.taskStart.keySet()) {
-      lts.addTransition(
-          connectNonAtomicStartEnd(task, params.taskStart, params.taskEnd));
+      lts.addTransition(connectNonAtomicStartEnd(task, params.taskStart, params.taskEnd));
     }
     for (var event : params.eventStart.keySet()) {
-      lts.addTransition(
-          connectNonAtomicStartEnd(event, params.eventStart, params.eventEnd));
+      lts.addTransition(connectNonAtomicStartEnd(event, params.eventStart, params.eventEnd));
     }
     // Translate edges to transitions by pushing target names to incoming transitions.
     convertEdgeToTransition(params);

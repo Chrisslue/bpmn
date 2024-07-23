@@ -18,7 +18,6 @@ import de.se_rwth.commons.Names;
 import de.se_rwth.commons.logging.Finding;
 import de.se_rwth.commons.logging.Log;
 import java.util.Collection;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 /**
@@ -84,13 +83,15 @@ public abstract class AbstractCoCoTest extends AbstractTest {
   }
 
   protected void testModelForErrors(
-          String qualifiedModelName, Collection<Finding> expectedErrors, Class exception) {
-    assertThrows(exception, () -> {
-      loadModel(qualifiedModelName);
-    });
+      String qualifiedModelName, Collection<Finding> expectedErrors, Class exception) {
+    assertThrows(
+        exception,
+        () -> {
+          loadModel(qualifiedModelName);
+        });
 
     Collection<Finding> errors =
-            Log.getFindings().stream().filter(Finding::isError).collect(Collectors.toList());
+        Log.getFindings().stream().filter(Finding::isError).collect(Collectors.toList());
     Assert.assertEqualErrorCounts(expectedErrors, errors);
     Assert.assertErrorMsg(expectedErrors, errors);
   }
@@ -109,7 +110,8 @@ public abstract class AbstractCoCoTest extends AbstractTest {
     return cu;
   }
 
-  protected ASTWorkflowCompilationUnit testModelNoErrors(String qualifiedModelName, int noOfWarnings) {
+  protected ASTWorkflowCompilationUnit testModelNoErrors(
+      String qualifiedModelName, int noOfWarnings) {
     ASTWorkflowCompilationUnit cu = loadModel(qualifiedModelName);
     assertEquals(0, Log.getFindings().stream().filter(Finding::isError).count());
     assertEquals(noOfWarnings, Log.getFindings().stream().filter(Finding::isWarning).count());

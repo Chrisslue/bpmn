@@ -134,7 +134,7 @@ public class StringArcSCBuilder implements ArcSCBuilder {
         .build();
   }
 
-  //todo: add dummy events to transitions
+  // todo: add dummy events to transitions
   public ASTMACompilationUnit buildMA(String name) {
 
     ASTPortDeclaration outPort =
