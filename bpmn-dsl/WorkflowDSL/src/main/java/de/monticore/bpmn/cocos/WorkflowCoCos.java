@@ -15,6 +15,7 @@ import de.monticore.bpmn.workflow._cocos.WorkflowASTSubProcessCoCo;
 import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
 import de.monticore.expressions.timeexpressions.cocos.TemporalExpressionsCoCos;
 import de.monticore.ocl.ocl._cocos.OCLCoCos;
+import de.monticore.ocl.ocl.types3.OCLTypeCheck3;
 
 /** Factory for CoCo checkers. */
 public class WorkflowCoCos {
@@ -165,6 +166,11 @@ public class WorkflowCoCos {
   }
 
   public static WorkflowCoCoChecker getTypesChecker() {
+    // assure that OCL TypeCheck is used
+    // As of writing, this is valid, as long as only OCL expressions are used
+    // should other expressions be included in this language,
+    // another TypeChecker will be required to be initialized.
+    OCLTypeCheck3.init();
     WorkflowCoCoChecker checker = new WorkflowCoCoChecker();
 
     checker.addCoCo(new CalledElementDoesExist());
