@@ -43,6 +43,7 @@ public class WfGraphGenerator {
     return graph;
   }
 
+  // Use a Builder Interface!!
   private WfNode mkGatewayNode(ASTGateway gateway) {
     String  label = "dummyLabel"+counter++ ;
     var node = new JwfGateway(WfNodeType.OR_SPLIT,label); // todo implement for other gateways
@@ -50,12 +51,14 @@ public class WfGraphGenerator {
     return node;
   }
 
+  // Use a Builder Interface!!
   private WfNode mkEventNode(ASTNamedEvent event) {
     var node = new JwfTask(event.getName());
     flowElements.put(event.getName(), node);
     return node;
   }
 
+  // Use a Builder Interface!!
   public JwfTask mkTaskNode(ASTTask task) {
     var node = new JwfTask(task.getName());
     flowElements.put(task.getName(), node);
