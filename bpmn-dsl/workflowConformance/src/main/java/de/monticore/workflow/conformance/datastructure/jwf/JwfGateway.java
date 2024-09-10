@@ -25,6 +25,6 @@ public class JwfGateway implements WfNode {
 
   @Override
   public String toString() {
-    return getLabel();
+    return "Xor:"+getLabel(); //todo fix implementation
   }
 }

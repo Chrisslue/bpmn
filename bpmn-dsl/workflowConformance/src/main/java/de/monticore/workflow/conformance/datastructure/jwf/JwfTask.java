@@ -22,6 +22,6 @@ public class JwfTask implements WfNode {
 
   @Override
   public String toString() {
-    return getLabel();
+    return "Task:"+getLabel(); //todo: fix implementation
   }
 }

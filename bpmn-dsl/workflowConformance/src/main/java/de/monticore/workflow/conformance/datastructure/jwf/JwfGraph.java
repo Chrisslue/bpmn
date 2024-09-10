@@ -3,14 +3,11 @@ package de.monticore.workflow.conformance.datastructure.jwf;
 import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
 import com.mxgraph.layout.mxGraphLayout;
 import com.mxgraph.swing.mxGraphComponent;
-import de.monticore.workflow.conformance.datastructure.interf.WfEdge;
 import de.monticore.workflow.conformance.datastructure.interf.WfGraph;
 import de.monticore.workflow.conformance.datastructure.interf.WfNode;
 import de.se_rwth.commons.logging.Log;
 import org.jgrapht.ext.JGraphXAdapter;
 import org.jgrapht.graph.DefaultDirectedGraph;
-import org.jgrapht.graph.DefaultEdge;
-import org.jgrapht.graph.SimpleDirectedGraph;
 
 import javax.swing.*;
 import java.util.HashSet;
