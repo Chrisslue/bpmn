@@ -1,7 +1,9 @@
 package de.monticore.workflow.conformance.datastructure.interf;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
 /***
@@ -12,6 +14,17 @@ public interface WfNode {
   String getLabel();    // toString() ? Mehr kommentare. z.B. "ist das Label eindeutig?"
 
   // ... maybe?
-  Optional<WfNode> existsPredecessor(Predicate<WfNode> predicate, int searchDepth);
-  Set<WfNode> allPredecessor(Predicate<WfNode> predicate, int searchDepth);
+
+  /**
+   *
+   * @param predicate List<WfNode> = Path to node X
+   *                  WfNode X predecessor reachable with <= searchDepth steps
+   * @param searchDepth
+   * @return
+   */
+  Optional<WfNode> existsPredecessor(BiPredicate<List<WfNode>, WfNode> predicate, int searchDepth);
+  Set<WfNode> allPredecessor(BiPredicate<List<WfNode>, WfNode> predicate, int searchDepth);
+
+
+
 }
