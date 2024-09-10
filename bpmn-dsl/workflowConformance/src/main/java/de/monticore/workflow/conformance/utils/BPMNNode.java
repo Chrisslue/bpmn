@@ -1,30 +1,27 @@
-package de.monticore.workflow.conformance.datastructure;
+package de.monticore.workflow.conformance.utils;
 
+import de.monticore.workflow.conformance.datastructure.interf.WfNodeType;
 import java.util.ArrayList;
 import java.util.List;
 
 public class BPMNNode {
-  private final BPMNNodeType type;
+  private final WfNodeType type;
   private final List<BPMNNode> successors;
   private String name;
   private final List<BPMNNode> children = new ArrayList<>();
 
-  public BPMNNode(String name, BPMNNodeType type) {
+  public BPMNNode(String name, WfNodeType type) {
     this.type = type;
     successors = new ArrayList<>();
     this.name = name;
   }
 
-  public static BPMNNode mkSequence(List<BPMNNode> nodeList) {
-    return new BPMNNode(null, BPMNNodeType.SEQUENCE, nodeList);
-  }
-
-  public BPMNNode(String name, BPMNNodeType type, List<BPMNNode> children) {
+  public BPMNNode(String name, WfNodeType type, List<BPMNNode> children) {
     this(name, type);
     this.children.addAll(children);
   }
 
-  public BPMNNodeType getType() {
+  public WfNodeType getType() {
     return type;
   }
 

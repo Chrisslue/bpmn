@@ -1,4 +1,4 @@
-package de.monticore.workflow.conformance.datastructure;
+package de.monticore.workflow.conformance.utils;
 
 import java.util.ArrayList;
 import java.util.List;

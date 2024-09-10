@@ -1,15 +1,16 @@
 package de.monticore.workflow.conformance;
 
 import de.monticore.bpmn.workflow._ast.*;
-import de.monticore.workflow.conformance.datastructure.BPMNNode;
-import de.monticore.workflow.conformance.datastructure.BPMNNodeType;
+import de.monticore.lts.LTSBuilder;
+import de.monticore.workflow.conformance.datastructure.interf.WfNodeType;
 import de.monticore.workflow.conformance.utils.BPMNElementStorage;
+import de.monticore.workflow.conformance.utils.BPMNNode;
 import de.monticore.workflow.conformance.utils.BPMNUtils;
 import de.se_rwth.commons.logging.Log;
 import java.util.*;
 
 public class WF2LTSGenerator {
-
+/*
   private BPMNElementStorage storage;
   private LTSBuilder ltsBuilder;
   private BPMNNode startEvent;
@@ -19,7 +20,7 @@ public class WF2LTSGenerator {
    * transform a BPMN to a sequence of scope, as scope we have sequence, Xor, Loop ,Or, and And.
    * @param wf the workflow as AST.
    */
-  public BPMNNode bpmn2lts(ASTWorkflowCompilationUnit wf) {
+ /* public BPMNNode bpmn2lts(ASTWorkflowCompilationUnit wf) {
     storage = new BPMNElementStorage(wf);
     ltsBuilder = new LTSBuilder();
     ASTEvent startEvent = BPMNUtils.getStartEvent(wf);
@@ -28,6 +29,7 @@ public class WF2LTSGenerator {
     sequence.add(ltsBuilder.mkEvent(startEvent.getName()));
 
     ASTFlowElement next = startEvent;
+
     while (storage.hasNext(next)) {
       next = storage.getNext(next);
       sequence.add(mkNode(next));
@@ -35,7 +37,7 @@ public class WF2LTSGenerator {
 
     return ltsBuilder.mkSequence(sequence);
   }
-
+/*
   BPMNNode mkNode(ASTFlowElement node) {
 
     if (node instanceof ASTTask) {
@@ -52,10 +54,10 @@ public class WF2LTSGenerator {
     } else if (node instanceof ASTNamedGateway) {
       List<BPMNNode> children = new ArrayList<>();
 
-      BPMNNodeType type = BPMNUtils.getGatewayType((ASTNamedGateway) node);
+      WfNodeType type = BPMNUtils.getGatewayType((ASTNamedGateway) node);
 
       if (BPMNUtils.isSplit((ASTNamedGateway) node)) {
-        ((ASTNamedGateway) node).forEachOutgoings(n -> children.add(mkNode((ASTFlowElement) n)));
+        storage.getOutgoingSequences((ASTNamedGateway) node).forEach(n -> children.add(mkNode(n)));
       }
 
       switch (type) {
@@ -71,5 +73,5 @@ public class WF2LTSGenerator {
       }
     }
     return null;
-  }
+  }*/
 }

@@ -5,6 +5,7 @@ import de.monticore.bpmn.workflow._ast.*;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
 import de.se_rwth.commons.logging.Log;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class BPMNElementStorage {
 
@@ -19,12 +20,10 @@ public class BPMNElementStorage {
     node.accept(traverser);
 
     for (ASTSequenceFlow sequenceFlow : collector.getSequenceFlows()) {
-
       List<ASTFlowTarget> targetList = sequenceFlow.getPathList();
       for (int i = 0; i < targetList.size() - 1; i++) {
         String src = targetList.get(i).getNodeRef().getBaseName();
         String tgt = targetList.get(i + 1).getNodeRef().getBaseName();
-
         elementSequence.put(collector.getFlowElement(src), collector.getFlowElement(tgt));
       }
     }
@@ -45,5 +44,12 @@ public class BPMNElementStorage {
 
   public boolean hasNext(ASTFlowElement node) {
     return elementSequence.containsKey(node);
+  }
+
+  public Set<ASTSequenceFlow> getOutgoingSequences(ASTNamedGateway gateway) {
+
+    return collector.getSequenceFlows().stream()
+        .filter(e -> e.getPathList().get(0).getNodeRef().getBaseName().equals(gateway.getName()))
+        .collect(Collectors.toSet());
   }
 }

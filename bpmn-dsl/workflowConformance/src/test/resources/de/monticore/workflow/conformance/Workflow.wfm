@@ -3,13 +3,15 @@ process Workflow {
 
   event start Start;
 
-  Start -> XorSplit;
+  Start -> Task1 -> XorSplit;
+
   split xor XorSplit;
-  Retry -> [false] Part1;
-  Retry -> [true] Part2;
+  XorSplit -> [false] Part1;
+  XorSplit -> [true] Part2;
 
   task Part1;
   task Part2;
+  task Task1;
 
   merge xor XorMerge ;
 
