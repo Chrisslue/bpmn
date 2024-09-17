@@ -42,8 +42,6 @@ dependencies {
         requireCapability("de.monticore.expressions:TimeExpressions-grammars")
       }
     }
-    implementation project(':BpmnXML')
-
 
     implementation "de.monticore.lang:petrinets:$petrinets_version"
 
