@@ -19,12 +19,11 @@ public interface WfNode {
    *
    * @param predicate List<WfNode> = Path to node X
    *                  WfNode X predecessor reachable with <= searchDepth steps
-   * @param searchDepth
-   * @return
+   * @param searchDepth: -1 = unlimited search; 0 = no search;
+   * @return Node X
    */
   Optional<WfNode> existsPredecessor(BiPredicate<List<WfNode>, WfNode> predicate, int searchDepth);
+
+
   Set<WfNode> allPredecessor(BiPredicate<List<WfNode>, WfNode> predicate, int searchDepth);
-
-
-
 }
