@@ -1,11 +1,11 @@
 package de.monticore.workflow.conformance.datastructure.interf;
 
-public enum WfNodeType {
+public enum NodeType {
   TASK,
   AND_SPLIT,
   AND_MERGE,
   OR_SPLIT,
-  OR_JOIN,
+  OR_MERGE,
   XOR_MERGE,
   XOR_SPLIT,
 }

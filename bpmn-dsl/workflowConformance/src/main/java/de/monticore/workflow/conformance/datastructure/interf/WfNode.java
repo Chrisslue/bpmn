@@ -4,16 +4,17 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiPredicate;
-import java.util.function.Predicate;
 
 /***
  * this class  represent a BPMNode
  * */
 public interface WfNode {
-  WfNodeType getNodeType();  // ... ungern ...
+  NodeType getNodeType();  // ... ungern ...
   String getLabel();    // toString() ? Mehr kommentare. z.B. "ist das Label eindeutig?"
 
   // ... maybe?
+
+
 
   /**
    *

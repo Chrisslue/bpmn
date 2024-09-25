@@ -1,6 +1,8 @@
 package de.monticore.workflow.conformance.datastructure.interf;
 
-public interface NodeBuilder<NodeType> {
-  NodeBuilder<NodeType> addPredecessor(NodeBuilder<NodeType>... t); // returns "this", to allow chaining
-  NodeBuilder<NodeType> addSuccessor(NodeBuilder<NodeType>... t); // returns "this", to allow chaining
+public interface NodeBuilder<Node> {
+  NodeBuilder<Node> addPredecessor(NodeBuilder<Node>... t); // returns "this", to allow chaining
+  NodeBuilder<Node> addPredecessor(NodeBuilder<Node> t); // returns "this", to allow chaining
+  NodeBuilder<Node> addSuccessor(NodeBuilder<Node>... t); // returns "this", to allow chaining
+  NodeBuilder<Node> addSuccessor(NodeBuilder<Node> t); // returns "this", to allow chaining
 }

@@ -1,29 +1,32 @@
-package de.monticore.workflow.conformance.utils;
+package de.monticore.workflow.conformance.datastructure.interf;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public interface BPMNBuilder<Node> {
+public interface WfBuilder<Node> {
 
   /****
    * transform a task to a BMPNNode.
    * @param name the name of the task.
    */
-  Node mkTask(String name);
+  NodeBuilder<Node> mkNamedTask(String name);
 
   /****
    * transform an event to a BMPNNode.
    * @param name the name of the event.
    */
-  Node mkEvent(String name);
+  NodeBuilder<Node> mkNamedEvent(String name);
+
+   //todo add  javadoc
+  NodeBuilder<Node> mkNamedGateway(String name,NodeType type);
 
   /***
    * Make a logical Xor scope from collection of alternatives.
    * @param name The name of the Xor gatter.
    * @param nodes the different alternatives as BPMNNode.
    */
-  default Node mkXor(String name, List<Node> nodes) {
+  default  NodeBuilder<Node> mkXor(String name, List<NodeBuilder<Node>> nodes) {
     return mkXor(Optional.of(name), nodes);
   }
 
@@ -32,14 +35,14 @@ public interface BPMNBuilder<Node> {
    * @param name The name of the Xor gatter.
    * @param nodes the different alternatives as BPMNNode.
    */
-  Node mkXor(Optional<String> name, List<Node> nodes);
+  NodeBuilder<Node> mkXor(Optional<String> name, List<NodeBuilder<Node>> nodes);
 
   /***
    * Make a logical Xor scope from collection of alternatives.
    * @param nodes the different alternatives as BPMNNode.
    */
 
-  default Node mkXor(List<Node> nodes) {
+  default  NodeBuilder<Node> mkXor(List< NodeBuilder<Node>> nodes) {
     return mkXor(Optional.empty(), nodes);
   }
 
@@ -47,21 +50,21 @@ public interface BPMNBuilder<Node> {
    * transform a list of BPMNNode to build a sequence.
    * @param nodes the collection of BPMNNodes.
    */
-  Node mkSequence(List<Node> nodes);
+  NodeBuilder<Node> mkSequence(List< NodeBuilder<Node>> nodes);
 
   /***
    * Make a logical And-gatter from a collection of alternatives.
    * @param name the name of the And-gatter.
    * @param nodes the different alternatives as BPMNNodes.
    */
-  Node mkAnd(Optional<String> name, List<Node> nodes);
+  NodeBuilder<Node> mkAnd(Optional<String> name, List< NodeBuilder<Node>> nodes);
 
   /***
    * Make a logical And-gatter from a collection of alternatives.
    * @param name the name of the And-gatter.
    * @param nodes the different alternatives as BPMNNodes.
    */
-  default Node mkAnd(String name, List<Node> nodes) {
+  default  NodeBuilder<Node> mkAnd(String name, List< NodeBuilder<Node>> nodes) {
     return mkAnd(Optional.of(name), nodes);
   }
 
@@ -69,7 +72,7 @@ public interface BPMNBuilder<Node> {
    * Make a logical And-gatter from a collection of alternatives.
    * @param nodes the different alternatives as BPMNNodes.
    */
-  default Node mkAnd(List<Node> nodes) {
+  default  NodeBuilder<Node> mkAnd(List< NodeBuilder<Node>> nodes) {
     return mkAnd(Optional.empty(), nodes);
   }
 
@@ -78,28 +81,28 @@ public interface BPMNBuilder<Node> {
    * @param name The name of the Or-gatter.
    * @param nodes the collection of alternatives.
    */
-  Node mkOr(Optional<String> name, List<Node> nodes);
+  NodeBuilder<Node> mkOr(Optional<String> name, List< NodeBuilder<Node>> nodes);
 
   /***
    * Make an Or-gatter from a collection of alternatives.
    * @param name The name of the Or-gatter.
    * @param nodes the collection of alternatives.
    */
-  default Node mkOr(String name, List<Node> nodes) {
+  default  NodeBuilder<Node> mkOr(String name, List< NodeBuilder<Node>> nodes) {
     return mkOr(Optional.of(name), nodes);
   }
   /***
    * Make an Or-gatter from a collection of alternatives.
    * @param nodes the collection of alternatives.
    */
-  default Node mkOr(List<Node> nodes) {
+  default  NodeBuilder<Node> mkOr(List< NodeBuilder<Node>> nodes) {
     return mkOr(Optional.empty(), nodes);
   }
 
   // name optional
-  Node mkLoop(String name, Node forward, Node backward);
+  NodeBuilder<Node> mkLoop(String name, NodeBuilder<Node> forward, NodeBuilder<Node> backward);
 
-  default Node mkLoop(Node forward) {
+  default  NodeBuilder<Node> mkLoop(NodeBuilder<Node> forward) {
     return mkLoop("", forward, mkSequence(new ArrayList<>()));
   }
 }
