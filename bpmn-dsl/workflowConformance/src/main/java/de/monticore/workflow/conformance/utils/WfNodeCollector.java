@@ -11,10 +11,14 @@ public class WfNodeCollector implements WorkflowVisitor2 {
   private final Set<ASTTask> tasks = new HashSet<>();
   private final Set<ASTGateway> gateways = new HashSet<>();
   private final Set<ASTSequenceFlow> sequenceFlows = new HashSet<>();
+  private ASTNamedEvent startEvent;
 
   @Override
   public void visit(ASTNamedEvent node) {
     namedEvents.add(node);
+    if (node.isStart()) {
+      this.startEvent = node;
+    }
   }
 
   @Override
@@ -56,5 +60,9 @@ public class WfNodeCollector implements WorkflowVisitor2 {
 
   public Set<ASTSequenceFlow> getSequenceFlows() {
     return sequenceFlows;
+  }
+
+  public ASTNamedEvent getStartEvent() {
+    return startEvent;
   }
 }

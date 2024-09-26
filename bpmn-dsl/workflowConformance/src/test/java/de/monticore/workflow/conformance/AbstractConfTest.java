@@ -20,7 +20,6 @@ import de.monticore.io.paths.MCPath;
 import de.monticore.symbols.basicsymbols.BasicSymbolsMill;
 import de.se_rwth.commons.Names;
 import de.se_rwth.commons.logging.Log;
-
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Optional;
@@ -117,10 +116,8 @@ public abstract class AbstractConfTest {
     if (shouldWriteAuxModels()) { // write models before running CoCos (and potentially failing)
       writeTestAuxModels(qualifiedModelName, ast);
     }
-   // getChecker().checkAll(ast);
+    // getChecker().checkAll(ast);
 
     return ast;
   }
-
-
 }

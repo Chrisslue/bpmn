@@ -18,15 +18,15 @@ public interface WfBuilder<Node> {
    */
   NodeBuilder<Node> mkNamedEvent(String name);
 
-   //todo add  javadoc
-  NodeBuilder<Node> mkNamedGateway(String name,NodeType type);
+  // todo add  javadoc
+  NodeBuilder<Node> mkNamedGateway(String name, NodeType type);
 
   /***
    * Make a logical Xor scope from collection of alternatives.
    * @param name The name of the Xor gatter.
    * @param nodes the different alternatives as BPMNNode.
    */
-  default  NodeBuilder<Node> mkXor(String name, List<NodeBuilder<Node>> nodes) {
+  default NodeBuilder<Node> mkXor(String name, List<NodeBuilder<Node>> nodes) {
     return mkXor(Optional.of(name), nodes);
   }
 
@@ -42,7 +42,7 @@ public interface WfBuilder<Node> {
    * @param nodes the different alternatives as BPMNNode.
    */
 
-  default  NodeBuilder<Node> mkXor(List< NodeBuilder<Node>> nodes) {
+  default NodeBuilder<Node> mkXor(List<NodeBuilder<Node>> nodes) {
     return mkXor(Optional.empty(), nodes);
   }
 
@@ -50,21 +50,21 @@ public interface WfBuilder<Node> {
    * transform a list of BPMNNode to build a sequence.
    * @param nodes the collection of BPMNNodes.
    */
-  NodeBuilder<Node> mkSequence(List< NodeBuilder<Node>> nodes);
+  NodeBuilder<Node> mkSequence(List<NodeBuilder<Node>> nodes);
 
   /***
    * Make a logical And-gatter from a collection of alternatives.
    * @param name the name of the And-gatter.
    * @param nodes the different alternatives as BPMNNodes.
    */
-  NodeBuilder<Node> mkAnd(Optional<String> name, List< NodeBuilder<Node>> nodes);
+  NodeBuilder<Node> mkAnd(Optional<String> name, List<NodeBuilder<Node>> nodes);
 
   /***
    * Make a logical And-gatter from a collection of alternatives.
    * @param name the name of the And-gatter.
    * @param nodes the different alternatives as BPMNNodes.
    */
-  default  NodeBuilder<Node> mkAnd(String name, List< NodeBuilder<Node>> nodes) {
+  default NodeBuilder<Node> mkAnd(String name, List<NodeBuilder<Node>> nodes) {
     return mkAnd(Optional.of(name), nodes);
   }
 
@@ -72,7 +72,7 @@ public interface WfBuilder<Node> {
    * Make a logical And-gatter from a collection of alternatives.
    * @param nodes the different alternatives as BPMNNodes.
    */
-  default  NodeBuilder<Node> mkAnd(List< NodeBuilder<Node>> nodes) {
+  default NodeBuilder<Node> mkAnd(List<NodeBuilder<Node>> nodes) {
     return mkAnd(Optional.empty(), nodes);
   }
 
@@ -81,28 +81,28 @@ public interface WfBuilder<Node> {
    * @param name The name of the Or-gatter.
    * @param nodes the collection of alternatives.
    */
-  NodeBuilder<Node> mkOr(Optional<String> name, List< NodeBuilder<Node>> nodes);
+  NodeBuilder<Node> mkOr(Optional<String> name, List<NodeBuilder<Node>> nodes);
 
   /***
    * Make an Or-gatter from a collection of alternatives.
    * @param name The name of the Or-gatter.
    * @param nodes the collection of alternatives.
    */
-  default  NodeBuilder<Node> mkOr(String name, List< NodeBuilder<Node>> nodes) {
+  default NodeBuilder<Node> mkOr(String name, List<NodeBuilder<Node>> nodes) {
     return mkOr(Optional.of(name), nodes);
   }
   /***
    * Make an Or-gatter from a collection of alternatives.
    * @param nodes the collection of alternatives.
    */
-  default  NodeBuilder<Node> mkOr(List< NodeBuilder<Node>> nodes) {
+  default NodeBuilder<Node> mkOr(List<NodeBuilder<Node>> nodes) {
     return mkOr(Optional.empty(), nodes);
   }
 
   // name optional
   NodeBuilder<Node> mkLoop(String name, NodeBuilder<Node> forward, NodeBuilder<Node> backward);
 
-  default  NodeBuilder<Node> mkLoop(NodeBuilder<Node> forward) {
+  default NodeBuilder<Node> mkLoop(NodeBuilder<Node> forward) {
     return mkLoop("", forward, mkSequence(new ArrayList<>()));
   }
 }

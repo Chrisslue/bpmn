@@ -1,0 +1,10 @@
+
+process Concrete {
+
+  event start Start;
+  task Part1;
+  task Task1;
+  event end End;
+
+  Start -> Task1 -> Part1 -> End;
+}
