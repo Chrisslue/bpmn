@@ -20,11 +20,11 @@ public interface WfNode {
    * @param searchDepth: -1 = unlimited search; 0 = no search;
    * @return Node X
    */
-  Optional< WfNode> existsPredecessor(BiPredicate<List< WfNode>, WfNode> predicate, int searchDepth);
+  Optional<WfNode> existsPredecessor(BiPredicate<List<WfNode>, WfNode> predicate, int searchDepth);
 
   Optional<WfNode> existsSuccessor(BiPredicate<List<WfNode>, WfNode> predicate, int searchDepth);
 
-  Set< WfNode> allPredecessor(BiPredicate<List<WfNode>, WfNode> predicate, int searchDepth);
+  Set<WfNode> allPredecessor(BiPredicate<List<WfNode>, WfNode> predicate, int searchDepth);
 
-  Set< WfNode> allSuccessors(BiPredicate<List<WfNode>, WfNode> predicate, int searchDepth);
+  Set<WfNode> allSuccessors(BiPredicate<List<WfNode>, WfNode> predicate, int searchDepth);
 }

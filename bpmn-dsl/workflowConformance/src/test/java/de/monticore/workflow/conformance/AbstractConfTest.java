@@ -36,7 +36,7 @@ public abstract class AbstractConfTest {
 
   public static void init() {
     Log.init();
-    Log.enableFailQuick(false);
+    // Log.enableFailQuick(false);
     WorkflowMill.init();
     WorkflowMill.globalScope().clear();
     WorkflowMill.globalScope().setSymbolPath(new MCPath(SYMBOL_DIR));

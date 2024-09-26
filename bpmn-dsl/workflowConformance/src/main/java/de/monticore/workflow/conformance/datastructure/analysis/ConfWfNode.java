@@ -3,7 +3,6 @@ package de.monticore.workflow.conformance.datastructure.analysis;
 import de.monticore.workflow.conformance.datastructure.interf.NodeType;
 import de.monticore.workflow.conformance.datastructure.interf.WfNode;
 import de.se_rwth.commons.logging.Log;
-
 import java.util.*;
 import java.util.function.BiPredicate;
 
@@ -35,59 +34,88 @@ public class ConfWfNode implements WfNode {
 
   @Override
   public Optional<WfNode> existsPredecessor(
-          BiPredicate<List<WfNode>,  WfNode> predicate, int searchDepth) {
-    return Optional.empty();
+      BiPredicate<List<WfNode>, WfNode> predicate, int searchDepth) {
+    return existsPredecessor(predicate, new ArrayList<>(), searchDepth);
+  }
+
+  public Optional<WfNode> existsPredecessor(
+      BiPredicate<List<WfNode>, WfNode> predicate, List<WfNode> path, int searchDepth) {
+    // todo correctly handle termination when search deep == -1
+
+    for (ConfWfNode pred : this.predecessors) {
+
+      if (predicate.test(path, pred)) {
+        return Optional.of(pred);
+      }
+    }
+
+    if (searchDepth == 1 || searchDepth == -1) {
+      return Optional.empty();
+    }
+    List<WfNode> newPath = new ArrayList<>(path);
+    newPath.add(this);
+    return existsPredecessor(predicate, newPath, searchDepth - 1);
   }
 
   @Override
   public Optional<WfNode> existsSuccessor(
       BiPredicate<List<WfNode>, WfNode> predicate, int searchDepth) {
-    if (searchDepth == 1){
-      for (ConfWfNode suc : this.successors){
-        if (predicate.test(List.of(this,suc),suc)){
-          return Optional.of(suc);
-        }
-      }
+    return existsSuccessor(predicate, new ArrayList<>(), searchDepth);
+  }
 
-      return Optional.empty();
+  public Optional<WfNode> existsSuccessor(
+      BiPredicate<List<WfNode>, WfNode> predicate, List<WfNode> path, int searchDepth) {
+    // todo correctly handle termination when search deep == -1
+
+    for (ConfWfNode suc : this.successors) {
+
+      if (predicate.test(path, suc)) {
+        return Optional.of(suc);
+      }
     }
 
-    Log.error("exists Successor not fully implemented yet");
-    return Optional.empty();
+    if (searchDepth == 1 || searchDepth == -1) {
+      return Optional.empty();
+    }
+    List<WfNode> newPath = new ArrayList<>(path);
+    newPath.add(this);
+    return existsSuccessor(predicate, newPath, searchDepth - 1);
   }
 
   @Override
   public Set<WfNode> allPredecessor(BiPredicate<List<WfNode>, WfNode> predicate, int searchDepth) {
 
-    if (searchDepth == 1){
+    if (searchDepth == 1) {
       Set<WfNode> res = new HashSet<>();
 
-      for(ConfWfNode pred :predecessors){
-        if (predicate.test(List.of(this,pred),pred)){
+      for (ConfWfNode pred : predecessors) {
+        if (predicate.test(List.of(this, pred), pred)) {
           res.add(pred);
         }
       }
-      return  res ;
+      return res;
     }
-
+    assert false;
     Log.error("getting all predecessor is not yet implemented");
-     return  null;
+
+    return null;
   }
 
   @Override
   public Set<WfNode> allSuccessors(BiPredicate<List<WfNode>, WfNode> predicate, int searchDepth) {
-    if (searchDepth == 1){
+    if (searchDepth == 1) {
       Set<WfNode> res = new HashSet<>();
 
-      for(ConfWfNode suc :successors){
-        if (predicate.test(List.of(this,suc),suc)){
+      for (ConfWfNode suc : successors) {
+        if (predicate.test(List.of(this, suc), suc)) {
           res.add(suc);
         }
       }
-      return  res ;
+      return res;
     }
-
+    assert false;
     Log.error("getting all sucessor is not yet implemented");
-    return  null;
+
+    return null;
   }
 }
