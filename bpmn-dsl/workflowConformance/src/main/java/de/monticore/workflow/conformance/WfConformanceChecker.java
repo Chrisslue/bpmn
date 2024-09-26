@@ -25,7 +25,7 @@ public class WfConformanceChecker {
   }
 
   // completely ignore gateway in the algorithm this should be handled  w in the node themselves
-  public boolean checkConformanceAlgorithm( WfNode con, WfNode ref) {
+  public boolean checkConformanceAlgorithm(WfNode con, WfNode ref) {
     Log.info(
         String.format(
             "Checking conformance of concrete:[%s] to  reference:[%s]",
@@ -63,7 +63,7 @@ public class WfConformanceChecker {
       Optional<WfNode> refSuc =
           ref.existsSuccessor(
               (path, node) ->
-                  noIncarnationOfAReferenceInPath(path) && incStrategy.isIncarnation(conSuc,node),
+                  noIncarnationOfAReferenceInPath(path) && incStrategy.isIncarnation(conSuc, node),
               -1);
 
       // return false if the check result is negative
@@ -72,7 +72,7 @@ public class WfConformanceChecker {
       }
 
       // recursively check conformance
-      if (!checkConformanceAlgorithm(conSuc,refSuc.get())) {
+      if (!checkConformanceAlgorithm(conSuc, refSuc.get())) {
         return false;
       }
     }

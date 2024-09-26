@@ -46,25 +46,22 @@ public class ConfWfNode implements WfNode {
 
       switch (pred.nodeType) {
         case XOR_SPLIT:
-          Optional<WfNode> res = pred.existsPredecessor(predicate,path,searchDepth);
-          if (res.isPresent()){
-            return  res;
+          Optional<WfNode> res = pred.existsPredecessor(predicate, path, searchDepth);
+          if (res.isPresent()) {
+            return res;
           }
           break;
 
         case XOR_MERGE:
-
-          res = pred.existsPredecessor(predicate,path,searchDepth);
-          if (res.isPresent()){
-            return  res;
+          res = pred.existsPredecessor(predicate, path, searchDepth);
+          if (res.isPresent()) {
+            return res;
           }
         default:
           if (predicate.test(path, pred)) {
             return Optional.of(pred);
           }
       }
-
-
     }
 
     if (searchDepth == 1 || searchDepth == -1) {
@@ -87,31 +84,28 @@ public class ConfWfNode implements WfNode {
 
     for (ConfWfNode suc : this.successors) {
 
-
       switch (suc.nodeType) {
         case XOR_SPLIT:
-          Optional<WfNode> res = suc.existsSuccessor(predicate,path,searchDepth);
-          if (res.isPresent()){
-            return  res;
+          Optional<WfNode> res = suc.existsSuccessor(predicate, path, searchDepth);
+          if (res.isPresent()) {
+            return res;
           }
 
           break;
 
         case XOR_MERGE:
-          res = suc.existsSuccessor(predicate,path,searchDepth);
-          if (res.isPresent()){
-            return  res;
+          res = suc.existsSuccessor(predicate, path, searchDepth);
+          if (res.isPresent()) {
+            return res;
           }
 
           break;
         default:
           if (predicate.test(path, suc)) {
-          return Optional.of(suc);
-        }
+            return Optional.of(suc);
+          }
           break;
       }
-
-
     }
 
     if (searchDepth == 1 || searchDepth == -1) {
