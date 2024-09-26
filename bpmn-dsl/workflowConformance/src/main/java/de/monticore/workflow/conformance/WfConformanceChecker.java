@@ -25,26 +25,25 @@ public class WfConformanceChecker {
   }
 
   // completely ignore gateway in the algorithm this should be handled  w in the node themselves
-  public boolean checkConformanceAlgorithm(WfNode con, WfNode ref) {
+  public boolean checkConformanceAlgorithm( WfNode con, WfNode ref) {
     Log.info(
         String.format(
             "Checking conformance of concrete:[%s] to  reference:[%s]",
-            con.getLabel(), ref.getLabel()),
+            ref.getLabel(), con.getLabel()),
         this.getClass().getName());
 
-    if (!incStrategy.isIncarnation(con, ref)) {
+    if (!incStrategy.isIncarnation(ref, con)) {
       return false;
     }
 
-    // all direct predecessors of the reference node
-    Set<WfNode> directPredecessors = ref.allPredecessor((path, node) -> true, 1);
+    // all direct predecessors of the concrete node
+    Set<WfNode> directPredecessors = con.allPredecessor((path, node) -> true, 1);
 
     for (WfNode refPred : directPredecessors) {
-      // check that the concrete node has a predecessor conPred (of any depth) that incarnate
-      // refPred,
+      // check that the reference node has a predecessor refPred (of any depth) that incarnate
       // but without incarnation of a reference node in between
       Optional<WfNode> conPred =
-          con.existsPredecessor(
+          ref.existsPredecessor(
               (path, node) ->
                   noIncarnationOfAReferenceInPath(path) && incStrategy.isIncarnation(node, refPred),
               -1);
@@ -55,25 +54,25 @@ public class WfConformanceChecker {
       }
     }
 
-    // all direct successors of the reference node
-    Set<WfNode> directSuccessors = ref.allSuccessors((path, node) -> true, 1);
+    // all direct successors of the concrete node
+    Set<WfNode> directSuccessors = con.allSuccessors((path, node) -> true, 1);
 
-    for (WfNode refSuc : directSuccessors) {
-      // check that the concrete node has a successors conSuc (of any depth) that incarnate refSuc,
-      // but without incarnation of a reference node in between
-      Optional<WfNode> conSuc =
-          con.existsSuccessor(
+    for (WfNode conSuc : directSuccessors) {
+      // check that the reference node has a successors conSuc (of any depth) that incarnate refSuc,
+      // but without incarnation of a concrete node in between
+      Optional<WfNode> refSuc =
+          ref.existsSuccessor(
               (path, node) ->
-                  noIncarnationOfAReferenceInPath(path) && incStrategy.isIncarnation(node, refSuc),
+                  noIncarnationOfAReferenceInPath(path) && incStrategy.isIncarnation(conSuc,node),
               -1);
 
       // return false if the check result is negative
-      if (conSuc.isEmpty()) {
+      if (refSuc.isEmpty()) {
         return false;
       }
 
       // recursively check conformance
-      if (!checkConformanceAlgorithm(conSuc.get(), refSuc)) {
+      if (!checkConformanceAlgorithm(conSuc,refSuc.get())) {
         return false;
       }
     }
@@ -81,7 +80,7 @@ public class WfConformanceChecker {
     // the algorithm will stop either when something is not conform or when the current node have no
     // successors
     Log.info(
-        String.format("concrete:[%s] conforms to  reference:[%s]", con.getLabel(), ref.getLabel()),
+        String.format("concrete:[%s] conforms to  reference:[%s]", ref.getLabel(), con.getLabel()),
         this.getClass().getName());
     return true;
   }
