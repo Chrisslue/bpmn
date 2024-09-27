@@ -18,8 +18,8 @@ class WfConfDemoTest extends AbstractConfTest {
 
   @Test
   public void testSimpleTask() {
-    ASTWorkflowCompilationUnit con = loadModel("de.monticore.workflow.conformance.demo.Concrete");
-    ASTWorkflowCompilationUnit ref = loadModel("de.monticore.workflow.conformance.demo.Reference");
+    ASTWorkflowCompilationUnit con = loadModel("de.monticore.workflow.conformance.demo.concrete");
+    ASTWorkflowCompilationUnit ref = loadModel("de.monticore.workflow.conformance.demo.reference");
 
     WfConformanceChecker checker = new WfConformanceChecker();
     Assertions.assertTrue(checker.checkConformance(con, ref));

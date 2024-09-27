@@ -80,12 +80,6 @@ public class WfConformanceChecker {
       if (refSuc.isEmpty()) {
         return false;
       }
-
-      // recursively check conformance
-
-      if (!checkConformanceAlgorithm(conSuc, refSuc.get())) { // todo  no recursion
-        return false;
-      }
     }
 
     // the algorithm will stop either when something is not conform or when the current node have no
