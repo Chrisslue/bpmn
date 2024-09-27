@@ -4,7 +4,9 @@ process Concrete {
   event start Start;
   task Part1;
   task Task1;
+  task Task3;
+  task Task5;
   event end End;
 
-  Start -> Task1 -> Part1 -> End;
+  Start -> Task1 -> Task3 -> Part1 -> End;
 }

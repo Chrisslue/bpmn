@@ -1,7 +1,11 @@
 package de.monticore.workflow.conformance;
 
+import de.monticore.bpmn.workflow.WorkflowMill;
 import de.monticore.bpmn.workflow._ast.ASTWorkflowCompilationUnit;
-import de.monticore.workflow.conformance.datastructure.analysis.WfNodeGenerator;
+import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
+import de.monticore.workflow.conformance.datastructure.analysis.ConfWfBuilder;
+import de.monticore.workflow.conformance.datastructure.analysis.ConfWfNode;
+import de.monticore.workflow.conformance.datastructure.analysis.WfElementVisitor;
 import de.monticore.workflow.conformance.datastructure.interf.WfNode;
 import de.se_rwth.commons.logging.Log;
 import java.util.List;
@@ -10,60 +14,66 @@ import java.util.Set;
 
 public class WfConformanceChecker {
 
-  private DummyIncarnationStrategy incStrategy = new DummyIncarnationStrategy();
+  private DummyIncarnationStrategy incStrategy;
 
   /** procedure to check if a node conform */
   public boolean checkConformance(
       ASTWorkflowCompilationUnit concrete, ASTWorkflowCompilationUnit reference) {
 
     // transform reference and concrete node
-    WfNodeGenerator generator = new WfNodeGenerator();
-    WfNode ref = generator.generateNode(reference);
-    WfNode con = generator.generateNode(concrete);
+    ConfWfNode ref = generateNode(reference, "Reference:");
+    ConfWfNode con = generateNode(reference, "Concrete:");
+
+    incStrategy = new DummyIncarnationStrategy(concrete, reference);
+    con.setIncStrategy(incStrategy);
+    ref.setIncStrategy(incStrategy);
 
     return checkConformanceAlgorithm(con, ref);
   }
 
   // completely ignore gateway in the algorithm this should be handled  w in the node themselves
-  public boolean checkConformanceAlgorithm(WfNode con, WfNode ref) {
+  public boolean checkConformanceAlgorithm(ConfWfNode con, ConfWfNode ref) {
+
     Log.info(
-        String.format(
-            "Checking conformance of concrete:[%s] to  reference:[%s]",
-            ref.getLabel(), con.getLabel()),
+        String.format("Checking conformance of [%s] to [%s]", con.getLabel(), ref.getLabel()),
         this.getClass().getName());
 
-    if (!incStrategy.isIncarnation(ref, con)) {
+    if (!incStrategy.checkIncarnation(ref, con)) {
       return false;
     }
+    // todo addd helper method for predecessor and successors
 
     // all direct predecessors of the concrete node
-    Set<WfNode> directPredecessors = con.allPredecessor((path, node) -> true, 1);
+    Set<WfNode> directPredecessors =
+        con.allPredecessor((path, node) -> incStrategy.isIncarnation(node), 1);
 
-    for (WfNode refPred : directPredecessors) {
+    for (WfNode conPred : directPredecessors) {
       // check that the reference node has a predecessor refPred (of any depth) that incarnate
       // but without incarnation of a reference node in between
-      Optional<WfNode> conPred =
+      Optional<WfNode> refPred =
           ref.existsPredecessor(
               (path, node) ->
-                  noIncarnationOfAReferenceInPath(path) && incStrategy.isIncarnation(node, refPred),
+                  noIncarnationOfAReferenceInPath(path)
+                      && incStrategy.checkIncarnation(conPred, node),
               -1);
 
       // return false if the check result is negative
-      if (conPred.isEmpty()) {
+      if (refPred.isEmpty()) {
         return false;
       }
     }
 
     // all direct successors of the concrete node
-    Set<WfNode> directSuccessors = con.allSuccessors((path, node) -> true, 1);
+    Set<ConfWfNode> directSuccessors = con.allSuccessors((path, node) -> true, 1);
 
-    for (WfNode conSuc : directSuccessors) {
+    for (ConfWfNode conSuc : directSuccessors) {
       // check that the reference node has a successors conSuc (of any depth) that incarnate refSuc,
       // but without incarnation of a concrete node in between
-      Optional<WfNode> refSuc =
+      Optional<ConfWfNode> refSuc =
           ref.existsSuccessor(
               (path, node) ->
-                  noIncarnationOfAReferenceInPath(path) && incStrategy.isIncarnation(conSuc, node),
+                  noIncarnationOfAReferenceInPath(path)
+                      && incStrategy.checkIncarnation(conSuc, node),
               -1);
 
       // return false if the check result is negative
@@ -72,7 +82,8 @@ public class WfConformanceChecker {
       }
 
       // recursively check conformance
-      if (!checkConformanceAlgorithm(conSuc, refSuc.get())) {
+
+      if (!checkConformanceAlgorithm(conSuc, refSuc.get())) { // todo  no recursion
         return false;
       }
     }
@@ -92,5 +103,18 @@ public class WfConformanceChecker {
     }
 
     return true;
+  }
+
+  public ConfWfNode generateNode(ASTWorkflowCompilationUnit ast, String prefix) {
+
+    ConfWfBuilder builder = new ConfWfBuilder(prefix);
+
+    // traverse the Workflow ast a collect elements
+    WfElementVisitor collector = new WfElementVisitor(builder);
+    WorkflowTraverser traverser = WorkflowMill.traverser();
+    traverser.add4Workflow(collector);
+    ast.accept(traverser);
+
+    return builder.build();
   }
 }

@@ -10,9 +10,7 @@ import java.util.function.BiPredicate;
  * */
 public interface WfNode {
 
-  String getLabel(); // toString() ? Mehr kommentare. z.B. "ist das Label eindeutig?"
-
-  // ... maybe?
+  String getLabel();
 
   /**
    * @param predicate List<WfNode> = Path to node X WfNode X predecessor reachable with <=
@@ -20,11 +18,14 @@ public interface WfNode {
    * @param searchDepth: -1 = unlimited search; 0 = no search;
    * @return Node X
    */
-  Optional<WfNode> existsPredecessor(BiPredicate<List<WfNode>, WfNode> predicate, int searchDepth);
+  Optional<? extends WfNode> existsPredecessor(
+      BiPredicate<List<WfNode>, WfNode> predicate, int searchDepth);
 
-  Optional<WfNode> existsSuccessor(BiPredicate<List<WfNode>, WfNode> predicate, int searchDepth);
+  Optional<? extends WfNode> existsSuccessor(
+      BiPredicate<List<WfNode>, WfNode> predicate, int searchDepth);
 
-  Set<WfNode> allPredecessor(BiPredicate<List<WfNode>, WfNode> predicate, int searchDepth);
+  Set<? extends WfNode> allPredecessor(
+      BiPredicate<List<WfNode>, WfNode> predicate, int searchDepth);
 
-  Set<WfNode> allSuccessors(BiPredicate<List<WfNode>, WfNode> predicate, int searchDepth);
+  Set<? extends WfNode> allSuccessors(BiPredicate<List<WfNode>, WfNode> predicate, int searchDepth);
 }
