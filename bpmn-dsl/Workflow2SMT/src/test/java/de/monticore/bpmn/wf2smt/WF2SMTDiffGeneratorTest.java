@@ -42,7 +42,10 @@ class WF2SMTDiffGeneratorTest {
     assertTrue(optWitness.isPresent());
     assertEquals(List.of(startName, endName), optWitness.get());
 
-    Log.setErrorHook(() -> {throw new MCFatalError("msg");});
+    Log.setErrorHook(
+        () -> {
+          throw new MCFatalError("msg");
+        });
 
     // Test invalid model
     assertThrows(

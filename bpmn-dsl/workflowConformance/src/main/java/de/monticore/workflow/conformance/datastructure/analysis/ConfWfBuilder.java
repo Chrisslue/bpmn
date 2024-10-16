@@ -54,15 +54,32 @@ public class ConfWfBuilder implements WfBuilder<ConfWfNode> {
 
   @Override
   public ConfWfNode build() {
+
+    Map<ConfWfNode, List<ConfWfNode>> predecessors = new HashMap<>();
+    Map<ConfWfNode, List<ConfWfNode>> successors = new HashMap<>();
     for (ASTSequenceFlow sequenceFlow : sequenceFlows) {
       for (int i = 0; i < sequenceFlow.getPathList().size() - 1; i++) {
 
-        String src = sequenceFlow.getPathList().get(i).getNodeRef().getBaseName();
-        String tgt = sequenceFlow.getPathList().get(i + 1).getNodeRef().getBaseName();
+        ConfWfNode src =
+            wfNodesMap.get(sequenceFlow.getPathList().get(i).getNodeRef().getBaseName());
+        ConfWfNode tgt =
+            wfNodesMap.get(sequenceFlow.getPathList().get(i + 1).getNodeRef().getBaseName());
 
-        wfNodesMap.get(src).addSuccessor(wfNodesMap.get(tgt));
-        wfNodesMap.get(tgt).addPredecessor(wfNodesMap.get(src));
+        if (successors.containsKey(src)) {
+          successors.get(src).add(tgt);
+        } else {
+          successors.put(src, new ArrayList<>(List.of(tgt)));
+        }
+
+        if (predecessors.containsKey(tgt)) {
+          predecessors.get(tgt).add(src);
+        } else {
+          predecessors.put(src, new ArrayList<>(List.of(src)));
+        }
       }
+
+      predecessors.forEach(ConfWfNode::addPredecessors);
+      successors.forEach(ConfWfNode::addSuccessors);
     }
     return startEvent;
   }

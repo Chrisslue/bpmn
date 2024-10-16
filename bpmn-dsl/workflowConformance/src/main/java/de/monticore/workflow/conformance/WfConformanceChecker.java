@@ -9,8 +9,9 @@ import de.monticore.workflow.conformance.datastructure.analysis.WfElementVisitor
 import de.monticore.workflow.conformance.datastructure.interf.WfNode;
 import de.se_rwth.commons.logging.Log;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
+import java.util.function.BiPredicate;
+import java.util.stream.Collectors;
 
 public class WfConformanceChecker {
 
@@ -25,78 +26,66 @@ public class WfConformanceChecker {
     ConfWfNode con = generateNode(reference, "Concrete:");
 
     incStrategy = new DummyIncarnationStrategy(concrete, reference);
-    con.setIncStrategy(incStrategy);
-    ref.setIncStrategy(incStrategy);
 
-    return checkConformanceAlgorithm(con, ref);
+    return true;
   }
 
   // completely ignore gateway in the algorithm this should be handled  w in the node themselves
-  public boolean checkConformanceAlgorithm(ConfWfNode con, ConfWfNode ref) {
-
+  public boolean checkNodeConformance(ConfWfNode con, ConfWfNode ref) {
     Log.info(
         String.format("Checking conformance of [%s] to [%s]", con.getLabel(), ref.getLabel()),
         this.getClass().getName());
 
-    if (!incStrategy.checkIncarnation(ref, con)) {
-      return false;
-    }
-    // todo addd helper method for predecessor and successors
-
-    // all direct predecessors of the concrete node
-    Set<WfNode> directPredecessors =
-        con.allPredecessor((path, node) -> incStrategy.isIncarnation(node), 1);
-
-    for (WfNode conPred : directPredecessors) {
-      // check that the reference node has a predecessor refPred (of any depth) that incarnate
-      // but without incarnation of a reference node in between
-      Optional<WfNode> refPred =
-          ref.existsPredecessor(
-              (path, node) ->
-                  noIncarnationOfAReferenceInPath(path)
-                      && incStrategy.checkIncarnation(conPred, node),
-              -1);
-
-      // return false if the check result is negative
-      if (refPred.isEmpty()) {
-        return false;
-      }
+    // check the successors of the concrete node
+    Set<WfNode> predecessors = checkAdjacentNodes(con, ref, true);
+    if (!predecessors.isEmpty()) {
+      Log.warn(
+          "Nodes does not conform, the following predecessors of the concrete node break the conformance "
+              + predecessors);
     }
 
-    // all direct successors of the concrete node
-    Set<ConfWfNode> directSuccessors = con.allSuccessors((path, node) -> true, 1);
+    // checking successors
+    Set<WfNode> successors = checkAdjacentNodes(con, ref, false);
 
-    for (ConfWfNode conSuc : directSuccessors) {
-      // check that the reference node has a successors conSuc (of any depth) that incarnate refSuc,
-      // but without incarnation of a concrete node in between
-      Optional<ConfWfNode> refSuc =
-          ref.existsSuccessor(
-              (path, node) ->
-                  noIncarnationOfAReferenceInPath(path)
-                      && incStrategy.checkIncarnation(conSuc, node),
-              -1);
-
-      // return false if the check result is negative
-      if (refSuc.isEmpty()) {
-        return false;
-      }
+    if (!successors.isEmpty()) {
+      Log.warn(
+          "Nodes does not conform, the following successors of the concrete node break the conformance "
+              + predecessors);
     }
 
-    // the algorithm will stop either when something is not conform or when the current node have no
-    // successors
     Log.info(
         String.format("concrete:[%s] conforms to  reference:[%s]", ref.getLabel(), con.getLabel()),
         this.getClass().getName());
     return true;
   }
 
-  // Function to check if the sum of two numbers is even
-  public static boolean noIncarnationOfAReferenceInPath(List<WfNode> path) {
-    for (WfNode node : path) {
-      // todo implements
+  /***
+   * check the neighbor (either successors or predecessors ) of a node and check if the node conforms
+   * according to the relation that it has to its neighbor.
+   * @param conNode the concrete node
+   * @return the set of neighbor that break the conformance.
+   */
+  Set<WfNode> checkAdjacentNodes(
+      ConfWfNode conNode, ConfWfNode refNode, boolean checkingPredecessor) {
+
+    BiPredicate<List<WfNode>, WfNode> refPred = this::nodeIncarnateLastPathNode;
+
+    Set<WfNode> directAdjNodes;
+    if (checkingPredecessor) {
+      directAdjNodes =
+          conNode.allPredecessor(this::lastPathNodeIsIncarnation, 1).parallelStream()
+              .filter(
+                  node -> refNode.existsPredecessor(path -> refPred.test(path, node), -1).isEmpty())
+              .collect(Collectors.toSet());
+    } else {
+      directAdjNodes =
+          conNode.allSuccessors(this::lastPathNodeIsIncarnation, 1).parallelStream()
+              .filter(
+                  node -> refNode.existsSuccessor(path -> refPred.test(path, node), -1).isEmpty())
+              .collect(Collectors.toSet());
     }
 
-    return true;
+    return directAdjNodes;
   }
 
   public ConfWfNode generateNode(ASTWorkflowCompilationUnit ast, String prefix) {
@@ -110,5 +99,23 @@ public class WfConformanceChecker {
     ast.accept(traverser);
 
     return builder.build();
+  }
+
+  boolean lastPathNodeIsIncarnation(List<WfNode> path) {
+    return incStrategy.isIncarnation(path.get(path.size() - 1));
+  }
+
+  boolean nodeIncarnateLastPathNode(List<WfNode> path, WfNode node) {
+    return incStrategy.checkIncarnation(node, path.get(path.size() - 1))
+        && noIncarnationOfAReferenceInPath(path);
+  }
+
+  // Function to check if the sum of two numbers is even
+  public static boolean noIncarnationOfAReferenceInPath(List<WfNode> path) {
+    for (WfNode node : path) {
+      // todo implements
+    }
+
+    return true;
   }
 }
