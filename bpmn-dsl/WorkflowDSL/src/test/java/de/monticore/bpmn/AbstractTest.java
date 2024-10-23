@@ -17,7 +17,6 @@ import de.monticore.bpmn.cocos.flow.SequenceFlowNodeReferencesExist;
 import de.monticore.bpmn.trafos.*;
 import de.monticore.bpmn.utils.AuxiliaryModelsWriter;
 import de.monticore.bpmn.workflow.WorkflowMill;
-import de.monticore.bpmn.workflow.WorkflowTool;
 import de.monticore.bpmn.workflow._ast.ASTWorkflowCompilationUnit;
 import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
 import de.monticore.bpmn.workflow._parser.WorkflowParser;
@@ -25,6 +24,7 @@ import de.monticore.bpmn.workflow._symboltable.IWorkflowGlobalScope;
 import de.monticore.bpmn.workflow._symboltable.WorkflowSTCompleter;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
 import de.monticore.io.paths.MCPath;
+import de.monticore.ocl.ocl.types3.OCLTypeCheck3;
 import de.monticore.symbols.basicsymbols.BasicSymbolsMill;
 import de.monticore.symboltable.ImportStatement;
 import de.se_rwth.commons.Names;
@@ -32,8 +32,6 @@ import de.se_rwth.commons.logging.Log;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Optional;
-
-import de.se_rwth.commons.logging.LogStub;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 
@@ -60,6 +58,7 @@ public abstract class AbstractTest {
     WorkflowMill.globalScope().clear();
     WorkflowMill.globalScope().setSymbolPath(new MCPath(SYMBOL_DIR));
     BasicSymbolsMill.initializePrimitives();
+    OCLTypeCheck3.init();
   }
 
   @BeforeEach
@@ -77,10 +76,11 @@ public abstract class AbstractTest {
     WorkflowParser parser = WorkflowMill.parser();
     Optional<ASTWorkflowCompilationUnit> ast = null;
     try {
-      ast = parser.parse(
+      ast =
+          parser.parse(
               MODEL_DIR
-                      + Names.getPathFromPackage(qualifiedModelName).replaceAll("\\\\", "/")
-                      + ".wfm");
+                  + Names.getPathFromPackage(qualifiedModelName).replaceAll("\\\\", "/")
+                  + ".wfm");
     } catch (IOException e) {
       fail("Cannot parse " + qualifiedModelName);
       return null;

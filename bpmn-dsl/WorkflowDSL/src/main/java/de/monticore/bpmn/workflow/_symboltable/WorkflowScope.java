@@ -3,7 +3,6 @@ package de.monticore.bpmn.workflow._symboltable;
 import de.monticore.bpmn.workflow._ast.ASTActivity;
 import de.monticore.bpmn.workflow._ast.ASTCallableElement;
 import de.monticore.bpmn.workflow._ast.ASTFlowNode;
-
 import java.util.Optional;
 
 /** This class should be refactored once MC 6 is released */

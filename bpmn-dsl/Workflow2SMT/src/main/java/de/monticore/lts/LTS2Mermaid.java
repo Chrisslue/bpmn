@@ -23,7 +23,6 @@ public class LTS2Mermaid implements LTSBuilder<String, String> {
   protected int stateIdCounter;
   protected final Set<Transition> transitions;
 
-
   public LTS2Mermaid() {
     this.states = new HashSet<>();
     this.state2Id = new HashMap<>();
@@ -86,7 +85,8 @@ public class LTS2Mermaid implements LTSBuilder<String, String> {
     addTransition(source, target, label, List.of(condition));
   }
 
-  private void addTransition(String source, String target, String label, List<ASTExpression> condition) {
+  private void addTransition(
+      String source, String target, String label, List<ASTExpression> condition) {
     addStateIfAbsent(source);
     addStateIfAbsent(target);
 
@@ -106,10 +106,20 @@ public class LTS2Mermaid implements LTSBuilder<String, String> {
       diagram.append("\t").append(state2Id.get(state)).append(" : ").append(state).append("\n");
     }
     for (String initialState : initialStates) {
-      diagram.append("\t").append("[*]").append(" --> ").append(state2Id.get(initialState)).append("\n");
+      diagram
+          .append("\t")
+          .append("[*]")
+          .append(" --> ")
+          .append(state2Id.get(initialState))
+          .append("\n");
     }
     for (String finalState : finalStates) {
-      diagram.append("\t").append(state2Id.get(finalState)).append(" --> ").append("[*]").append("\n");
+      diagram
+          .append("\t")
+          .append(state2Id.get(finalState))
+          .append(" --> ")
+          .append("[*]")
+          .append("\n");
     }
 
     for (Transition transition : transitions) {

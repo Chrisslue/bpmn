@@ -26,13 +26,12 @@ public class SMTDiff {
 
   private final Context ctx;
 
-
-  public SMTDiff(Context ctx,
+  public SMTDiff(
+      Context ctx,
       EnumSort<String> labelSort,
       List<Expr<EnumSort<String>>> finalSymbols,
       LTS2SMTEncoding first,
-      LTS2SMTEncoding second
-  ) {
+      LTS2SMTEncoding second) {
     this.ctx = ctx;
     this.labelSort = labelSort;
     this.finalSymbols = finalSymbols;
@@ -40,14 +39,11 @@ public class SMTDiff {
     this.encodedSecond = second;
   }
 
-
   private Entry<IntExpr, BoolExpr> createIndexOfFinal(int maxSize) {
     var indexOfFinal = ctx.mkIntConst(Z3Helper.uniqueName("IndexOfFinal"));
     // The "real" trace length has to be >= 0 and smaller than the maxSize.
-    var indexOfFinalAssertions = ctx.mkAnd(
-        ctx.mkGe(indexOfFinal, ctx.mkInt(0)),
-        ctx.mkLt(indexOfFinal, ctx.mkInt(maxSize))
-    );
+    var indexOfFinalAssertions =
+        ctx.mkAnd(ctx.mkGe(indexOfFinal, ctx.mkInt(0)), ctx.mkLt(indexOfFinal, ctx.mkInt(maxSize)));
     return entry(indexOfFinal, indexOfFinalAssertions);
   }
 
@@ -55,35 +51,40 @@ public class SMTDiff {
       LTS2SMTEncoding encodedLTS,
       List<Expr<EnumSort<String>>> labelList,
       List<Expr<EnumSort<String>>> stateList,
-      IntExpr indexOfFinal
-  ) {
+      IntExpr indexOfFinal) {
     // For all 0 <= i <= indexOfFinal the transition relation has to hold.
     Expr<BoolSort> conformsTransitionRelation =
-        allIndicesMatch(ctx, labelList,
-            idx -> ctx.mkImplies(ctx.mkLe(ctx.mkInt(idx), indexOfFinal),
-                encodedLTS.getTransitionRelation()
-                    .isTransition(stateList.get(idx), labelList.get(idx), stateList.get(idx + 1)))
-        );
-    return ctx.mkAnd(conformsTransitionRelation,
-        traceHasCorrectStartAndEnd(encodedLTS, labelList, stateList, indexOfFinal
-        ));
+        allIndicesMatch(
+            ctx,
+            labelList,
+            idx ->
+                ctx.mkImplies(
+                    ctx.mkLe(ctx.mkInt(idx), indexOfFinal),
+                    encodedLTS
+                        .getTransitionRelation()
+                        .isTransition(
+                            stateList.get(idx), labelList.get(idx), stateList.get(idx + 1))));
+    return ctx.mkAnd(
+        conformsTransitionRelation,
+        traceHasCorrectStartAndEnd(encodedLTS, labelList, stateList, indexOfFinal));
   }
 
   public Expr<BoolSort> traceHasCorrectStartAndEnd(
       LTS2SMTEncoding ltsEncoding,
       List<Expr<EnumSort<String>>> labelList,
       List<Expr<EnumSort<String>>> stateList,
-      IntExpr indexOfFinal
-  ) {
+      IntExpr indexOfFinal) {
     return ctx.mkAnd(
         ctx.mkEq(stateList.get(0), ltsEncoding.getStartState()), // Trace starts with start state.
         // If idx == indexOfFinal => the label at idx has to be a final symbol.
         // That normally means the trace has to end with a label of an end event.
-        allIndicesMatch(ctx, labelList,
-            idx -> ctx.mkImplies(
-                ctx.mkEq(indexOfFinal, ctx.mkInt(idx)),
-                matchesAny(ctx, labelList.get(idx), finalSymbols)
-            )));
+        allIndicesMatch(
+            ctx,
+            labelList,
+            idx ->
+                ctx.mkImplies(
+                    ctx.mkEq(indexOfFinal, ctx.mkInt(idx)),
+                    matchesAny(ctx, labelList.get(idx), finalSymbols))));
   }
 
   public Optional<List<String>> firstIncludesTracesOfSecond(int maxSize) {
@@ -95,51 +96,58 @@ public class SMTDiff {
   }
 
   /**
-   * Test whether all traces of first are also possible in second. A trace is defined by the list of transition-label
-   * that are on a path through the lts.
+   * Test whether all traces of first are also possible in second. A trace is defined by the list of
+   * transition-label that are on a path through the lts.
    *
    * @param maxSize The maximum size a possible witness can have.
    * @return An optional witness (list of label) that is possible in first but not second.
    */
   private Optional<List<String>> findWitness(
-      LTS2SMTEncoding first,
-      LTS2SMTEncoding second,
-      int maxSize
-  ) {
+      LTS2SMTEncoding first, LTS2SMTEncoding second, int maxSize) {
     var indexOfFinalEntry = createIndexOfFinal(maxSize);
     IntExpr indexOfFinal = indexOfFinalEntry.getKey();
     BoolExpr indexOfFinalAssertions = indexOfFinalEntry.getValue();
 
     // The trace is defined by the [state0, label0, state1, ..., label_n, state_n+1 ].
     // We require the labelList and statesInFirst to be a valid trace in the first diagram.
-    // If no combination of states (length =n+1) can be created for second, which would allow the same
-    // trace of label than this is a witness for a trace that is possible in first but not in second.
-    List<Expr<EnumSort<String>>> labelList = IntStream
-        .range(0, maxSize)
-        .mapToObj(i -> ctx.mkConst(Z3Helper.uniqueName("l" + i), this.labelSort))
-        .collect(Collectors.toList());
+    // If no combination of states (length =n+1) can be created for second, which would allow the
+    // same
+    // trace of label than this is a witness for a trace that is possible in first but not in
+    // second.
+    List<Expr<EnumSort<String>>> labelList =
+        IntStream.range(0, maxSize)
+            .mapToObj(i -> ctx.mkConst(Z3Helper.uniqueName("l" + i), this.labelSort))
+            .collect(Collectors.toList());
 
-    List<Expr<EnumSort<String>>> statesInFirst = IntStream
-        .range(0, maxSize + 1)
-        .mapToObj(i -> ctx.mkConst(Z3Helper.uniqueName("s" + i), first.getStateEnum()))
-        .collect(Collectors.toList());
+    List<Expr<EnumSort<String>>> statesInFirst =
+        IntStream.range(0, maxSize + 1)
+            .mapToObj(i -> ctx.mkConst(Z3Helper.uniqueName("s" + i), first.getStateEnum()))
+            .collect(Collectors.toList());
 
-    List<Expr<EnumSort<String>>> statesInSecond = IntStream
-        .range(0, maxSize + 1)
-        .mapToObj(i -> ctx.mkConst(Z3Helper.uniqueName("s" + i), second.getStateEnum()))
-        .collect(Collectors.toList());
+    List<Expr<EnumSort<String>>> statesInSecond =
+        IntStream.range(0, maxSize + 1)
+            .mapToObj(i -> ctx.mkConst(Z3Helper.uniqueName("s" + i), second.getStateEnum()))
+            .collect(Collectors.toList());
     var isTraceInFirst = isValidTraceOver(first, labelList, statesInFirst, indexOfFinal);
 
-    // There is no combination of states such that those would allow the same path of label in second.
-    var traceNotInSecond = ctx.mkForall(statesInSecond.toArray(Expr[]::new),
-        ctx.mkNot(isValidTraceOver(second, labelList, statesInSecond, indexOfFinal)),
-        1, null, null, ctx.mkSymbol(Z3Helper.uniqueName("ForAll")), ctx.mkSymbol(Z3Helper.uniqueName("")));
+    // There is no combination of states such that those would allow the same path of label in
+    // second.
+    var traceNotInSecond =
+        ctx.mkForall(
+            statesInSecond.toArray(Expr[]::new),
+            ctx.mkNot(isValidTraceOver(second, labelList, statesInSecond, indexOfFinal)),
+            1,
+            null,
+            null,
+            ctx.mkSymbol(Z3Helper.uniqueName("ForAll")),
+            ctx.mkSymbol(Z3Helper.uniqueName("")));
 
     var solver = ctx.mkSolver();
     var result = solver.check(indexOfFinalAssertions, isTraceInFirst, traceNotInSecond);
     if (result == Status.SATISFIABLE) {
       var indexOfFinalEvaluation = Z3Helper.evaluationOfInt(solver.getModel(), indexOfFinal);
-      var labelEvaluation = Z3Helper.evaluationOfList(solver.getModel(), labelList, indexOfFinalEvaluation + 1);
+      var labelEvaluation =
+          Z3Helper.evaluationOfList(solver.getModel(), labelList, indexOfFinalEvaluation + 1);
       return Optional.of(labelEvaluation);
 
     } else if (result == Status.UNSATISFIABLE) {
@@ -156,5 +164,4 @@ public class SMTDiff {
   public LTS2SMTEncoding getEncodedSecond() {
     return encodedSecond;
   }
-
 }

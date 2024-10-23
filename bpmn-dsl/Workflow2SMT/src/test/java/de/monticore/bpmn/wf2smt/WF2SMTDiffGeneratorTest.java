@@ -29,23 +29,30 @@ class WF2SMTDiffGeneratorTest {
 
   @Test
   void testGenerateDifferModels() {
-    var differ = WF2SMTDiffGenerator.generateDiffer(Resources.SIMPLE, Resources.SIMPLE_EQUIVALENT, startName, endName,
-        terminatingName);
+    var differ =
+        WF2SMTDiffGenerator.generateDiffer(
+            Resources.SIMPLE, Resources.SIMPLE_EQUIVALENT, startName, endName, terminatingName);
     assertTrue(differ.firstIncludesTracesOfSecond(5).isEmpty());
     assertTrue(differ.secondIncludesTracesOfFirst(5).isEmpty());
-    differ = WF2SMTDiffGenerator.generateDiffer(Resources.SIMPLE, Resources.SIMPLE_NOT_EQUIVALENT, startName, endName,
-        terminatingName);
+    differ =
+        WF2SMTDiffGenerator.generateDiffer(
+            Resources.SIMPLE, Resources.SIMPLE_NOT_EQUIVALENT, startName, endName, terminatingName);
     assertTrue(differ.firstIncludesTracesOfSecond(5).isEmpty());
     var optWitness = differ.secondIncludesTracesOfFirst(5);
     assertTrue(optWitness.isPresent());
     assertEquals(List.of(startName, endName), optWitness.get());
 
-    Log.setErrorHook(() -> {throw new MCFatalError("msg");});
+    Log.setErrorHook(
+        () -> {
+          throw new MCFatalError("msg");
+        });
 
     // Test invalid model
-    assertThrows(MCFatalError.class,
-        () -> WF2SMTDiffGenerator.generateDiffer(Resources.SIMPLE, "Invalid path", startName, endName,
-            terminatingName));
+    assertThrows(
+        MCFatalError.class,
+        () ->
+            WF2SMTDiffGenerator.generateDiffer(
+                Resources.SIMPLE, "Invalid path", startName, endName, terminatingName));
   }
 
   @Test
@@ -62,19 +69,18 @@ class WF2SMTDiffGeneratorTest {
   }
 
   public static Stream<String> reflexiveArgumentProvider() {
-    return Resources.allValidModel()
-        .stream()
-        .filter(diagram -> !diagram.equals(Resources.NESTED_GATEWAY))  // TODO add when #1 fixed
+    return Resources.allValidModel().stream()
+        .filter(diagram -> !diagram.equals(Resources.NESTED_GATEWAY)) // TODO add when #1 fixed
         .filter(diagram -> !diagram.equals(Resources.MULTIPLE_INCOMING_OUTGOING)); // FIXME
   }
 
   @ParameterizedTest
   @MethodSource("reflexiveArgumentProvider")
   void testReflexive(String diagramName) {
-    var differ = WF2SMTDiffGenerator.generateDiffer(diagramName, diagramName, startName, endName,
-        terminatingName);
+    var differ =
+        WF2SMTDiffGenerator.generateDiffer(
+            diagramName, diagramName, startName, endName, terminatingName);
     assertTrue(differ.firstIncludesTracesOfSecond(15).isEmpty());
     assertTrue(differ.secondIncludesTracesOfFirst(15).isEmpty());
-
   }
 }

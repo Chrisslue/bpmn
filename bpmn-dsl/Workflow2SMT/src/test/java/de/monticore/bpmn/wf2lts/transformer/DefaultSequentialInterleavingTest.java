@@ -53,12 +53,12 @@ class DefaultSequentialInterleavingTest {
 
     LTSTestingUtils.assertSameStartOutgoingLabel(lts, interleaved);
 
-    var expectedFinalStates = Stream.concat(
-        interleaved.getTransitionsForLabel("B").stream().map(Transition::getTarget),
-        interleaved.getTransitionsForLabel("D").stream().map(Transition::getTarget)
-    ).collect(Collectors.toSet());
+    var expectedFinalStates =
+        Stream.concat(
+                interleaved.getTransitionsForLabel("B").stream().map(Transition::getTarget),
+                interleaved.getTransitionsForLabel("D").stream().map(Transition::getTarget))
+            .collect(Collectors.toSet());
     Assertions.assertEquals(expectedFinalStates, interleaved.getFinalStates());
-
   }
 
   @Test
@@ -66,7 +66,11 @@ class DefaultSequentialInterleavingTest {
     var lts = new LTSWithFinalStates();
     LTSTestingUtils.addPathOfLabelFromStart(lts, List.of("A", "B"));
     lts.addTransition(
-        new Transition(lts.getTransitionsForLabel("A").get(0).getTarget(), Collections.emptyList(), "C", new State()));
+        new Transition(
+            lts.getTransitionsForLabel("A").get(0).getTarget(),
+            Collections.emptyList(),
+            "C",
+            new State()));
     lts.getTerminalStates().forEach(lts::addAsFinalState);
 
     var interleaved = DefaultSequentialInterleaving.interleave(lts);
@@ -77,15 +81,16 @@ class DefaultSequentialInterleavingTest {
     Assertions.assertEquals(2, interleaved.getTerminalStates().size());
     Assertions.assertEquals(1, interleaved.getOutgoings(interleaved.getStart()).size());
 
-    var expectedFinalStates = Stream.of("B", "C")
-        .flatMap(label -> interleaved.getTransitionsForLabel(label).stream())
-        .map(Transition::getTarget)
-        .collect(Collectors.toSet());
+    var expectedFinalStates =
+        Stream.of("B", "C")
+            .flatMap(label -> interleaved.getTransitionsForLabel(label).stream())
+            .map(Transition::getTarget)
+            .collect(Collectors.toSet());
 
     Assertions.assertEquals(expectedFinalStates, interleaved.getFinalStates());
     // Final states equal terminal states as there is only one path.
-    Utils.assertEqualIgnoreOrder(interleaved.getTerminalStates(), new ArrayList<>(interleaved.getFinalStates()));
-
+    Utils.assertEqualIgnoreOrder(
+        interleaved.getTerminalStates(), new ArrayList<>(interleaved.getFinalStates()));
   }
 
   @Test
@@ -105,10 +110,11 @@ class DefaultSequentialInterleavingTest {
             .collect(Collectors.toList());
 
     LTSTestingUtils.assertPathsExist(interleaved, threePathsLTSValidPaths);
-    var expectedFinalStates = Stream.of("B", "D", "F")
-        .flatMap(label -> interleaved.getTransitionsForLabel(label).stream())
-        .map(Transition::getTarget)
-        .collect(Collectors.toSet());
+    var expectedFinalStates =
+        Stream.of("B", "D", "F")
+            .flatMap(label -> interleaved.getTransitionsForLabel(label).stream())
+            .map(Transition::getTarget)
+            .collect(Collectors.toSet());
     Assertions.assertEquals(expectedFinalStates, interleaved.getFinalStates());
   }
 
@@ -142,12 +148,14 @@ class DefaultSequentialInterleavingTest {
     Assertions.assertEquals(2, interleaved.getTransitionsForLabel("Z").size());
     var pathToZ = LTSTraverser.pathOfLabel(interleaved, List.of("A", "B", "Z")).orElseThrow();
     // The target of the Z transition is the source of the B transition
-    Assertions.assertEquals(pathToZ.getTransitions().get(1).getSource(), pathToZ.getTransitions().get(2).getTarget());
+    Assertions.assertEquals(
+        pathToZ.getTransitions().get(1).getSource(), pathToZ.getTransitions().get(2).getTarget());
 
-    var expectedFinalStates = Stream.of("D", "BB")
-        .flatMap(label -> interleaved.getTransitionsForLabel(label).stream())
-        .map(Transition::getTarget)
-        .collect(Collectors.toSet());
+    var expectedFinalStates =
+        Stream.of("D", "BB")
+            .flatMap(label -> interleaved.getTransitionsForLabel(label).stream())
+            .map(Transition::getTarget)
+            .collect(Collectors.toSet());
     Assertions.assertEquals(expectedFinalStates, interleaved.getFinalStates());
   }
 
@@ -181,38 +189,38 @@ class DefaultSequentialInterleavingTest {
     }
 
     // Assert "End" after every "A" transition possible
-    var aWithoutEndOutgoing = interleaved.getTransitionsForLabel("A")
-        .stream()
-        .map(Transition::getTarget)
-        .map(interleavedTraverser::pathFrom)
-        .filter(path -> path.outgoingsWith("End").size() != 1)
-        .findAny();
+    var aWithoutEndOutgoing =
+        interleaved.getTransitionsForLabel("A").stream()
+            .map(Transition::getTarget)
+            .map(interleavedTraverser::pathFrom)
+            .filter(path -> path.outgoingsWith("End").size() != 1)
+            .findAny();
     assertTrue(aWithoutEndOutgoing.isEmpty());
 
     // Assert no transition after "End"
-    var interleavedEndTargets = interleaved
-        .getTransitionsForLabel("End")
-        .stream()
-        .map(Transition::getTarget).collect(
-            Collectors.toList());
+    var interleavedEndTargets =
+        interleaved.getTransitionsForLabel("End").stream()
+            .map(Transition::getTarget)
+            .collect(Collectors.toList());
     assertTrue(interleaved.getTerminalStates().containsAll(interleavedEndTargets));
     assertTrue(interleavedEndTargets.stream().noneMatch(interleaved::isFinalState));
 
     // Assert after every "D" transition a "Z" is possible.
-    var zOutgoingsFromB = interleaved.getTransitionsForLabel("D")
-        .stream()
-        .map(Transition::getTarget)
-        .map(interleavedTraverser::pathFrom)
-        .map(path -> path.outgoingsWith("Z"))
-        .collect(Collectors.toList());
+    var zOutgoingsFromB =
+        interleaved.getTransitionsForLabel("D").stream()
+            .map(Transition::getTarget)
+            .map(interleavedTraverser::pathFrom)
+            .map(path -> path.outgoingsWith("Z"))
+            .collect(Collectors.toList());
     assertTrue(zOutgoingsFromB.stream().allMatch(zPath -> zPath.size() == 1));
 
     // Assert that every you have "D" followed by "Z" after every target of a "Z" transition
-    var noBZContinuation = zOutgoingsFromB
-        .stream()
-        .map(transitions -> transitions.get(0).getTarget())
-        .filter(zTarget -> interleavedTraverser.pathOfLabel(zTarget, List.of("D", "Z")).isEmpty())
-        .findAny();
+    var noBZContinuation =
+        zOutgoingsFromB.stream()
+            .map(transitions -> transitions.get(0).getTarget())
+            .filter(
+                zTarget -> interleavedTraverser.pathOfLabel(zTarget, List.of("D", "Z")).isEmpty())
+            .findAny();
     assertTrue(noBZContinuation.isEmpty());
   }
 }

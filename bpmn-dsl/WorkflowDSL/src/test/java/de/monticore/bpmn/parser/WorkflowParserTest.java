@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.Optional;
 import org.antlr.v4.runtime.RecognitionException;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class WorkflowParserTest extends AbstractTest {
@@ -50,7 +49,6 @@ public class WorkflowParserTest extends AbstractTest {
     String modelName = "de.monticore.bpmn.xml.Example";
     parseModel(modelName);
   }
-
 
   @Test
   public void testSimpleTask() throws RecognitionException, IOException {

@@ -21,22 +21,24 @@ import java.util.stream.Collectors;
 
 public class WF2SMTDiffGenerator {
 
-  private WF2SMTDiffGenerator() {
+  private WF2SMTDiffGenerator() {}
 
-  }
-
-  public static SMTDiff generateDiffer(String firstModelName, String secondModelName
-      , String startName, String endName, String terminatingName) {
+  public static SMTDiff generateDiffer(
+      String firstModelName,
+      String secondModelName,
+      String startName,
+      String endName,
+      String terminatingName) {
     ASTWorkflowCompilationUnit firstAST = WF2LTSGenerator.loadBPMN(firstModelName);
     ASTWorkflowCompilationUnit secondAST = WF2LTSGenerator.loadBPMN(secondModelName);
 
     var namingStrategy = new UniqueStartAndEndEventNaming(startName, endName, terminatingName);
 
-    var graphTransformer = new DefaultGraph2LTSTransformer(
-        namingStrategy,
-        new DefaultGatewayTransformer(new DefaultGatewayInterleaving(), namingStrategy),
-        new DefaultSubprocessTransformer()
-    );
+    var graphTransformer =
+        new DefaultGraph2LTSTransformer(
+            namingStrategy,
+            new DefaultGatewayTransformer(new DefaultGatewayInterleaving(), namingStrategy),
+            new DefaultSubprocessTransformer());
 
     var firstLTS = WF2LTSGenerator.workflow2LTS(firstAST, graphTransformer);
     var secondLTS = WF2LTSGenerator.workflow2LTS(secondAST, graphTransformer);
@@ -52,8 +54,7 @@ public class WF2SMTDiffGenerator {
         (x) -> firstLTS.toModel(x, firstLTS.getNamingStrategy("p")),
         (y) -> secondLTS.toModel(y, secondLTS.getNamingStrategy("q")),
         allUsedLabel(firstLTS, secondLTS, finalSymbols),
-        finalSymbols
-    );
+        finalSymbols);
   }
 
   private static List<String> allUsedLabel(LTS first, LTS second, List<String> finalSymbols) {
@@ -68,8 +69,7 @@ public class WF2SMTDiffGenerator {
       Consumer<LTS2SMTBuilder> supplierForFirst,
       Consumer<LTS2SMTBuilder> supplierForSecond,
       List<String> allLabel,
-      List<String> finalSymbols
-  ) {
+      List<String> finalSymbols) {
     var ctx = new Context();
 
     Entry<EnumSort<String>, Map<String, Expr<EnumSort<String>>>> labelSortEntry =
@@ -85,11 +85,9 @@ public class WF2SMTDiffGenerator {
   private static LTS2SMTEncoding encodeUsingBuilder(
       Context ctx,
       Map<String, Expr<EnumSort<String>>> label2Enum,
-      Consumer<LTS2SMTBuilder> builderPopulatingConsumer
-  ) {
+      Consumer<LTS2SMTBuilder> builderPopulatingConsumer) {
     var builderOfFirst = new LTS2SMTBuilder(ctx, label2Enum);
     builderPopulatingConsumer.accept(builderOfFirst);
     return builderOfFirst.build();
   }
-
 }

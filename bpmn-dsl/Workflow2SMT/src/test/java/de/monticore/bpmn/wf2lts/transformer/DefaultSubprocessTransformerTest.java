@@ -165,6 +165,7 @@ class DefaultSubprocessTransformerTest {
           public LTS transform(IntermediateGraphWithScopes graph) {
             return internalLTS;
           }
+
           @Override
           public LTS transformAndReduce(IntermediateGraphWithScopes graph) {
             return internalLTS;

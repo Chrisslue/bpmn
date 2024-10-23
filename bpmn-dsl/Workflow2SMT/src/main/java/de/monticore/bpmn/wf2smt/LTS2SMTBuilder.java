@@ -55,7 +55,6 @@ public class LTS2SMTBuilder implements LTSBuilder<Symbol, Expr<EnumSort<String>>
     return sym;
   }
 
-
   @Override
   public Symbol addInitialState(String name) {
     if (initialState != null) {
@@ -77,7 +76,8 @@ public class LTS2SMTBuilder implements LTSBuilder<Symbol, Expr<EnumSort<String>>
   }
 
   @Override
-  public void addTransition(Symbol source, Symbol target, Expr<EnumSort<String>> symbol, ASTExpression condition) {
+  public void addTransition(
+      Symbol source, Symbol target, Expr<EnumSort<String>> symbol, ASTExpression condition) {
     Log.warn("Ignoring " + condition + " ASTExpressions as conditions are not yet implemented");
     addTransition(source, target, symbol);
   }
@@ -89,22 +89,26 @@ public class LTS2SMTBuilder implements LTSBuilder<Symbol, Expr<EnumSort<String>>
   public LTS2SMTEncoding build(String stateEnumName) {
     Symbol[] statesAsSymbols = stateEncoding.values().toArray(Symbol[]::new);
     EnumSort<String> stateSort = ctx.mkEnumSort(ctx.mkSymbol(stateEnumName), statesAsSymbols);
-    Map<Symbol, Expr<EnumSort<String>>> value2Sort = IntStream.range(0, statesAsSymbols.length)
-        .boxed()
-        .collect(Collectors.toMap(
-            index -> statesAsSymbols[index],
-            index -> stateSort.getConsts()[index])
-        );
+    Map<Symbol, Expr<EnumSort<String>>> value2Sort =
+        IntStream.range(0, statesAsSymbols.length)
+            .boxed()
+            .collect(
+                Collectors.toMap(
+                    index -> statesAsSymbols[index], index -> stateSort.getConsts()[index]));
     TransitionRelation<Expr<EnumSort<String>>, Expr<EnumSort<String>>> transitionRelation =
         (source, label, target) ->
-            Z3Helper.BigOr(ctx, transitions.stream().map(transition ->
-                ctx.mkAnd(
-                    ctx.mkEq(value2Sort.get(transition.source), source),
-                    ctx.mkEq(value2Sort.get(transition.target), target),
-                    ctx.mkEq(transition.label, label)
-                    // TODO Add ASTExpressions here
-                )
-            ).collect(Collectors.toList()));
+            Z3Helper.BigOr(
+                ctx,
+                transitions.stream()
+                    .map(
+                        transition ->
+                            ctx.mkAnd(
+                                ctx.mkEq(value2Sort.get(transition.source), source),
+                                ctx.mkEq(value2Sort.get(transition.target), target),
+                                ctx.mkEq(transition.label, label)
+                                // TODO Add ASTExpressions here
+                                ))
+                    .collect(Collectors.toList()));
     var startState = value2Sort.get(initialState);
     return new LTS2SMTEncoding(startState, stateSort, transitionRelation);
   }

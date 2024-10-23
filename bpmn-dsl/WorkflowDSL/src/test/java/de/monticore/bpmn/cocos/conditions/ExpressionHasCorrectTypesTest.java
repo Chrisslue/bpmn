@@ -1,16 +1,11 @@
 package de.monticore.bpmn.cocos.conditions;
 
-import com.google.common.collect.Lists;
 import de.monticore.bpmn.cocos.AbstractCoCoTest;
 import de.monticore.bpmn.cocos.WorkflowCoCos;
 import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
-import de.se_rwth.commons.logging.Finding;
-import java.util.Collection;
-
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-//todo: reactivate when (de-)serialization of symbol tables is fixed
+// todo: reactivate when (de-)serialization of symbol tables is fixed
 class ExpressionHasCorrectTypesTest extends AbstractCoCoTest {
 
   @Override

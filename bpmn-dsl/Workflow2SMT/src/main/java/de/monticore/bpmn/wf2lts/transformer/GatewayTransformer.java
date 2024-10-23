@@ -8,8 +8,5 @@ public interface GatewayTransformer {
   GatewayInterleavingStrategy getGatewayInterleavingStrategy();
 
   LTS transform(
-      GatewayScope gatewayScope,
-      LTS externalLTS,
-      Graph2LTSTransformer graph2LTSTransformer
-  );
+      GatewayScope gatewayScope, LTS externalLTS, Graph2LTSTransformer graph2LTSTransformer);
 }

@@ -5,7 +5,8 @@ import de.monticore.bpmn.wf2lts.scopes.GatewayScope;
 
 public interface GatewayInterleavingStrategy {
 
-  default LTSWithFinalStates interleave(GatewayScope.GatewayType type, LTSWithFinalStates ltsWithFinalStates) {
+  default LTSWithFinalStates interleave(
+      GatewayScope.GatewayType type, LTSWithFinalStates ltsWithFinalStates) {
     switch (type) {
       case XOR:
         return interleaveExclusive(ltsWithFinalStates);

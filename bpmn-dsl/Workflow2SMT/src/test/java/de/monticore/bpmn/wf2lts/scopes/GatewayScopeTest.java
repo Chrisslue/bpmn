@@ -31,10 +31,12 @@ class GatewayScopeTest {
   void testNestedGateway() {
     var ast = WF2LTSGenerator.loadBPMN(Resources.NESTED_GATEWAY);
     var gateways = collectGateways(ast);
-    var outerGateway = gateways.stream()
-        .filter(ASTGateway::isDiverging)
-        .filter(astGateway -> astGateway.getName().equals("GatewaySplit"))
-        .findFirst().orElseThrow();
+    var outerGateway =
+        gateways.stream()
+            .filter(ASTGateway::isDiverging)
+            .filter(astGateway -> astGateway.getName().equals("GatewaySplit"))
+            .findFirst()
+            .orElseThrow();
     var scope = new GatewayScope(WorkflowMill.traverser(), outerGateway);
     assertEquals(GatewayType.PARALLEL, scope.getGatewayType());
     assertTrue(scope.getClosingGateway().isPresent());
@@ -42,13 +44,13 @@ class GatewayScopeTest {
     assertEquals(outerGateway, outerGatewayGraph.getStart());
     assertEquals(1, outerGatewayGraph.getGatewayScopes().size());
 
-    var expectedOuterGatewayEdges = List.of(
-        entry("GatewaySplit", "A"),
-        entry("A", "GatewayMerge"),
-        entry("GatewaySplit", "InnerGatewaySplit"),
-        entry("InnerGatewayMerge", "E"),
-        entry("E", "GatewayMerge")
-    );
+    var expectedOuterGatewayEdges =
+        List.of(
+            entry("GatewaySplit", "A"),
+            entry("A", "GatewayMerge"),
+            entry("GatewaySplit", "InnerGatewaySplit"),
+            entry("InnerGatewayMerge", "E"),
+            entry("E", "GatewayMerge"));
     Utils.assertSameEdges(outerGatewayGraph, expectedOuterGatewayEdges);
 
     var innerGatewayScope = outerGatewayGraph.getGatewayScopes().get(0);
@@ -56,13 +58,14 @@ class GatewayScopeTest {
     assertTrue(innerGatewayScope.getClosingGateway().isPresent());
     assertEquals(0, innerGatewayScope.getGraph().getGatewayScopes().size());
     var innerGatewayGraph = innerGatewayScope.getGraph();
-    var expectedInnerGatewayEdges = List.of(
-        entry("InnerGatewaySplit", "B"),
-        entry("B", "InnerGatewayEnd"),
-        entry("InnerGatewaySplit", "C"),
-        entry("C", "InnerGatewayMerge"),
-        entry("InnerGatewaySplit", "D"),
-        entry("D", "InnerGatewayMerge"));
+    var expectedInnerGatewayEdges =
+        List.of(
+            entry("InnerGatewaySplit", "B"),
+            entry("B", "InnerGatewayEnd"),
+            entry("InnerGatewaySplit", "C"),
+            entry("C", "InnerGatewayMerge"),
+            entry("InnerGatewaySplit", "D"),
+            entry("D", "InnerGatewayMerge"));
     Utils.assertSameEdges(innerGatewayGraph, expectedInnerGatewayEdges);
 
     var startEdges = innerGatewayGraph.getEdges().get(innerGatewayGraph.getStart());
@@ -73,19 +76,19 @@ class GatewayScopeTest {
   void testCyclicGateway() {
     var ast = WF2LTSGenerator.loadBPMN(Resources.CYCLIC_GATEWAY);
     var gateways = collectGateways(ast);
-    var outerGateway = gateways.stream()
-        .filter(ASTGateway::isDiverging)
-        .filter(astGateway -> astGateway.getName().equals("GatewaySplit"))
-        .findFirst().orElseThrow();
+    var outerGateway =
+        gateways.stream()
+            .filter(ASTGateway::isDiverging)
+            .filter(astGateway -> astGateway.getName().equals("GatewaySplit"))
+            .findFirst()
+            .orElseThrow();
     var scope = new GatewayScope(WorkflowMill.traverser(), outerGateway);
     assertEquals(GatewayType.XOR, scope.getGatewayType());
     assertTrue(scope.getClosingGateway().isPresent());
 
-    var expectedEdges = List.of(
-        entry("GatewaySplit", "GatewayMerge"),
-        entry("GatewaySplit", "C"),
-        entry("C", "End")
-    );
+    var expectedEdges =
+        List.of(
+            entry("GatewaySplit", "GatewayMerge"), entry("GatewaySplit", "C"), entry("C", "End"));
     var gatewayGraph = scope.getGraph();
     Utils.assertSameEdges(gatewayGraph, expectedEdges);
 
@@ -94,24 +97,24 @@ class GatewayScopeTest {
   }
 
   private List<ASTGateway> collectGateways(ASTWorkflowCompilationUnit ast) {
-    var visitor = new WorkflowVisitor2() {
+    var visitor =
+        new WorkflowVisitor2() {
 
-      final List<ASTGateway> gateways = new ArrayList<>();
+          final List<ASTGateway> gateways = new ArrayList<>();
 
-      @Override
-      public void visit(ASTNamedGateway node) {
-        gateways.add(node);
-      }
+          @Override
+          public void visit(ASTNamedGateway node) {
+            gateways.add(node);
+          }
 
-      @Override
-      public void visit(ASTInlineGateway node) {
-        gateways.add(node);
-      }
-    };
+          @Override
+          public void visit(ASTInlineGateway node) {
+            gateways.add(node);
+          }
+        };
     var traverser = WorkflowMill.traverser();
     traverser.add4Workflow(visitor);
     ast.accept(traverser);
     return visitor.gateways;
   }
-
 }

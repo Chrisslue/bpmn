@@ -28,12 +28,13 @@ class StartEndGraphTransformerTest {
     var ast = WF2LTSGenerator.loadBPMN(Resources.PROTOTYPE);
     var graphWithScopes = WF2LTSGenerator.transformToGraph(ast);
     var naming = new UniqueStartAndEndEventNaming("Start", "End", "Term");
-    var transformer = new StartEndGraphTransformer(
-        "_S", "_E",
-        new UniqueStartAndEndEventNaming("Start", "End", "Term"),
-        new DefaultGatewayTransformer(new DefaultGatewayInterleaving(), naming),
-        new DefaultSubprocessTransformer()
-    );
+    var transformer =
+        new StartEndGraphTransformer(
+            "_S",
+            "_E",
+            new UniqueStartAndEndEventNaming("Start", "End", "Term"),
+            new DefaultGatewayTransformer(new DefaultGatewayInterleaving(), naming),
+            new DefaultSubprocessTransformer());
     var lts = transformer.transform(graphWithScopes);
 
     // Assert no unreachable states.

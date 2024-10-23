@@ -65,10 +65,7 @@ class DefaultGraph2LTSTransformerTest {
 
       @Override
       public LTS transform(
-          GatewayScope gatewayScope,
-          LTS externalLTS,
-          Graph2LTSTransformer graph2LTSTransformer
-      ) {
+          GatewayScope gatewayScope, LTS externalLTS, Graph2LTSTransformer graph2LTSTransformer) {
         return externalLTS;
       }
     };
@@ -145,6 +142,8 @@ class DefaultGraph2LTSTransformerTest {
         List.of(aTaskName, bTaskName, cTaskName, startEventName, endEventName)) {
       Assertions.assertTrue(lts.isLabelPresent(existingLabel), existingLabel + " not present.");
     }
-    var asMermaid = lts.toModel(new LTS2Mermaid()).build(); // optionally look at result in https://mermaid.live/
+    var asMermaid =
+        lts.toModel(new LTS2Mermaid())
+            .build(); // optionally look at result in https://mermaid.live/
   }
 }

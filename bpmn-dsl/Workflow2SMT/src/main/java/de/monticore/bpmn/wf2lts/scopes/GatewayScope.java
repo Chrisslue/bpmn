@@ -10,9 +10,10 @@ import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
 import java.util.Optional;
 
 /**
- * Encapsulate a block of sequences between two matching gateways (split -> ... -> merge). Or paths from split that end
- * in an end event. Build the internal graph connecting both gateways. Might include other nested GatewayScopes or
- * SubprocessScopes. When created (using the constructor) the intermediate graph is build immediately.
+ * Encapsulate a block of sequences between two matching gateways (split -> ... -> merge). Or paths
+ * from split that end in an end event. Build the internal graph connecting both gateways. Might
+ * include other nested GatewayScopes or SubprocessScopes. When created (using the constructor) the
+ * intermediate graph is build immediately.
  */
 public class GatewayScope extends GraphBuildingTraverser {
 
@@ -102,8 +103,10 @@ public class GatewayScope extends GraphBuildingTraverser {
       // This is way we have to test for equality too.
       if (this.closingGateway != null && this.closingGateway != gateway) {
         throw new IllegalArgumentException(
-            "Closing gateway was already set: " + this.closingGateway.getName()
-                + " and was about to be overriden by: " + gateway.getName());
+            "Closing gateway was already set: "
+                + this.closingGateway.getName()
+                + " and was about to be overriden by: "
+                + gateway.getName());
       }
       this.closingGateway = gateway;
     } else { // Continue traversing graph.
