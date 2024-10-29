@@ -20,29 +20,37 @@ grammar Workflow
   /*=============================== PROCESS ================================*/
   /*========================================================================*/
 
+  /* all elements that can appear in a Process flow e.g. Activities, Gateways, Events ... */
   interface FlowElement;
 
+  /* superset of elements contained in BPMNs */
   interface FlowElementContainer = Name FlowElement*;
 
+  /* represents a model element that can be called */
   interface symbol CallableElement =
       Name
       IOSpecification
+      // supported Interface?
+      // ioBinding?
     ;
 
+  /* Graph of FlowElements */
   symbol scope Process implements CallableElement, FlowElementContainer =
       "process" Name
+      // missing many attributes like ProcessType, Properties, Ressources ...
       "{"
         IOSpecification
-        (   Lane
+        (   Lane        // Split Lanes and FlowElements into two separat Productions?
           | FlowElement
         )*
       "}"
     ;
 
+  /* sub-partition within a Process to organize Activities within a Pool */
   symbol Lane =
       "lane" Name
       "{"
-        (   childLane:Lane
+        (   childLane:Lane  // Split Lanes and FlowElements into two separat Productions?
           | FlowElement
         )*
       "}"
@@ -68,12 +76,14 @@ grammar Workflow
       outgoings:List<de.monticore.bpmn.workflow._ast.SequenceFlow>
     ;
 
+  /* work performed within a Business Process */
   interface Activity extends GlobalFlowNode =
       Name
       CompensationHandler?
       LoopCharacteristics?
     ;
 
+  /* Activity whose internal details are modelled using Activites, Events ... */
   symbol scope SubProcess implements Activity, FlowElementContainer  =
       type:SubProcessType
       Name
@@ -82,18 +92,21 @@ grammar Workflow
       LoopCharacteristics?
       "{"
         IOSpecification // IOSpecification is not allowed here by BPMN standard, but we include it here to be able to show a suitable error message
-        (   Lane
+        (   Lane        // Split Lanes and FlowElements into two separat Productions?
           | FlowElement
         )*
       "}"
     ;
 
+  /* possible Types for SubProcesses */
   enum SubProcessType =
       "subprocess"
     | "transaction"
     | "adhoc"
     ;
 
+  /* needed in case it is an Ad-Hoc Sub Process */
+  /* set of Activites that do not require any Sequence relationships */
   AdHocCharacteristics =
       ("until" ":" "[" completionCondition:Expression "]")
       (   "parallel" (waitForRemainingInstances:["noninterrupt"])?
@@ -105,16 +118,18 @@ grammar Workflow
       triggeredByEvent:boolean
     ;
 
+  /* Non-decomposable Activity */
   interface symbol scope AtomicActivity extends Activity =
       Name
       IOSpecification?
       (boundaryEvent:NamedEvent)*
     ;
 
+  /* can override properties of the element beeing called */
   CallActivity implements AtomicActivity =
       "task"
       Name
-      "template" ":" template:Name  // @CallableElement
+      "template" ":" template:Name@CallableElement  // defines the calledElement, unprecise  naming?
       CompensationHandler?
       LoopCharacteristics?
       (   "{"
@@ -125,6 +140,7 @@ grammar Workflow
       )
     ;
 
+  /* AtomicActivity that is included within the process */
   Task implements AtomicActivity =
       "task"
       type:TaskType?
@@ -140,36 +156,41 @@ grammar Workflow
       )
     ;
 
+  /* possible Types for Tasks */
   enum TaskType =
       "service"
     | "send"
     | "receive"
     | "user"
     | "manual"
-    | "rule"
+    | "rule" // BusinessRule ?
     | "script"
     ;
 
   interface TaskTypeAttributes;
 
+  /* Attributes for the other types are missing */
   TaskSendReceiveTypeAttributes implements TaskTypeAttributes =
       "message" ":" message:Name@Notification
     ;
 
+  /* Activites that are not connected to other parts of the BPMN model */
   CompensationHandler =
       "compensate" ":" activity:Name // @Activity
     ;
 
   interface LoopCharacteristics;
 
+  /* looping behavior based on loopCondition */
   StandardLoop implements LoopCharacteristics =
-      (testBefore:["while"] | "until") ":" "[" loopCondition:Expression "]"
+      (testBefore:["while"] | "until") ":" "[" loopCondition:Expression "]" // use "true" and "false" instead of "while" and "until" ?
       ("max" ":" loopMaximum:NatLiteral)?
     ;
 
+  /* allows a multiple number of Activity instances */
   MILoop implements LoopCharacteristics =
       "count" ":" LoopCardinality
-      ("parallel" | ["sequential"])?
+      ("parallel" | "sequential")?
       ("until" ":" "[" completionCondition:Expression "]")?
       ("implicit" ":" implicitBehavior:MIImplicitEventBehavior)?
       ("event" ":"    implicitEventDef:EventTrigger           )?
@@ -180,6 +201,7 @@ grammar Workflow
       loopDataOutput:Name
     ;
 
+  /* specifies when Events shall be thrown */
   MIImplicitEventBehavior =
       ["none"]
     | ["first"]
@@ -187,10 +209,11 @@ grammar Workflow
     | "[" complexCondition:Expression "]"
     ;
 
+  /* controls the number of Activites created by a MILoop */ 
   LoopCardinality =
       count:NatLiteral
     | ("[" expression:Expression "]")
-    | collection:Name
+    | collection:Name // what is meant by collection? do we use this option?
     ;
 
 
@@ -200,9 +223,11 @@ grammar Workflow
 
   // cannot be an abstract class, due to a bug in MC v5.0.2 (attributes from interface NT FlowNode are not inherited)
   interface Gateway extends FlowNode =
-      direction:GatewayDirection type:GatewayType
+      direction:GatewayDirection 
+      type:GatewayType
     ;
 
+  /* named Gateway at Process-Level */
   symbol NamedGateway implements Gateway, GlobalFlowNode =
       direction:GatewayDirection
       type:GatewayType
@@ -211,17 +236,21 @@ grammar Workflow
       ";"
     ;
 
+  /* Gateway inlined in the SequenceFlow */
   InlineGateway implements Gateway, InlineFlowNode =
       direction:GatewayDirection
       type:GatewayType
       ("[" activationCondition:Expression "]")?  // complex gateway
     ;
 
+  /* specifies how the Gateway may be used */
+  /* different naming: Unspecified, Converging, Diverging and Mixed */
   enum GatewayDirection =
       "split"
     | "merge"
     ;
-
+    
+  /* possible Types of Gateways */
   GatewayType =
       [exclusive:"xor"]
     | [inclusive:"ior"]
@@ -236,15 +265,20 @@ grammar Workflow
   /*================================ EVENTS ================================*/
   /*========================================================================*/
 
+  /* happens during a Process */
   interface Event extends FlowNode =
-      type:EventType? behavior:EventBehavior? trigger:EventTrigger?
+      type:EventType? 
+      behavior:EventBehavior? 
+      trigger:EventTrigger?
     ;
 
+  /* named Event at Process-Level */
   symbol NamedEvent implements Event, GlobalFlowNode =
       (boundary:["<<boundary>>"])?
       "event" type:EventType?
       Name
-      behavior:EventBehavior? trigger:EventTrigger?
+      behavior:EventBehavior? 
+      trigger:EventTrigger?
       (   "{"
             (input:IRequirement | output:ORequirement)
           "}"
@@ -252,16 +286,20 @@ grammar Workflow
       )
     ;
 
+  /* Event inlined in the SequenceFlow */
   InlineEvent implements Event, InlineFlowNode =
       "event" type:EventType?
-      behavior:EventBehavior? trigger:EventTrigger?
+      behavior:EventBehavior? 
+      trigger:EventTrigger?
     ;
 
+  /* possible Types of Events */
   enum EventType =
       "start"
-    | "end"
+    | "end"   // "intermediate" missing?
     ;
 
+  /* Events are either catching or throwing */
   EventBehavior =
         throw:["send"]
       | catch:["receive"] (nonInterrupt:["noninterrupt"])? // TODO move noninterrupt behind the trigger?
@@ -269,6 +307,7 @@ grammar Workflow
 
   interface EventTrigger;
 
+  /* all BPMN triggers except the link trigger */
   EventTriggerCancel       implements EventTrigger = "cancel";
   EventTriggerCompensate   implements EventTrigger = "compensate" (":" activity:Name)? ["async"]?;
   EventTriggerConditional  implements EventTrigger = "when"        ":" "[" Expression "]";
@@ -285,12 +324,13 @@ grammar Workflow
   /*============================= CONTROL FLOW =============================*/
   /*========================================================================*/
 
-
+  /* models the SequenceFlow by chaining FlowTargets */
   SequenceFlow implements FlowElement =
       path:(FlowTarget || "->")+
       ";"
     ;
 
+  /* specifies a set of parallel branches */
   FlowBlock =
       "{" branch:(FlowBranch || ",")+ "}"
     ;
@@ -299,6 +339,7 @@ grammar Workflow
       path:(FlowTarget || "->")+
     ;
 
+  /* reference a FlowNode using its name, define a FlowNode inside or create a block structure */
   FlowTarget =
       condition:FlowCondition?
       (   nodeRef:MCQualifiedName
@@ -307,6 +348,7 @@ grammar Workflow
       )
     ;
 
+  /* Type of SequenceFlow */
   FlowCondition =
       "[" Expression "]"
     | default:["<<default>>"]
@@ -316,6 +358,7 @@ grammar Workflow
   /*================================ DATA ==================================*/
   /*========================================================================*/
 
+  /* represents a data object or data store */
   symbol DataObject implements FlowElement, Variable =
       ("data" | ["store"]) Name ":" MCType ";"
     ;
@@ -327,8 +370,10 @@ grammar Workflow
 
   IOSpecification = IORequirement* ;
 
+  /* input requirement, ouput requirement or input-output rule */
   interface IORequirement;
 
+  /* specifies data input or data output */
   DataIO =
       MCQualifiedName
       (loop:["[i]"] {noSpace()}?)?
@@ -342,6 +387,7 @@ grammar Workflow
       ("as" alias:Name)?
     ;
 
+  /* Set of input and output data */
   DataSet  =  DataIO | "{" (DataIO || ",")* "}" ;
 
   IRequirement implements IORequirement = "in"  ":" inputSet :DataSet  ";" ;
