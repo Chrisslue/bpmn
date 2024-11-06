@@ -1,11 +1,8 @@
 package de.monticore.bpmn;
 
-grammar Workflow
-        extends de.monticore.ocl.OCL,
-                de.monticore.expressions.TimeExpressions,
-                de.monticore.symbols.OOSymbols {
-
-  start WorkflowCompilationUnit;
+grammar Workflow extends de.monticore.ocl.OCL, // todo: common, assigmnement, lammbda?
+                         de.monticore.expressions.TimeExpressions, // todo: integrieren
+                         de.monticore.symbols.OOSymbols {  //todo: ggf. durch Type-Symbols ersetzen und Modifier importieren
 
   /* Expression Language, e. g. OCL */
 
@@ -28,7 +25,7 @@ grammar Workflow
   interface FlowElementContainer = Name FlowElement*;
 
   /* represents a model element that can be called by a CallActivity */
-  /* potentially unnecessary */
+  /* potentially unnecessary todo: remove*/
   interface symbol CallableElement =
       Name
       IOSpecification
@@ -37,7 +34,7 @@ grammar Workflow
   /* represents a Process which contains Lanes and FlowElements in any order */
   symbol scope Process implements CallableElement, FlowElementContainer =
       // add BasicAccessModifier in order to model the ProcessTypes None, Private and Public
-      // Modifier?
+      // todo: Modifier?
       "process" Name
       // missing attributes like Properties, Resources ...
       "{"
@@ -67,6 +64,8 @@ grammar Workflow
   /*============================== ACTIVITIES ==============================*/
   /*========================================================================*/
 
+  // todo: FlowNode rausnehmen, wir nutzen nur FlowElement, keine Unterscheidung zwischen global und inline
+
   interface FlowNode ;
 
   /* distinction necessary? */
@@ -77,6 +76,7 @@ grammar Workflow
   /* InlineFlowNode is defined in-lined in the SequenceFlow e.g. Gateways and Events */
   interface InlineFlowNode extends FlowNode;
 
+  /* todo:IFLowNode rausnehmen, FlowElement mit TOP erweitern */
   astrule FlowNode astextends ASTFlowElement, IFlowNode = // IFlowNode provides additional default methods for predecessors/successors
       parentRef:String?
       laneRef:String?
@@ -111,6 +111,7 @@ grammar Workflow
     ;
 
   /* possible Types for SubProcesses */
+  /*todo: in SubProcess integrieren, Kommentare in Block vor SubProcess*/
   enum SubProcessType =
       "subprocess"    // embedded subprocess
     | "transaction"   // model complex business scenarios -> ensuring all parts completed successfully or a handled in case of failure
@@ -164,6 +165,7 @@ grammar Workflow
     ;
 
   /* possible Types for Tasks */
+  /*todo: in Task integrieren, Kommentare in Block vor Task*/
   enum TaskType =
       "service" // automated by software and can use external applications
     | "send"    // sending message to an external system or participant
@@ -174,6 +176,7 @@ grammar Workflow
     | "script"  // execution of script directly within the process model
     ;
 
+  //todo: für später ggf. alle Attribute einfach optional in Task aufführen?
   interface TaskTypeAttributes;
   /* service: used webservice and the operation triggered by the task  */
   /* send:    used webservice, message and the operation triggered by the task  */
@@ -239,6 +242,8 @@ grammar Workflow
   /*=============================== GATEWAYS ===============================*/
   /*========================================================================*/
 
+
+  //todo: interface raus, Name optional, keine Unterscheidung zwischen global und inline
   // cannot be an abstract class, due to a bug in MC v5.0.2 (attributes from interface NT FlowNode are not inherited)
   interface Gateway extends FlowNode =
       direction:GatewayDirection 
@@ -250,7 +255,7 @@ grammar Workflow
       direction:GatewayDirection
       type:GatewayType
       Name
-      ("[" activationCondition:Expression "]")?  // needed for complex gateway, maybe put activationCondition and the Type "complex" together?
+      ("[" guard:Expression "]")?  // needed for complex gateway, maybe put guard and the Type "complex" together?
       ";"
     ;
 
@@ -258,11 +263,12 @@ grammar Workflow
   InlineGateway implements Gateway, InlineFlowNode =
       direction:GatewayDirection
       type:GatewayType
-      ("[" activationCondition:Expression "]")?  // needed for complex gateway
+      ("[" guard:Expression "]")?  // needed for complex gateway
     ;
 
   /* specifies how the Gateway may be used */
   /* different naming: Unspecified, Converging, Diverging and Mixed */
+  /*todo: Als Constant Group / boolean constant? */
   enum GatewayDirection =
       "split"
     | "merge"
@@ -275,7 +281,7 @@ grammar Workflow
     | [parallel: "and"]
     | ("receive" ":" [exclusiveEventBased:"first"]) // first event determines the path to follow
     | ("receive" ":" [ parallelEventBased:  "all"]) // waits for each event before following each outgoing path
-    | ["complex"]                                   // Gateway is connected to an activationCondition
+    | ["complex"]                                   // Gateway is connected to an guard
     ;
 
 
@@ -283,6 +289,7 @@ grammar Workflow
   /*================================ EVENTS ================================*/
   /*========================================================================*/
 
+  /*todo: interface weg, keine Unterscheidung zwischen Global und Inline, Name und IO optional */
   /* defines something that happens during a Process */
   interface Event extends FlowNode =
       type:EventType? 
@@ -306,11 +313,12 @@ grammar Workflow
 
   /* Event inlined in the SequenceFlow */
   InlineEvent implements Event, InlineFlowNode =
-      "event" type:EventType?
-      behavior:EventBehavior? // why is behavior optional? It is always either catching or throwing
+      "event" (type:["start" | "end"])?
+      ([throw:"send"] | [catch:"receive"] (["noninterrupt"])?)
       trigger:EventTrigger?
     ;
 
+  /* todo: Entfernen und als Constant Group im Event */
   /* possible Types of Events */
   /* if the type is not specified, it is an intermediate event */
   enum EventType =
@@ -319,17 +327,19 @@ grammar Workflow
     ;
 
   /* Events are either catching or throwing */
+  /* todo: Entfernen! */
   EventBehavior =
       /* throw event emits the event trigger */
         throw:["send"]
       /* catch event listens and waits for the event trigger to occur
       /* interrupting boundary event cancels the activity to which it is attached as it occurs */  
-      | catch:["receive"] (nonInterrupt:["noninterrupt"])? // TODO move noninterrupt behind the trigger?
+      | catch:["receive"] (nonInterrupt:["noninterrupt"])? // TODO move interrupt behind the trigger?
     ;
 
   interface EventTrigger;
 
   /* all BPMN triggers except the link trigger */
+  /* todo: beibehalten, aber vielleicht EventTriggerNotification mit Alternativen zusammenfassen?*/
   EventTriggerCancel       implements EventTrigger = "cancel";
   EventTriggerCompensate   implements EventTrigger = "compensate" (":" activity:Name)? ["async"]?;
   EventTriggerConditional  implements EventTrigger = "when"        ":" "[" Expression "]";
@@ -415,7 +425,7 @@ grammar Workflow
   DataSet  =  DataIO | "{" (DataIO || ",")* "}" ;
 
   /* specifies an input set */
-  IRequirement implements IORequirement = "in"  ":" inputSet :DataSet  ";" ;
+  IRequirement implements IORequirement = "in"  ":" inputSet:DataSet  ";" ;
 
   /* specifies an output set */
   ORequirement implements IORequirement = "out" ":" outputSet:DataSet ";" ;

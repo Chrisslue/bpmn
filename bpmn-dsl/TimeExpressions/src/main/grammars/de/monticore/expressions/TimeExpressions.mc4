@@ -1,5 +1,6 @@
 package de.monticore.expressions;
 
+/* In WorkflowDSL integrieren*/
 grammar TimeExpressions extends de.monticore.literals.MCCommonLiterals {
 
   interface TimeExpression;
@@ -24,6 +25,8 @@ grammar TimeExpressions extends de.monticore.literals.MCCommonLiterals {
   CronExpr implements TimeExpression =
       "cron" value:String
     ;
+
+  //Todo: DateTime von MSm nehmen!
 
   Time =
       hours:NatLiteral ":" {noSpace()}? minutes:NatLiteral {noSpace()}? (":" {noSpace()}? seconds:NatLiteral {noSpace()}?)?

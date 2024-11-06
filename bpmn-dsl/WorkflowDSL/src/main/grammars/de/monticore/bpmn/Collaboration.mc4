@@ -3,8 +3,6 @@ package de.monticore.workflow;
 
 grammar Collaboration extends de.monticore.bpmn.Workflow {
 
-  start CollaborationCompilationUnit;
-
   CollaborationCompilationUnit =
     ("package" package:(Name& || ".")+ ";")?
     (ImportStatement)*
