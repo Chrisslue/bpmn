@@ -10,10 +10,10 @@ import java.util.*;
  * to workflow nodes.
  * It also collects sequence flow in the workflow in other to build transitions between nodes.
  */
-public class ConfWfBuilder implements WfBuilder<ConfWfNode> {
+public class ConfWfBuilder implements WfBuilder<IdWfNode> {
   private final Set<ASTSequenceFlow> sequenceFlows = new HashSet<>();
-  private final Map<String, ConfWfNode> wfNodesMap = new HashMap<>();
-  private ConfWfNode startEvent;
+
+  private IdWfNode startEvent;
   private final String prefix;
 
   public ConfWfBuilder(String prefix) {
@@ -25,61 +25,59 @@ public class ConfWfBuilder implements WfBuilder<ConfWfNode> {
   }
 
   @Override
-  public ConfWfNode mkNamedTask(String name) {
-    ConfWfNode res = new ConfWfNode(addPrefix(name), NodeType.TASK);
-    wfNodesMap.put(name, res);
-    return res;
+  public IdWfNode mkNamedTask(String name) {
+      return IdWfNode.mkNode(addPrefix(name), NodeType.TASK);
   }
 
   @Override
-  public ConfWfNode mkNamedEvent(String name) {
-    ConfWfNode res = new ConfWfNode(addPrefix(name), NodeType.EVENT);
-    wfNodesMap.put(name, res);
-    return res;
+  public IdWfNode mkNamedEvent(String name) {
+return IdWfNode.mkNode(addPrefix(name), NodeType.EVENT);
+
   }
 
   @Override
-  public ConfWfNode mkNamedGateway(String name, NodeType type) {
-    ConfWfNode res = new ConfWfNode(addPrefix(name), type);
-    wfNodesMap.put(name, res);
-    return res;
+  public IdWfNode mkNamedGateway(String name, NodeType type) {
+   return IdWfNode.mkNode (addPrefix(name), type);
+
   }
 
   @Override
-  public ConfWfNode mkStartEvent(String label) {
-    ConfWfNode res = mkNamedEvent(label);
+  public IdWfNode mkStartEvent(String label) {
+    IdWfNode res = mkNamedEvent(label);
     startEvent = res;
     return res;
   }
 
   @Override
-  public ConfWfNode build() {
+  public IdWfNode build() {
 
-    Map<ConfWfNode, List<ConfWfNode>> predecessors = new HashMap<>();
-    Map<ConfWfNode, List<ConfWfNode>> successors = new HashMap<>();
+
+
+    Map<IdWfNode, Set<IdWfNode>> predecessors = new HashMap<>();
+    Map<IdWfNode, Set<IdWfNode>> successors = new HashMap<>();
     for (ASTSequenceFlow sequenceFlow : sequenceFlows) {
       for (int i = 0; i < sequenceFlow.getPathList().size() - 1; i++) {
 
-        ConfWfNode src =
-            wfNodesMap.get(sequenceFlow.getPathList().get(i).getNodeRef().getBaseName());
-        ConfWfNode tgt =
-            wfNodesMap.get(sequenceFlow.getPathList().get(i + 1).getNodeRef().getBaseName());
+        IdWfNode src =
+            IdWfNode.getNode(sequenceFlow.getPathList().get(i).getNodeRef()  .get(i).getNodeRef().getBaseName());
+        IdWfNode tgt =
+            IdWfNode.getNode(sequenceFlow.getPathList().get(i + 1).getNodeRef().getBaseName());
 
         if (successors.containsKey(src)) {
           successors.get(src).add(tgt);
         } else {
-          successors.put(src, new ArrayList<>(List.of(tgt)));
+          successors.put(src, new HashSet<>(List.of(tgt)));
         }
 
         if (predecessors.containsKey(tgt)) {
           predecessors.get(tgt).add(src);
         } else {
-          predecessors.put(src, new ArrayList<>(List.of(src)));
+          predecessors.put(src, new HashSet<>(List.of(src)));
         }
       }
 
-      predecessors.forEach(ConfWfNode::addPredecessors);
-      successors.forEach(ConfWfNode::addSuccessors);
+      predecessors.forEach(IdWfNode::addPredecessors);
+      successors.forEach(IdWfNode::addSuccessors);
     }
     return startEvent;
   }

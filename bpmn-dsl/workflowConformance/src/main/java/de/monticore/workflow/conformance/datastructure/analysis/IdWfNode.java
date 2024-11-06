@@ -6,23 +6,47 @@ import de.se_rwth.commons.logging.Log;
 import java.util.*;
 import java.util.function.Predicate;
 
-public class ConfWfNode implements WfNode {
-  private List<ConfWfNode> predecessors = Collections.unmodifiableList(new ArrayList<>());
-  private List<ConfWfNode> successors = Collections.unmodifiableList(new ArrayList<>());
+public class IdWfNode implements WfNode {
+  private Set<IdWfNode> predecessors = Collections.unmodifiableSet(new HashSet<>());
+  private Set<IdWfNode> successors = Collections.unmodifiableSet(new HashSet<>());
   private final String label;
   private final NodeType nodeType;
 
-  public ConfWfNode(String label, NodeType nodeType) {
+  public static Set<IdWfNode> allNodes = Collections.unmodifiableSet(new HashSet<>());
+
+  public Set<IdWfNode> getPredecessors() {
+    return predecessors;
+  }
+
+  public Set<IdWfNode> getSuccessors() {
+    return successors;
+  }
+
+  private IdWfNode(String label, NodeType nodeType) {
     this.label = label;
     this.nodeType = nodeType;
+
+
+
   }
 
-  public void addPredecessors(List<ConfWfNode> predecessor) {
-    this.predecessors = Collections.unmodifiableList(predecessor);
+  public static IdWfNode mkNode(String label, NodeType nodeType){
+    return  getNode(label).orElse(new IdWfNode(label,nodeType));
   }
 
-  public void addSuccessors(List<ConfWfNode> successor) {
-    this.successors = Collections.unmodifiableList(successor);
+  public   static Optional<IdWfNode> getNode(String label){
+   return allNodes.stream().filter(node->node.label.equals(label)).findAny();
+  }
+
+  public NodeType getNodeType() {
+    return nodeType;
+  }
+
+   public void addPredecessor(Set<IdWfNode> predecessor){
+     this.predecessors = Collections.unmodifiableSet(predecessor);
+   }
+  public void addSuccessors(,Set<IdWfNode> successor){
+    this.successors = Collections.unmodifiableSet(successor);
   }
 
   @Override
@@ -30,12 +54,21 @@ public class ConfWfNode implements WfNode {
     return label;
   }
 
-  private Predicate<List<WfNode>> increasePath(Predicate<List<WfNode>> predicate, ConfWfNode node) {
+  public Set<IdWfNode> getAllNodes() {
+    return allNodes;
+  }
+
+  private Predicate<List<WfNode>> increasePath(
+      Predicate<List<WfNode>> predicate, IdWfNode node) {
     return path -> {
       List<WfNode> newPath = new ArrayList<>(path);
       newPath.add(this);
       return predicate.test(newPath);
     };
+  }
+
+  public void setAllNodes(Set<IdWfNode> allNodes) {
+    this.allNodes = Collections.unmodifiableSet(allNodes);
   }
 
   @Override
@@ -75,7 +108,8 @@ public class ConfWfNode implements WfNode {
   }
 
   @Override
-  public Optional<ConfWfNode> existsSuccessor(Predicate<List<WfNode>> predicate, int searchDepth) {
+  public Optional<IdWfNode> existsSuccessor(
+      Predicate<List<WfNode>> predicate, int searchDepth) {
     /* // todo correctly handle termination when search deep == -1
 
     for (ConfWfNode suc : this.successors) {
@@ -134,7 +168,7 @@ public class ConfWfNode implements WfNode {
   }
 
   @Override
-  public Set<ConfWfNode> allSuccessors(Predicate<List<WfNode>> predicate, int searchDepth) {
+  public Set<IdWfNode> allSuccessors(Predicate<List<WfNode>> predicate, int searchDepth) {
 
     /*  if (searchDepth == 1) {
       Set<ConfWfNode> res = new HashSet<>();
@@ -159,5 +193,21 @@ public class ConfWfNode implements WfNode {
     Log.error("getting all successor is not yet implemented");
 
     return null;
+  }
+
+  public boolean isGateway() {
+    return Set.of(
+            NodeType.AND_SPLIT,
+            NodeType.OR_SPLIT,
+            NodeType.XOR_SPLIT,
+            NodeType.OR_MERGE,
+            NodeType.AND_MERGE,
+            NodeType.XOR_MERGE)
+        .contains(nodeType);
+  }
+
+  @Override
+  public String toString() {
+    return label;
   }
 }

@@ -4,7 +4,7 @@ import de.monticore.bpmn.workflow.WorkflowMill;
 import de.monticore.bpmn.workflow._ast.ASTWorkflowCompilationUnit;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
 import de.monticore.workflow.conformance.datastructure.analysis.ConfWfBuilder;
-import de.monticore.workflow.conformance.datastructure.analysis.ConfWfNode;
+import de.monticore.workflow.conformance.datastructure.analysis.IdWfNode;
 import de.monticore.workflow.conformance.datastructure.analysis.WfElementVisitor;
 import de.monticore.workflow.conformance.datastructure.interf.WfNode;
 import de.se_rwth.commons.logging.Log;
@@ -22,8 +22,8 @@ public class WfConformanceChecker {
       ASTWorkflowCompilationUnit concrete, ASTWorkflowCompilationUnit reference) {
 
     // transform reference and concrete node
-    ConfWfNode ref = generateNode(reference, "Reference:");
-    ConfWfNode con = generateNode(reference, "Concrete:");
+    IdWfNode ref = generateNode(reference, "Reference:");
+    IdWfNode con = generateNode(reference, "Concrete:");
 
     incStrategy = new DummyIncarnationStrategy(concrete, reference);
 
@@ -31,7 +31,7 @@ public class WfConformanceChecker {
   }
 
   // completely ignore gateway in the algorithm this should be handled  w in the node themselves
-  public boolean checkNodeConformance(ConfWfNode con, ConfWfNode ref) {
+  public boolean checkNodeConformance(IdWfNode con, IdWfNode ref) {
     Log.info(
         String.format("Checking conformance of [%s] to [%s]", con.getLabel(), ref.getLabel()),
         this.getClass().getName());
@@ -66,7 +66,7 @@ public class WfConformanceChecker {
    * @return the set of neighbor that break the conformance.
    */
   Set<WfNode> checkAdjacentNodes(
-      ConfWfNode conNode, ConfWfNode refNode, boolean checkingPredecessor) {
+          IdWfNode conNode, IdWfNode refNode, boolean checkingPredecessor) {
 
     BiPredicate<List<WfNode>, WfNode> refPred = this::nodeIncarnateLastPathNode;
 
@@ -88,7 +88,7 @@ public class WfConformanceChecker {
     return directAdjNodes;
   }
 
-  public ConfWfNode generateNode(ASTWorkflowCompilationUnit ast, String prefix) {
+  public IdWfNode generateNode(ASTWorkflowCompilationUnit ast, String prefix) {
 
     ConfWfBuilder builder = new ConfWfBuilder(prefix);
 
