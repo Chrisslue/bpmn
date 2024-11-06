@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 public class PredicateGenerator {
   public Predicate<Set<IdWfNode>> postPredicate(IdWfNode node) {
 
-    Set<Predicate<Set<IdWfNode>>> subPred = new HashSet<>();
+    Predicate<Set<IdWfNode>> subPred  =p->true;
 
     for (var suc : node.getSuccessors()) {
 
@@ -18,21 +18,23 @@ public class PredicateGenerator {
             suc.getSuccessors().stream().map(this::postPredicate).collect(Collectors.toSet());
         switch (suc.getNodeType()) {
           case XOR_SPLIT:
-            subPred.add(mkXor(sucSuc));
+            subPred =(mkXor(sucSuc));
             break;
           case AND_SPLIT:
-            subPred.add(mkAnd(sucSuc));
+            subPred =mkAnd(sucSuc);
             break;
           case OR_SPLIT:
-            subPred.add(mkOr(sucSuc));
+            subPred =mkOr(sucSuc);
             break;
+          default:
+            subPred =mkAnd(sucSuc);
         }
       } else {
-        subPred.add(postPredicate(suc));
+        subPred =postPredicate(suc);
       }
     }
 
-    return mkAnd(Set.of(mkVar(node), mkAnd(subPred)));
+    return mkAnd(Set.of(mkVar(node), subPred));
   }
 
   public static Predicate<Set<IdWfNode>> mkVar(IdWfNode left) {

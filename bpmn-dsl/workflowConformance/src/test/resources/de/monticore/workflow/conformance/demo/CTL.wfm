@@ -25,12 +25,12 @@ process CTL {
 
   XorMerge -> Task3 ;
 
-  Task3 -> AndSplit ;
-  AndSplit -> Task4 -> Task6 ;
+  Task3 -> End ;
+ /* AndSplit -> Task4 -> Task6 ;
   AndSplit -> Task5;
 
   Task6 -> AndMerge;
   Task5 -> AndMerge;
 
-  AndMerge -> End;
+  AndMerge -> End;*/
 }

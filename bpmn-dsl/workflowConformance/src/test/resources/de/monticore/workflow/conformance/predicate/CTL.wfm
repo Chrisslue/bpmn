@@ -3,9 +3,24 @@ process CTL {
 
   event start Start;
   task Task1;
-
+  task Task2;
+  task Task3 ;
   event end End;
 
+  split xor XorSplit ;
+  merge xor XorMerge ;
+  split and AndSplit;
+  merge and AndMerge;
 
-  Start -> Task1 -> End;
+  Start ->  XorSplit ;
+
+  XorSplit ->  [false] Task1 ;
+  XorSplit ->  [false] Task2 ;
+
+  Task1 ->  End ;
+  Task2 ->  End ;
+
+  XorMerge -> Task3 ;
+
+  Task3 -> End ;
 }
