@@ -9,7 +9,6 @@ import de.monticore.bpmn.workflow._ast.*;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
 import de.monticore.workflow.conformance.datastructure.ctl.CTLGraph;
 import de.monticore.workflow.conformance.datastructure.ctl.CTLNode;
-import de.monticore.workflow.conformance.datastructure.ctl.TokenController;
 import javax.swing.*;
 import org.jgrapht.ext.JGraphXAdapter;
 import org.jgrapht.graph.DefaultEdge;

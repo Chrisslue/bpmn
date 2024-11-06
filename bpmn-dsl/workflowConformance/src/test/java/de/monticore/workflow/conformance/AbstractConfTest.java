@@ -85,11 +85,10 @@ public abstract class AbstractConfTest {
     }
   }
 
-
-
   protected WorkflowCoCoChecker getChecker() {
     return WorkflowCoCos.getFullChecker();
   }
+
   protected ASTWorkflowCompilationUnit loadModel(String qualifiedModelName) {
     WorkflowTool tool = new WorkflowTool();
     ASTWorkflowCompilationUnit ast =

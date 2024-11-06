@@ -26,19 +26,17 @@ public class ConfWfBuilder implements WfBuilder<IdWfNode> {
 
   @Override
   public IdWfNode mkNamedTask(String name) {
-      return IdWfNode.mkNode(addPrefix(name), NodeType.TASK);
+    return IdWfNode.mkNode(addPrefix(name), NodeType.TASK);
   }
 
   @Override
   public IdWfNode mkNamedEvent(String name) {
-return IdWfNode.mkNode(addPrefix(name), NodeType.EVENT);
-
+    return IdWfNode.mkNode(addPrefix(name), NodeType.EVENT);
   }
 
   @Override
   public IdWfNode mkNamedGateway(String name, NodeType type) {
-   return IdWfNode.mkNode (addPrefix(name), type);
-
+    return IdWfNode.mkNode(addPrefix(name), type);
   }
 
   @Override
@@ -51,17 +49,17 @@ return IdWfNode.mkNode(addPrefix(name), NodeType.EVENT);
   @Override
   public IdWfNode build() {
 
-
-
     Map<IdWfNode, Set<IdWfNode>> predecessors = new HashMap<>();
     Map<IdWfNode, Set<IdWfNode>> successors = new HashMap<>();
     for (ASTSequenceFlow sequenceFlow : sequenceFlows) {
       for (int i = 0; i < sequenceFlow.getPathList().size() - 1; i++) {
 
         IdWfNode src =
-            IdWfNode.getNode(sequenceFlow.getPathList().get(i).getNodeRef().getBaseName()).get(); //todo fix
+            IdWfNode.getNode(prefix+ sequenceFlow.getPathList().get(i).getNodeRef().getBaseName())
+                .get(); // todo fix
         IdWfNode tgt =
-            IdWfNode.getNode(sequenceFlow.getPathList().get(i + 1).getNodeRef().getBaseName()).get();
+            IdWfNode.getNode(prefix+ sequenceFlow.getPathList().get(i + 1).getNodeRef().getBaseName())
+                .get();
 
         if (successors.containsKey(src)) {
           successors.get(src).add(tgt);

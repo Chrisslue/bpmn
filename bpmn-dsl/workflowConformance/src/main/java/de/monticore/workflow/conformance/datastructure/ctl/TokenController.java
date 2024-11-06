@@ -9,7 +9,7 @@ public class TokenController {
   private final Set<IdWfNode> labels;
   private final Set<IdWfNode> activeNodes;
 
-  public TokenController(Set<IdWfNode> labels,Set<IdWfNode> activeNodes) {
+  public TokenController(Set<IdWfNode> labels, Set<IdWfNode> activeNodes) {
     this.labels = Collections.unmodifiableSet(labels);
     this.activeNodes = activeNodes;
   }

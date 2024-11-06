@@ -60,31 +60,25 @@ public class CTLGenerator {
             break;
         }
       }
-
-
     }
   }
 
-  public TokenController doTransition(TokenController previous, Set<IdWfNode> activity, CTLGraph graph) {
+  public TokenController doTransition(
+      TokenController previous, Set<IdWfNode> activity, CTLGraph graph) {
     Set<IdWfNode> predElements = new HashSet<>(previous.getLabels());
     predElements.addAll(activity);
     TokenController sucNode = new TokenController(predElements, activity);
 
-     var x =CTLNode.mkNode(sucNode.getLabels());
+    var x = CTLNode.mkNode(sucNode.getLabels());
     graph.addNode(x);
-
 
     var x1 = CTLNode.mkNode(previous.getLabels());
     var x2 = CTLNode.mkNode(sucNode.getLabels());
 
-    graph.addEdge(x1,x2 );
+    graph.addEdge(x1, x2);
 
     return sucNode;
   }
-
-
-
-
 
   public IdWfNode generateNode(ASTWorkflowCompilationUnit ast, String prefix) {
 

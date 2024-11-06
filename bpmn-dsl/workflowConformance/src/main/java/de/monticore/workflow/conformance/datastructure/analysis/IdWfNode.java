@@ -27,25 +27,25 @@ public class IdWfNode implements WfNode {
     this.nodeType = nodeType;
 
     allNodes.add(this);
-
   }
 
-  public static IdWfNode mkNode(String label, NodeType nodeType){
-    return  getNode(label).orElse(new IdWfNode(label,nodeType));
+  public static IdWfNode mkNode(String label, NodeType nodeType) {
+    return getNode(label).orElse(new IdWfNode(label, nodeType));
   }
 
-  public   static Optional<IdWfNode> getNode(String label){
-   return allNodes.stream().filter(node->node.label.equals(label)).findAny();
+  public static Optional<IdWfNode> getNode(String label) {
+    return allNodes.stream().filter(node -> node.label.equals(label)).findAny();
   }
 
   public NodeType getNodeType() {
     return nodeType;
   }
 
-   public void addPredecessors(Set<IdWfNode> predecessor){
-     this.predecessors = Collections.unmodifiableSet(predecessor);
-   }
-  public void addSuccessors(Set<IdWfNode> successor){
+  public void addPredecessors(Set<IdWfNode> predecessor) {
+    this.predecessors = Collections.unmodifiableSet(predecessor);
+  }
+
+  public void addSuccessors(Set<IdWfNode> successor) {
     this.successors = Collections.unmodifiableSet(successor);
   }
 
@@ -58,8 +58,7 @@ public class IdWfNode implements WfNode {
     return allNodes;
   }
 
-  private Predicate<List<WfNode>> increasePath(
-      Predicate<List<WfNode>> predicate, IdWfNode node) {
+  private Predicate<List<WfNode>> increasePath(Predicate<List<WfNode>> predicate, IdWfNode node) {
     return path -> {
       List<WfNode> newPath = new ArrayList<>(path);
       newPath.add(this);
@@ -108,8 +107,7 @@ public class IdWfNode implements WfNode {
   }
 
   @Override
-  public Optional<IdWfNode> existsSuccessor(
-      Predicate<List<WfNode>> predicate, int searchDepth) {
+  public Optional<IdWfNode> existsSuccessor(Predicate<List<WfNode>> predicate, int searchDepth) {
     /* // todo correctly handle termination when search deep == -1
 
     for (ConfWfNode suc : this.successors) {

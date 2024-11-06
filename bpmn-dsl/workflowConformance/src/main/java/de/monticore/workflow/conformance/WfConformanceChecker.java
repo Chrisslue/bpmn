@@ -6,12 +6,11 @@ import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
 import de.monticore.workflow.conformance.datastructure.analysis.ConfWfBuilder;
 import de.monticore.workflow.conformance.datastructure.analysis.IdWfNode;
 import de.monticore.workflow.conformance.datastructure.analysis.WfElementVisitor;
-import de.monticore.workflow.conformance.datastructure.interf.WfNode;
-import de.se_rwth.commons.logging.Log;
-import java.util.List;
+import de.monticore.workflow.conformance.datastructure.ctl.CTLGenerator;
+import de.monticore.workflow.conformance.datastructure.ctl.CTLGraph;
+import de.monticore.workflow.conformance.datastructure.ctl.PredicateGenerator;
 import java.util.Set;
-import java.util.function.BiPredicate;
-import java.util.stream.Collectors;
+import java.util.function.Predicate;
 
 public class WfConformanceChecker {
 
@@ -22,15 +21,16 @@ public class WfConformanceChecker {
       ASTWorkflowCompilationUnit concrete, ASTWorkflowCompilationUnit reference) {
 
     // transform reference and concrete node
-    IdWfNode ref = generateNode(reference, "Reference:");
-    IdWfNode con = generateNode(reference, "Concrete:");
+    IdWfNode ref = generateNode(reference, "Ref:");
+    IdWfNode con = generateNode(reference, "con:");
 
-    incStrategy = new DummyIncarnationStrategy(concrete, reference);
+    Predicate<Set<IdWfNode>> refPredicate = new PredicateGenerator().postPredicate(ref);
+    CTLGraph conGraph = new CTLGenerator().bpmn2ctl(concrete);
 
-    return true;
+    return conGraph.checkPredicate(refPredicate);
   }
 
-  // completely ignore gateway in the algorithm this should be handled  w in the node themselves
+  /* // completely ignore gateway in the algorithm this should be handled  w in the node themselves
   public boolean checkNodeConformance(IdWfNode con, IdWfNode ref) {
     Log.info(
         String.format("Checking conformance of [%s] to [%s]", con.getLabel(), ref.getLabel()),
@@ -65,7 +65,7 @@ public class WfConformanceChecker {
    * @param conNode the concrete node
    * @return the set of neighbor that break the conformance.
    */
-  Set<WfNode> checkAdjacentNodes(
+  /*  Set<WfNode> checkAdjacentNodes(
           IdWfNode conNode, IdWfNode refNode, boolean checkingPredecessor) {
 
     BiPredicate<List<WfNode>, WfNode> refPred = this::nodeIncarnateLastPathNode;
@@ -88,18 +88,7 @@ public class WfConformanceChecker {
     return directAdjNodes;
   }
 
-  public IdWfNode generateNode(ASTWorkflowCompilationUnit ast, String prefix) {
 
-    ConfWfBuilder builder = new ConfWfBuilder(prefix);
-
-    // traverse the Workflow ast a collect elements
-    WfElementVisitor collector = new WfElementVisitor(builder);
-    WorkflowTraverser traverser = WorkflowMill.traverser();
-    traverser.add4Workflow(collector);
-    ast.accept(traverser);
-
-    return builder.build();
-  }
 
   boolean lastPathNodeIsIncarnation(List<WfNode> path) {
     return incStrategy.isIncarnation(path.get(path.size() - 1));
@@ -117,5 +106,18 @@ public class WfConformanceChecker {
     }
 
     return true;
+  }*/
+
+  public IdWfNode generateNode(ASTWorkflowCompilationUnit ast, String prefix) {
+
+    ConfWfBuilder builder = new ConfWfBuilder(prefix);
+
+    // traverse the Workflow ast a collect elements
+    WfElementVisitor collector = new WfElementVisitor(builder);
+    WorkflowTraverser traverser = WorkflowMill.traverser();
+    traverser.add4Workflow(collector);
+    ast.accept(traverser);
+
+    return builder.build();
   }
 }
