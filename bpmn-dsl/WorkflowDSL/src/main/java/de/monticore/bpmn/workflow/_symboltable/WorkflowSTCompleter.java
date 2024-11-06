@@ -3,12 +3,9 @@ package de.monticore.bpmn.workflow._symboltable;
 
 import de.monticore.bpmn.workflow._ast.*;
 import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
-import de.monticore.ocl.types.check.OCLDeriver;
-import de.monticore.ocl.types.check.OCLSynthesizer;
 import de.monticore.types.check.SymTypeExpression;
-import de.monticore.types.check.TypeCalculator;
-import de.monticore.types.check.TypeRelations;
 import de.monticore.types.mcbasictypes._ast.ASTMCType;
+import de.monticore.types3.TypeCheck3;
 
 public class WorkflowSTCompleter implements WorkflowVisitor2 {
   @Override
@@ -30,8 +27,6 @@ public class WorkflowSTCompleter implements WorkflowVisitor2 {
   }
 
   protected SymTypeExpression createTypeSymbolRef(ASTMCType astType) {
-    TypeCalculator calculator =
-        new TypeCalculator(new OCLSynthesizer(), new OCLDeriver(), new TypeRelations());
-    return calculator.symTypeFromAST(astType);
+    return TypeCheck3.symTypeFromAST(astType);
   }
 }

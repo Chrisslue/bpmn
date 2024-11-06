@@ -4,11 +4,9 @@ import de.monticore.bpmn.Messages;
 import de.monticore.bpmn.workflow._ast.ASTLoopCardinality;
 import de.monticore.bpmn.workflow._cocos.WorkflowASTLoopCardinalityCoCo;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
-import de.monticore.ocl.types.check.OCLDeriver;
-import de.monticore.ocl.types.check.OCLSynthesizer;
 import de.monticore.types.check.SymTypeExpression;
-import de.monticore.types.check.TypeCalculator;
 import de.monticore.types.check.TypeRelations;
+import de.monticore.types3.TypeCheck3;
 import de.se_rwth.commons.logging.Log;
 
 /**
@@ -22,9 +20,7 @@ public class LoopCountExpressionReturnsIntegerNumber implements WorkflowASTLoopC
   public void check(final ASTLoopCardinality loopCardinality) {
     if (loopCardinality.isPresentExpression()) {
       ASTExpression loopExpression = loopCardinality.getExpression();
-      TypeCalculator calculator =
-          new TypeCalculator(new OCLSynthesizer(), new OCLDeriver(), new TypeRelations());
-      SymTypeExpression type = calculator.typeOf(loopExpression);
+      SymTypeExpression type = TypeCheck3.typeOf(loopExpression);
 
       if (type == null) {
         Log.warn(Messages.get("0xWFM1009"));

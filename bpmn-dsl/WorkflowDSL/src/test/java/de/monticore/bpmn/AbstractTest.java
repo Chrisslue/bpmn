@@ -24,6 +24,7 @@ import de.monticore.bpmn.workflow._symboltable.IWorkflowGlobalScope;
 import de.monticore.bpmn.workflow._symboltable.WorkflowSTCompleter;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
 import de.monticore.io.paths.MCPath;
+import de.monticore.ocl.ocl.types3.OCLTypeCheck3;
 import de.monticore.symbols.basicsymbols.BasicSymbolsMill;
 import de.monticore.symboltable.ImportStatement;
 import de.se_rwth.commons.Names;
@@ -57,6 +58,7 @@ public abstract class AbstractTest {
     WorkflowMill.globalScope().clear();
     WorkflowMill.globalScope().setSymbolPath(new MCPath(SYMBOL_DIR));
     BasicSymbolsMill.initializePrimitives();
+    OCLTypeCheck3.init();
   }
 
   @BeforeEach
