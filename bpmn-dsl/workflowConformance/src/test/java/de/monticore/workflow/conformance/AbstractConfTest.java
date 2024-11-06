@@ -5,6 +5,7 @@ import static de.se_rwth.commons.Names.getSimpleName;
 import static java.nio.file.Paths.get;
 import static org.junit.jupiter.api.Assertions.*;
 
+import de.monticore.bpmn.cocos.WorkflowCoCos;
 import de.monticore.bpmn.cocos.flow.SequenceFlowNodeReferencesExist;
 import de.monticore.bpmn.trafos.*;
 import de.monticore.bpmn.utils.AuxiliaryModelsWriter;
@@ -84,13 +85,11 @@ public abstract class AbstractConfTest {
     }
   }
 
-  /**
-   * Returns the context condition checker to be executed by this test.
-   *
-   * @return the context condition checker.
-   */
-  protected abstract WorkflowCoCoChecker getChecker();
 
+
+  protected WorkflowCoCoChecker getChecker() {
+    return WorkflowCoCos.getFullChecker();
+  }
   protected ASTWorkflowCompilationUnit loadModel(String qualifiedModelName) {
     WorkflowTool tool = new WorkflowTool();
     ASTWorkflowCompilationUnit ast =

@@ -6,28 +6,28 @@ import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 
 public class CTLGraph {
-  public final DefaultDirectedGraph<TokenController, DefaultEdge> graph;
-  private final Set<TokenController> nodes;
+  public final DefaultDirectedGraph<CTLNode, DefaultEdge> graph;
+  private final Set<CTLNode> nodes;
 
   public CTLGraph() {
     this.graph = new DefaultDirectedGraph<>(DefaultEdge.class);
     nodes = new HashSet<>();
   }
 
-  public void addNode(TokenController node) {
+  public void addNode(CTLNode node) {
     if (!isNodePresent(node)) {
       nodes.add(node);
       graph.addVertex(node);
     }
   }
 
-  public void addEdge(TokenController from, TokenController to) {
+  public void addEdge(CTLNode from, CTLNode to) {
     assert isNodePresent(from);
-    assert isNodePresent(from);
+    assert isNodePresent(to);
     graph.addEdge(from, to);
   }
 
-  private boolean isNodePresent(TokenController node) {
+  private boolean isNodePresent(CTLNode node) {
     return this.nodes.contains(node);
   }
 }

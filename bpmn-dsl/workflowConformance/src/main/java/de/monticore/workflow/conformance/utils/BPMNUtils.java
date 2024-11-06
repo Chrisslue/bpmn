@@ -8,6 +8,7 @@ import de.monticore.bpmn.workflow.WorkflowMill;
 import de.monticore.bpmn.workflow._ast.*;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
 import de.monticore.workflow.conformance.datastructure.ctl.CTLGraph;
+import de.monticore.workflow.conformance.datastructure.ctl.CTLNode;
 import de.monticore.workflow.conformance.datastructure.ctl.TokenController;
 import javax.swing.*;
 import org.jgrapht.ext.JGraphXAdapter;
@@ -32,7 +33,7 @@ public class BPMNUtils {
     System.out.println("Start Visualizing");
     int i = 0;
     // Create JGraphXAdapter for visualization
-    JGraphXAdapter<TokenController, DefaultEdge> jgxAdapter = new JGraphXAdapter<>(graph.graph);
+    JGraphXAdapter<CTLNode, DefaultEdge> jgxAdapter = new JGraphXAdapter<>(graph.graph);
 
     // Create JGraphXAdapter for visualization
 

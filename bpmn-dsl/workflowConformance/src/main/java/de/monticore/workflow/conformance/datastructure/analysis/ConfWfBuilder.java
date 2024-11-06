@@ -59,9 +59,9 @@ return IdWfNode.mkNode(addPrefix(name), NodeType.EVENT);
       for (int i = 0; i < sequenceFlow.getPathList().size() - 1; i++) {
 
         IdWfNode src =
-            IdWfNode.getNode(sequenceFlow.getPathList().get(i).getNodeRef()  .get(i).getNodeRef().getBaseName());
+            IdWfNode.getNode(sequenceFlow.getPathList().get(i).getNodeRef().getBaseName()).get(); //todo fix
         IdWfNode tgt =
-            IdWfNode.getNode(sequenceFlow.getPathList().get(i + 1).getNodeRef().getBaseName());
+            IdWfNode.getNode(sequenceFlow.getPathList().get(i + 1).getNodeRef().getBaseName()).get();
 
         if (successors.containsKey(src)) {
           successors.get(src).add(tgt);

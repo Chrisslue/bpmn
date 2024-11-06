@@ -1,0 +1,11 @@
+
+process CTL {
+
+  event start Start;
+  task Task1;
+
+  event end End;
+
+
+  Start -> Task1 -> End;
+}

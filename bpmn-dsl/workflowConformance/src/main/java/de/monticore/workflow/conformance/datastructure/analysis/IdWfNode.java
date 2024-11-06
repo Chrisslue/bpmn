@@ -12,7 +12,7 @@ public class IdWfNode implements WfNode {
   private final String label;
   private final NodeType nodeType;
 
-  public static Set<IdWfNode> allNodes = Collections.unmodifiableSet(new HashSet<>());
+  public static Set<IdWfNode> allNodes = new HashSet<>();
 
   public Set<IdWfNode> getPredecessors() {
     return predecessors;
@@ -26,7 +26,7 @@ public class IdWfNode implements WfNode {
     this.label = label;
     this.nodeType = nodeType;
 
-
+    allNodes.add(this);
 
   }
 
@@ -42,10 +42,10 @@ public class IdWfNode implements WfNode {
     return nodeType;
   }
 
-   public void addPredecessor(Set<IdWfNode> predecessor){
+   public void addPredecessors(Set<IdWfNode> predecessor){
      this.predecessors = Collections.unmodifiableSet(predecessor);
    }
-  public void addSuccessors(,Set<IdWfNode> successor){
+  public void addSuccessors(Set<IdWfNode> successor){
     this.successors = Collections.unmodifiableSet(successor);
   }
 

@@ -21,7 +21,7 @@ public class CTLGenerator {
     // case we are at the root node
 
     TokenController root = new TokenController(Set.of(start), Set.of(start));
-    graph.addNode(root);
+    graph.addNode(CTLNode.mkNode(root.getLabels()));
 
     // create root node of CTL
     addSuccessorsRecursive(root, graph);
@@ -70,11 +70,21 @@ public class CTLGenerator {
     predElements.addAll(activity);
     TokenController sucNode = new TokenController(predElements, activity);
 
-    graph.addNode(sucNode);
-    graph.addEdge(previous, sucNode);
+     var x =CTLNode.mkNode(sucNode.getLabels());
+    graph.addNode(x);
+
+
+    var x1 = CTLNode.mkNode(previous.getLabels());
+    var x2 = CTLNode.mkNode(sucNode.getLabels());
+
+    graph.addEdge(x1,x2 );
 
     return sucNode;
   }
+
+
+
+
 
   public IdWfNode generateNode(ASTWorkflowCompilationUnit ast, String prefix) {
 
