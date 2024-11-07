@@ -1,0 +1,46 @@
+
+process CTL {
+
+  event start S;
+  task T1;
+  task T2;
+  task T3 ;
+  task T4;
+  task T5;
+  task Task6;
+  event end End;
+
+  split xor XorSplit ;
+  merge xor XorMerge ;
+  split and AndSplit;
+  merge and AndMerge;
+
+  S ->  T1  ->  T2 ->  XorSplit -> T3 ;
+                       XorSplit -> T4 ;
+
+  T3-> XorMerge ;
+  T4 -> XorMerge;
+
+  XorMerge -> T5;
+
+
+
+
+
+ // XorSplit ->  [false] Task1 ;
+ // XorSplit ->  [false] Task2 ;
+
+ /* Task1 ->  XorMerge ;
+  Task2 ->  XorMerge ;
+
+  XorMerge -> Task3 ;
+
+  Task3 -> End ;
+ /* AndSplit -> Task4 -> Task6 ;
+  AndSplit -> Task5;
+
+  Task6 -> AndMerge;
+  Task5 -> AndMerge;
+
+  AndMerge -> End;*/
+}

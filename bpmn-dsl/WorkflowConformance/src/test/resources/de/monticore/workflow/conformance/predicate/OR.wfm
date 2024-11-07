@@ -1,0 +1,17 @@
+
+process OR {
+
+  event start Start;
+  task Task1;
+  task Task2;
+  event end End;
+  split ior OrSplit ;
+
+  Start ->  OrSplit ;
+
+  OrSplit ->  [false] Task1 ;
+  OrSplit ->  [false] Task2 ;
+
+  Task1 ->  End ;
+  Task2 ->  End ;
+}

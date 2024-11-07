@@ -1,0 +1,32 @@
+package de.monticore.workflow.conformance;
+
+import de.monticore.bpmn.cocos.WorkflowCoCos;
+import de.monticore.bpmn.workflow._ast.ASTWorkflowCompilationUnit;
+import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
+import de.se_rwth.commons.logging.Log;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+class WfConfDemoTest extends AbstractConfTest {
+
+  @BeforeEach
+  public void setup() {
+    init();
+    Log.init();
+  }
+
+  @Test
+  public void testSimpleTask() {
+    ASTWorkflowCompilationUnit con = loadModel("de.monticore.workflow.conformance.demo.CTL");
+    ASTWorkflowCompilationUnit ref = loadModel("de.monticore.workflow.conformance.demo.CTL");
+
+    WfConformanceChecker checker = new WfConformanceChecker();
+    Assertions.assertTrue(checker.checkConformance(con, con));
+  }
+
+  @Override
+  protected WorkflowCoCoChecker getChecker() {
+    return WorkflowCoCos.getFullChecker();
+  }
+}

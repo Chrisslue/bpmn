@@ -1,0 +1,17 @@
+
+process XOR {
+
+  event start Start;
+  task Task1;
+  task Task2;
+  event end End;
+  split xor XorSplit ;
+
+  Start ->  XorSplit ;
+
+  XorSplit ->  [false] Task1 ;
+  XorSplit ->  [false] Task2 ;
+
+  Task1 ->  End ;
+  Task2 ->  End ;
+}
