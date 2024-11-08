@@ -3,48 +3,38 @@ package de.monticore.workflow.conformance.datastructure.ctl;
 import de.monticore.workflow.conformance.datastructure.analysis.IDWfNode;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 public class CTLNode {
   private final Set<IDWfNode> labels;
 
-  private IDWfNode activeNode;
+  private final Set<IDWfNode> activeNode;
 
-  public CTLNode(Set<IDWfNode> labels, IDWfNode activeNodes) {
+  protected CTLNode(Set<IDWfNode> labels, Set<IDWfNode> activeNodes) {
     this.labels = Collections.unmodifiableSet(labels);
-    this.activeNode = activeNodes;
-    ctlNodes.add(this);
+    this.activeNode = new HashSet<>(activeNodes);
   }
 
-  public IDWfNode getActiveNodes() {
+  public Set<IDWfNode> getActiveNodes() {
     return activeNode;
   }
 
-  private static final Set<CTLNode> ctlNodes = new HashSet<>();
+  public  void removeActiveNodes(Set<IDWfNode> nodes) {
+    activeNode.removeAll(nodes);
+  }
+
+  public  void addActiveNodes(Set<IDWfNode> nodes) {
+    activeNode.addAll(nodes);
+  }
 
   public Set<IDWfNode> getLabels() {
     return labels;
   }
 
-  public static CTLNode mkNode(Set<IDWfNode> labels, IDWfNode activeNodes) {
-
-    if (getNode(labels).isPresent()) {
-      CTLNode res = getNode(labels).get();
-      res.activeNode = activeNodes;
-      return res;
-    }
-    return getNode(labels).orElseGet(() -> new CTLNode(labels, activeNodes));
-  }
-
-  public static Optional<CTLNode> getNode(Set<IDWfNode> labels) {
-    return ctlNodes.stream()
-        .filter(node -> node.labels.containsAll(labels) && labels.containsAll(node.labels))
-        .findAny();
-  }
-
   @Override
   public String toString() {
-    return "[" + labels.toString() + "|" + activeNode.toString() + "]";
+    return "[" + new TreeSet<>(labels.stream().map(IDWfNode::getLabel).collect(Collectors.toSet())) + "|" + new TreeSet<>(activeNode.stream().map(IDWfNode::getLabel).collect(Collectors.toSet())) + "]";
   }
 }

@@ -9,6 +9,7 @@ import de.monticore.bpmn.workflow._ast.*;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
 import de.monticore.workflow.conformance.datastructure.analysis.IDWfNodeBuilder;
 import de.monticore.workflow.conformance.datastructure.analysis.WfElementVisitor;
+import de.monticore.workflow.conformance.datastructure.ctl.CTLEdge;
 import de.monticore.workflow.conformance.datastructure.ctl.CTLGraph;
 import de.monticore.workflow.conformance.datastructure.ctl.CTLNode;
 import javax.swing.*;
@@ -47,7 +48,7 @@ public class BPMNUtils {
     System.out.println("Start Visualizing");
     int i = 0;
     // Create JGraphXAdapter for visualization
-    JGraphXAdapter<CTLNode, DefaultEdge> jgxAdapter = new JGraphXAdapter<>(graph.graph);
+    JGraphXAdapter<CTLNode, CTLEdge> jgxAdapter = new JGraphXAdapter<>(graph.graph);
 
     // Create JGraphXAdapter for visualization
 

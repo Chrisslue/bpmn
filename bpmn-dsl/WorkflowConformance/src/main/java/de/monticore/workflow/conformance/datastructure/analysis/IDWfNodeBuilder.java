@@ -89,8 +89,8 @@ public class IDWfNodeBuilder implements WfBuilder<IDWfNode> {
         }
       }
 
-      predecessors.forEach(IDWfNode::addPredecessors);
-      successors.forEach(IDWfNode::addSuccessors);
+      predecessors.forEach(IDWfNode::addAllPredecessors);
+      successors.forEach(IDWfNode::addAllSuccessors);
     }
     return startEvent;
   }

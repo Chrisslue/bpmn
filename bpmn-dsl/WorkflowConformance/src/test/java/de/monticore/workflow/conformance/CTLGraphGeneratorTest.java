@@ -24,6 +24,7 @@ class CTLGraphGeneratorTest extends AbstractConfTest {
 
     CTLGenerator generator = new CTLGenerator();
     var graph = generator.buildCTL(con);
+    BPMNUtils.visualize(graph);
   }
 
   @Test

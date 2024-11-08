@@ -15,7 +15,7 @@ process Parallel {
   split and AndSplit;
   merge and AndMerge;
 
-  S ->  AndSplit  ->  T1 -> T3 -> T5 -> AndMerge;
+  S ->  AndSplit  ->  T1 -> T3 -> T5 -> AndMerge -> End;
         AndSplit  ->  T2 -> T4 -> AndMerge ;
 
 
