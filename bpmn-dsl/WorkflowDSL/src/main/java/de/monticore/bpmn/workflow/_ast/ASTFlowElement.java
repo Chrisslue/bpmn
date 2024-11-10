@@ -9,6 +9,24 @@ import java.util.Optional;
 public interface ASTFlowElement extends ASTFlowElementTOP {
 
   /**
+   * Extended FlowElement by 
+   * a Name
+   * a List with all incoming SequenceFlows
+   * a List with all outgoing SequenceFlows 
+   */
+  String getName();
+  List<SequenceFlow> getIncomingsList();
+  List<SequenceFlow> getOutgoingsList();
+
+  default Set<ASTFlowNode> getSuccessors() {
+    return getOutgoingsList().stream().map(SequenceFlow::getTarget).collect(Collectors.toSet());
+  }
+
+  default Set<ASTFlowNode> getPredecessors() {
+    return getIncomingsList().stream().map(SequenceFlow::getSource).collect(Collectors.toSet());
+  }
+
+  /**
    * Determines the flow element container (process or sub-process) that directly contains this
    * node.
    *
