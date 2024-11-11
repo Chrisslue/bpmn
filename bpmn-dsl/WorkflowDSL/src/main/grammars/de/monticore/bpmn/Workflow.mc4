@@ -2,7 +2,8 @@ package de.monticore.bpmn;
 
 grammar Workflow extends de.monticore.ocl.OCL, // todo: common, assigmnement, lammbda?
                          de.monticore.expressions.TimeExpressions, // todo: integrieren
-                         de.monticore.symbols.OOSymbols{  //todo: ggf. durch Type-Symbols ersetzen und Modifier importieren
+                         de.monticore.symbols.OOSymbols,
+                         de.monticore.UMLModifier{  //todo: ggf. durch Type-Symbols ersetzen und Modifier importieren
 
   /* Expression Language, e. g. OCL */
 
@@ -20,15 +21,18 @@ grammar Workflow extends de.monticore.ocl.OCL, // todo: common, assigmnement, la
   /* represents a model element that can appear in a Process e.g. Activity, Gateway, Event ... */
   interface FlowElement;
 
-  /* contains a superset of FlowElements e.g. Process, SubProcess */
-  /* low priority ? */
+  /**
+   * contains a superset of FlowElements e.g. Process, SubProcess 
+   * todo: low priority? remove? 
+   */
   interface FlowElementContainer = Name FlowElement*;
 
   /* represents a Process which contains Lanes and FlowElements in any order */
   symbol scope Process implements FlowElementContainer =
       "process" 
       Name
-      // todo: Modifier? None, Private and Public
+      // todo: Modifier? Is this correct?
+      {next("public","private","default")}? (Modifier | "default")
       "{"
         IOSpecification
         (   Lane        
@@ -37,8 +41,10 @@ grammar Workflow extends de.monticore.ocl.OCL, // todo: common, assigmnement, la
       "}"
     ;
 
-  /* sub-partition within a Process which contains FlowElements and sub-lanes */
-  /* a lane denotes for example a business function or a role */
+  /**
+   * sub-partition within a Process which contains FlowElements and sub-lanes
+   * a lane denotes for example a business function or a role
+   */
   symbol Lane =
       "lane" Name
       "{"
@@ -56,8 +62,11 @@ grammar Workflow extends de.monticore.ocl.OCL, // todo: common, assigmnement, la
   /*============================== ACTIVITIES ==============================*/
   /*========================================================================*/
 
-  /* denotes an unit of work performed within a Business Process, can be atomic or non-atomic */
-  interface Activity extends FlowElement =
+  /** 
+   * denotes an unit of work performed within a Business Process
+   * can be atomic or non-atomic 
+   */
+  interface symbol Activity extends FlowElement =
       Name
       CompensationHandler?
       LoopCharacteristics?
@@ -76,19 +85,27 @@ grammar Workflow extends de.monticore.ocl.OCL, // todo: common, assigmnement, la
       CompensationHandler?
       LoopCharacteristics?
       "{"
-        IOSpecification // IOSpecification is not allowed here by BPMN standard, but we include it here to be able to show a suitable error message
+        // IOSpecification not allowed by BPMN standard, we include it here to enable a suitable error message
+        IOSpecification 
         (   Lane        
           | FlowElement
         )*
       "}"
     ;
 
-  /* indicates whether it is an "event sub-process" -> a subprocess with a separate start event */
+  /** 
+   * flag that indicates whether it is an "event sub-process"
+   * false: normal subprocess
+   * true: a subprocess with a separate start event and a start trigger
+   */
   astrule SubProcess =
       triggeredByEvent:boolean  
     ;
 
-  /* needed in case it is an Ad-Hoc Sub Process -> do not require any Sequence relationships */
+  /** 
+   * AdHocCharacteristics is needed in case it is an Ad-Hoc Sub Process 
+   * an adhoc subprocess does not require any Sequence relationships 
+   */
   AdHocCharacteristics =
       ("until" ":" "[" completionCondition:Expression "]")
       (   "parallel" (waitForRemainingInstances:["noninterrupt"])? 
@@ -107,7 +124,8 @@ grammar Workflow extends de.monticore.ocl.OCL, // todo: common, assigmnement, la
   CallActivity implements AtomicActivity =
       "task"
       Name
-      "template" ":" template:Name@Process // defines the calledElement, better naming possible? @Process correct?
+      // todo: better naming calledElement? @Task (global)?
+      "template" ":" template:Name@Process 
       CompensationHandler?
       LoopCharacteristics?
       (   "{"
@@ -159,28 +177,42 @@ grammar Workflow extends de.monticore.ocl.OCL, // todo: common, assigmnement, la
       "message" ":" message:Name@Notification
     ;
 
-  /* Activity that is outside the normal flow of the Process, similar to exception handling. Why not linked to boundaryEvent?*/
-  /* Example: a task "BookOffering" is compensated by the service task "CancelBooking"*/
+  /* 
+   * describes a set of activities that are outside of the process flow, similar to exception handling
+   * Why not linked to boundaryEvent? -> can also be the start event of a subprocess 
+   * Example: a task "BookOffering" is compensated by the service task "CancelBooking"
+   */
   CompensationHandler =
-      "compensate" ":" activity:Name // @Activity
+      "compensate" ":" activity:Name@Activity
     ;
 
+  /* interface for StandardLoop and MILoop */
   interface LoopCharacteristics;
 
   /* looping behavior based on loopCondition */
   StandardLoop implements LoopCharacteristics =
-      (testBefore:["while"] | "until") ":" "[" loopCondition:Expression "]" // use "true" and "false" instead of "while" and "until" ?
+      (testBefore:["while"] | "until") ":" "[" loopCondition:Expression "]" 
       ("max" ":" loopMaximum:NatLiteral)?
     ;
 
-  /* allows multiple instances of Activities */
+  /** 
+   * allows to create multiple instances of Activities 
+   * can be executed parallel or sequential 
+   * will only loop until completionCondition
+   */
   MILoop implements LoopCharacteristics =
       "count" ":" LoopCardinality
       ("parallel" | "sequential")?
       ("until" ":" "[" completionCondition:Expression "]")?
       MIImplicitEventBehavior?  
     ;
-  
+
+  /**
+   * todo: do we need this? then we may also need loopDataInputRef, loopDataOutputRef?
+   * loopDataInput describes a single item of the collection stored in loopDataInputRef
+   * example: loopdataInputRef = ["Person1", "Person2", "Person3"]
+   *          loopDataInput will contain on of these names for the corresponding instance
+   */
   astrule MILoop =
       loopDataInput: Name
       loopDataOutput:Name
@@ -207,8 +239,10 @@ grammar Workflow extends de.monticore.ocl.OCL, // todo: common, assigmnement, la
   /*=============================== GATEWAYS ===============================*/
   /*========================================================================*/
 
-  /* named Gateway at Process-Level */
-  /* different naming for GatewayDirection: Unspecified, Converging, Diverging ?*/
+  /** 
+   * describes a flow control element that allows converging and diverging sequence flows
+   * todo: different naming for GatewayDirection? Unspecified, Converging, Diverging 
+   */
   symbol Gateway implements FlowElement =
       direction:["split" | "merge"]
       type:GatewayType
@@ -216,14 +250,18 @@ grammar Workflow extends de.monticore.ocl.OCL, // todo: common, assigmnement, la
       ";"
     ;
     
-  /* possible Types of Gateways */
+  /** possible Types of Gateways 
+   * "receive first": first event determines the path to follow 
+   * "receive all":  waits for each event before following each outgoing path
+   * "complex": Gateway is connected to a guard
+   */
   GatewayType =
       [exclusive:"xor"]
     | [inclusive:"ior"]
     | [parallel: "and"]
-    | ("receive" ":" [exclusiveEventBased:"first"]) // first event determines the path to follow
-    | ("receive" ":" [ parallelEventBased:  "all"]) // waits for each event before following each outgoing path
-    | ["complex"] ("[" guard:Expression "]")       // complex Gateway is connected to a activationCondition
+    | ("receive" ":" [exclusiveEventBased:"first"])  
+    | ("receive" ":" [ parallelEventBased:  "all"]) 
+    | ["complex"] ("[" guard:Expression "]")       
     ;
 
 
@@ -232,18 +270,19 @@ grammar Workflow extends de.monticore.ocl.OCL, // todo: common, assigmnement, la
   /*========================================================================*/
 
   /** 
-   * defines something that happens during a Process 
+   * defines something that happens during the course of business process  
    * Events are either catching or throwing 
-   * throw event emits the event trigger 
-   * catch event listens and waits for the event trigger to occur
+   * throw: emits the event trigger 
+   * catch: listens and waits for the event trigger to occur
    * interrupting boundary event cancels the activity to which it is attached as it occurs 
+   * boundary: is marked in case it is attached to an Activity
    */  
   symbol Event implements FlowElement =
       (boundary:["<<boundary>>"])?
       "event" 
       type:["start" | "end"]?
       Name?
-      behavior:[ throw:"send" | catch:"receive" ] // Do we need "noninterrupt" for catch events?
+      behavior:[ throw:"send" | catch:"receive" ] //todo: Do we need "noninterrupt" for catch events?
       trigger:EventTrigger?
       (   "{"
             (input:IRequirement | output:ORequirement)?
@@ -267,6 +306,8 @@ grammar Workflow extends de.monticore.ocl.OCL, // todo: common, assigmnement, la
   /*============================= CONTROL FLOW =============================*/
   /*========================================================================*/
 
+  /* todo: force the naming of FlowElements? eliminates the need for the flow block*/
+
   /* models the SequenceFlow by chaining FlowTargets */
   SequenceFlow implements FlowElement =
       path:(FlowTarget || "->")+
@@ -283,7 +324,7 @@ grammar Workflow extends de.monticore.ocl.OCL, // todo: common, assigmnement, la
       path:(FlowTarget || "->")+
     ;
 
-  /* reference a FlowElement using its name, define a FlowElement inside or create a block structure */
+  /* reference a FlowElement using its name or create a block structure */
   FlowTarget =
       condition:FlowCondition?
       (   nodeRef:MCQualifiedName   // reference flow node at process level
@@ -314,7 +355,7 @@ grammar Workflow extends de.monticore.ocl.OCL, // todo: common, assigmnement, la
   /*========================== I/O REQUIREMENTS ============================*/
   /*========================================================================*/
 
-  /* distinction necessary? */
+  /* todo: distinction necessary? remove? */
   IOSpecification = IORequirement* ;
 
   /* input requirement, output requirement or input-output rule */
@@ -334,18 +375,23 @@ grammar Workflow extends de.monticore.ocl.OCL, // todo: common, assigmnement, la
   /* Set of input and output data */
   DataSet  =  DataIO | "{" (DataIO || ",")* "}" ;
 
-  /* specifies data input or data output */
+  /** 
+   * specifies data input or data output 
+   * [i]: the use of a collection-valued data input
+   * "?": optional data input or output
+   * "!": data that can be produced or evaluated while executing
+   */
   DataIO =
       MCQualifiedName   // name of the consumed or produced data element
-      (loop:["[i]"] {noSpace()}?)?   // the use of a collection-valued data input is marked with [i]
-      (":" MCType)?     // specify a type to form the interface visible to the outside world
+      (loop:["[i]"] {noSpace()}?)?  
+      (":" MCType)?     
       (
-        (   optional:["?"]        // optional data input or output
-          | whileExecuting:["!"]  // data that can be produced or evaluated while executing
+        (   optional:["?"]         
+          | whileExecuting:["!"]   
         )
         {noSpace()}?
       )?
-      ("as" alias:Name)?          // specify an alias name 
+      ("as" alias:Name)?        
     ;
 
 
