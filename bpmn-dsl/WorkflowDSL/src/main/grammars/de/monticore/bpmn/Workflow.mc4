@@ -1,9 +1,9 @@
 package de.monticore.bpmn;
 
 grammar Workflow extends de.monticore.ocl.OCL, // todo: common, assigmnement, lammbda?
-                         de.monticore.expressions.TimeExpressions, // todo: integrieren
-                         de.monticore.symbols.OOSymbols,
-                         de.monticore.UMLModifier{  //todo: ggf. durch Type-Symbols ersetzen und Modifier importieren
+                         de.monticore.expressions.TimeExpressions, // todo: Grammatik hier integrieren und DateTime nutzen
+                         de.monticore.symbols.OOSymbols, //todo: ggf. durch Type-Symbols ersetzen
+                         de.monticore.UMLModifier{
 
   /* Expression Language, e. g. OCL */
 
@@ -21,18 +21,13 @@ grammar Workflow extends de.monticore.ocl.OCL, // todo: common, assigmnement, la
   /* represents a model element that can appear in a Process e.g. Activity, Gateway, Event ... */
   interface FlowElement;
 
-  /**
-   * contains a superset of FlowElements e.g. Process, SubProcess 
-   * todo: low priority? remove? 
+  /* represents a Process which contains Lanes and FlowElements in any order
+   * a process may be designated as public or private
    */
-  interface FlowElementContainer = Name FlowElement*;
-
-  /* represents a Process which contains Lanes and FlowElements in any order */
-  symbol scope Process implements FlowElementContainer =
-      "process" 
+  symbol scope Process =
+      Modifier
+      "process"
       Name
-      // todo: Modifier? Is this correct?
-      {next("public","private","default")}? (Modifier | "default")
       "{"
         IOSpecification
         (   Lane        
@@ -64,7 +59,7 @@ grammar Workflow extends de.monticore.ocl.OCL, // todo: common, assigmnement, la
 
   /** 
    * denotes an unit of work performed within a Business Process
-   * can be atomic or non-atomic 
+   * can be atomic or non-atomic
    */
   interface symbol Activity extends FlowElement =
       Name
@@ -78,7 +73,7 @@ grammar Workflow extends de.monticore.ocl.OCL, // todo: common, assigmnement, la
    * "transaction":  models complex business scenarios -> ensuring all parts completed successfully or are handled in case of failure 
    * "adhoc":        collection of activities with no required sequence relationships -> flexibility in task execution   
    */
-  symbol scope SubProcess implements Activity, FlowElementContainer  =
+  symbol scope SubProcess implements Activity =
       Name
       type:["subprocess" | "transaction" | "adhoc" ]
       AdHocCharacteristics?
@@ -113,19 +108,12 @@ grammar Workflow extends de.monticore.ocl.OCL, // todo: common, assigmnement, la
       )?
     ;
 
-  /* Non-decomposable Activity */
-  interface symbol scope AtomicActivity extends Activity =
-      Name
-      IOSpecification?
-      (boundaryEvent:Event)* // used for intermediate catch events
-    ;
-
   /* allows a process to invoke another reusable process or task */
-  CallActivity implements AtomicActivity =
-      "task"
+  CallActivity implements Activity =
+      "call" // todo: Warum "task"? Ggf. umbenennen.
       Name
       // todo: better naming calledElement? @Task (global)?
-      "template" ":" template:Name@Process 
+      "calls" ":" calledElement:Name@Process
       CompensationHandler?
       LoopCharacteristics?
       (   "{"
@@ -137,7 +125,7 @@ grammar Workflow extends de.monticore.ocl.OCL, // todo: common, assigmnement, la
     ;
 
   /** 
-   * AtomicActivity within a process flow 
+   * Atomic Activity within a process flow
    * "service": automated by software and can use external applications
    * "send":    sending message to an external system or participant
    * "receive": waiting for an incoming message from an external system or participant
@@ -146,12 +134,12 @@ grammar Workflow extends de.monticore.ocl.OCL, // todo: common, assigmnement, la
    * "rule":    BusinessRule? used to interact with a business rule engine
    * "script":  execution of script directly within the process model
    */
-  Task implements AtomicActivity =
+  Task implements Activity =
+      type:["service" | "send" | "receive" | "user" | "manual" | "rule" | "script"]?
       "task"
       Name
-      type:["service" | "send" | "receive" | "user" | "manual" | "rule" | "script"]?
-      TaskTypeAttributes?
-      CompensationHandler?
+      TaskTypeAttributes? // todo: ersetzen durch konkrete Attribute
+      CompensationHandler? // todo: ggf. rausnehmen und mit TOP in Symbol hinzufügen?
       LoopCharacteristics?
       (   "{"
             IOSpecification
@@ -161,7 +149,8 @@ grammar Workflow extends de.monticore.ocl.OCL, // todo: common, assigmnement, la
       )
     ;
 
-  //todo: für später ggf. alle Attribute einfach optional in Task aufführen?
+  /* todo: für später ggf. alle Attribute einfach optional in Task aufführen
+   * todo: CoCo für type -> Attribute */
   interface TaskTypeAttributes;
   /* service: used webservice and the operation triggered by the task  */
   /* send:    used webservice, message and the operation triggered by the task  */
@@ -177,7 +166,7 @@ grammar Workflow extends de.monticore.ocl.OCL, // todo: common, assigmnement, la
       "message" ":" message:Name@Notification
     ;
 
-  /* 
+  /* todo: besser beschreiben
    * describes a set of activities that are outside of the process flow, similar to exception handling
    * Why not linked to boundaryEvent? -> can also be the start event of a subprocess 
    * Example: a task "BookOffering" is compensated by the service task "CancelBooking"
@@ -208,9 +197,10 @@ grammar Workflow extends de.monticore.ocl.OCL, // todo: common, assigmnement, la
     ;
 
   /**
+   * todo @MSh: JN und MB fragen!
    * todo: do we need this? then we may also need loopDataInputRef, loopDataOutputRef?
    * loopDataInput describes a single item of the collection stored in loopDataInputRef
-   * example: loopdataInputRef = ["Person1", "Person2", "Person3"]
+   * example: loopDataInputRef = ["Person1", "Person2", "Person3"]
    *          loopDataInput will contain on of these names for the corresponding instance
    */
   astrule MILoop =
