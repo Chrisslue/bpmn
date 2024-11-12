@@ -73,7 +73,9 @@ public class IDWfNodeBuilder implements WfBuilder<IDWfNode> {
             getNode(identifier.apply(sequenceFlow.getPathList().get(i).getNodeRef().getBaseName()))
                 .get(); // todo fix
         IDWfNode tgt =
-            getNode(identifier.apply(sequenceFlow.getPathList().get(i + 1).getNodeRef().getBaseName()))
+            getNode(
+                    identifier.apply(
+                        sequenceFlow.getPathList().get(i + 1).getNodeRef().getBaseName()))
                 .get();
 
         if (successors.containsKey(src)) {

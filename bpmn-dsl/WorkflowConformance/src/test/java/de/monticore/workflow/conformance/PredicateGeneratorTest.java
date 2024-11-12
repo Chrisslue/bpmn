@@ -25,7 +25,7 @@ class PredicateGeneratorTest extends AbstractConfTest {
     super.init();
     String modelDir = "de.monticore.workflow.conformance.predicate.";
     ASTWorkflowCompilationUnit ast = loadModel(modelDir + model);
-    builder = BPMNUtils.generateIDWfNode(ast, i->i);
+    builder = BPMNUtils.generateIDWfNode(ast, i -> i);
   }
 
   @BeforeEach
@@ -165,22 +165,20 @@ class PredicateGeneratorTest extends AbstractConfTest {
 
   static Stream<Arguments> complexSource() {
     return Stream.of(
-            Arguments.of(List.of("Task1"), false),
-            Arguments.of(List.of("Task2"), false),
-            Arguments.of(List.of("Task1", "Task2"), false),
-            Arguments.of(List.of("Task1", "Start"), false),
-            Arguments.of(List.of("Task1", "End"), false),
-            Arguments.of(List.of("Start", "Task2"), false),
-            Arguments.of(List.of("End", "Task2"), false),
-            Arguments.of(List.of("End", "Task1", "Task2"), false),
-            Arguments.of(List.of("End", "Task1", "Start"), false),
-            Arguments.of(List.of("End", "Task2", "Start"), false),
-            Arguments.of(List.of("End", "Task1", "Task2", "Start"), false),
-            Arguments.of(List.of("End", "Task1", "Task2", "Start", "AndSplit"), false),
-            Arguments.of(List.of("End", "Task1", "Task3","Task4","Task5","Task6", "Start"), true),
-            Arguments.of(List.of("End", "Task2", "Task3","Task4","Task5","Task6", "Start"), true)
-    );
-
+        Arguments.of(List.of("Task1"), false),
+        Arguments.of(List.of("Task2"), false),
+        Arguments.of(List.of("Task1", "Task2"), false),
+        Arguments.of(List.of("Task1", "Start"), false),
+        Arguments.of(List.of("Task1", "End"), false),
+        Arguments.of(List.of("Start", "Task2"), false),
+        Arguments.of(List.of("End", "Task2"), false),
+        Arguments.of(List.of("End", "Task1", "Task2"), false),
+        Arguments.of(List.of("End", "Task1", "Start"), false),
+        Arguments.of(List.of("End", "Task2", "Start"), false),
+        Arguments.of(List.of("End", "Task1", "Task2", "Start"), false),
+        Arguments.of(List.of("End", "Task1", "Task2", "Start", "AndSplit"), false),
+        Arguments.of(List.of("End", "Task1", "Task3", "Task4", "Task5", "Task6", "Start"), true),
+        Arguments.of(List.of("End", "Task2", "Task3", "Task4", "Task5", "Task6", "Start"), true));
   }
 
   public List<WfNode> resolveNode(List<String> nodeNames) {

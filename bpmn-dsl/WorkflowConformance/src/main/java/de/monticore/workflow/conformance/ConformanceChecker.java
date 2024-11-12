@@ -32,7 +32,9 @@ public class ConformanceChecker {
         logName);
 
     // transform reference and concrete node
-    IDWfNodeBuilder ref = BPMNUtils.generateIDWfNode(reference, i -> ":" + i); //todo fix  indentifier
+    IDWfNodeBuilder ref =
+        BPMNUtils.generateIDWfNode(
+            reference, i -> ":" + i); // todo fix  identifier for different strategies
     IDWfNodeBuilder con = BPMNUtils.generateIDWfNode(concrete, i -> ":" + i);
     NameIncarnationStrategy inc = new NameIncarnationStrategy(ref, con);
 
