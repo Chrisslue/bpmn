@@ -1,7 +1,7 @@
-package de.monticore.workflow.conformance;
+package de.monticore.workflow.conformance.conformance;
 
 import de.monticore.bpmn.workflow._ast.ASTWorkflowCompilationUnit;
-import de.monticore.workflow.conformance.conformance.PredicateGenerator;
+import de.monticore.workflow.conformance.AbstractConfTest;
 import de.monticore.workflow.conformance.datastructure.IDWfNode;
 import de.monticore.workflow.conformance.datastructure.IDWfNodeBuilder;
 import de.monticore.workflow.conformance.datastructure.interf.WfNode;
@@ -17,7 +17,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-class PredicateGeneratorTest extends AbstractConfTest {
+class PredicateTest extends AbstractConfTest {
 
   private IDWfNodeBuilder builder;
 

@@ -7,11 +7,11 @@ process XOR {
   event end End;
   split xor XorSplit ;
 
-  Start ->  XorSplit ;
+  Start -> XorSplit ;
 
-  XorSplit ->  [false] Task1 ;
-  XorSplit ->  [false] Task2 ;
+  XorSplit -> [false] Task1 ;
+  XorSplit -> [false] Task2 ;
 
-  Task1 ->  End ;
-  Task2 ->  End ;
+  Task1 -> End ;
+  Task2 -> End ;
 }

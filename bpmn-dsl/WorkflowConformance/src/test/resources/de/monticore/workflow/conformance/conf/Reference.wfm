@@ -2,15 +2,15 @@
 process Reference {
 
   event start Start;
-   task Part1;
-   task Part2;
-   task Task1;
-   event end End;
-   split xor XorSplit;
-   merge xor XorMerge ;
+  task Part1;
+  task Part2;
+  task Task1;
+  event end End;
+  split xor XorSplit;
+  merge xor XorMerge ;
 
-   Start -> Task1 -> XorSplit -> Part1 -> XorMerge -> End;
-                     XorSplit -> Part2 -> XorMerge;
+  Start -> Task1 -> XorSplit -> Part1 -> XorMerge -> End;
+                    XorSplit -> Part2 -> XorMerge;
 
 
 

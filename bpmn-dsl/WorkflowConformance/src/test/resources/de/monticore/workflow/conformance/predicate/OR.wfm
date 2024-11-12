@@ -7,11 +7,11 @@ process OR {
   event end End;
   split ior OrSplit ;
 
-  Start ->  OrSplit ;
+  Start -> OrSplit ;
 
-  OrSplit ->  [false] Task1 ;
-  OrSplit ->  [false] Task2 ;
+  OrSplit -> [false] Task1 ;
+  OrSplit -> [false] Task2 ;
 
-  Task1 ->  End ;
-  Task2 ->  End ;
+  Task1 -> End ;
+  Task2 -> End ;
 }

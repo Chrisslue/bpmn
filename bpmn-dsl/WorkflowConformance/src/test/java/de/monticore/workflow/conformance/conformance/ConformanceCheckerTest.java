@@ -9,7 +9,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class ConformanceCheckerTest extends AbstractConfTest {
-  private final String modelDir = "de.monticore.workflow.conformance.conf.";
 
   @BeforeEach
   public void setup() {
@@ -24,6 +23,7 @@ class ConformanceCheckerTest extends AbstractConfTest {
   }
 
   public boolean checkConformance(String concrete, String reference) {
+    String modelDir = "de.monticore.workflow.conformance.conf.";
     ASTWorkflowCompilationUnit con = loadModel(modelDir + concrete);
     ASTWorkflowCompilationUnit ref = loadModel(modelDir + reference);
 
