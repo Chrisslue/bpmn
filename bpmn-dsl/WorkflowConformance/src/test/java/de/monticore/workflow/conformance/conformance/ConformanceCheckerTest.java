@@ -18,7 +18,7 @@ class ConformanceCheckerTest extends AbstractConfTest {
   }
 
   @Test
-  public void testSimpleTask() {
+  public void basicConformanceCheckerTest() {
     boolean res = checkConformance("Concrete", "Reference");
     Assertions.assertTrue(res);
   }

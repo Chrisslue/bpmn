@@ -5,7 +5,7 @@ import de.monticore.workflow.conformance.datastructure.IDWfNodeBuilder;
 import de.monticore.workflow.conformance.datastructure.interf.WfNode;
 import java.util.Optional;
 
-public class NameIncarnationStrategy {
+public class NameIncarnationStrategy implements IncarnationStrategy {
   private final IDWfNodeBuilder reference;
   private final IDWfNodeBuilder concrete;
 
@@ -14,7 +14,13 @@ public class NameIncarnationStrategy {
     this.concrete = concrete;
   }
 
-  public Optional<IDWfNode> getReference(WfNode con) {
+  @Override
+  public Optional<IDWfNode> getReferenceElements(WfNode con) {
     return reference.getNode(con.getLabel());
+  }
+
+  @Override
+  public boolean isIncarnation(WfNode srcElem, WfNode tgtElem) {
+    return false;
   }
 }
