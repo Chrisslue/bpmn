@@ -1,9 +1,10 @@
-package de.monticore.workflow.conformance.datastructure.analysis;
+package de.monticore.workflow.conformance.datastructure;
 
 import de.monticore.bpmn.workflow._ast.ASTSequenceFlow;
-import de.monticore.workflow.conformance.datastructure.interf.NodeType;
 import de.monticore.workflow.conformance.datastructure.interf.WfBuilder;
+import de.monticore.workflow.conformance.utils.NodeType;
 import java.util.*;
+import java.util.function.Function;
 
 /***
  * this class contains methods that transform Workflow elements(tasks, gateways, events, etc. )
@@ -12,7 +13,6 @@ import java.util.*;
  */
 public class IDWfNodeBuilder implements WfBuilder<IDWfNode> {
   private final Set<ASTSequenceFlow> sequenceFlows = new HashSet<>();
-
   public Set<IDWfNode> allNodes = new HashSet<>();
 
   public Optional<IDWfNode> getNode(String label) {
@@ -29,14 +29,14 @@ public class IDWfNodeBuilder implements WfBuilder<IDWfNode> {
   }
 
   private IDWfNode startEvent;
-  private final String prefix;
+  private final Function<String, String> identifier;
 
-  public IDWfNodeBuilder(String prefix) {
-    this.prefix = prefix;
+  public IDWfNodeBuilder(Function<String, String> identifier) {
+    this.identifier = identifier;
   }
 
   private String addPrefix(String name) {
-    return prefix + name;
+    return identifier.apply(name);
   }
 
   @Override
@@ -70,10 +70,10 @@ public class IDWfNodeBuilder implements WfBuilder<IDWfNode> {
       for (int i = 0; i < sequenceFlow.getPathList().size() - 1; i++) {
 
         IDWfNode src =
-            getNode(prefix + sequenceFlow.getPathList().get(i).getNodeRef().getBaseName())
+            getNode(identifier.apply(sequenceFlow.getPathList().get(i).getNodeRef().getBaseName()))
                 .get(); // todo fix
         IDWfNode tgt =
-            getNode(prefix + sequenceFlow.getPathList().get(i + 1).getNodeRef().getBaseName())
+            getNode(identifier.apply(sequenceFlow.getPathList().get(i + 1).getNodeRef().getBaseName()))
                 .get();
 
         if (successors.containsKey(src)) {
@@ -92,6 +92,12 @@ public class IDWfNodeBuilder implements WfBuilder<IDWfNode> {
       predecessors.forEach(IDWfNode::addAllPredecessors);
       successors.forEach(IDWfNode::addAllSuccessors);
     }
+    return startEvent;
+  }
+
+  @Override
+  public IDWfNode getStartEvent() {
+    build(); // todo hanlde that differently
     return startEvent;
   }
 

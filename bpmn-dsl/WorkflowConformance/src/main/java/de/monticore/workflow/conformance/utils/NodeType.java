@@ -1,4 +1,4 @@
-package de.monticore.workflow.conformance.datastructure.interf;
+package de.monticore.workflow.conformance.utils;
 
 public enum NodeType {
   TASK,

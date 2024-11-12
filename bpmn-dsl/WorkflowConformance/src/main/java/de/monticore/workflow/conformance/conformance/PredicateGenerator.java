@@ -1,22 +1,22 @@
-package de.monticore.workflow.conformance.datastructure.ctl;
+package de.monticore.workflow.conformance.conformance;
 
-import de.monticore.workflow.conformance.datastructure.analysis.IDWfNode;
+import de.monticore.workflow.conformance.datastructure.interf.WfNode;
 import de.se_rwth.commons.logging.Log;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class PredicateGenerator {
 
-  public static Predicate<Set<IDWfNode>> postPredicate(IDWfNode node) {
+  public static Predicate<List<WfNode>> postPredicate(WfNode node) {
 
-    Predicate<Set<IDWfNode>> subPred;
-    Set<Predicate<Set<IDWfNode>>> sucSuc =
+    Predicate<List<WfNode>> subPred;
+    List<Predicate<List<WfNode>>> sucSuc =
         node.getSuccessors().stream()
             .map(PredicateGenerator::postPredicate)
-            .collect(Collectors.toSet());
+            .collect(Collectors.toList());
+
     switch (node.getNodeType()) {
       case XOR_SPLIT:
         subPred = mkXor(sucSuc);
@@ -31,42 +31,42 @@ public class PredicateGenerator {
     if (node.isGateway()) {
       return subPred;
     } else {
-      return mkAnd(Set.of(mkVar(node), subPred));
+      return mkAnd(List.of(mkVar(node), subPred));
     }
   }
 
-  public static Predicate<Set<IDWfNode>> mkVar(IDWfNode left) {
+  public static Predicate<List<WfNode>> mkVar(WfNode left) {
     return confWfNodes -> confWfNodes.contains(left);
   }
 
-  public static Predicate<Set<IDWfNode>> mkAnd(Set<Predicate<Set<IDWfNode>>> formulas) {
+  public static Predicate<List<WfNode>> mkAnd(List<Predicate<List<WfNode>>> formulas) {
 
-    Predicate<Set<IDWfNode>> res = set -> true;
+    Predicate<List<WfNode>> res = set -> true;
     for (var formula : formulas) {
       res = res.and(formula);
     }
     return res;
   }
 
-  public static Predicate<Set<IDWfNode>> mkOr(Set<Predicate<Set<IDWfNode>>> formulas) {
+  public static Predicate<List<WfNode>> mkOr(List<Predicate<List<WfNode>>> formulas) {
 
-    Predicate<Set<IDWfNode>> res = set -> false;
+    Predicate<List<WfNode>> res = set -> false;
     for (var formula : formulas) {
       res = res.or(formula);
     }
     return res;
   }
 
-  public static Predicate<Set<IDWfNode>> mkXor(Set<Predicate<Set<IDWfNode>>> formulas) {
+  public static Predicate<List<WfNode>> mkXor(List<Predicate<List<WfNode>>> formulas) {
     if (formulas.size() < 2) {
       Log.error("Xor need at least 2 formulas");
     }
 
-    List<Predicate<Set<IDWfNode>>> formulaList = new ArrayList<>(formulas);
-    Predicate<Set<IDWfNode>> res = formulaList.get(0);
+    List<Predicate<List<WfNode>>> formulaList = new ArrayList<>(formulas);
+    Predicate<List<WfNode>> res = formulaList.get(0);
 
     for (int i = 1; i < formulaList.size(); i++) {
-      Predicate<Set<IDWfNode>> finalRes = res;
+      Predicate<List<WfNode>> finalRes = res;
       int finalI = i;
       res = set -> finalRes.test(set) ^ formulaList.get(finalI).test(set);
     }

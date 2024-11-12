@@ -1,0 +1,27 @@
+
+process Reference {
+
+  event start Start;
+   task Part1;
+   task Part2;
+   task Task1;
+   event end End;
+
+   Start -> Task1 -> XorSplit;
+
+   split xor XorSplit;
+   XorSplit -> [false] Part1;
+   XorSplit -> [true] Part2;
+
+
+
+   merge xor XorMerge ;
+
+   Part1 -> XorMerge;
+   Part2 -> XorMerge;
+
+   XorMerge -> End;
+
+
+
+}

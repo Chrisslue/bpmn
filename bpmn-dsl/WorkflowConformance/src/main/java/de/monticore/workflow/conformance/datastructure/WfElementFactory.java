@@ -1,19 +1,19 @@
-package de.monticore.workflow.conformance.datastructure.analysis;
+package de.monticore.workflow.conformance.datastructure;
 
 import de.monticore.bpmn.workflow._ast.*;
 import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
-import de.monticore.workflow.conformance.datastructure.interf.NodeType;
+import de.monticore.workflow.conformance.utils.NodeType;
 
 /***
  * This class take as parameter a workflowBuilder.  It visits workflow element
  * and use the builder to transform workflow elements (tasks, events, gateways, etc.)
  * in to Node. The builder also collects the sequence flows.
  */
-public class WfElementVisitor implements WorkflowVisitor2 {
+public class WfElementFactory implements WorkflowVisitor2 {
 
   private final IDWfNodeBuilder builder;
 
-  public WfElementVisitor(IDWfNodeBuilder builder) {
+  public WfElementFactory(IDWfNodeBuilder builder) {
     this.builder = builder;
   }
 

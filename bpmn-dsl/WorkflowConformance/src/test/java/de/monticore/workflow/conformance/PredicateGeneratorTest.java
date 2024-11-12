@@ -1,13 +1,14 @@
 package de.monticore.workflow.conformance;
 
 import de.monticore.bpmn.workflow._ast.ASTWorkflowCompilationUnit;
-import de.monticore.workflow.conformance.datastructure.analysis.IDWfNode;
-import de.monticore.workflow.conformance.datastructure.analysis.IDWfNodeBuilder;
-import de.monticore.workflow.conformance.datastructure.ctl.PredicateGenerator;
+import de.monticore.workflow.conformance.conformance.PredicateGenerator;
+import de.monticore.workflow.conformance.datastructure.IDWfNode;
+import de.monticore.workflow.conformance.datastructure.IDWfNodeBuilder;
+import de.monticore.workflow.conformance.datastructure.interf.WfNode;
 import de.monticore.workflow.conformance.utils.BPMNUtils;
 import de.se_rwth.commons.logging.Log;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
@@ -24,7 +25,7 @@ class PredicateGeneratorTest extends AbstractConfTest {
     super.init();
     String modelDir = "de.monticore.workflow.conformance.predicate.";
     ASTWorkflowCompilationUnit ast = loadModel(modelDir + model);
-    builder = BPMNUtils.generateIDWfNode(ast, "");
+    builder = BPMNUtils.generateIDWfNode(ast, i->i);
   }
 
   @BeforeEach
@@ -35,13 +36,13 @@ class PredicateGeneratorTest extends AbstractConfTest {
 
   @ParameterizedTest
   @MethodSource("xorSource")
-  public void testPostPredicateXor(Set<String> nodeNames, boolean result) {
+  public void testPostPredicateXor(List<String> nodeNames, boolean result) {
     // given
     init("XOR");
-    Set<IDWfNode> tasks = resolveNode(nodeNames);
+    List<WfNode> tasks = resolveNode(nodeNames);
 
     // when
-    Predicate<Set<IDWfNode>> predicate = PredicateGenerator.postPredicate(builder.build());
+    Predicate<List<WfNode>> predicate = PredicateGenerator.postPredicate(builder.build());
 
     // then
     Assertions.assertEquals(predicate.test(tasks), result);
@@ -49,13 +50,13 @@ class PredicateGeneratorTest extends AbstractConfTest {
 
   @ParameterizedTest
   @MethodSource("orSource")
-  public void testPostPredicateOr(Set<String> nodeNames, boolean result) {
+  public void testPostPredicateOr(List<String> nodeNames, boolean result) {
     // given
     init("OR");
-    Set<IDWfNode> tasks = resolveNode(nodeNames);
+    List<WfNode> tasks = resolveNode(nodeNames);
 
     // when
-    Predicate<Set<IDWfNode>> predicate = PredicateGenerator.postPredicate(builder.build());
+    Predicate<List<WfNode>> predicate = PredicateGenerator.postPredicate(builder.build());
 
     // then
     Assertions.assertEquals(predicate.test(tasks), result);
@@ -63,84 +64,127 @@ class PredicateGeneratorTest extends AbstractConfTest {
 
   @ParameterizedTest
   @MethodSource("andSource")
-  public void testPostPredicateAnd(Set<String> nodeNames, boolean result) {
+  public void testPostPredicateAnd(List<String> nodeNames, boolean result) {
     // given
     init("AND");
-    Set<IDWfNode> tasks = resolveNode(nodeNames);
+    List<WfNode> tasks = resolveNode(nodeNames);
 
     // when
-    Predicate<Set<IDWfNode>> predicate = PredicateGenerator.postPredicate(builder.build());
+    Predicate<List<WfNode>> predicate = PredicateGenerator.postPredicate(builder.build());
 
     // then
     Assertions.assertEquals(predicate.test(tasks), result);
   }
 
   @ParameterizedTest
-  @MethodSource("andSource")
-  public void testPostPredicateCOMPLEX(Set<String> nodeNames, boolean result) {
+  @MethodSource("complexSource")
+  public void testPostPredicateCOMPLEX(List<String> nodeNames, boolean result) {
     // given
     init("COMPLEX");
-    Set<IDWfNode> tasks = resolveNode(nodeNames);
+    List<WfNode> tasks = resolveNode(nodeNames);
 
     // when
-    Predicate<Set<IDWfNode>> predicate = PredicateGenerator.postPredicate(builder.build());
+    Predicate<List<WfNode>> predicate = PredicateGenerator.postPredicate(builder.build());
 
     // then
     Assertions.assertEquals(predicate.test(tasks), result);
+  }
+
+  @ParameterizedTest
+  @MethodSource("concreteSource")
+  public void testPostPredicateConcrete(List<String> nodeNames, boolean result) {
+    // given
+    init("Concrete");
+    List<WfNode> tasks = resolveNode(nodeNames);
+
+    // when
+    Predicate<List<WfNode>> predicate = PredicateGenerator.postPredicate(builder.build());
+
+    // then
+    Assertions.assertEquals(predicate.test(tasks), result);
+  }
+
+  static Stream<Arguments> concreteSource() {
+    return Stream.of(
+        Arguments.of(List.of("Task1"), false),
+        Arguments.of(List.of("Task1", "Start"), false),
+        Arguments.of(List.of("End", "Start"), false),
+        Arguments.of(List.of("Task1", "End"), false),
+        Arguments.of(List.of("End", "Task1", "Start"), true));
   }
 
   static Stream<Arguments> orSource() {
     return Stream.of(
-        Arguments.of(Set.of("Task1"), false),
-        Arguments.of(Set.of("Task2"), false),
-        Arguments.of(Set.of("Task1", "Task2"), false),
-        Arguments.of(Set.of("Task1", "Start"), false),
-        Arguments.of(Set.of("End", "Start"), false),
-        Arguments.of(Set.of("Task1", "End"), false),
-        Arguments.of(Set.of("Task2", "End"), false),
-        Arguments.of(Set.of("Start", "Task2"), false),
-        Arguments.of(Set.of("End", "Task2"), false),
-        Arguments.of(Set.of("End", "Task1", "Task2"), false),
-        Arguments.of(Set.of("End", "Task1", "Task2", "Start"), true),
-        Arguments.of(Set.of("End", "Task1", "Start"), true),
-        Arguments.of(Set.of("End", "Task1", "Start", "OrSplit"), true),
-        Arguments.of(Set.of("End", "Task2", "Start"), true));
+        Arguments.of(List.of("Task1"), false),
+        Arguments.of(List.of("Task2"), false),
+        Arguments.of(List.of("Task1", "Task2"), false),
+        Arguments.of(List.of("Task1", "Start"), false),
+        Arguments.of(List.of("End", "Start"), false),
+        Arguments.of(List.of("Task1", "End"), false),
+        Arguments.of(List.of("Task2", "End"), false),
+        Arguments.of(List.of("Start", "Task2"), false),
+        Arguments.of(List.of("End", "Task2"), false),
+        Arguments.of(List.of("End", "Task1", "Task2"), false),
+        Arguments.of(List.of("End", "Task1", "Task2", "Start"), true),
+        Arguments.of(List.of("End", "Task1", "Start"), true),
+        Arguments.of(List.of("End", "Task1", "Start", "OrSplit"), true),
+        Arguments.of(List.of("End", "Task2", "Start"), true));
   }
 
   static Stream<Arguments> xorSource() {
     return Stream.of(
-        Arguments.of(Set.of("Task1"), false),
-        Arguments.of(Set.of("Task2"), false),
-        Arguments.of(Set.of("Task1", "Task2"), false),
-        Arguments.of(Set.of("Task1", "Start"), false),
-        Arguments.of(Set.of("Task1", "End"), false),
-        Arguments.of(Set.of("Start", "Task2"), false),
-        Arguments.of(Set.of("End", "Task2"), false),
-        Arguments.of(Set.of("End", "Task1", "Task2"), false),
-        Arguments.of(Set.of("End", "Task1", "Task2", "Start"), false),
-        Arguments.of(Set.of("End", "Task1", "Start"), true),
-        Arguments.of(Set.of("End", "Task1", "Start", "XorSplit"), true),
-        Arguments.of(Set.of("End", "Task2", "Start"), true));
+        Arguments.of(List.of("Task1"), false),
+        Arguments.of(List.of("Task2"), false),
+        Arguments.of(List.of("Task1", "Task2"), false),
+        Arguments.of(List.of("Task1", "Start"), false),
+        Arguments.of(List.of("Task1", "End"), false),
+        Arguments.of(List.of("Start", "Task2"), false),
+        Arguments.of(List.of("End", "Task2"), false),
+        Arguments.of(List.of("End", "Task1", "Task2"), false),
+        Arguments.of(List.of("End", "Task1", "Task2", "Start"), false),
+        Arguments.of(List.of("End", "Task1", "Start"), true),
+        Arguments.of(List.of("End", "Task1", "Start", "XorSplit"), true),
+        Arguments.of(List.of("End", "Task2", "Start"), true));
   }
 
   static Stream<Arguments> andSource() {
     return Stream.of(
-        Arguments.of(Set.of("Task1"), false),
-        Arguments.of(Set.of("Task2"), false),
-        Arguments.of(Set.of("Task1", "Task2"), false),
-        Arguments.of(Set.of("Task1", "Start"), false),
-        Arguments.of(Set.of("Task1", "End"), false),
-        Arguments.of(Set.of("Start", "Task2"), false),
-        Arguments.of(Set.of("End", "Task2"), false),
-        Arguments.of(Set.of("End", "Task1", "Task2"), false),
-        Arguments.of(Set.of("End", "Task1", "Start"), false),
-        Arguments.of(Set.of("End", "Task2", "Start"), false),
-        Arguments.of(Set.of("End", "Task1", "Task2", "Start"), true),
-        Arguments.of(Set.of("End", "Task1", "Task2", "Start", "AndSplit"), true));
+        Arguments.of(List.of("Task1"), false),
+        Arguments.of(List.of("Task2"), false),
+        Arguments.of(List.of("Task1", "Task2"), false),
+        Arguments.of(List.of("Task1", "Start"), false),
+        Arguments.of(List.of("Task1", "End"), false),
+        Arguments.of(List.of("Start", "Task2"), false),
+        Arguments.of(List.of("End", "Task2"), false),
+        Arguments.of(List.of("End", "Task1", "Task2"), false),
+        Arguments.of(List.of("End", "Task1", "Start"), false),
+        Arguments.of(List.of("End", "Task2", "Start"), false),
+        Arguments.of(List.of("End", "Task1", "Task2", "Start"), true),
+        Arguments.of(List.of("End", "Task1", "Task2", "Start", "AndSplit"), true));
   }
 
-  public Set<IDWfNode> resolveNode(Set<String> nodeNames) {
-    Set<IDWfNode> res = new HashSet<>();
+  static Stream<Arguments> complexSource() {
+    return Stream.of(
+            Arguments.of(List.of("Task1"), false),
+            Arguments.of(List.of("Task2"), false),
+            Arguments.of(List.of("Task1", "Task2"), false),
+            Arguments.of(List.of("Task1", "Start"), false),
+            Arguments.of(List.of("Task1", "End"), false),
+            Arguments.of(List.of("Start", "Task2"), false),
+            Arguments.of(List.of("End", "Task2"), false),
+            Arguments.of(List.of("End", "Task1", "Task2"), false),
+            Arguments.of(List.of("End", "Task1", "Start"), false),
+            Arguments.of(List.of("End", "Task2", "Start"), false),
+            Arguments.of(List.of("End", "Task1", "Task2", "Start"), false),
+            Arguments.of(List.of("End", "Task1", "Task2", "Start", "AndSplit"), false),
+            Arguments.of(List.of("End", "Task1", "Task3","Task4","Task5","Task6", "Start"), true),
+            Arguments.of(List.of("End", "Task2", "Task3","Task4","Task5","Task6", "Start"), true)
+    );
+
+  }
+
+  public List<WfNode> resolveNode(List<String> nodeNames) {
+    List<WfNode> res = new ArrayList<>();
 
     for (String name : nodeNames) {
       Assertions.assertTrue(builder.getNode(name).isPresent());
