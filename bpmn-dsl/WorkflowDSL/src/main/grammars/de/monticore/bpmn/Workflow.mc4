@@ -1,6 +1,9 @@
 package de.monticore.bpmn;
 
-grammar Workflow extends de.monticore.ocl.OCL, // todo: common, assigmnement, lammbda?
+grammar Workflow extends de.monticore.ocl.OCL,
+                         de.monticore.expressions.LambdaExpressions,
+                         de.monticore.expressions.AssignmentExpressions,
+                         de.monticore.expressions.CommonExpressions, 
                          de.monticore.expressions.TimeExpressions, // todo: Grammatik hier integrieren und DateTime nutzen
                          de.monticore.symbols.OOSymbols, //todo: ggf. durch Type-Symbols ersetzen
                          de.monticore.UMLModifier{
@@ -29,7 +32,7 @@ grammar Workflow extends de.monticore.ocl.OCL, // todo: common, assigmnement, la
       "process"
       Name
       "{"
-        IOSpecification
+        IORequirement*
         (   Lane        
           | FlowElement
         )*
@@ -80,8 +83,8 @@ grammar Workflow extends de.monticore.ocl.OCL, // todo: common, assigmnement, la
       CompensationHandler?
       LoopCharacteristics?
       "{"
-        // IOSpecification not allowed by BPMN standard, we include it here to enable a suitable error message
-        IOSpecification 
+        // IORequirement not allowed by BPMN standard, we include it here to enable a suitable error message
+        IORequirement* 
         (   Lane        
           | FlowElement
         )*
@@ -108,16 +111,19 @@ grammar Workflow extends de.monticore.ocl.OCL, // todo: common, assigmnement, la
       )?
     ;
 
-  /* allows a process to invoke another reusable process or task */
+  /**
+   * allows a process to invoke another reusable process or global task 
+   * we model global tasks as a process with only one task
+   * Example: a call activity "ShipOrder" calls a process named "ShippingProcess"
+   */
   CallActivity implements Activity =
-      "call" // todo: Warum "task"? Ggf. umbenennen.
+      "call" 
       Name
-      // todo: better naming calledElement? @Task (global)?
       "calls" ":" calledElement:Name@Process
       CompensationHandler?
       LoopCharacteristics?
       (   "{"
-            IOSpecification         // must match the I/O requirements of the called element
+            IORequirement*         // must match the I/O requirements of the called element
             (boundaryEvent:Event)*
           "}"
         | ";"
@@ -138,38 +144,71 @@ grammar Workflow extends de.monticore.ocl.OCL, // todo: common, assigmnement, la
       type:["service" | "send" | "receive" | "user" | "manual" | "rule" | "script"]?
       "task"
       Name
-      TaskTypeAttributes? // todo: ersetzen durch konkrete Attribute
+      TaskTypeAttributes 
       CompensationHandler? // todo: ggf. rausnehmen und mit TOP in Symbol hinzufügen?
       LoopCharacteristics?
       (   "{"
-            IOSpecification
+            IORequirement*
             (boundaryEvent:Event)*
           "}"
         | ";"
       )
     ;
+  
 
-  /* todo: für später ggf. alle Attribute einfach optional in Task aufführen
-   * todo: CoCo für type -> Attribute */
-  interface TaskTypeAttributes;
-  /* service: used webservice and the operation triggered by the task  */
-  /* send:    used webservice, message and the operation triggered by the task  */
-  /* receive: used webservice, message and the operation triggered by the task  */
-  /* user: used webservice and renderings  */
-  /* manual: needed resources  */
-  /* rule: used webservice  */
-  /* script: used script and the format of the script  */
+  /**
+   * describes the attributes of all Tasks
+   * service: used webservice and the operation triggered by the task
+   * send:    used webservice, message and the operation triggered by the task
+   * receive: used webservice, message and the operation triggered by the task
+   * user:    used webservice   
+   * manual:  needed resources
+   * rule:    used webservice
+   * script:  used script and the format of the script
+   * todo: add CoCo for each type to check the attributes
+   */ 
+  TaskTypeAttributes =
+      /* valid Strings are ##unspecified, ##Webservice or a URI */
+      webservice:String?
 
+      /* format of the script and a script that can be run when a task is performed */
+      scriptFormat:String?
+      script:String?
 
-  /* TaskTypeAttribute for "send" and "receive" */
-  TaskSendReceiveTypeAttributes implements TaskTypeAttributes =
-      "message" ":" message:Name@Notification
+      /* human resources or other resources assigned to tasks */
+      resource:Name*
+
+      Message?
+      Operation?
     ;
 
-  /* todo: besser beschreiben
-   * describes a set of activities that are outside of the process flow, similar to exception handling
-   * Why not linked to boundaryEvent? -> can also be the start event of a subprocess 
-   * Example: a task "BookOffering" is compensated by the service task "CancelBooking"
+  /* 
+   * describes the invoked operation by a task
+   * exactly one ingoing message but at most one outgoing message
+   * can specify error elements which may be returned 
+   */
+  Operation = 
+      Name
+      in:Message 
+      out:Message?
+      error:String?
+    ;
+
+  /* 
+   * used in Operations to define input and output messages
+   * used in send and receive tasks for communication 
+   */
+  Message = 
+      ("message" ":" message:Name@Notification)
+    ;
+
+  /* 
+   * describes a set of activities that are not connected to other parts of the BPMN model
+   * handler performs steps to reverse certain effects of an activity
+   * handler starts with a catch compensation event which can be a boundary event or the start event of an event subprocess
+   * the compensation activity can either be a task or a subprocess -> todo: add CoCo
+   * example: task "BookOffering" is compensated by the service task "CancelBooking" (compensation activity)
+   * here activity:Name states the Activity which needs to be compensated, in this example it would be "BookOffering"
    */
   CompensationHandler =
       "compensate" ":" activity:Name@Activity
@@ -221,7 +260,7 @@ grammar Workflow extends de.monticore.ocl.OCL, // todo: common, assigmnement, la
   LoopCardinality =
       count:NatLiteral
     | ("[" expression:Expression "]")
-    | collection:Name // a collection-valued data object, do we need this option?
+    | collection:Name // a collection-valued data object
     ;
 
 
@@ -229,15 +268,20 @@ grammar Workflow extends de.monticore.ocl.OCL, // todo: common, assigmnement, la
   /*=============================== GATEWAYS ===============================*/
   /*========================================================================*/
 
-  /** 
-   * describes a flow control element that allows converging and diverging sequence flows
-   * todo: different naming for GatewayDirection? Unspecified, Converging, Diverging 
-   */
+  /* describes a flow control element that allows converging and diverging sequence flows */
   symbol Gateway implements FlowElement =
       direction:["split" | "merge"]
       type:GatewayType
       Name?
       ";"
+    ;
+  
+  /** 
+   * represents the number of activations at a complex gateway 
+   * guard for "complex" GatewayType refers to activationCount
+   */
+  astrule Gateway = 
+      activationCount:NatLiteral?
     ;
     
   /** possible Types of Gateways 
@@ -272,15 +316,16 @@ grammar Workflow extends de.monticore.ocl.OCL, // todo: common, assigmnement, la
       "event" 
       type:["start" | "end"]?
       Name?
-      behavior:[ throw:"send" | catch:"receive" ] //todo: Do we need "noninterrupt" for catch events?
+      (throw:["send"] | catch:["receive"] (["noninterrupt"])?)
       trigger:EventTrigger?
       (   "{"
-            (input:IRequirement | output:ORequirement)?
+            IOSet?
           "}"
         | ";"
       )
     ;
 
+  
   interface EventTrigger;
 
   /* all BPMN triggers except the link trigger */
@@ -317,9 +362,8 @@ grammar Workflow extends de.monticore.ocl.OCL, // todo: common, assigmnement, la
   /* reference a FlowElement using its name or create a block structure */
   FlowTarget =
       condition:FlowCondition?
-      (   nodeRef:MCQualifiedName   // reference flow node at process level
-        // leads to error from Antlr due to left-recursive production
-        // we can no longer specify InlineFlowElements, so we can ignore this option?
+      (   nodeRef:MCQualifiedName   // reference a named FlowElement
+        // we can no longer specify InlineFlowElements, so this option is currently ignored
         // "| node:FlowElement"  
         | block:FlowBlock
       )
@@ -345,17 +389,11 @@ grammar Workflow extends de.monticore.ocl.OCL, // todo: common, assigmnement, la
   /*========================== I/O REQUIREMENTS ============================*/
   /*========================================================================*/
 
-  /* todo: distinction necessary? remove? */
-  IOSpecification = IORequirement* ;
-
-  /* input requirement, output requirement or input-output rule */
+  /* input set, output set or input-output rule */
   interface IORequirement;
 
-  /* specifies an input set */
-  IRequirement implements IORequirement = "in"  ":" inputSet:DataSet  ";" ;
-
-  /* specifies an output set */
-  ORequirement implements IORequirement = "out" ":" outputSet:DataSet ";" ;
+  /* specifies an input and output set */
+  IOSet implements IORequirement = ("in"  ":" inputSet:DataSet | "out" ":" outputSet:DataSet ) ";" ;
 
   /* maps an input set to an output set and optionally assigns an operationName */
   IORule implements IORequirement =
