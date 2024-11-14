@@ -1,9 +1,10 @@
 package de.monticore.expressions;
 
 /* In WorkflowDSL integrieren*/
-grammar TimeExpressions extends de.monticore.literals.MCCommonLiterals {
+grammar TimeExpressions extends de.monticore.literals.MCCommonLiterals,
+                                de.monticore.expressions.CommonExpressions {
 
-  interface TimeExpression;
+  interface TimeExpression extends Expression;
 
 
   TimeExpr implements TimeExpression =
