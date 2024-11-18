@@ -5,51 +5,19 @@ import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
 import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
 import java.util.function.Predicate;
 
-public interface ASTEvent extends ASTEventTOP {
+public ASTEvent extends ASTEventTOP {
 
-  default boolean isStart() {
-    return isPresentType() && getType().equals(ASTEventType.START);
+  public boolean isStart() {
+    return getType() == ASTConstantsWorkflow.START;
   }
 
-  default boolean isEnd() {
-    return isPresentType() && getType().equals(ASTEventType.END);
+  public boolean isEnd() {
+    return getType() == ASTConstantsWorkflow.END;
   }
 
-  default boolean isIntermediate() {
+  public boolean isIntermediate() {
     return !isStart() && !isEnd();
   }
-
-  default boolean isBoundary() {
-    return false;
-  }
-
-  default boolean isNonInterrupt() {
-    return isPresentBehavior() && getBehavior().isNonInterrupt();
-  }
-
-  default boolean isCatch() {
-    if (isPresentBehavior()) {
-      if (getBehavior().isCatch()) {
-        return true;
-      }
-      return isStart()
-          || isBoundary()
-          || (isIntermediate() && new IsIntermediateCatchTrigger().test(this));
-    }
-    return false;
-  }
-
-  default boolean isThrow() {
-    if (isPresentBehavior()) {
-      if (getBehavior().isThrow()) {
-        return true;
-      }
-      return isEnd() || (isIntermediate() && new IsIntermediateThrowTrigger().test(this));
-    }
-    return false;
-  }
-
-  String getName();
 
   class IsIntermediateThrowTrigger implements Predicate<ASTEvent>, WorkflowVisitor2 {
     boolean isThrow;
