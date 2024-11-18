@@ -29,6 +29,5 @@ public interface WfBuilder<Node> {
    */
   Node mkStartEvent(String label);
 
-
   Node getStartEvent();
 }

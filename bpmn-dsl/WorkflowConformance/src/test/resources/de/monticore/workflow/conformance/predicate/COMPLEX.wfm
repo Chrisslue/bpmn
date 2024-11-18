@@ -1,36 +1,25 @@
 
 process COMPLEX {
 
-  event start Start;
-  task Task1;
-  task Task2;
-  task Task3 ;
-  task Task4;
-  task Task5;
-  task Task6;
-  event end End;
+  event start S;
+  task T1;
+  task T2;
+  task T3;
+  task T4;
+  task T5;
+  split xor XOR ;
+  split and AND ;
+  split ior OR ;
 
-  split xor XorSplit ;
-  merge xor XorMerge ;
-  split and AndSplit;
-  merge and AndMerge;
 
-  Start -> XorSplit ;
 
-  XorSplit -> [false] Task1 ;
-  XorSplit -> [false] Task2 ;
 
-  Task1 -> XorMerge ;
-  Task2 -> XorMerge ;
 
-  XorMerge -> Task3 ;
+       XOR -> AND ->  T5;
+       XOR -> AND ->  T3 ;
+  S -> XOR -> T1 ;
+       XOR -> OR ->  T2 ;
+              OR ->  T4 ;
 
-  Task3 -> AndSplit ;
-  AndSplit -> Task4 -> Task6 ;
-  AndSplit -> Task5;
-
-  Task6 -> AndMerge;
-  Task5 -> AndMerge;
-
-  AndMerge -> End;
 }
+

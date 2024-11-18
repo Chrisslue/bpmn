@@ -63,7 +63,6 @@ public class IDWfNodeBuilder implements WfBuilder<IDWfNode> {
     return res;
   }
 
-
   public void build() {
 
     Map<IDWfNode, Set<IDWfNode>> predecessors = new HashMap<>();
@@ -96,12 +95,11 @@ public class IDWfNodeBuilder implements WfBuilder<IDWfNode> {
       predecessors.forEach(IDWfNode::addAllPredecessors);
       successors.forEach(IDWfNode::addAllSuccessors);
     }
-
   }
 
   @Override
   public IDWfNode getStartEvent() {
-    if (!isBuild){
+    if (!isBuild) {
       build();
       isBuild = true;
     }

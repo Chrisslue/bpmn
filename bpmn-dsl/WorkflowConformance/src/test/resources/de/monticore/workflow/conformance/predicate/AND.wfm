@@ -1,20 +1,19 @@
 
 process AND {
 
-  event start Start;
-  task Task1;
-  task Task2;
-  event end End;
-  split and AndSplit ;
-  merge and AndMerge ;
 
-  Start -> AndSplit ;
+  event start S;
+  task T1;
+  task T2;
+  task T3;
+  task T4;
+  split and AND1 ;
+  split and AND2 ;
 
-  AndSplit -> [false] Task1 ;
-  AndSplit -> [false] Task2 ;
+       AND1 ->  T3 ;
+  S -> AND1 ->  T1 ;
+       AND1 ->  AND2 ->  T2 ;
+                AND2 ->  T4 ;
 
-  Task1 -> AndMerge ;
-  Task2 -> AndMerge ;
 
-  AndMerge ->End;
 }

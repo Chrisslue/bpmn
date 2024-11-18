@@ -10,31 +10,33 @@ import java.util.stream.Collectors;
 public class PredicateGenerator {
 
   public static Predicate<List<WfNode>> postPredicate(WfNode node) {
-    assert node.getSuccessors().size() == 1 ;
+    assert node.getSuccessors().size() == 1;
     return postPredicateRecursive(node.getSuccessors().iterator().next());
-
   }
 
   private static Predicate<List<WfNode>> postPredicateRecursive(WfNode node) {
 
-
     List<Predicate<List<WfNode>>> sucsuc =
-           node.getSuccessors().stream()
-                    .map(PredicateGenerator::postPredicateRecursive)
-                    .collect(Collectors.toList());
+        node.getSuccessors().stream()
+            .map(PredicateGenerator::postPredicateRecursive)
+            .collect(Collectors.toList());
 
-    switch (node.getNodeType()){
+    switch (node.getNodeType()) {
       case TASK:
-      case EVENT:return mkVar(node);
-      case XOR_SPLIT:return mkXor(sucsuc);
-      case OR_SPLIT:return mkOr(sucsuc);
-      case AND_SPLIT: return  mkAnd(sucsuc);
+      case EVENT:
+        return mkVar(node);
+      case XOR_SPLIT:
+        return mkXor(sucsuc);
+      case OR_SPLIT:
+        return mkOr(sucsuc);
+      case AND_SPLIT:
+        return mkAnd(sucsuc);
       default:
         Log.error("Not implemented yet");
-      assert false;
+        assert false;
     }
     Log.error("something wrong happened");
-    assert  false;
+    assert false;
     return null;
   }
 
