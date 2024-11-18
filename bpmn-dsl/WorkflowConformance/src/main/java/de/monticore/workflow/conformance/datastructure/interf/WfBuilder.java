@@ -29,10 +29,6 @@ public interface WfBuilder<Node> {
    */
   Node mkStartEvent(String label);
 
-  /***
-   * @return the start node of the Workflow.
-   */
-  Node build();
 
   Node getStartEvent();
 }

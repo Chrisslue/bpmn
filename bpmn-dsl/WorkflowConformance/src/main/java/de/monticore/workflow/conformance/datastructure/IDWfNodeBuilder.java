@@ -13,9 +13,11 @@ import java.util.function.Function;
  */
 public class IDWfNodeBuilder implements WfBuilder<IDWfNode> {
   private final Set<ASTSequenceFlow> sequenceFlows = new HashSet<>();
-  public Set<IDWfNode> allNodes = new HashSet<>();
+  private final Set<IDWfNode> allNodes = new HashSet<>();
+  private boolean isBuild = false;
 
   public Optional<IDWfNode> getNode(String label) {
+
     return allNodes.stream().filter(node -> node.getLabel().equals(label)).findAny();
   }
 
@@ -61,8 +63,8 @@ public class IDWfNodeBuilder implements WfBuilder<IDWfNode> {
     return res;
   }
 
-  @Override
-  public IDWfNode build() {
+
+  public void build() {
 
     Map<IDWfNode, Set<IDWfNode>> predecessors = new HashMap<>();
     Map<IDWfNode, Set<IDWfNode>> successors = new HashMap<>();
@@ -94,12 +96,15 @@ public class IDWfNodeBuilder implements WfBuilder<IDWfNode> {
       predecessors.forEach(IDWfNode::addAllPredecessors);
       successors.forEach(IDWfNode::addAllSuccessors);
     }
-    return startEvent;
+
   }
 
   @Override
   public IDWfNode getStartEvent() {
-    build(); // todo hanlde that differently
+    if (!isBuild){
+      build();
+      isBuild = true;
+    }
     return startEvent;
   }
 

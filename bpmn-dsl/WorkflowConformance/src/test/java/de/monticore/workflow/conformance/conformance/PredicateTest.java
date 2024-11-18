@@ -4,6 +4,7 @@ import de.monticore.bpmn.workflow._ast.ASTWorkflowCompilationUnit;
 import de.monticore.workflow.conformance.AbstractConfTest;
 import de.monticore.workflow.conformance.datastructure.IDWfNode;
 import de.monticore.workflow.conformance.datastructure.IDWfNodeBuilder;
+import de.monticore.workflow.conformance.datastructure.interf.WfBuilder;
 import de.monticore.workflow.conformance.datastructure.interf.WfNode;
 import de.monticore.workflow.conformance.utils.BPMNUtils;
 import de.se_rwth.commons.logging.Log;
@@ -41,11 +42,29 @@ class PredicateTest extends AbstractConfTest {
     init("XOR");
     List<WfNode> tasks = resolveNode(nodeNames);
 
+    WfNode res = builder.getStartEvent();
+
     // when
-    Predicate<List<WfNode>> predicate = PredicateGenerator.postPredicate(builder.build());
+    Predicate<List<WfNode>> predicate = PredicateGenerator.postPredicate(res);
 
     // then
     Assertions.assertEquals(predicate.test(tasks), result);
+  }
+
+  static Stream<Arguments> xorSource() {
+    return Stream.of(
+            Arguments.of(List.of("T1"), true),
+            Arguments.of(List.of("T2"), true),
+            Arguments.of(List.of("T3"), true),
+            Arguments.of(List.of("T4"), true),
+            Arguments.of(List.of("T1", "S"), true),
+            Arguments.of(List.of("S", "T2"), true),
+            Arguments.of(List.of("S" ,"T2"), true),
+            Arguments.of(List.of( "T1", "T2"), false),
+            Arguments.of(List.of( "T1", "T2", "S"), false),
+            Arguments.of(List.of( "T1", "S"), true),
+            Arguments.of(List.of( "T1", "T3", "XOR1"), false),
+            Arguments.of(List.of( "T2", "S"), true));
   }
 
   @ParameterizedTest
@@ -56,7 +75,7 @@ class PredicateTest extends AbstractConfTest {
     List<WfNode> tasks = resolveNode(nodeNames);
 
     // when
-    Predicate<List<WfNode>> predicate = PredicateGenerator.postPredicate(builder.build());
+    Predicate<List<WfNode>> predicate = PredicateGenerator.postPredicate(builder.getStartEvent());
 
     // then
     Assertions.assertEquals(predicate.test(tasks), result);
@@ -70,7 +89,7 @@ class PredicateTest extends AbstractConfTest {
     List<WfNode> tasks = resolveNode(nodeNames);
 
     // when
-    Predicate<List<WfNode>> predicate = PredicateGenerator.postPredicate(builder.build());
+    Predicate<List<WfNode>> predicate = PredicateGenerator.postPredicate(builder.getStartEvent());
 
     // then
     Assertions.assertEquals(predicate.test(tasks), result);
@@ -84,7 +103,7 @@ class PredicateTest extends AbstractConfTest {
     List<WfNode> tasks = resolveNode(nodeNames);
 
     // when
-    Predicate<List<WfNode>> predicate = PredicateGenerator.postPredicate(builder.build());
+    Predicate<List<WfNode>> predicate = PredicateGenerator.postPredicate(builder.getStartEvent());
 
     // then
     Assertions.assertEquals(predicate.test(tasks), result);
@@ -98,7 +117,7 @@ class PredicateTest extends AbstractConfTest {
     List<WfNode> tasks = resolveNode(nodeNames);
 
     // when
-    Predicate<List<WfNode>> predicate = PredicateGenerator.postPredicate(builder.build());
+    Predicate<List<WfNode>> predicate = PredicateGenerator.postPredicate(builder.getStartEvent());
 
     // then
     Assertions.assertEquals(predicate.test(tasks), result);
@@ -106,79 +125,65 @@ class PredicateTest extends AbstractConfTest {
 
   static Stream<Arguments> concreteSource() {
     return Stream.of(
-        Arguments.of(List.of("Task1"), false),
-        Arguments.of(List.of("Task1", "Start"), false),
-        Arguments.of(List.of("End", "Start"), false),
-        Arguments.of(List.of("Task1", "End"), false),
-        Arguments.of(List.of("End", "Task1", "Start"), true));
+        Arguments.of(List.of("T1"), false),
+        Arguments.of(List.of("T1", "S"), false),
+        Arguments.of(List.of("E", "S"), false),
+        Arguments.of(List.of("T1", "E"), false),
+        Arguments.of(List.of("E", "T1", "S"), true));
   }
 
   static Stream<Arguments> orSource() {
     return Stream.of(
-        Arguments.of(List.of("Task1"), false),
-        Arguments.of(List.of("Task2"), false),
-        Arguments.of(List.of("Task1", "Task2"), false),
-        Arguments.of(List.of("Task1", "Start"), false),
-        Arguments.of(List.of("End", "Start"), false),
-        Arguments.of(List.of("Task1", "End"), false),
-        Arguments.of(List.of("Task2", "End"), false),
-        Arguments.of(List.of("Start", "Task2"), false),
-        Arguments.of(List.of("End", "Task2"), false),
-        Arguments.of(List.of("End", "Task1", "Task2"), false),
-        Arguments.of(List.of("End", "Task1", "Task2", "Start"), true),
-        Arguments.of(List.of("End", "Task1", "Start"), true),
-        Arguments.of(List.of("End", "Task1", "Start", "OrSplit"), true),
-        Arguments.of(List.of("End", "Task2", "Start"), true));
+        Arguments.of(List.of("T1"), false),
+        Arguments.of(List.of("T2"), false),
+        Arguments.of(List.of("T1", "T2"), false),
+        Arguments.of(List.of("T1", "S"), false),
+        Arguments.of(List.of("E", "S"), false),
+        Arguments.of(List.of("T1", "E"), false),
+        Arguments.of(List.of("T2", "E"), false),
+        Arguments.of(List.of("S", "T2"), false),
+        Arguments.of(List.of("E", "T2"), false),
+        Arguments.of(List.of("E", "T1", "T2"), false),
+        Arguments.of(List.of("E", "T1", "T2", "S"), true),
+        Arguments.of(List.of("E", "T1", "S"), true),
+        Arguments.of(List.of("E", "T1", "S", "OrSplit"), true),
+        Arguments.of(List.of("E", "T2", "S"), true));
   }
 
-  static Stream<Arguments> xorSource() {
-    return Stream.of(
-        Arguments.of(List.of("Task1"), false),
-        Arguments.of(List.of("Task2"), false),
-        Arguments.of(List.of("Task1", "Task2"), false),
-        Arguments.of(List.of("Task1", "Start"), false),
-        Arguments.of(List.of("Task1", "End"), false),
-        Arguments.of(List.of("Start", "Task2"), false),
-        Arguments.of(List.of("End", "Task2"), false),
-        Arguments.of(List.of("End", "Task1", "Task2"), false),
-        Arguments.of(List.of("End", "Task1", "Task2", "Start"), false),
-        Arguments.of(List.of("End", "Task1", "Start"), true),
-        Arguments.of(List.of("End", "Task1", "Start", "XorSplit"), true),
-        Arguments.of(List.of("End", "Task2", "Start"), true));
-  }
+
 
   static Stream<Arguments> andSource() {
     return Stream.of(
-        Arguments.of(List.of("Task1"), false),
-        Arguments.of(List.of("Task2"), false),
-        Arguments.of(List.of("Task1", "Task2"), false),
-        Arguments.of(List.of("Task1", "Start"), false),
-        Arguments.of(List.of("Task1", "End"), false),
-        Arguments.of(List.of("Start", "Task2"), false),
-        Arguments.of(List.of("End", "Task2"), false),
-        Arguments.of(List.of("End", "Task1", "Task2"), false),
-        Arguments.of(List.of("End", "Task1", "Start"), false),
-        Arguments.of(List.of("End", "Task2", "Start"), false),
-        Arguments.of(List.of("End", "Task1", "Task2", "Start"), true),
-        Arguments.of(List.of("End", "Task1", "Task2", "Start", "AndSplit"), true));
+        Arguments.of(List.of("T1"), false),
+        Arguments.of(List.of("T2"), false),
+        Arguments.of(List.of("T1", "T2"), false),
+        Arguments.of(List.of("T1", "S"), false),
+        Arguments.of(List.of("T1", "E"), false),
+        Arguments.of(List.of("S", "T2"), false),
+        Arguments.of(List.of("E", "T2"), false),
+        Arguments.of(List.of("E", "T1", "T2"), false),
+        Arguments.of(List.of("E", "T1", "S"), false),
+        Arguments.of(List.of("E", "T2", "S"), false),
+        Arguments.of(List.of("E", "T1", "T2", "S"), true),
+        Arguments.of(List.of("E", "T1", "T2", "S", "AndSplit"), true));
   }
 
   static Stream<Arguments> complexSource() {
     return Stream.of(
-        Arguments.of(List.of("Task1"), false),
-        Arguments.of(List.of("Task2"), false),
-        Arguments.of(List.of("Task1", "Task2"), false),
-        Arguments.of(List.of("Task1", "Start"), false),
-        Arguments.of(List.of("Task1", "End"), false),
-        Arguments.of(List.of("Start", "Task2"), false),
-        Arguments.of(List.of("End", "Task2"), false),
-        Arguments.of(List.of("End", "Task1", "Task2"), false),
-        Arguments.of(List.of("End", "Task1", "Start"), false),
-        Arguments.of(List.of("End", "Task2", "Start"), false),
-        Arguments.of(List.of("End", "Task1", "Task2", "Start"), false),
-        Arguments.of(List.of("End", "Task1", "Task2", "Start", "AndSplit"), false),
-        Arguments.of(List.of("End", "Task1", "Task3", "Task4", "Task5", "Task6", "Start"), true),
-        Arguments.of(List.of("End", "Task2", "Task3", "Task4", "Task5", "Task6", "Start"), true));
+        Arguments.of(List.of("T1"), false),
+        Arguments.of(List.of("T2"), false),
+        Arguments.of(List.of("T1", "T2"), false),
+        Arguments.of(List.of("T1", "S"), false),
+        Arguments.of(List.of("T1", "E"), false),
+        Arguments.of(List.of("S", "T2"), false),
+        Arguments.of(List.of("E", "T2"), false),
+        Arguments.of(List.of("E", "T1", "T2"), false),
+        Arguments.of(List.of("E", "T1", "S"), false),
+        Arguments.of(List.of("E", "T2", "S"), false),
+        Arguments.of(List.of("E", "T1", "T2", "S"), false),
+        Arguments.of(List.of("E", "T1", "T2", "S", "AndSplit"), false),
+        Arguments.of(List.of("E", "T1", "T3", "T4", "T5", "T6", "S"), true),
+        Arguments.of(List.of("E", "T2", "T3", "T4", "T5", "T6", "S"), true));
   }
 
   public List<WfNode> resolveNode(List<String> nodeNames) {

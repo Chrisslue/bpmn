@@ -10,37 +10,41 @@ import java.util.stream.Collectors;
 public class PredicateGenerator {
 
   public static Predicate<List<WfNode>> postPredicate(WfNode node) {
+    assert node.getSuccessors().size() == 1 ;
+    return postPredicateRecursive(node.getSuccessors().iterator().next());
 
-    Predicate<List<WfNode>> subPred;
-    List<Predicate<List<WfNode>>> sucSuc =
-        node.getSuccessors().stream()
-            .map(PredicateGenerator::postPredicate)
-            .collect(Collectors.toList());
+  }
 
-    switch (node.getNodeType()) {
-      case XOR_SPLIT:
-        subPred = mkXor(sucSuc);
-        break;
-      case OR_SPLIT:
-        subPred = mkOr(sucSuc);
-        break;
+  private static Predicate<List<WfNode>> postPredicateRecursive(WfNode node) {
+
+
+    List<Predicate<List<WfNode>>> sucsuc =
+           node.getSuccessors().stream()
+                    .map(PredicateGenerator::postPredicateRecursive)
+                    .collect(Collectors.toList());
+
+    switch (node.getNodeType()){
+      case TASK:
+      case EVENT:return mkVar(node);
+      case XOR_SPLIT:return mkXor(sucsuc);
+      case OR_SPLIT:return mkOr(sucsuc);
+      case AND_SPLIT: return  mkAnd(sucsuc);
       default:
-        subPred = mkAnd(sucSuc);
+        Log.error("Not implemented yet");
+      assert false;
     }
-
-    if (node.isGateway()) {
-      return subPred;
-    } else {
-      return mkAnd(List.of(mkVar(node), subPred));
-    }
+    Log.error("something wrong happened");
+    assert  false;
+    return null;
   }
 
   public static Predicate<List<WfNode>> mkVar(WfNode left) {
+    System.out.print(left);
     return confWfNodes -> confWfNodes.contains(left);
   }
 
   public static Predicate<List<WfNode>> mkAnd(List<Predicate<List<WfNode>>> formulas) {
-
+    System.out.print("and");
     Predicate<List<WfNode>> res = set -> true;
     for (var formula : formulas) {
       res = res.and(formula);
@@ -49,7 +53,7 @@ public class PredicateGenerator {
   }
 
   public static Predicate<List<WfNode>> mkOr(List<Predicate<List<WfNode>>> formulas) {
-
+    System.out.print("or");
     Predicate<List<WfNode>> res = set -> false;
     for (var formula : formulas) {
       res = res.or(formula);
@@ -58,6 +62,8 @@ public class PredicateGenerator {
   }
 
   public static Predicate<List<WfNode>> mkXor(List<Predicate<List<WfNode>>> formulas) {
+    System.out.print("xor");
+
     if (formulas.size() < 2) {
       Log.error("Xor need at least 2 formulas");
     }
