@@ -7,6 +7,7 @@ import montiarc.MontiArcMill;
 import montiarc.MontiArcTool;
 import montiarc._ast.ASTMACompilationUnit;
 import montiarc._cocos.MontiArcCoCos;
+import montiarc.check.MontiArcTypeCheck;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -16,6 +17,7 @@ public class ArcSCBuilderTest {
   void init() {
     MontiArcMill.init();
     MontiArcMill.globalScope().init();
+    MontiArcTypeCheck.init();
     new MontiArcTool().initializeClass2MC();
   }
 

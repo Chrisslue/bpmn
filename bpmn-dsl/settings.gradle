@@ -21,4 +21,6 @@ include(':TimerConditions')
 include(':WorkflowCLI')
 include(':WorkflowDSL')
 include(':Workflow2SMT')
+include(':WorkflowConformance')
+
 
