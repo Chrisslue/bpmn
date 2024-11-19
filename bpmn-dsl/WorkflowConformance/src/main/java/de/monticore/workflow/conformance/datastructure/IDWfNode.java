@@ -21,7 +21,7 @@ public class IDWfNode implements WfNode {
     return successors;
   }
 
-  protected IDWfNode(String label, NodeType nodeType) {
+  public IDWfNode(String label, NodeType nodeType) {
     this.label = label;
     this.nodeType = nodeType;
   }

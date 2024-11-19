@@ -2,54 +2,49 @@ package de.monticore.workflow.conformance.conformance;
 
 import de.monticore.workflow.conformance.datastructure.interf.WfNode;
 import de.monticore.workflow.conformance.incarnation.IncarnationStrategy;
+import de.monticore.workflow.conformance.utils.CheckResult;
 import de.se_rwth.commons.logging.Log;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class ConfWfVisitor {
+public class ConfWfVisitor implements WfNodeVisitor {
   private final Predicate<List<WfNode>> predicate;
   private final IncarnationStrategy inc;
+  private final WfNode concreteNode;
 
-  Set<List<WfNode>> branchIdSet = new HashSet<>();
+  private CheckResult checkResult;
 
-  private boolean result = true;
-
-  public boolean getResult() {
-    return result;
-  }
-
-  public ConfWfVisitor(Predicate<List<WfNode>> predicate, IncarnationStrategy inc) {
+  public ConfWfVisitor(WfNode conNode, Predicate<List<WfNode>> predicate, IncarnationStrategy inc) {
     this.predicate = predicate;
     this.inc = inc;
+    this.concreteNode = conNode;
+    checkResult = CheckResult.mkConform(conNode);
   }
 
+  @Override
   public boolean accept(WfNode node, List<WfNode> branchId) {
     branchId.add(node);
 
-    Log.info(String.format("Testing branch %s with predicate", branchId), "");
+    Log.debug(String.format("Testing branch %s with predicate", branchId), "");
 
     List<WfNode> referenceNodes =
         branchId.stream()
             .map(inc::getReferenceElements)
-            .flatMap(Optional::stream)
+            .flatMap(List::stream)
             .collect(Collectors.toList());
 
     boolean res = predicate.test(referenceNodes);
 
-    if (node.getSuccessors().isEmpty()) {
-      result = res && result;
-      branchIdSet.add(branchId);
+    if (!res && node.getSuccessors().isEmpty()) {
+      checkResult = CheckResult.mkNonConform(concreteNode, branchId);
     }
 
-    Log.info(String.format("Test result: %S", res), "");
+    Log.debug(String.format("Test result: %S", res), "");
     return res;
   }
 
-  public String printStatistics() {
-    return String.format("A total of %s branch Visited", branchIdSet.size());
+  public CheckResult getCheckResult() {
+    return checkResult;
   }
 }

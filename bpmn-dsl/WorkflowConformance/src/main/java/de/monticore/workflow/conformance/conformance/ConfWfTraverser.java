@@ -30,6 +30,7 @@ public class ConfWfTraverser {
       case XOR_SPLIT:
         for (WfNode suc : node.getSuccessors()) {
           var newBranchId = new ArrayList<>(branchId);
+          branchId.add(suc);
           this.traverseForward(wfVisitor, newBranchId, suc);
         }
         break;

@@ -2,6 +2,7 @@ package de.monticore.workflow.conformance.datastructure;
 
 import de.monticore.bpmn.workflow._ast.*;
 import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
+import de.monticore.workflow.conformance.datastructure.interf.IDWfNodeBuilder;
 import de.monticore.workflow.conformance.utils.NodeType;
 
 /***

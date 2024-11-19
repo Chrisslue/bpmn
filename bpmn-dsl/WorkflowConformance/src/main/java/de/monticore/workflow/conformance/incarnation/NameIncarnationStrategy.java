@@ -1,8 +1,10 @@
 package de.monticore.workflow.conformance.incarnation;
 
 import de.monticore.workflow.conformance.datastructure.IDWfNode;
-import de.monticore.workflow.conformance.datastructure.IDWfNodeBuilder;
+import de.monticore.workflow.conformance.datastructure.interf.IDWfNodeBuilder;
 import de.monticore.workflow.conformance.datastructure.interf.WfNode;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class NameIncarnationStrategy implements IncarnationStrategy {
@@ -15,8 +17,11 @@ public class NameIncarnationStrategy implements IncarnationStrategy {
   }
 
   @Override
-  public Optional<IDWfNode> getReferenceElements(WfNode con) {
-    return reference.getNode(con.getLabel());
+  public List<WfNode> getReferenceElements(WfNode con) {
+    Optional<IDWfNode> ref =
+        reference.getAllNodes().stream().filter(n -> n.getLabel().equals(con.getLabel())).findAny();
+    return ref.<List<WfNode>>map(idWfNode -> new ArrayList<>(List.of(idWfNode)))
+        .orElseGet(ArrayList::new);
   }
 
   @Override

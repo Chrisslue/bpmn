@@ -3,7 +3,7 @@ package de.monticore.workflow.conformance.conformance;
 import de.monticore.bpmn.workflow._ast.ASTWorkflowCompilationUnit;
 import de.monticore.workflow.conformance.AbstractConfTest;
 import de.monticore.workflow.conformance.datastructure.IDWfNode;
-import de.monticore.workflow.conformance.datastructure.IDWfNodeBuilder;
+import de.monticore.workflow.conformance.datastructure.interf.IDWfNodeBuilder;
 import de.monticore.workflow.conformance.datastructure.interf.WfNode;
 import de.monticore.workflow.conformance.utils.BPMNUtils;
 import de.se_rwth.commons.logging.Log;
@@ -41,7 +41,7 @@ class PredicateTest extends AbstractConfTest {
     init("XOR");
     List<WfNode> tasks = resolveNode(nodeNames);
 
-    WfNode res = builder.getStartEvent();
+    WfNode res = builder.getNode("S");
 
     // when
     Predicate<List<WfNode>> predicate = PredicateGenerator.postPredicate(res);
@@ -74,7 +74,7 @@ class PredicateTest extends AbstractConfTest {
     List<WfNode> tasks = resolveNode(nodeNames);
 
     // when
-    Predicate<List<WfNode>> predicate = PredicateGenerator.postPredicate(builder.getStartEvent());
+    Predicate<List<WfNode>> predicate = PredicateGenerator.postPredicate(builder.getNode("S"));
 
     // then
     Assertions.assertEquals(predicate.test(tasks), result);
@@ -104,7 +104,7 @@ class PredicateTest extends AbstractConfTest {
     List<WfNode> tasks = resolveNode(nodeNames);
 
     // when
-    Predicate<List<WfNode>> predicate = PredicateGenerator.postPredicate(builder.getStartEvent());
+    Predicate<List<WfNode>> predicate = PredicateGenerator.postPredicate(builder.getNode("S"));
 
     // then
     Assertions.assertEquals(predicate.test(tasks), result);
@@ -133,7 +133,7 @@ class PredicateTest extends AbstractConfTest {
     List<WfNode> tasks = resolveNode(nodeNames);
 
     // when
-    Predicate<List<WfNode>> predicate = PredicateGenerator.postPredicate(builder.getStartEvent());
+    Predicate<List<WfNode>> predicate = PredicateGenerator.postPredicate(builder.getNode("S"));
 
     // then
     Assertions.assertEquals(predicate.test(tasks), result);
@@ -155,8 +155,8 @@ class PredicateTest extends AbstractConfTest {
     List<WfNode> res = new ArrayList<>();
 
     for (String name : nodeNames) {
-      Assertions.assertTrue(builder.getNode(name).isPresent());
-      IDWfNode node = builder.getNode(name).get();
+      builder.getNode(name);
+      IDWfNode node = builder.getNode(name);
       res.add(node);
     }
     return res;
