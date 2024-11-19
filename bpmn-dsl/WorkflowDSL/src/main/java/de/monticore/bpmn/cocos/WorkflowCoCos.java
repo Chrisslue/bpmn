@@ -13,7 +13,7 @@ import de.monticore.bpmn.cocos.flow.*;
 import de.monticore.bpmn.cocos.gateways.*;
 import de.monticore.bpmn.workflow._cocos.WorkflowASTSubProcessCoCo;
 import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
-import de.monticore.expressions.timeexpressions.cocos.TemporalExpressionsCoCos;
+import de.monticore.timer.timerconditions.cocos.TemporalExpressionsCoCos;
 import de.monticore.ocl.ocl._cocos.OCLCoCos;
 import de.monticore.ocl.ocl.types3.OCLTypeCheck3;
 

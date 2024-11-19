@@ -3,7 +3,7 @@ package de.monticore.bpmn;
 grammar Workflow extends de.monticore.expressions.LambdaExpressions,
                          de.monticore.expressions.AssignmentExpressions,
                          de.monticore.expressions.CommonExpressions, 
-                         de.monticore.expressions.TimeExpressions, // todo: Grammatik hier integrieren und DateTime nutzen
+                         de.monticore.timer.TimerConditions, // todo: Grammatik hier integrieren und DateTime nutzen
                          de.monticore.symbols.OOSymbols, //todo: ggf. durch Type-Symbols ersetzen
                          de.monticore.UMLModifier{
 
@@ -332,7 +332,7 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
   EventTriggerCompensate   implements EventTrigger = "compensate" (":" activity:Name)? ["async"]?;
   EventTriggerConditional  implements EventTrigger = "when"        ":" "[" Expression "]";
   EventTriggerTerminate    implements EventTrigger = "terminate";
-  EventTriggerTimer        implements EventTrigger = "timer"       ":" "[" expression:TimeExpression "]";
+  EventTriggerTimer        implements EventTrigger = "timer"       ":" "[" condition:TimerCondition "]";
   EventTriggerMultiple     implements EventTrigger = ("one" | parallelMultiple:["all"]) "{" trigger:(EventTrigger || ",")+ "}";
   EventTriggerNotification implements EventTrigger = ("error" | "escalate" | "message" | "signal") ":" Name@Notification ;
 

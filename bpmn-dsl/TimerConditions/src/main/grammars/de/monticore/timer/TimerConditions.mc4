@@ -1,0 +1,40 @@
+package de.monticore.timer;
+
+/* In WorkflowDSL integrieren*/
+grammar TimerConditions extends de.monticore.literals.MCCommonLiterals {
+
+  interface TimerCondition;
+
+  AtTimeCondition implements TimerCondition =
+      "at" Time
+    ;
+
+  OnDateCondition implements TimerCondition =
+      "on" Date AtTimeCondition?
+    ;
+
+  AfterPeriodCondition implements TimerCondition =
+      "after" period:Period
+    ;
+
+  EveryTimeCondition implements TimerCondition =
+      ("start" start:OnDateCondition ",")? (times:NatLiteral "times")? "every" period:Period
+    ;
+
+  CronCondition implements TimerCondition =
+      "cron" value:String
+    ;
+
+  //Todo: DateTime von MSm nehmen!
+
+  Time =
+      hours:NatLiteral ":" {noSpace()}? minutes:NatLiteral {noSpace()}? (":" {noSpace()}? seconds:NatLiteral {noSpace()}?)?
+    ;
+
+  Date =
+      year:NatLiteral "-" {noSpace()}? month:NatLiteral {noSpace()}? "-" {noSpace()}? day:NatLiteral {noSpace()}?
+    ;
+
+  Period = value:Name; //PERIOD;
+
+}

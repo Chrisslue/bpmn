@@ -5,7 +5,7 @@ plugins {
     id "jacoco"
 }
 
-group = "de.monticore.lang"
+group = "de.monticore.timer"
 sourceCompatibility = '11'
 
 def grammarOutDir = "$buildDir/generated-sources/monticore/sourcecode"
@@ -36,34 +36,11 @@ test {
 }
 
 dependencies {
-    implementation project(':TimerConditions')
-    grammar (project(':TimerConditions')){
-      capabilities {
-        requireCapability("de.monticore.timer:TimerConditions-grammars")
-      }
-    }
-
-    implementation "de.monticore.lang:petrinets:$petrinets_version"
-
     implementation "com.google.guava:guava:$guava_version"
-    implementation "com.google.code.gson:gson:$gson_version"
-    implementation 'one.util:streamex:0.7.0'
-    implementation "org.jgrapht:jgrapht-core:$jgrapht_version"
-    implementation "org.jgrapht:jgrapht-io:$jgrapht_version"
-    implementation "org.jgrapht:jgrapht-guava:$jgrapht_version"
-    implementation "org.zeroturnaround:zt-exec:$exec_version"
-    implementation "ch.qos.logback:logback-classic:$logback_version"
-    implementation "com.google.code.findbugs:jsr305:$jsr305_version"
-
-    implementation "jakarta.xml.bind:jakarta.xml.bind-api:3.0.1"
-    implementation "com.sun.xml.bind:jaxb-core:$jaxb_core_version"
-    implementation "com.sun.xml.bind:jaxb-impl:$jaxb_impl_version"
-    implementation "com.sun.xml.bind:jaxb-xjc:$jaxb_impl_version"
-
+    implementation "joda-time:joda-time:$joda_time_version"
+    implementation "com.cronutils:cron-utils:$cron_utils_version"
 
     /*-----------------------MONTICORE-------------------------------*/
-    implementation "de.monticore.lang:cd4analysis:$mc_version"
-    implementation "org.antlr:antlr4-runtime:$antlr_version"
     implementation "de.monticore:monticore-runtime:$mc_version"
     implementation "de.monticore:monticore-grammar:$mc_version"
     grammar "de.monticore:monticore-grammar:$mc_version:$grammars_classifier"
@@ -74,15 +51,15 @@ dependencies {
     testImplementation "de.monticore:monticore-runtime:$mc_version"
 }
 
-task generateWorkflow (type: MCTask) {
-    grammar = file "$projectDir/$grammarDir/de/monticore/bpmn/Workflow.mc4"
+task generateTimerConditions (type: MCTask) {
+    grammar = file "$projectDir/$grammarDir/de/monticore/timer/TimerConditions.mc4"
     outputDir = file "$buildDir/generated-sources/monticore/sourcecode"
     handcodedPath "$projectDir/src/main/java"
-    def uptoDate = incCheck("de/monticore/bpmn/Workflow.mc4")
+    def uptoDate = incCheck("de/monticore/timer/TimerConditions.mc4")
     outputs.upToDateWhen { uptoDate }
 }
 
-compileJava.dependsOn(generateWorkflow)
+compileJava.dependsOn(generateTimerConditions)
 
 // build sources jar in addition
 task sourcesJar(type: Jar) {
@@ -106,6 +83,7 @@ task grammarJar(type: Jar) {
     from("$projectDir/src/main/grammars/") { include "**/*.mc4" }
     archiveClassifier = "grammars"
 }
+
 
 task buildAll(type: GradleBuild) {
     tasks = [ 'build' ]

@@ -8,7 +8,7 @@ group = "de.monticore.lang"
 sourceCompatibility = '11'
 
 dependencies {
-    implementation project(':TimeExpressions')
+    implementation project(':TimerConditions')
     implementation project(':WorkflowDSL')
     implementation "de.monticore:monticore-grammar:$mc_version"
     implementation "de.monticore.lang:cd4analysis:$mc_version"

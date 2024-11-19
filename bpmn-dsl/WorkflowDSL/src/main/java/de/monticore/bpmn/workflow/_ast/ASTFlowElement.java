@@ -9,13 +9,13 @@ import java.util.Optional;
 public interface ASTFlowElement extends ASTFlowElementTOP {
 
   /**
-   * Extended FlowElement by 
-   * a Name
-   * a List with all incoming SequenceFlows
-   * a List with all outgoing SequenceFlows 
+   * Extended FlowElement by a Name a List with all incoming SequenceFlows a List with all outgoing
+   * SequenceFlows
    */
   String getName();
+
   List<SequenceFlow> getIncomingsList();
+
   List<SequenceFlow> getOutgoingsList();
 
   default Set<ASTFlowNode> getSuccessors() {

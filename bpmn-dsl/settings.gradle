@@ -17,7 +17,7 @@ pluginManagement {
 
 rootProject.name="BPMN"
 include(':BpmnXML')
-include(':TimeExpressions')
+include(':TimerConditions')
 include(':WorkflowCLI')
 include(':WorkflowDSL')
 include(':Workflow2SMT')
