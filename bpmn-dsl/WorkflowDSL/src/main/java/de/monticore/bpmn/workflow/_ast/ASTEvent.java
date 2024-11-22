@@ -5,7 +5,7 @@ import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
 import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
 import java.util.function.Predicate;
 
-public ASTEvent extends ASTEventTOP {
+public class ASTEvent extends ASTEventTOP {
 
   public boolean isStart() {
     return getType() == ASTConstantsWorkflow.START;

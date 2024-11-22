@@ -68,8 +68,7 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
    * "adhoc":        collection of activities with no required sequence relationships -> flexibility in task execution   
    */
   symbol scope SubProcess implements Activity =
-      Name 
-      type:["subprocess" | "transaction" | "adhoc" ]
+      type:["subprocess" | "transaction" | "adhoc" ] Name
       AdHocCharacteristics?
       CompensationHandler?
       LoopCharacteristics?
@@ -85,7 +84,7 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
    * false: normal subprocess
    * true: a subprocess with a separate start event and a start trigger
    */
-  astrule SubProcess =
+  symbolrule SubProcess =
       triggeredByEvent:boolean  
     ;
 
@@ -127,7 +126,7 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
    */
   Task implements Activity =
       type:["service" | "send" | "receive" | "user" | "manual" | "rule" | "script"]? "task" Name
-      TaskTypeAttributes 
+      TaskTypeAttributes?
       CompensationHandler? // todo: ggf. rausnehmen und mit TOP in Symbol hinzufügen?
       LoopCharacteristics?
       (   "{"
@@ -151,18 +150,22 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
    * todo: add CoCo for each type to check the attributes
    */ 
   TaskTypeAttributes =
-      /* valid Strings are ##unspecified, ##Webservice or a URI */
-      webservice:String?
+      (
+          /* valid Strings are ##unspecified, ##Webservice or a URI */
+          ("webservice" "=" webservice:String ";")
 
-      /* format of the script and a script that can be run when a task is performed */
-      scriptFormat:String?
-      script:String?
+          //todo: Finde raus, ob das dieselbe Message wie bei der Operation ist!
+          /* used in send and receive tasks for communication */
+          ("message" "=" message:Name@Notification ";")?
 
-      /* human resources or other resources assigned to tasks */
-      resource:Name*
-
-      Message?
-      Operation?
+          Operation?
+        |
+          /* format of the script and a script that can be run when a task is performed */
+          ("script" "=" scriptFormat:String ":" script:String ";")
+        |
+          /* human resources or other resources assigned to tasks */
+          ("resources" "=" resources:(Name || ",")+ ";")
+      )
     ;
 
   /* 
@@ -171,18 +174,11 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
    * can specify error elements which may be returned 
    */
   Operation = 
-      Name
-      in:Message 
-      out:Message?
-      error:String?
-    ;
-
-  /* 
-   * used in Operations to define input and output messages
-   * used in send and receive tasks for communication 
-   */
-  Message = 
-      ("message" ":" message:Name@Notification)
+      "operation" Name
+      "in" ":" in:Name@Notification
+      ("out" ":" out:Name@Notification)?
+      ("throws" ":" error:String)?
+      ";"
     ;
 
   /* 
@@ -219,15 +215,15 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
     ;
 
   /**
-   * todo @MSh: JN und MB fragen!
+   * todo @MSh: NJ und MB fragen!
    * todo: do we need this? then we may also need loopDataInputRef, loopDataOutputRef?
    * loopDataInput describes a single item of the collection stored in loopDataInputRef
    * example: loopDataInputRef = ["Person1", "Person2", "Person3"]
    *          loopDataInput will contain on of these names for the corresponding instance
    */
   astrule MILoop =
-      loopDataInput: Name
-      loopDataOutput:Name
+      loopDataInput: Name+
+      loopDataOutput: Name+
     ;
 
   /** 
@@ -235,7 +231,7 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
    * implicit: controls when the Eventtrigger shall be thrown
    */
   MIImplicitEventBehavior =
-      "event" ":" implicitEventDef:EventTrigger    
+      "event" ":" implicitEventDef:EventTrigger
       ("implicit" ":" (["none"] | ["first"] | ["every"] | "[" complexCondition:Expression "]"))?
     ;
 
@@ -296,16 +292,10 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
    */  
   symbol Event implements FlowElement =
       (boundary:["<<boundary>>"])?
-      "event" 
-      type:["start" | "end"]? 
-      Name?
+      "event" type:["start" | "end"]? Name?
       (throw:["send"] | catch:["receive"] (["noninterrupt"])?)
       trigger:EventTrigger?
-      (   "{"
-            IOSet?
-          "}"
-        | ";"
-      )
+      ("{" IOSet? "}" | ";")
     ;
 
   
@@ -324,11 +314,14 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
   /*============================= CONTROL FLOW =============================*/
   /*========================================================================*/
 
-  /* todo: force the naming of FlowElements? eliminates the need for the flow block*/
-
-  /* models the SequenceFlow by chaining FlowTargets */
-  SequenceFlow implements FlowElement =
+  /* sequence of FlowElement for constructing a SequenceFlow or a FlowBlock*/
+  FlowBranch =
       path:(FlowTarget || "->")+
+    ;
+
+  /* defines a sequence of FlowElements */
+  SequenceFlow implements FlowElement =
+      FlowBranch
       ";"
     ;
 
@@ -337,19 +330,11 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
       "{" branch:(FlowBranch || ",")+ "}"
     ;
 
-  /* similar to the production of SequenceFlow but without the ";" */
-  FlowBranch =
-      path:(FlowTarget || "->")+
-    ;
 
-  /* reference a FlowElement using its name or create a block structure */
+  /* references a flow element or defines an inline gateway, event or flow block */
   FlowTarget =
       condition:FlowCondition?
-      (   nodeRef:MCQualifiedName   // reference a named FlowElement
-        // we can no longer specify InlineFlowElements, so this option is currently ignored
-        // "| node:FlowElement"  
-        | block:FlowBlock
-      )
+      (element:MCQualifiedName | gateway:Gateway | event:Event | block:FlowBlock)
     ;
 
   /* Either a FlowTarget is preceded by a FlowCondition or it is a default sequence flow */

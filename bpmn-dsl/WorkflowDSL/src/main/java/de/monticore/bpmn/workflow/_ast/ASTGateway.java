@@ -1,6 +1,6 @@
 package de.monticore.bpmn.workflow._ast;
 
-public interface ASTGateway extends ASTGatewayTOP {
+public class ASTGateway extends ASTGatewayTOP {
 
   public boolean isConverging() {
     return getDirection() == ASTConstantsWorkflow.MERGE;
