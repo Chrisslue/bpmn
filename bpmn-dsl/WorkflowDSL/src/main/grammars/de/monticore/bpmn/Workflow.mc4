@@ -27,14 +27,9 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
    * a process may be designated as public or private
    */
   symbol scope Process =
-      Modifier
-      "process"
-      Name
-      "{"
+      Modifier "process" Name "{"
         IORequirement*
-        (   Lane        
-          | FlowElement
-        )*
+        ( Lane | FlowElement )*
       "}"
     ;
 
@@ -43,14 +38,11 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
    * a lane denotes for example a business function or a role
    */
   symbol Lane =
-      "lane" Name
-      "{"
-        (   childLane:Lane  
-          | FlowElement
-        )*
+      "lane" Name "{"
+        ( childLane:Lane | FlowElement )*
       "}"
     ;
-  astrule Lane =
+  symbolrule Lane =
       parentLane:String?
     ;
 
@@ -76,7 +68,7 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
    * "adhoc":        collection of activities with no required sequence relationships -> flexibility in task execution   
    */
   symbol scope SubProcess implements Activity =
-      Name
+      Name 
       type:["subprocess" | "transaction" | "adhoc" ]
       AdHocCharacteristics?
       CompensationHandler?
@@ -84,9 +76,7 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
       "{"
         // IORequirement not allowed by BPMN standard, we include it here to enable a suitable error message
         IORequirement* 
-        (   Lane        
-          | FlowElement
-        )*
+        ( Lane | FlowElement )*
       "}"
     ;
 
@@ -105,9 +95,7 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
    */
   AdHocCharacteristics =
       ("until" ":" "[" completionCondition:Expression "]")
-      (   "parallel" (waitForRemainingInstances:["noninterrupt"])? 
-        | ["sequential"]
-      )?
+      ( ["parallel"] (waitForRemainingInstances:["noninterrupt"])? | ["sequential"] )?
     ;
 
   /**
@@ -116,9 +104,7 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
    * Example: a call activity "ShipOrder" calls a process named "ShippingProcess"
    */
   CallActivity implements Activity =
-      "call" 
-      Name
-      "calls" ":" calledElement:Name@Process
+      "call" Name "calls" ":" calledElement:Name@Process
       CompensationHandler?
       LoopCharacteristics?
       (   "{"
@@ -140,9 +126,7 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
    * "script":  execution of script directly within the process model
    */
   Task implements Activity =
-      type:["service" | "send" | "receive" | "user" | "manual" | "rule" | "script"]?
-      "task"
-      Name
+      type:["service" | "send" | "receive" | "user" | "manual" | "rule" | "script"]? "task" Name
       TaskTypeAttributes 
       CompensationHandler? // todo: ggf. rausnehmen und mit TOP in Symbol hinzufügen?
       LoopCharacteristics?
@@ -229,7 +213,7 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
    */
   MILoop implements LoopCharacteristics =
       "count" ":" LoopCardinality
-      ("parallel" | "sequential")?
+      ( ["parallel"] | ["sequential"] )?
       ("until" ":" "[" completionCondition:Expression "]")?
       MIImplicitEventBehavior?  
     ;
@@ -269,9 +253,9 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
 
   /* describes a flow control element that allows converging and diverging sequence flows */
   symbol Gateway implements FlowElement =
-      direction:["split" | "merge"]
-      type:GatewayType
-      Name?
+      direction:["split" | "merge"] 
+      type:GatewayType 
+      Name? 
       ";"
     ;
   
@@ -313,7 +297,7 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
   symbol Event implements FlowElement =
       (boundary:["<<boundary>>"])?
       "event" 
-      type:["start" | "end"]?
+      type:["start" | "end"]? 
       Name?
       (throw:["send"] | catch:["receive"] (["noninterrupt"])?)
       trigger:EventTrigger?
@@ -379,7 +363,7 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
   /*========================================================================*/
 
   /* represents a data object or data store */
-  symbol DataObject implements FlowElement, Variable =
+  DataObject implements FlowElement, Variable =
       ("data" | ["store"]) Name ":" MCType ";"
     ;
 
@@ -392,7 +376,7 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
   interface IORequirement;
 
   /* specifies an input and output set */
-  IOSet implements IORequirement = ("in"  ":" inputSet:DataSet | "out" ":" outputSet:DataSet ) ";" ;
+  IOSet implements IORequirement = dir:[ "in" | "out" ] ":" DataSet ";" ;
 
   /* maps an input set to an output set and optionally assigns an operationName */
   IORule implements IORequirement =
@@ -405,19 +389,15 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
   /** 
    * specifies data input or data output 
    * [i]: the use of a collection-valued data input
-   * "?": optional data input or output
+   * "?": optional data input or output 
    * "!": data that can be produced or evaluated while executing
    */
   DataIO =
       MCQualifiedName   // name of the consumed or produced data element
-      (loop:["[i]"] {noSpace()}?)?  
+      (loop:["[i]"])?  
       (":" MCType)?     
-      (
-        (   optional:["?"]         
-          | whileExecuting:["!"]   
-        )
-        {noSpace()}?
-      )?
+      (optional:["?"])?         
+      (whileExecuting:["!"])? 
       ("as" alias:Name)?        
     ;
 
