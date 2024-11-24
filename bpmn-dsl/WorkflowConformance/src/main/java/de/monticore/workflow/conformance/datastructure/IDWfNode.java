@@ -7,7 +7,9 @@ import java.util.*;
 public class IDWfNode implements WfNode {
   private Set<IDWfNode> predecessors = Collections.unmodifiableSet(new HashSet<>());
   private Set<IDWfNode> successors = Collections.unmodifiableSet(new HashSet<>());
+  private final boolean isStart;
 
+  private final boolean isEnd;
   private final String label;
   private final NodeType nodeType;
 
@@ -21,7 +23,9 @@ public class IDWfNode implements WfNode {
     return successors;
   }
 
-  public IDWfNode(String label, NodeType nodeType) {
+  public IDWfNode(String label, NodeType nodeType, boolean isStart, boolean isEnd) {
+    this.isStart = isStart;
+    this.isEnd = isEnd;
     this.label = label;
     this.nodeType = nodeType;
   }
@@ -29,6 +33,16 @@ public class IDWfNode implements WfNode {
   @Override
   public NodeType getNodeType() {
     return nodeType;
+  }
+
+  @Override
+  public boolean isStart() {
+    return isStart;
+  }
+
+  @Override
+  public boolean isEnd() {
+    return isEnd;
   }
 
   @Override

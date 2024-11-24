@@ -10,11 +10,11 @@ public interface WfNode {
 
   String getLabel();
 
-  public NodeType getNodeType();
+  NodeType getNodeType();
 
-  //  Set<? extends WfNode> getSuccessors(int depth);
-  //
-  //  Set<? extends WfNode> getPredecessors(int depth);
+  boolean isStart();
+
+  boolean isEnd();
 
   Set<? extends WfNode> getSuccessorsOfDepth(int depth);
 

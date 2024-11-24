@@ -1,7 +1,6 @@
 package de.monticore.workflow.conformance.utils;
 
 import de.monticore.workflow.conformance.datastructure.interf.WfNode;
-import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 
@@ -9,9 +8,9 @@ public class CheckResult {
 
   private final WfNode node;
   private final Result result;
-  private final Optional<List<WfNode>> branchId;
+  private final Optional<BranchID> branchId;
 
-  private CheckResult(WfNode node, List<WfNode> branchId, Result result) {
+  private CheckResult(WfNode node, BranchID branchId, Result result) {
     this.result = result;
     this.node = node;
     this.branchId = Optional.ofNullable(branchId);
@@ -21,15 +20,15 @@ public class CheckResult {
     return new CheckResult(node, null, Result.CONFORM);
   }
 
-  public static CheckResult mkNonConform(WfNode node, @Nonnull List<WfNode> branchId) {
+  public static CheckResult mkNonConform(WfNode node, @Nonnull BranchID branchId) {
     return new CheckResult(node, branchId, Result.NON_CONFORM);
   }
 
-  public static CheckResult mkUnknown(WfNode node) {
-    return new CheckResult(node, null, Result.UNKNOWN);
+  public static CheckResult mkUnknown(WfNode node, BranchID branchId) {
+    return new CheckResult(node, branchId, Result.UNKNOWN);
   }
 
-  public Optional<List<WfNode>> getBranchId() {
+  public Optional<BranchID> getBranchId() {
     return branchId;
   }
 
@@ -41,6 +40,18 @@ public class CheckResult {
     return node;
   }
 
+  public boolean isConform() {
+    return result == Result.CONFORM;
+  }
+
+  public boolean isNonConform() {
+    return result == Result.NON_CONFORM;
+  }
+
+  public boolean isUnknown() {
+    return result == Result.UNKNOWN;
+  }
+
   public enum Result {
     CONFORM,
     NON_CONFORM,
@@ -49,8 +60,7 @@ public class CheckResult {
 
   @Override
   public String toString() {
-
     String branchId = getBranchId().isEmpty() ? "[]" : getBranchId().get().toString();
-    return String.format("Node: %20s , result = %20s, witness = %s", node, result, branchId);
+    return String.format("Node: %s , result = %s, witness = %s", node, result, branchId);
   }
 }

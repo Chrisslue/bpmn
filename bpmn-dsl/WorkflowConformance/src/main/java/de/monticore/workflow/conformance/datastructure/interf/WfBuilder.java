@@ -2,7 +2,7 @@ package de.monticore.workflow.conformance.datastructure.interf;
 
 import de.monticore.workflow.conformance.utils.NodeType;
 
-public interface WfBuilder<Node> {
+public interface WfBuilder<NODE> { // todo find solution with parameter
 
   /****
    * Transform a task to a Workflow node. the tasks are uniquely identify bei their names.
@@ -17,7 +17,7 @@ public interface WfBuilder<Node> {
   void mkNamedEvent(String label);
 
   /****
-   * Transform an gateway to a Workflow node.
+   * Transform a gateway to a Workflow node.
    * @param label the label of the event.
    * @param type the type of the gateway.
    */
@@ -28,4 +28,6 @@ public interface WfBuilder<Node> {
    * @param label the label of the start  event.
    */
   void mkStartEvent(String label);
+
+  void mkEndEvent(String label);
 }

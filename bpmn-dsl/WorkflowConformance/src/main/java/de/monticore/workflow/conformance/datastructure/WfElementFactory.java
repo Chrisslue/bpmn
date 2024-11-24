@@ -22,6 +22,8 @@ public class WfElementFactory implements WorkflowVisitor2 {
   public void visit(ASTNamedEvent node) {
     if (node.isStart()) {
       builder.mkStartEvent(node.getName());
+    } else if (node.isEnd()) {
+      builder.mkEndEvent(node.getName());
     } else {
       builder.mkNamedEvent(node.getName());
     }

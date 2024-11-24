@@ -14,6 +14,7 @@ class ConformanceCheckerTest extends AbstractConfTest {
   public void setup() {
     init();
     Log.init();
+    // Log.initDEBUG();
   }
 
   @Test

@@ -1,37 +1,43 @@
 package de.monticore.workflow.conformance.conformance;
 
 import de.monticore.workflow.conformance.datastructure.interf.WfNode;
+import de.monticore.workflow.conformance.utils.BranchID;
 import de.se_rwth.commons.logging.Log;
 import java.util.*;
 
 public class ConfWfTraverser {
 
-  public void traverseForward(ConfWfVisitor wfVisitor, List<WfNode> branchId, WfNode node) {
+  private int counter = 0;
 
-    Log.debug(String.format("Traversing node %s forward", node), "");
+  public void traverseForward(WfNodeVisitor wfVisitor, BranchID branchId, WfNode node) {
+    if (branchId == null) {
+      branchId = new BranchID(new ArrayList<>(), counter++);
+    }
+    Log.trace(String.format("Traversing node %s forward", node), "");
 
     switch (node.getNodeType()) {
       case EVENT:
       case TASK:
-        boolean abort = wfVisitor.accept(node, branchId);
+        boolean abort = !wfVisitor.accept(node, branchId);
         if (abort) {
           return;
         }
         assert node.getSuccessors().size() <= 1;
-        node.getSuccessors().forEach(suc -> this.traverseForward(wfVisitor, branchId, suc));
+        BranchID finalBranchId = branchId;
+        node.getSuccessors().forEach(suc -> this.traverseForward(wfVisitor, finalBranchId, suc));
         break;
 
       case AND_SPLIT:
       case AND_MERGE:
       case XOR_MERGE:
-        node.getSuccessors().forEach(suc -> this.traverseForward(wfVisitor, branchId, suc));
+        BranchID finalBranchId1 = branchId;
+        node.getSuccessors().forEach(suc -> this.traverseForward(wfVisitor, finalBranchId1, suc));
         break;
 
       case XOR_SPLIT:
         for (WfNode suc : node.getSuccessors()) {
-          var newBranchId = new ArrayList<>(branchId);
-          branchId.add(suc);
-          this.traverseForward(wfVisitor, newBranchId, suc);
+          var newNodeLists = new ArrayList<>(branchId.getNodeList());
+          this.traverseForward(wfVisitor, new BranchID(newNodeLists, counter++), suc);
         }
         break;
 
@@ -40,6 +46,6 @@ public class ConfWfTraverser {
         assert false; // TODO implement me
     }
 
-    Log.debug(String.format("Finish traversing %s forward", node.getLabel()), "");
+    Log.trace(String.format("Finish traversing %s forward", node.getLabel()), "");
   }
 }

@@ -49,7 +49,6 @@ public class PredicateGenerator {
   }
 
   public static Predicate<List<WfNode>> mkVar(WfNode left) {
-    System.out.print(left);
     return confWfNodes -> confWfNodes.contains(left);
   }
 

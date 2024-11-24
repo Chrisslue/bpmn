@@ -14,16 +14,24 @@ import de.monticore.workflow.conformance.utils.CheckResult;
 import de.se_rwth.commons.logging.Log;
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class ConformanceChecker {
 
-  private final String logName = this.getClass().getSimpleName();
+  private final String logger = "";
   private IncarnationStrategy inc;
+
   private final Set<CheckResult> results = new HashSet<>();
 
-  /** procedure to check if a node conform */
   public boolean checkConformance(
       ASTWorkflowCompilationUnit concrete, ASTWorkflowCompilationUnit reference) {
+    return checkConformance(concrete, reference, false);
+  }
+  /** procedure to check if a node conform */
+  private boolean checkConformance(
+      ASTWorkflowCompilationUnit concrete,
+      ASTWorkflowCompilationUnit reference,
+      boolean lowerBound) {
 
     String conName = concrete.getProcess().getName();
     String refName = reference.getProcess().getName();
@@ -31,7 +39,7 @@ public class ConformanceChecker {
     Log.info(
         String.format(
             "Start Checking Conformance of Concrete:%s to Reference:%s.", conName, refName),
-        logName);
+        logger);
 
     // transform reference and concrete node
     // todo fix  identifier for different strategies
@@ -42,41 +50,69 @@ public class ConformanceChecker {
 
     for (WfNode con : conBuilder.getAllNodes()) {
       List<WfNode> references = inc.getReferenceElements(con);
+
       if (references.isEmpty()) {
         results.add(CheckResult.mkConform(con));
       } else if (references.size() == 1) {
 
-        results.add(checkConformance(con, references.iterator().next()));
+        results.add(checkConformance(con, references.get(0), conBuilder.getStartNodes()));
       } else {
         Log.error("Found more than one reference to the concrete element  " + conName);
       }
     }
 
-    return checkAndPrintResult();
+    return printResult();
   }
 
-  private boolean checkAndPrintResult() {
-    Optional<CheckResult> nonConformedNode =
+  private boolean printResult() {
+    List<WfNode> nonConform =
         results.stream()
             .filter(n -> n.getResult().equals(CheckResult.Result.NON_CONFORM))
-            .findAny();
+            .map(CheckResult::getNode)
+            .collect(Collectors.toList());
+
+    List<WfNode> unKnown =
+        results.stream()
+            .filter(n -> n.getResult().equals(CheckResult.Result.NON_CONFORM))
+            .map(CheckResult::getNode)
+            .collect(Collectors.toList());
+
+    Log.println("");
+    Log.info("--- Final Result of Conformance Checking ---", logger);
 
     for (CheckResult result : results) {
       Log.info(result.toString(), "");
     }
 
-    return nonConformedNode.isEmpty();
+    if (!nonConform.isEmpty()) {
+      Log.info("The following node are non conform: " + nonConform, logger);
+      return false;
+    }
+
+    if (!unKnown.isEmpty()) {
+      Log.info("The status of following node is unknown: " + nonConform, logger);
+      return false;
+    }
+
+    Log.info("--- All node are Conformed to their reference ---", logger);
+    return true;
   }
 
-  CheckResult checkConformance(WfNode concrete, WfNode reference) {
+  protected CheckResult checkConformance(
+      WfNode concrete, WfNode reference, Set<WfNode> conStartNodes) {
+
+    Log.println("");
+    Log.info(String.format("Checking Conformance of %s to %s", concrete, reference), logger);
 
     Predicate<List<WfNode>> refPredicate = PredicateGenerator.postPredicate(reference);
 
-    ConfWfVisitor visitor = new ConfWfVisitor(concrete, refPredicate, inc);
+    ConfWfVisitor visitor = new ConfWfVisitor(concrete, conStartNodes, refPredicate, inc);
 
     ConfWfTraverser traverser = new ConfWfTraverser();
-    traverser.traverseForward(visitor, new ArrayList<>(), concrete);
+    traverser.traverseForward(visitor, null, concrete);
 
-    return visitor.getCheckResult();
+    visitor.printResult();
+
+    return visitor.getResult();
   }
 }
