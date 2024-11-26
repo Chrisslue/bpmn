@@ -3,8 +3,8 @@ package de.monticore.bpmn;
 grammar Workflow extends de.monticore.expressions.LambdaExpressions,
                          de.monticore.expressions.AssignmentExpressions,
                          de.monticore.expressions.CommonExpressions, 
-                         de.monticore.timer.TimerConditions, // todo: Grammatik hier integrieren und DateTime nutzen
-                         de.monticore.symbols.OOSymbols, //todo: ggf. durch Type-Symbols ersetzen
+                         de.monticore.timer.TimerConditions, 
+                         de.monticore.symbols.OOSymbols, 
                          de.monticore.UMLModifier{
 
   /* Expression Language, e. g. OCL */
@@ -20,10 +20,10 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
   /*=============================== PROCESS ================================*/
   /*========================================================================*/
 
-  /* represents a model element that can appear in a Process e.g. Activity, Gateway, Event ... */
+  /* represents a model element that can appear in a process e.g. activity, gateway, event ... */
   interface FlowElement;
 
-  /* represents a Process which contains Lanes and FlowElements in any order
+  /* represents a process which contains lanes and flow elements in any order
    * a process may be designated as public or private
    */
   symbol scope Process =
@@ -34,8 +34,8 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
     ;
 
   /**
-   * sub-partition within a Process which contains FlowElements and sub-lanes
-   * a lane denotes for example a business function or a role
+   * sub-partition within a process which contains flow elements and sub-lanes
+   *every lane has a name and denotes for example a business function or a role
    */
   symbol Lane =
       "lane" Name "{"
@@ -127,7 +127,7 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
   Task implements Activity =
       type:["service" | "send" | "receive" | "user" | "manual" | "rule" | "script"]? "task" Name
       TaskTypeAttributes?
-      CompensationHandler? // todo: ggf. rausnehmen und mit TOP in Symbol hinzufügen?
+      CompensationHandler? 
       LoopCharacteristics?
       (   "{"
             IORequirement*
@@ -182,9 +182,9 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
     ;
 
   /* 
-   * describes a set of activities that are not connected to other parts of the BPMN model
+   * describes a set of activities that do not belong to normal sequence flow 
    * handler performs steps to reverse certain effects of an activity
-   * handler starts with a catch compensation event which can be a boundary event or the start event of an event subprocess
+   * throw events trigger a catch compensation event that starts the compensation activity
    * the compensation activity can either be a task or a subprocess -> todo: add CoCo
    * example: task "BookOffering" is compensated by the service task "CancelBooking" (compensation activity)
    * here activity:Name states the Activity which needs to be compensated, in this example it would be "BookOffering"
@@ -215,11 +215,8 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
     ;
 
   /**
-   * todo @MSh: NJ und MB fragen!
-   * todo: do we need this? then we may also need loopDataInputRef, loopDataOutputRef?
-   * loopDataInput describes a single item of the collection stored in loopDataInputRef
-   * example: loopDataInputRef = ["Person1", "Person2", "Person3"]
-   *          loopDataInput will contain on of these names for the corresponding instance
+   * loopDataInput describes a List items used for MultiInstance-Activities
+   * example: loopDataInput = ["Person1", "Person2", "Person3"]
    */
   astrule MILoop =
       loopDataInput: Name+
@@ -227,8 +224,8 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
     ;
 
   /** 
-   * event: defines the EventTrigger to be thrown
-   * implicit: controls when the Eventtrigger shall be thrown
+   * event: defines the event trigger to be thrown
+   * implicit: controls when the event trigger shall be thrown
    */
   MIImplicitEventBehavior =
       "event" ":" implicitEventDef:EventTrigger
@@ -291,9 +288,9 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
    * boundary: is marked in case it is attached to an Activity
    */  
   symbol Event implements FlowElement =
-      (boundary:["<<boundary>>"])?
-      "event" type:["start" | "end"]? Name?
-      (throw:["send"] | catch:["receive"] (["noninterrupt"])?)
+      (boundary:["<<boundary>>"])? 
+      type:["start" | "end"]?  "event"  Name?
+      throw:["send"] | catch:["receive"] (["noninterrupt"])?
       trigger:EventTrigger?
       ("{" IOSet? "}" | ";")
     ;
@@ -314,15 +311,15 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
   /*============================= CONTROL FLOW =============================*/
   /*========================================================================*/
 
-  /* sequence of FlowElement for constructing a SequenceFlow or a FlowBlock*/
-  FlowBranch =
-      path:(FlowTarget || "->")+
-    ;
-
   /* defines a sequence of FlowElements */
   SequenceFlow implements FlowElement =
       FlowBranch
       ";"
+    ;
+  
+  /* sequence of FlowElements for constructing a SequenceFlow or a FlowBlock*/
+  FlowBranch =
+      path:(FlowTarget || "->")+
     ;
 
   /* specifies a set of parallel sequence flow branches */
@@ -376,9 +373,10 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
    * [i]: the use of a collection-valued data input
    * "?": optional data input or output 
    * "!": data that can be produced or evaluated while executing
+   * MCQualifiedName: name of the consumed or produced data element
    */
   DataIO =
-      MCQualifiedName   // name of the consumed or produced data element
+      MCQualifiedName    
       (loop:["[i]"])?  
       (":" MCType)?     
       (optional:["?"])?         

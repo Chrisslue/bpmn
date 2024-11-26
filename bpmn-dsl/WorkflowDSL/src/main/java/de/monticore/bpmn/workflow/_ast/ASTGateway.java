@@ -9,4 +9,13 @@ public class ASTGateway extends ASTGatewayTOP {
   public boolean isDiverging() {
     return getDirection() == ASTConstantsWorkflow.SPLIT;
   }
+
+  public boolean isExclusiveEventBasedInstantiate() {
+    return getType().isExclusiveEventBased() && isEmptyIncomings();
+  }
+
+  public boolean isParallelEventBasedInstantiate() {
+    return getType().isParallelEventBased() && isEmptyIncomings();
+  }
+
 }
