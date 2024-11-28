@@ -19,6 +19,29 @@ public class ASTEvent extends ASTEventTOP {
     return !isStart() && !isEnd();
   }
 
+  public boolean isCatch() {
+    if (isCatch()) {
+      return true;
+    }
+    else{
+    return isStart()
+        || isBoundary()
+        || (isIntermediate() && new IsIntermediateCatchTrigger().test(this));
+    }
+  }
+
+  public boolean isThrow() {
+    if (isThrow()) {
+      return true;
+    }
+    else{
+      return isEnd() || (isIntermediate() && new IsIntermediateThrowTrigger().test(this));
+    }
+  }
+
+
+
+
   class IsIntermediateThrowTrigger implements Predicate<ASTEvent>, WorkflowVisitor2 {
     boolean isThrow;
 

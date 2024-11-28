@@ -12,11 +12,10 @@ public interface ASTFlowElement extends ASTFlowElementTOP {
    * Extended FlowElement by a Name a List with all incoming SequenceFlows a List with all outgoing
    * SequenceFlows
    */
-  String getName();
 
-  List<SequenceFlow> getIncomingsList();
+  default List<SequenceFlow> getIncomingsList();
 
-  List<SequenceFlow> getOutgoingsList();
+  default List<SequenceFlow> getOutgoingsList();
 
   default Set<ASTFlowNode> getSuccessors() {
     return getOutgoingsList().stream().map(SequenceFlow::getTarget).collect(Collectors.toSet());

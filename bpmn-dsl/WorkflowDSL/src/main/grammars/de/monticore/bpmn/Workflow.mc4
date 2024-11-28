@@ -4,7 +4,7 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
                          de.monticore.expressions.AssignmentExpressions,
                          de.monticore.expressions.CommonExpressions, 
                          de.monticore.timer.TimerConditions,
-                         de.monticore.symbols.OOSymbols, //todo: ggf. durch Type-Symbols ersetzen
+                         de.monticore.symbols.OOSymbols,
                          de.monticore.UMLModifier{
 
   /* Expression Language, e. g. OCL */
@@ -20,10 +20,10 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
   /*=============================== PROCESS ================================*/
   /*========================================================================*/
 
-  /* represents a model element that can appear in a Process e.g. Activity, Gateway, Event ... */
+  /* represents a model element that can appear in a process e.g. activity, gateway, event ... */
   interface FlowElement;
 
-  /* represents a Process which contains Lanes and FlowElements in any order
+  /* represents a process which contains lanes and flow elements in any order
    * a process may be designated as public or private
    */
   symbol scope Process =
@@ -34,8 +34,8 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
     ;
 
   /**
-   * sub-partition within a Process which contains FlowElements and sub-lanes
-   * a lane denotes for example a business function or a role
+   * sub-partition within a process which contains flow elements and sub-lanes
+   *every lane has a name and denotes for example a business function or a role
    */
   symbol Lane =
       "lane" Name "{"
@@ -65,7 +65,7 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
     compensates:ActivitySymbol
   ;
 
-  /** 
+  /**
    * represents a SubProcess whose internal details are modelled using Activities, Events ... 
    * "subprocess":   describes an embedded subprocess 
    * "transaction":  models complex business scenarios -> ensuring all parts completed successfully or are handled in case of failure 
@@ -163,6 +163,7 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
           /* used in send and receive tasks for communication */
           ("message" ":" message:Name@Notification ";")?
 
+          Operation?
         |
           /* format of the script and a script that can be run when a task is performed */
           "script" "(" scriptFormat:String ")" "=" "{" script:String "}" ";"
@@ -208,9 +209,8 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
     ;
 
   /**
-   * loopDataInput describes a single item of the collection stored in loopDataInputRef
-   * example: loopDataInputRef = ["Person1", "Person2", "Person3"]
-   *          loopDataInput will contain on of these names for the corresponding instance
+   * loopDataInput describes a List items used for MultiInstance-Activities
+   * example: loopDataInput = ["Person1", "Person2", "Person3"]
    */
   astrule MILoop =
       loopDataInput: Name+
@@ -218,8 +218,8 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
     ;
 
   /** 
-   * event: defines the EventTrigger to be thrown
-   * implicit: controls when the Eventtrigger shall be thrown
+   * event: defines the event trigger to be thrown
+   * implicit: controls when the event trigger shall be thrown
    */
   MIImplicitEventBehavior =
       "event" ":" implicitEventDef:EventTrigger
@@ -293,7 +293,7 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
   symbolrule Event =
       isBoundary:boolean
     ;
-  
+
   interface EventTrigger;
 
   /* all BPMN triggers except the link trigger */
@@ -316,15 +316,15 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
   /*============================= CONTROL FLOW =============================*/
   /*========================================================================*/
 
-  /* sequence of FlowElement for constructing a SequenceFlow or a FlowBlock*/
-  FlowBranch =
-      path:(FlowTarget || "->")+
-    ;
-
   /* defines a sequence of FlowElements */
   SequenceFlow implements FlowElement =
       FlowBranch
       ";"
+    ;
+
+  /* sequence of FlowElements for constructing a SequenceFlow or a FlowBlock*/
+  FlowBranch =
+      path:(FlowTarget || "->")+
     ;
 
   /* specifies a set of parallel sequence flow branches */
@@ -378,9 +378,10 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
    * [i]: the use of a collection-valued data input
    * "?": optional data input or output 
    * "!": data that can be produced or evaluated while executing
+   * MCQualifiedName: name of the consumed or produced data element
    */
   DataIO =
-      MCQualifiedName   // name of the consumed or produced data element
+      MCQualifiedName
       (loop:["[i]"])?  
       (":" MCType)?     
       (optional:["?"])?         
