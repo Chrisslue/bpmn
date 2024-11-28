@@ -3,7 +3,7 @@ package de.monticore.bpmn;
 grammar Workflow extends de.monticore.expressions.LambdaExpressions,
                          de.monticore.expressions.AssignmentExpressions,
                          de.monticore.expressions.CommonExpressions, 
-                         de.monticore.timer.TimerConditions, // todo: Grammatik hier integrieren und DateTime nutzen
+                         de.monticore.timer.TimerConditions,
                          de.monticore.symbols.OOSymbols, //todo: ggf. durch Type-Symbols ersetzen
                          de.monticore.UMLModifier{
 
@@ -57,9 +57,13 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
    */
   interface symbol Activity extends FlowElement =
       Name
-      CompensationHandler?
       LoopCharacteristics?
     ;
+
+  symbolrule Activity =
+    isCompensating:boolean
+    compensates:ActivitySymbol
+  ;
 
   /** 
    * represents a SubProcess whose internal details are modelled using Activities, Events ... 
@@ -70,7 +74,6 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
   symbol scope SubProcess implements Activity =
       type:["subprocess" | "transaction" | "adhoc" ] Name
       AdHocCharacteristics?
-      CompensationHandler?
       LoopCharacteristics?
       "{"
         // IORequirement not allowed by BPMN standard, we include it here to enable a suitable error message
@@ -103,12 +106,11 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
    * Example: a call activity "ShipOrder" calls a process named "ShippingProcess"
    */
   CallActivity implements Activity =
-      "call" Name "calls" ":" calledElement:Name@Process
-      CompensationHandler?
+      "call-activity" Name "calls" ":" calledElement:Name@Process
       LoopCharacteristics?
       (   "{"
             IORequirement*         // must match the I/O requirements of the called element
-            (boundaryEvent:Event)*
+            ("boundary" boundaryEvent:Event)*
           "}"
         | ";"
       )
@@ -126,13 +128,14 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
    */
   Task implements Activity =
       type:["service" | "send" | "receive" | "user" | "manual" | "rule" | "script"]? "task" Name
-      TaskTypeAttributes?
-      CompensationHandler? // todo: ggf. rausnehmen und mit TOP in Symbol hinzufügen?
       LoopCharacteristics?
-      (   "{"
-            IORequirement*
-            (boundaryEvent:Event)*
-          "}"
+      ( "{"
+             TaskTypeAttributes?
+             IORequirement*
+
+             //todo: CoCo for boundary events, must be catching
+             ("boundary" boundaryEvent:Event)*
+        "}"
         | ";"
       )
     ;
@@ -140,7 +143,7 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
 
   /**
    * describes the attributes of all Tasks
-   * service: used webservice and the operation triggered by the task
+   * service: used webservice and optionally the operation triggered by the task
    * send:    used webservice, message and the operation triggered by the task
    * receive: used webservice, message and the operation triggered by the task
    * user:    used webservice   
@@ -154,43 +157,33 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
           /* valid Strings are ##unspecified, ##Webservice or a URI */
           ("webservice" "=" webservice:String ";")
 
-          //todo: Finde raus, ob das dieselbe Message wie bei der Operation ist!
-          /* used in send and receive tasks for communication */
-          ("message" "=" message:Name@Notification ";")?
+          /* references an operation
+          ("operation" ":" operation:Name@Operation ";")?
 
-          Operation?
+          /* used in send and receive tasks for communication */
+          ("message" ":" message:Name@Notification ";")?
+
         |
           /* format of the script and a script that can be run when a task is performed */
-          ("script" "=" scriptFormat:String ":" script:String ";")
+          "script" "(" scriptFormat:String ")" "=" "{" script:String "}" ";"
         |
           /* human resources or other resources assigned to tasks */
-          ("resources" "=" resources:(Name || ",")+ ";")
+          "resources" ":" resources:(MCQualifiedName || ",")+ ";"
       )
     ;
 
   /* 
    * describes the invoked operation by a task
    * exactly one ingoing message but at most one outgoing message
-   * can specify error elements which may be returned 
+   * can specify error elements which may be returned
+   * an implementation of the operation can be referenced
    */
-  Operation = 
-      "operation" Name
+  symbol Operation implements FlowElement, Variable =
+      "operation" Name "("
       "in" ":" in:Name@Notification
-      ("out" ":" out:Name@Notification)?
-      ("throws" ":" error:String)?
-      ";"
-    ;
-
-  /* 
-   * describes a set of activities that are not connected to other parts of the BPMN model
-   * handler performs steps to reverse certain effects of an activity
-   * handler starts with a catch compensation event which can be a boundary event or the start event of an event subprocess
-   * the compensation activity can either be a task or a subprocess -> todo: add CoCo
-   * example: task "BookOffering" is compensated by the service task "CancelBooking" (compensation activity)
-   * here activity:Name states the Activity which needs to be compensated, in this example it would be "BookOffering"
-   */
-  CompensationHandler =
-      "compensate" ":" activity:Name@Activity
+      (";" "out" ":" out:Name@Notification)? ")"
+      ("throws" ":" error:Name@Notification)?
+      ("{" "implementation" "=" impl:String ";" "}" | ";")
     ;
 
   /* interface for StandardLoop and MILoop */
@@ -215,8 +208,6 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
     ;
 
   /**
-   * todo @MSh: NJ und MB fragen!
-   * todo: do we need this? then we may also need loopDataInputRef, loopDataOutputRef?
    * loopDataInput describes a single item of the collection stored in loopDataInputRef
    * example: loopDataInputRef = ["Person1", "Person2", "Person3"]
    *          loopDataInput will contain on of these names for the corresponding instance
@@ -288,16 +279,20 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
    * throw: emits the event trigger 
    * catch: listens and waits for the event trigger to occur
    * interrupting boundary event cancels the activity to which it is attached as it occurs 
-   * boundary: is marked in case it is attached to an Activity
+   * CompensationHandler: specifies compensating activity for boundary events
+   * operation: MUST be specified for message task in an executable process
    */  
   symbol Event implements FlowElement =
-      (boundary:["<<boundary>>"])?
       "event" type:["start" | "end"]? Name?
       (throw:["send"] | catch:["receive"] (["noninterrupt"])?)
       trigger:EventTrigger?
-      ("{" IOSet? "}" | ";")
+      CompensationHandler?
+      ("{" ("operation" ":" operation:Name@Operation ";")? IOSet? "}" | ";")
     ;
 
+  symbolrule Event =
+      isBoundary:boolean
+    ;
   
   interface EventTrigger;
 
@@ -309,6 +304,13 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
   EventTriggerTimer        implements EventTrigger = "timer"       ":" "[" condition:TimerCondition "]";
   EventTriggerMultiple     implements EventTrigger = ("one" | parallelMultiple:["all"]) "{" trigger:(EventTrigger || ",")+ "}";
   EventTriggerNotification implements EventTrigger = ("error" | "escalate" | "message" | "signal") ":" Name@Notification ;
+
+  /*
+   * designates compensating activity for a boundary event
+   */
+  CompensationHandler =
+      "with" ":" activity:Name@Activity
+    ;
 
   /*========================================================================*/
   /*============================= CONTROL FLOW =============================*/
@@ -365,7 +367,7 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
 
   /* maps an input set to an output set and optionally assigns an operationName */
   IORule implements IORequirement =
-      "io" (operationName:Name)? ":" inputSet:DataSet "->" outputSet:DataSet ";"
+      "io" ":" inputSet:DataSet "->" outputSet:DataSet ";"
     ;
 
   /* Set of input and output data */
