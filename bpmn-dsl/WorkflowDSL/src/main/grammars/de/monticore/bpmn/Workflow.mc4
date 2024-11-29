@@ -132,8 +132,6 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
       ( "{"
              TaskTypeAttributes?
              IORequirement*
-
-             //todo: CoCo for boundary events, must be catching
              ("boundary" boundaryEvent:Event)*
         "}"
         | ";"
@@ -150,7 +148,6 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
    * manual:  needed resources
    * rule:    used webservice
    * script:  used script and the format of the script
-   * todo: add CoCo for each type to check the attributes
    */ 
   TaskTypeAttributes =
       (
@@ -198,7 +195,7 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
 
   /** 
    * allows to create multiple instances of Activities 
-   * can be executed parallel or sequential 
+   * can be executed in parallel or sequential
    * will only loop until completionCondition
    */
   MILoop implements LoopCharacteristics =
@@ -307,6 +304,7 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
 
   /*
    * designates compensating activity for a boundary event
+   * compensation is done to, e.g., undo the effects of an activity
    */
   CompensationHandler =
       "with" ":" activity:Name@Activity
