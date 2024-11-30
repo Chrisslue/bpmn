@@ -1,12 +1,17 @@
-package de.monticore.workflow.conformance.datastructure.interf;
+package de.monticore.bpmn.conformance.datastructures.interf;
 
-import de.monticore.workflow.conformance.utils.NodeType;
+import de.monticore.bpmn.conformance.datastructures.utils.NodeType;
+import de.monticore.umlstereotype._ast.ASTStereotype;
+
+import java.util.Optional;
 import java.util.Set;
 
 /***
  * this class  represent a BPMNode
  * */
 public interface WfNode {
+
+ Optional<ASTStereotype>  getStereotype();
 
   String getLabel();
 
@@ -16,13 +21,8 @@ public interface WfNode {
 
   boolean isEnd();
 
-  Set<? extends WfNode> getSuccessorsOfDepth(int depth);
-
-  Set<? extends WfNode> getPredecessorsOfDepth(int depth);
-
   Set<? extends WfNode> getSuccessors();
 
   Set<? extends WfNode> getPredecessors();
 
-  boolean isGateway();
 }

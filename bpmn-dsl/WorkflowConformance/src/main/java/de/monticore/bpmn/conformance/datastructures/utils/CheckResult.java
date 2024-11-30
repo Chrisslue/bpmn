@@ -1,6 +1,7 @@
-package de.monticore.workflow.conformance.utils;
+package de.monticore.bpmn.conformance.datastructures.utils;
 
-import de.monticore.workflow.conformance.datastructure.interf.WfNode;
+import de.monticore.bpmn.conformance.datastructures.interf.WfNode;
+
 import java.util.Optional;
 import javax.annotation.Nonnull;
 

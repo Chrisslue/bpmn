@@ -2,7 +2,7 @@ package de.monticore.workflow.conformance.conformance;
 
 import de.monticore.bpmn.workflow._ast.ASTWorkflowCompilationUnit;
 import de.monticore.workflow.conformance.AbstractConfTest;
-import de.monticore.workflow.conformance.ConformanceChecker;
+import de.monticore.bpmn.conformance.ConformanceChecker;
 import de.se_rwth.commons.logging.Log;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

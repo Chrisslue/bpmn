@@ -1,6 +1,6 @@
-package de.monticore.workflow.conformance.conformance;
+package de.monticore.bpmn.conformance.conformance.ctlConformance;
 
-import de.monticore.workflow.conformance.datastructure.interf.WfNode;
+import de.monticore.bpmn.conformance.datastructures.interf.WfNode;
 import de.se_rwth.commons.logging.Log;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +16,11 @@ public class PredicateGenerator {
 
     if (node.getSuccessors().size() == 1) {
       return postPredicateRecursive(node.getSuccessors().iterator().next());
+    }
+
+    if (node.getNodeType().isGateway()){
+      Log.error(String.format("cannot compute post predicate of %s", node));
+      assert false;
     }
 
     Log.error(

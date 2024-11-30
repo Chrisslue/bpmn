@@ -1,7 +1,8 @@
-package de.monticore.workflow.conformance.conformance;
+package de.monticore.bpmn.conformance.conformance.ctlConformance;
 
-import de.monticore.workflow.conformance.datastructure.interf.WfNode;
-import de.monticore.workflow.conformance.utils.BranchID;
+import de.monticore.bpmn.conformance.datastructures.interf.WfNode;
+import de.monticore.bpmn.conformance.datastructures.utils.BranchID;
+import de.monticore.bpmn.conformance.datastructures.interf.WfNodeVisitor;
 import de.se_rwth.commons.logging.Log;
 import java.util.*;
 

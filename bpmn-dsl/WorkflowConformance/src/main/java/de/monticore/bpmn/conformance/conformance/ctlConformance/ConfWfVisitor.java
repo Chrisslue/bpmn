@@ -1,10 +1,10 @@
-package de.monticore.workflow.conformance.conformance;
+package de.monticore.bpmn.conformance.conformance.ctlConformance;
 
-import de.monticore.workflow.conformance.datastructure.interf.WfNode;
-import de.monticore.workflow.conformance.incarnation.IncarnationStrategy;
-import de.monticore.workflow.conformance.utils.AbortRule;
-import de.monticore.workflow.conformance.utils.BranchID;
-import de.monticore.workflow.conformance.utils.CheckResult;
+import de.monticore.bpmn.conformance.datastructures.utils.CheckResult;
+import de.monticore.bpmn.conformance.datastructures.interf.WfNode;
+import de.monticore.bpmn.conformance.datastructures.interf.WfNodeVisitor;
+import de.monticore.bpmn.conformance.incarnation.IncarnationStrategy;
+import de.monticore.bpmn.conformance.datastructures.utils.BranchID;
 import de.se_rwth.commons.logging.Log;
 import java.util.*;
 import java.util.function.Predicate;
@@ -16,7 +16,7 @@ public class ConfWfVisitor implements WfNodeVisitor {
 
   private final Predicate<List<WfNode>> predicate;
 
-  private final IncarnationStrategy inc;
+  private final IncarnationStrategy<WfNode> inc;
 
   private final WfNode node;
 
@@ -29,7 +29,7 @@ public class ConfWfVisitor implements WfNodeVisitor {
       WfNode conNode,
       Set<WfNode> startNodes,
       Predicate<List<WfNode>> predicate,
-      IncarnationStrategy inc) {
+      IncarnationStrategy<WfNode> inc) {
     this.predicate = predicate;
     this.inc = inc;
     this.node = conNode;
@@ -155,5 +155,12 @@ public class ConfWfVisitor implements WfNodeVisitor {
       return CheckResult.mkUnknown(this.node, upperBound.getBranchId().get());
     }
     return upperBound;
+  }
+
+  private enum AbortRule {
+    SATISFIED_PREDICATE,
+    LOOP_DISCOVERED,
+    END_NODE_REACHED,
+    RETURN_TO_START
   }
 }

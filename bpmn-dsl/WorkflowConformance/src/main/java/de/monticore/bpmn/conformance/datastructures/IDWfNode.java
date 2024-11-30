@@ -1,7 +1,9 @@
-package de.monticore.workflow.conformance.datastructure;
+package de.monticore.bpmn.conformance.datastructures;
 
-import de.monticore.workflow.conformance.datastructure.interf.WfNode;
-import de.monticore.workflow.conformance.utils.NodeType;
+import de.monticore.bpmn.conformance.datastructures.interf.WfNode;
+import de.monticore.bpmn.conformance.datastructures.utils.NodeType;
+import de.monticore.umlstereotype._ast.ASTStereotype;
+
 import java.util.*;
 
 public class IDWfNode implements WfNode {
@@ -12,6 +14,7 @@ public class IDWfNode implements WfNode {
   private final boolean isEnd;
   private final String label;
   private final NodeType nodeType;
+  private  final ASTStereotype stereotype;
 
   @Override
   public Set<IDWfNode> getPredecessors() {
@@ -23,11 +26,12 @@ public class IDWfNode implements WfNode {
     return successors;
   }
 
-  public IDWfNode(String label, NodeType nodeType, boolean isStart, boolean isEnd) {
+  public IDWfNode(String label, NodeType nodeType,ASTStereotype stereotype, boolean isStart, boolean isEnd) {
     this.isStart = isStart;
     this.isEnd = isEnd;
     this.label = label;
     this.nodeType = nodeType;
+      this.stereotype = stereotype;
   }
 
   @Override
@@ -46,56 +50,13 @@ public class IDWfNode implements WfNode {
   }
 
   @Override
+  public Optional<ASTStereotype> getStereotype() {
+    return Optional.ofNullable(stereotype);
+  }
+
+  @Override
   public String getLabel() {
     return label;
-  }
-
-  private Set<IDWfNode> getSuccessors(int depth) {
-    if (depth == 1) {
-      return successors;
-    }
-
-    Set<IDWfNode> res = new HashSet<>(successors);
-
-    for (IDWfNode suc : successors) {
-      res.addAll(suc.getSuccessors(depth - 1));
-    }
-    return res;
-  }
-
-  private Set<IDWfNode> getPredecessors(int depth) {
-    if (depth == 1) {
-      return predecessors;
-    }
-
-    Set<IDWfNode> res = new HashSet<>(predecessors);
-
-    for (IDWfNode suc : predecessors) {
-      res.addAll(suc.getPredecessors(depth - 1));
-    }
-    return res;
-  }
-
-  @Override
-  public Set<IDWfNode> getSuccessorsOfDepth(int depth) {
-    if (depth == 0) {
-      return new HashSet<>();
-    }
-
-    Set<IDWfNode> res = getSuccessors(depth);
-    res.removeAll(getSuccessors(depth - 1));
-    return res;
-  }
-
-  @Override
-  public Set<? extends WfNode> getPredecessorsOfDepth(int depth) {
-    if (depth == 0) {
-      return new HashSet<>();
-    }
-
-    Set<IDWfNode> res = getPredecessors(depth);
-    res.removeAll(getPredecessors(depth - 1));
-    return res;
   }
 
   public boolean isGateway() {
