@@ -7,7 +7,7 @@ import de.se_rwth.commons.logging.Log;
 
 /**
  * Source: https://www.omg.org/spec/BPMN/2.0/PDF Page: 249 Description: The Event can respond to
- * (“catch”) the Event trigger or the Event can be used to set off (“throw”) the Event trigger.
+ * (“catch”) the Event trigger xor the Event can be used to set off (“throw”) the Event trigger.
  */
 public class IntermediateEventIsEitherThrowOrCatch implements WorkflowASTEventCoCo {
 

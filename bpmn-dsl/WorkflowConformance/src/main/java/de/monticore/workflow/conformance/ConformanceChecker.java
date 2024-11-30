@@ -21,17 +21,11 @@ public class ConformanceChecker {
   private final String logger = "";
   private IncarnationStrategy inc;
 
-  private final Set<CheckResult> results = new HashSet<>();
+  private final Set<CheckResult> checkResult = new HashSet<>();
 
+  /** procedure to check if a node conform */
   public boolean checkConformance(
       ASTWorkflowCompilationUnit concrete, ASTWorkflowCompilationUnit reference) {
-    return checkConformance(concrete, reference, false);
-  }
-  /** procedure to check if a node conform */
-  private boolean checkConformance(
-      ASTWorkflowCompilationUnit concrete,
-      ASTWorkflowCompilationUnit reference,
-      boolean lowerBound) {
 
     String conName = concrete.getProcess().getName();
     String refName = reference.getProcess().getName();
@@ -52,10 +46,10 @@ public class ConformanceChecker {
       List<WfNode> references = inc.getReferenceElements(con);
 
       if (references.isEmpty()) {
-        results.add(CheckResult.mkConform(con));
+        checkResult.add(CheckResult.mkConform(con));
       } else if (references.size() == 1) {
 
-        results.add(checkConformance(con, references.get(0), conBuilder.getStartNodes()));
+        checkResult.add(checkConformance(con, references.get(0), conBuilder.getStartNodes()));
       } else {
         Log.error("Found more than one reference to the concrete element  " + conName);
       }
@@ -66,13 +60,13 @@ public class ConformanceChecker {
 
   private boolean printResult() {
     List<WfNode> nonConform =
-        results.stream()
+        checkResult.stream()
             .filter(n -> n.getResult().equals(CheckResult.Result.NON_CONFORM))
             .map(CheckResult::getNode)
             .collect(Collectors.toList());
 
     List<WfNode> unKnown =
-        results.stream()
+        checkResult.stream()
             .filter(n -> n.getResult().equals(CheckResult.Result.NON_CONFORM))
             .map(CheckResult::getNode)
             .collect(Collectors.toList());
@@ -80,7 +74,7 @@ public class ConformanceChecker {
     Log.println("");
     Log.info("--- Final Result of Conformance Checking ---", logger);
 
-    for (CheckResult result : results) {
+    for (CheckResult result : checkResult) {
       Log.info(result.toString(), "");
     }
 

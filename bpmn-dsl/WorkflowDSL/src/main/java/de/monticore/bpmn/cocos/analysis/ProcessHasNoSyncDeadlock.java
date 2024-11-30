@@ -48,7 +48,7 @@ public class ProcessHasNoSyncDeadlock extends CommonAntiPatternCoCo {
                             splitGateway -> {
                               if (!splitGateway.getType().isParallel()
                                   && !splitGateway.getType().isParallelEventBased()) {
-                                // Step 2: Report deadlock (deterministic or non-deterministic)
+                                // Step 2: Report deadlock (deterministic xor non-deterministic)
                                 reportDeadlock(splitGateway, mergeGateway);
                               } else {
                                 // Step 3: Find path entries an exits

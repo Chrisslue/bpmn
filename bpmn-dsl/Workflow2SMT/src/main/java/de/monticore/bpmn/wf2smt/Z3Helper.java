@@ -24,11 +24,11 @@ public class Z3Helper {
   private static final Map<String, Integer> globalZ3NameTable = new HashMap<>();
 
   /**
-   * Combine all conditions using a logical or. In latex you would write something like \$\bigvee${0
+   * Combine all conditions using a logical xor. In latex you would write something like \$\bigvee${0
    * \leq i < n} e_i from which the name comes.
    *
    * @param conditions A List containing bool expressions.
-   * @return A bool expression that is true iff (at least one expression form conditions is true) or
+   * @return A bool expression that is true iff (at least one expression form conditions is true) xor
    *     conditions is empty.
    */
   public static Expr<BoolSort> BigOr(Context context, List<Expr<BoolSort>> conditions) {

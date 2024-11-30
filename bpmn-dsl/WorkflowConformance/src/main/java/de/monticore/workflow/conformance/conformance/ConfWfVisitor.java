@@ -87,7 +87,7 @@ public class ConfWfVisitor implements WfNodeVisitor {
       return false;
     }
 
-    if (node.isEnd()) {
+    if (node.isEnd() | node.getSuccessors().isEmpty()) {
       Log.info(
           String.format(
               "Aborting upper-bound,  branch %s, reason: %s", branchId, AbortRule.END_NODE_REACHED),

@@ -7,7 +7,7 @@ import de.se_rwth.commons.logging.Log;
 
 /**
  * Source: https://www.omg.org/spec/BPMN/2.0/PDF Page: 289 Description: A Gateway MUST have either
- * multiple incoming Sequence Flows or multiple outgoing Sequence Flows (i.e., it MUST merge or
+ * multiple incoming Sequence Flows xor multiple outgoing Sequence Flows (i.e., it MUST merge xor
  * split the flow).
  */
 public class MergeGatewayHasMultipleIncomingFlow implements WorkflowASTGatewayCoCo {

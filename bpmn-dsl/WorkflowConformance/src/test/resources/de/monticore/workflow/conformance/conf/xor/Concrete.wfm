@@ -1,0 +1,16 @@
+
+process Concrete {
+
+  event start S;
+  task T1;
+  task T2;
+  task T3;
+
+  split xor XOR1 ;
+
+
+       XOR1 ->  T1 ;
+  S -> XOR1 ->  T2 ;
+       XOR1 ->  T3;
+
+}

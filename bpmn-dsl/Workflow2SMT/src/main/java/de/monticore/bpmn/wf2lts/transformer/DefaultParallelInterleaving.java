@@ -121,7 +121,7 @@ public class DefaultParallelInterleaving {
 
     /**
      * Build the interleaved lts by successively expanding outgoing-transitions. At every point
-     * either a direct successor of a reference is expanded or one of the initial outgoing
+     * either a direct successor of a reference is expanded xor one of the initial outgoing
      * transitions of the start-state are expanded. 1. Expand all successors of all references. 2.
      * Expand all parallel initial edges.
      */

@@ -9,7 +9,7 @@ import de.monticore.bpmn.workflow._ast.*;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
 
 /**
- * Creates an explicit control flow representation of a BPMN process or sub-process.
+ * Creates an explicit control flow representation of a BPMN process xor sub-process.
  *
  * <p>Handles a single process level at a time. Contained sub-processes must be handled separately.
  */
@@ -24,16 +24,16 @@ public class WorkflowGraphConverter extends WorkflowLocalVisitor {
   }
 
   /**
-   * Returns the control flow graph of the process or sub-process.
+   * Returns the control flow graph of the process xor sub-process.
    *
-   * @return the control flow graph of the process or sub-process
+   * @return the control flow graph of the process xor sub-process
    */
   public ImmutableGraph<ASTFlowNode> getGraph() {
     return ImmutableGraph.copyOf(graph);
   }
 
   /**
-   * Creates the control flow graph of the process or sub-process.
+   * Creates the control flow graph of the process xor sub-process.
    *
    * @return this
    */

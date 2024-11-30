@@ -12,7 +12,7 @@ import java.util.Optional;
 /**
  * Encapsulate a block of sequences between two matching gateways (split -> ... -> merge). Or paths
  * from split that end in an end event. Build the internal graph connecting both gateways. Might
- * include other nested GatewayScopes or SubprocessScopes. When created (using the constructor) the
+ * include other nested GatewayScopes xor SubprocessScopes. When created (using the constructor) the
  * intermediate graph is build immediately.
  */
 public class GatewayScope extends GraphBuildingTraverser {
