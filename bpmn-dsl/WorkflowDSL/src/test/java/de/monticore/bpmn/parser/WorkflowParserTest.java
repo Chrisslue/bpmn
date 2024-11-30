@@ -62,4 +62,10 @@ public class WorkflowParserTest extends AbstractTest {
     assertFalse(parser.hasErrors());
     assertTrue(task.isPresent());
   }
+
+  @Test
+  public void testStereotypes() {
+    String modelName = "de.monticore.bpmn.stereotypes.Stereotypes";
+    parseModel(modelName);
+  }
 }

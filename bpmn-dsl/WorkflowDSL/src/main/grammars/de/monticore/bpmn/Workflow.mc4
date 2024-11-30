@@ -3,7 +3,9 @@ package de.monticore.bpmn;
 grammar Workflow
         extends de.monticore.ocl.OCL,
                 de.monticore.expressions.TimeExpressions,
-                de.monticore.symbols.OOSymbols {
+                de.monticore.symbols.OOSymbols,
+                de.monticore.UMLStereotype,
+                de.monticore.UMLModifier {
 
   start WorkflowCompilationUnit;
 
@@ -58,7 +60,7 @@ grammar Workflow
 
   interface FlowNode ;
 
-  interface GlobalFlowNode extends FlowNode, FlowElement; // TODO naming? BaseFlowNode, RootFlowNode, TopLevelFlowNode, LocalFlowNode, NamedFlowNode, CommonFlowNode?
+  interface GlobalFlowNode extends FlowNode, FlowElement = Modifier; // TODO naming? BaseFlowNode, RootFlowNode, TopLevelFlowNode, LocalFlowNode, NamedFlowNode, CommonFlowNode?
   interface InlineFlowNode extends FlowNode ;
 
   astrule FlowNode astextends ASTFlowElement, IFlowNode = // IFlowNode provides additional default methods for predecessors/successors
@@ -75,6 +77,7 @@ grammar Workflow
     ;
 
   symbol scope SubProcess implements Activity, FlowElementContainer  =
+      Modifier
       type:SubProcessType
       Name
       AdHocCharacteristics?
@@ -112,6 +115,7 @@ grammar Workflow
     ;
 
   CallActivity implements AtomicActivity =
+      Modifier
       "task"
       Name
       "template" ":" template:Name  // @CallableElement
@@ -126,6 +130,7 @@ grammar Workflow
     ;
 
   Task implements AtomicActivity =
+      Modifier
       "task"
       type:TaskType?
       Name
@@ -204,6 +209,7 @@ grammar Workflow
     ;
 
   symbol NamedGateway implements Gateway, GlobalFlowNode =
+      Modifier
       direction:GatewayDirection
       type:GatewayType
       Name
@@ -241,6 +247,7 @@ grammar Workflow
     ;
 
   symbol NamedEvent implements Event, GlobalFlowNode =
+      Modifier
       (boundary:["<<boundary>>"])?
       "event" type:EventType?
       Name
