@@ -1,0 +1,12 @@
+
+process Concrete {
+
+ <<ref="Start">> event start  Start;
+
+ <<ref="Part1">> task Part1;
+
+ <<ref="Part1">> subprocess S1 {
+                   <<ref="Start">> event start S;
+ }
+
+}
