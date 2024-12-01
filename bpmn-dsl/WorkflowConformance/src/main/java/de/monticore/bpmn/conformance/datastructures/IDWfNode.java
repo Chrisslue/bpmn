@@ -3,7 +3,6 @@ package de.monticore.bpmn.conformance.datastructures;
 import de.monticore.bpmn.conformance.datastructures.interf.WfNode;
 import de.monticore.bpmn.conformance.datastructures.utils.NodeType;
 import de.monticore.umlstereotype._ast.ASTStereotype;
-
 import java.util.*;
 
 public class IDWfNode implements WfNode {
@@ -14,7 +13,7 @@ public class IDWfNode implements WfNode {
   private final boolean isEnd;
   private final String label;
   private final NodeType nodeType;
-  private  final ASTStereotype stereotype;
+  private final ASTStereotype stereotype;
 
   @Override
   public Set<IDWfNode> getPredecessors() {
@@ -26,12 +25,13 @@ public class IDWfNode implements WfNode {
     return successors;
   }
 
-  public IDWfNode(String label, NodeType nodeType,ASTStereotype stereotype, boolean isStart, boolean isEnd) {
+  public IDWfNode(
+      String label, NodeType nodeType, ASTStereotype stereotype, boolean isStart, boolean isEnd) {
     this.isStart = isStart;
     this.isEnd = isEnd;
     this.label = label;
     this.nodeType = nodeType;
-      this.stereotype = stereotype;
+    this.stereotype = stereotype;
   }
 
   @Override

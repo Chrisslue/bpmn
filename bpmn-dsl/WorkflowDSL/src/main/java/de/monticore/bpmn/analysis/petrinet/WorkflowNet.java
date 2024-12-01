@@ -154,8 +154,8 @@ public class WorkflowNet {
   }
 
   /**
-   * Returns the warnings generated during translation from the BPMN process xor sub-process into the
-   * WF-net.
+   * Returns the warnings generated during translation from the BPMN process xor sub-process into
+   * the WF-net.
    *
    * @return the warnings
    */

@@ -15,9 +15,11 @@ import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
  */
 public class WfNodeFactory implements WorkflowVisitor2 {
 
-  public static WfBuilder buildWorkflowNodes(ASTWorkflowCompilationUnit ast, WfBuilder builder) {
+  public static WfBuilder workflowBuilder(ASTWorkflowCompilationUnit ast, String pref) {
 
     // traverse the Workflow asts a collect elements
+    IDWfNodeBuilder builder = new IDWfNodeBuilder(pref);
+
     WfNodeFactory collector = new WfNodeFactory(builder);
     WorkflowTraverser traverser = WorkflowMill.traverser();
     traverser.add4Workflow(collector);
@@ -25,7 +27,6 @@ public class WfNodeFactory implements WorkflowVisitor2 {
 
     return builder;
   }
-
 
   private final WfBuilder builder;
 
@@ -58,7 +59,6 @@ public class WfNodeFactory implements WorkflowVisitor2 {
   public void visit(ASTNamedGateway node) {
     builder.mkNamedGateway(node);
   }
-
 
   @Override
   public void endVisit(ASTWorkflowCompilationUnit wf) {

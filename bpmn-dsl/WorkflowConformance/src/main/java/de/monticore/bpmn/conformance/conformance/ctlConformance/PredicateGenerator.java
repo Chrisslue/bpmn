@@ -18,7 +18,7 @@ public class PredicateGenerator {
       return postPredicateRecursive(node.getSuccessors().iterator().next());
     }
 
-    if (node.getNodeType().isGateway()){
+    if (node.getNodeType().isGateway()) {
       Log.error(String.format("cannot compute post predicate of %s", node));
       assert false;
     }

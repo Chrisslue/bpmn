@@ -2,8 +2,6 @@ package de.monticore.bpmn.conformance.incarnation;
 
 import de.monticore.bpmn.conformance.datastructures.interf.WfBuilder;
 import de.monticore.bpmn.conformance.datastructures.interf.WfNode;
-
-
 import java.util.ArrayList;
 import java.util.List;
 

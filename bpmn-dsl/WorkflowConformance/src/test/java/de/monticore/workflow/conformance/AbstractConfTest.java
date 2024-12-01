@@ -1,14 +1,10 @@
 package de.monticore.workflow.conformance;
 
-import static de.se_rwth.commons.Names.getPathFromQualifiedName;
-import static de.se_rwth.commons.Names.getSimpleName;
-import static java.nio.file.Paths.get;
 import static org.junit.jupiter.api.Assertions.*;
 
 import de.monticore.bpmn.cocos.WorkflowCoCos;
 import de.monticore.bpmn.cocos.flow.SequenceFlowNodeReferencesExist;
 import de.monticore.bpmn.trafos.*;
-import de.monticore.bpmn.utils.AuxiliaryModelsWriter;
 import de.monticore.bpmn.workflow.WorkflowMill;
 import de.monticore.bpmn.workflow.WorkflowTool;
 import de.monticore.bpmn.workflow._ast.ASTWorkflowCompilationUnit;
@@ -22,7 +18,6 @@ import de.monticore.symbols.basicsymbols.BasicSymbolsMill;
 import de.se_rwth.commons.Names;
 import de.se_rwth.commons.logging.Log;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.Optional;
 
 public abstract class AbstractConfTest {
@@ -73,18 +68,6 @@ public abstract class AbstractConfTest {
     return false;
   }
 
-  protected void writeTestAuxModels(
-      final String qualifiedModelName, final ASTWorkflowCompilationUnit unit) {
-    Path out =
-        get(MODEL_AUX_DIR)
-            .resolve(get(getPathFromQualifiedName(qualifiedModelName)))
-            .resolve(getSimpleName(qualifiedModelName).toLowerCase());
-    try {
-      new AuxiliaryModelsWriter(unit.getProcess()).print(out);
-    } catch (IOException ignored) {
-    }
-  }
-
   protected WorkflowCoCoChecker getChecker() {
     return WorkflowCoCos.getFullChecker();
   }
@@ -97,6 +80,10 @@ public abstract class AbstractConfTest {
                 + Names.getPathFromPackage(qualifiedModelName).replaceAll("\\\\", "/")
                 + ".wfm");
 
+    return checkModel(ast);
+  }
+
+  public ASTWorkflowCompilationUnit checkModel(ASTWorkflowCompilationUnit ast) {
     WorkflowMill.scopesGenitorDelegator().createFromAST(ast);
     WorkflowCoCoChecker checker = new WorkflowCoCoChecker();
     checker.addCoCo(new SequenceFlowNodeReferencesExist());
@@ -111,11 +98,24 @@ public abstract class AbstractConfTest {
     traverser.add4Workflow(stCompleter);
     ast.accept(traverser);
 
-    if (shouldWriteAuxModels()) { // write models before running CoCos (and potentially failing)
-      writeTestAuxModels(qualifiedModelName, ast);
-    }
     // getChecker().checkAll(ast);
 
     return ast;
+  }
+
+  public ASTWorkflowCompilationUnit parse_str(String input) {
+    WorkflowParser parser = new WorkflowParser();
+    Optional<ASTWorkflowCompilationUnit> ast = Optional.empty();
+    try {
+      ast = parser.parse_String(input);
+    } catch (IOException e) {
+      Log.error("Error while parsing workflow", e);
+    }
+
+    if (ast.isEmpty()) {
+      Log.error("Error while parsing workflow");
+      assert false;
+    }
+    return checkModel(ast.get());
   }
 }

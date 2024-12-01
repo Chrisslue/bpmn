@@ -2,7 +2,6 @@ package de.monticore.bpmn.conformance.datastructures.interf;
 
 import de.monticore.bpmn.conformance.datastructures.utils.NodeType;
 import de.monticore.umlstereotype._ast.ASTStereotype;
-
 import java.util.Optional;
 import java.util.Set;
 
@@ -11,7 +10,7 @@ import java.util.Set;
  * */
 public interface WfNode {
 
- Optional<ASTStereotype>  getStereotype();
+  Optional<ASTStereotype> getStereotype();
 
   String getLabel();
 
@@ -24,5 +23,4 @@ public interface WfNode {
   Set<? extends WfNode> getSuccessors();
 
   Set<? extends WfNode> getPredecessors();
-
 }

@@ -1,10 +1,10 @@
 package de.monticore.bpmn.conformance.conformance.ctlConformance;
 
-import de.monticore.bpmn.conformance.datastructures.utils.CheckResult;
 import de.monticore.bpmn.conformance.datastructures.interf.WfNode;
 import de.monticore.bpmn.conformance.datastructures.interf.WfNodeVisitor;
-import de.monticore.bpmn.conformance.incarnation.IncarnationStrategy;
 import de.monticore.bpmn.conformance.datastructures.utils.BranchID;
+import de.monticore.bpmn.conformance.datastructures.utils.CheckResult;
+import de.monticore.bpmn.conformance.incarnation.IncarnationStrategy;
 import de.se_rwth.commons.logging.Log;
 import java.util.*;
 import java.util.function.Predicate;

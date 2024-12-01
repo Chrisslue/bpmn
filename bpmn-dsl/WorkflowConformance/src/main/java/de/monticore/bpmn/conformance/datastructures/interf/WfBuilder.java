@@ -4,7 +4,6 @@ import de.monticore.bpmn.workflow._ast.ASTNamedEvent;
 import de.monticore.bpmn.workflow._ast.ASTNamedGateway;
 import de.monticore.bpmn.workflow._ast.ASTSequenceFlow;
 import de.monticore.bpmn.workflow._ast.ASTTask;
-
 import java.util.Set;
 
 public interface WfBuilder { // todo find solution with parameter
@@ -37,10 +36,9 @@ public interface WfBuilder { // todo find solution with parameter
 
   void mkSequence(ASTSequenceFlow sequenceFlow);
 
-
   void build();
 
+  WfNode getWfNode(String name);
 
-  WfNode resolveNode(String name);
   Set<WfNode> getAllNodes();
 }

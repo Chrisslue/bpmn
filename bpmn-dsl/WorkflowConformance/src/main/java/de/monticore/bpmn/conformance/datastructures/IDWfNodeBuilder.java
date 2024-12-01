@@ -7,39 +7,36 @@ import de.monticore.bpmn.workflow._ast.*;
 import de.monticore.umlstereotype._ast.ASTStereotype;
 import de.se_rwth.commons.logging.Log;
 import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /***
- * this class contains methods that transform Workflow elements(tasks, gateways, events, etc. )
+ * this class contains methods that transform Workflow elements (tasks, gateways, events, etc.)
  * to workflow nodes.
  * It also collects sequence flow in the workflow in other to build transitions between nodes.
  */
 public class IDWfNodeBuilder implements WfBuilder {
   private final Set<ASTSequenceFlow> sequenceFlows = new HashSet<>();
-  private final Set<IDWfNode> allNodes = new HashSet<>();
+  private final Map<String, IDWfNode> allNodes = new HashMap<>();
 
-  private final Function<String, String> identifier;
+  private final String prefix;
 
-
-
-  public IDWfNodeBuilder(Function<String, String> identifier) {
-    this.identifier = identifier;
+  public IDWfNodeBuilder(String prefix) {
+    this.prefix = prefix;
   }
 
   @Override
   public void mkNamedTask(ASTTask task) {
-    ASTStereotype stereotype  = task.getModifier().isPresentStereotype() ? task.getModifier().getStereotype():null;
-    mkNode(mkUniqueString(task.getName()), NodeType.TASK, stereotype ,false, false);
+    ASTStereotype stereotype =
+        task.getModifier().isPresentStereotype() ? task.getModifier().getStereotype() : null;
+    mkNode(task.getName(), NodeType.TASK, stereotype, false, false);
   }
 
   @Override
   public void mkNamedEvent(ASTNamedEvent event) {
-    ASTStereotype stereotype  = event.getModifier().isPresentStereotype() ? event.getModifier().getStereotype():null;
+    ASTStereotype stereotype =
+        event.getModifier().isPresentStereotype() ? event.getModifier().getStereotype() : null;
 
-    mkNode(mkUniqueString(event.getName()), NodeType.EVENT, stereotype,false, false);
+    mkNode(event.getName(), NodeType.EVENT, stereotype, false, false);
   }
-
 
   @Override
   public void mkNamedGateway(ASTNamedGateway gateway) {
@@ -51,27 +48,26 @@ public class IDWfNodeBuilder implements WfBuilder {
     } else if (gateway.getType().isInclusive()) {
       nodeType = isMerge ? NodeType.OR_MERGE : NodeType.OR_SPLIT;
     } else {
-       nodeType = isMerge ? NodeType.AND_MERGE : NodeType.AND_SPLIT;
+      nodeType = isMerge ? NodeType.AND_MERGE : NodeType.AND_SPLIT;
     }
 
-    mkNode(mkUniqueString(gateway.getName()), nodeType,null ,false, false);
+    mkNode(gateway.getName(), nodeType, null, false, false);
   }
 
   @Override
-  public void mkStartEvent(
-          ASTNamedEvent event
-  ) {
-    ASTStereotype stereotype  =  event.getModifier().isPresentStereotype() ? event.getModifier().getStereotype():null;
+  public void mkStartEvent(ASTNamedEvent event) {
+    ASTStereotype stereotype =
+        event.getModifier().isPresentStereotype() ? event.getModifier().getStereotype() : null;
 
-    mkNode(mkUniqueString(event.getName()), NodeType.EVENT, stereotype,true, false);
+    mkNode(event.getName(), NodeType.EVENT, stereotype, true, false);
   }
 
   @Override
   public void mkEndEvent(ASTNamedEvent event) {
-    ASTStereotype stereotype  =  event.getModifier().isPresentStereotype() ? event.getModifier().getStereotype():null;
+    ASTStereotype stereotype =
+        event.getModifier().isPresentStereotype() ? event.getModifier().getStereotype() : null;
 
-
-    mkNode(mkUniqueString(event.getName()), NodeType.EVENT, stereotype,false, true);
+    mkNode(event.getName(), NodeType.EVENT, stereotype, false, true);
   }
 
   @Override
@@ -80,37 +76,35 @@ public class IDWfNodeBuilder implements WfBuilder {
   }
 
   @Override
-  public IDWfNode resolveNode(String label) {
-    Optional<IDWfNode> res =
-            allNodes.stream().filter(node -> node.getLabel().equals(label)).findAny();
+  public IDWfNode getWfNode(String label) {
 
-    if (res.isEmpty()) {
-      Log.error(
-              String.format(
-                      "Trying to get node %s from Node builder but this node  is not present", label));
+    IDWfNode res = allNodes.getOrDefault(label, null);
+
+    if (res == null) {
+      Log.error("Trying to get node " + label + " from Node builder but this node  is not present");
       assert false;
     }
-    return res.get();
+    return res;
   }
 
   @Override
   public Set<WfNode> getAllNodes() {
-    return allNodes.stream().map(n->(WfNode)n).collect(Collectors.toSet());
+    return new HashSet<>(allNodes.values());
   }
 
+  private void mkNode(
+      String label, NodeType nodeType, ASTStereotype stereotype, boolean isStart, boolean isEnd) {
 
-  private void mkNode(String label, NodeType nodeType, ASTStereotype stereotype , boolean isStart, boolean isEnd) {
-    if (allNodes.stream().noneMatch(node -> node.getLabel().equals(label))) {
-      IDWfNode res = new IDWfNode(label, nodeType, stereotype ,isStart, isEnd);
-      allNodes.add(res);
+    String newLabel = addPrefix(label);
+    if (!allNodes.containsKey(label)) {
+      IDWfNode res = new IDWfNode(newLabel, nodeType, stereotype, isStart, isEnd);
+      allNodes.put(label, res);
     }
-
   }
 
-  private String mkUniqueString(String name) {
-    return identifier.apply(name);
+  private String addPrefix(String name) {
+    return this.prefix + name;
   }
-
 
   @Override
   public void build() {
@@ -120,11 +114,8 @@ public class IDWfNodeBuilder implements WfBuilder {
     for (ASTSequenceFlow sequenceFlow : sequenceFlows) {
       for (int i = 0; i < sequenceFlow.getPathList().size() - 1; i++) {
 
-        IDWfNode src =
-            resolveNode(identifier.apply(sequenceFlow.getPathList().get(i).getNodeRef().getBaseName()));
-        IDWfNode tgt =
-            resolveNode(
-                identifier.apply(sequenceFlow.getPathList().get(i + 1).getNodeRef().getBaseName()));
+        IDWfNode src = getWfNode(sequenceFlow.getPathList().get(i).getNodeRef().getBaseName());
+        IDWfNode tgt = getWfNode(sequenceFlow.getPathList().get(i + 1).getNodeRef().getBaseName());
 
         if (successors.containsKey(src)) {
           successors.get(src).add(tgt);

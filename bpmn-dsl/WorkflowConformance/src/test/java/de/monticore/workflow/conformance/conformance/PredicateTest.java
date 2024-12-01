@@ -1,12 +1,11 @@
 package de.monticore.workflow.conformance.conformance;
 
-import de.monticore.bpmn.conformance.datastructures.interf.WfBuilder;
-import de.monticore.bpmn.conformance.datastructures.WfNodeFactory;
-import de.monticore.bpmn.workflow._ast.ASTWorkflowCompilationUnit;
 import de.monticore.bpmn.conformance.conformance.ctlConformance.PredicateGenerator;
-import de.monticore.workflow.conformance.AbstractConfTest;
-import de.monticore.bpmn.conformance.datastructures.IDWfNodeBuilder;
+import de.monticore.bpmn.conformance.datastructures.WfNodeFactory;
+import de.monticore.bpmn.conformance.datastructures.interf.WfBuilder;
 import de.monticore.bpmn.conformance.datastructures.interf.WfNode;
+import de.monticore.bpmn.workflow._ast.ASTWorkflowCompilationUnit;
+import de.monticore.workflow.conformance.AbstractConfTest;
 import de.se_rwth.commons.logging.Log;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,14 +19,14 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 class PredicateTest extends AbstractConfTest {
 
-  private WfBuilder builder = new IDWfNodeBuilder(i->i);
+  private WfBuilder builder;
 
   public void init(String model) {
     super.init();
     String modelDir = "de.monticore.workflow.ctlConformance.predicate.";
     ASTWorkflowCompilationUnit ast = loadModel(modelDir + model);
 
-    WfNodeFactory.buildWorkflowNodes(ast, builder);
+    builder = WfNodeFactory.workflowBuilder(ast, "");
   }
 
   @BeforeEach
@@ -43,12 +42,13 @@ class PredicateTest extends AbstractConfTest {
     init("XOR");
     List<WfNode> tasks = resolveNode(nodeNames);
 
-    WfNode res = builder.resolveNode("S");
+    WfNode res = builder.getWfNode("S");
 
     // when
     Predicate<List<WfNode>> predicate = PredicateGenerator.postPredicate(res);
 
     // then
+    Assertions.assertNotNull(predicate);
     Assertions.assertEquals(predicate.test(tasks), result);
   }
 
@@ -76,7 +76,7 @@ class PredicateTest extends AbstractConfTest {
     List<WfNode> tasks = resolveNode(nodeNames);
 
     // when
-    Predicate<List<WfNode>> predicate = PredicateGenerator.postPredicate(builder.resolveNode("S"));
+    Predicate<List<WfNode>> predicate = PredicateGenerator.postPredicate(builder.getWfNode("S"));
 
     // then
     Assertions.assertEquals(predicate.test(tasks), result);
@@ -106,7 +106,7 @@ class PredicateTest extends AbstractConfTest {
     List<WfNode> tasks = resolveNode(nodeNames);
 
     // when
-    Predicate<List<WfNode>> predicate = PredicateGenerator.postPredicate(builder.resolveNode("S"));
+    Predicate<List<WfNode>> predicate = PredicateGenerator.postPredicate(builder.getWfNode("S"));
 
     // then
     Assertions.assertEquals(predicate.test(tasks), result);
@@ -135,11 +135,11 @@ class PredicateTest extends AbstractConfTest {
     List<WfNode> tasks = resolveNode(nodeNames);
 
     // when
-    Predicate<List<WfNode>> predicate = PredicateGenerator.postPredicate(builder.resolveNode("S"));
+    Predicate<List<WfNode>> predicate = PredicateGenerator.postPredicate(builder.getWfNode("S"));
 
     // then
-      Assertions.assertNotNull(predicate);
-      Assertions.assertEquals(predicate.test(tasks), result);
+    Assertions.assertNotNull(predicate);
+    Assertions.assertEquals(predicate.test(tasks), result);
   }
 
   static Stream<Arguments> complexSource() {
@@ -158,8 +158,8 @@ class PredicateTest extends AbstractConfTest {
     List<WfNode> res = new ArrayList<>();
 
     for (String name : nodeNames) {
-      builder.resolveNode(name);
-      WfNode node = builder.resolveNode(name);
+      builder.getWfNode(name);
+      WfNode node = builder.getWfNode(name);
       res.add(node);
     }
     return res;
