@@ -9,17 +9,14 @@ import de.monticore.bpmn.wf2lts.datastructure.IntermediateGraphWithScopes;
 import de.monticore.bpmn.wf2lts.datastructure.LTS;
 import de.monticore.bpmn.wf2lts.scopes.GatewayScope;
 import de.monticore.bpmn.wf2lts.scopes.SubProcessScope;
+import de.monticore.bpmn.workflow.WorkflowMill;
 import de.monticore.bpmn.workflow._ast.ASTEventType;
 import de.monticore.bpmn.workflow._ast.ASTFlowNode;
 import de.monticore.bpmn.workflow._ast.ASTIOSpecificationBuilder;
-import de.monticore.bpmn.workflow._ast.ASTInlineEventBuilder;
 import de.monticore.bpmn.workflow._ast.ASTNamedEvent;
-import de.monticore.bpmn.workflow._ast.ASTNamedEventBuilder;
 import de.monticore.bpmn.workflow._ast.ASTSubProcess;
-import de.monticore.bpmn.workflow._ast.ASTSubProcessBuilder;
 import de.monticore.bpmn.workflow._ast.ASTSubProcessType;
 import de.monticore.bpmn.workflow._ast.ASTTask;
-import de.monticore.bpmn.workflow._ast.ASTTaskBuilder;
 import de.monticore.bpmn.workflow._ast.SequenceFlowBuilder;
 import de.monticore.lts.LTS2Mermaid;
 import de.se_rwth.commons.logging.Log;
@@ -35,20 +32,26 @@ class DefaultGraph2LTSTransformerTest {
   @BeforeEach
   void setUp() {
     Log.init();
+    WorkflowMill.init();
   }
 
   private ASTSubProcess buildSubprocess(String subProcessName, String gTaskName) {
-    var start = new ASTInlineEventBuilder().setType(ASTEventType.START).build();
-    var end = new ASTInlineEventBuilder().setType(ASTEventType.END).build();
-    var taskG = new ASTTaskBuilder().setName(gTaskName).build();
+    var start = WorkflowMill.inlineEventBuilder().setType(ASTEventType.START).build();
+    var end = WorkflowMill.inlineEventBuilder().setType(ASTEventType.END).build();
+    var taskG =
+        WorkflowMill.taskBuilder()
+            .setName(gTaskName)
+            .setModifier(WorkflowMill.modifierBuilder().setStereotypeAbsent().build())
+            .build();
 
     var start2G = new SequenceFlowBuilder().setSource(start).setTarget(taskG).build();
     var g2End = new SequenceFlowBuilder().setSource(taskG).setTarget(end).build();
     start.getOutgoingsList().add(start2G);
     taskG.getOutgoingsList().add(g2End);
 
-    return new ASTSubProcessBuilder()
+    return WorkflowMill.subProcessBuilder()
         .setName(subProcessName)
+        .setModifier(WorkflowMill.modifierBuilder().setStereotypeAbsent().build())
         .setType(ASTSubProcessType.SUBPROCESS)
         .setIOSpecification(new ASTIOSpecificationBuilder().build())
         .setFlowElementsList(List.of(start, end, taskG))
@@ -88,13 +91,33 @@ class DefaultGraph2LTSTransformerTest {
       String cTaskName,
       String startEventName,
       String endEventName) {
-    ASTTask aTask = new ASTTaskBuilder().setName(aTaskName).build();
-    ASTTask bTask = new ASTTaskBuilder().setName(bTaskName).build();
-    ASTTask cTask = new ASTTaskBuilder().setName(cTaskName).build();
+    ASTTask aTask =
+        WorkflowMill.taskBuilder()
+            .setName(aTaskName)
+            .setModifier(WorkflowMill.modifierBuilder().setStereotypeAbsent().build())
+            .build();
+    ASTTask bTask =
+        WorkflowMill.taskBuilder()
+            .setName(bTaskName)
+            .setModifier(WorkflowMill.modifierBuilder().setStereotypeAbsent().build())
+            .build();
+    ASTTask cTask =
+        WorkflowMill.taskBuilder()
+            .setName(cTaskName)
+            .setModifier(WorkflowMill.modifierBuilder().setStereotypeAbsent().build())
+            .build();
     ASTNamedEvent start =
-        new ASTNamedEventBuilder().setType(ASTEventType.START).setName(startEventName).build();
+        WorkflowMill.namedEventBuilder()
+            .setType(ASTEventType.START)
+            .setName(startEventName)
+            .setModifier(WorkflowMill.modifierBuilder().setStereotypeAbsent().build())
+            .build();
     ASTNamedEvent end =
-        new ASTNamedEventBuilder().setType(ASTEventType.END).setName(endEventName).build();
+        WorkflowMill.namedEventBuilder()
+            .setType(ASTEventType.END)
+            .setName(endEventName)
+            .setModifier(WorkflowMill.modifierBuilder().setStereotypeAbsent().build())
+            .build();
 
     Map<ASTFlowNode, List<EdgeTo<ASTFlowNode>>> edges =
         Map.ofEntries(

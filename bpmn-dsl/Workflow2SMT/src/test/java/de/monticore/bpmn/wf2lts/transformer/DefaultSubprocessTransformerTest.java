@@ -9,17 +9,14 @@ import de.monticore.bpmn.wf2lts.datastructure.LTS;
 import de.monticore.bpmn.wf2lts.datastructure.LTS.State;
 import de.monticore.bpmn.wf2lts.datastructure.LTS.Transition;
 import de.monticore.bpmn.wf2lts.scopes.SubProcessScope;
+import de.monticore.bpmn.workflow.WorkflowMill;
 import de.monticore.bpmn.workflow._ast.ASTEventTriggerTerminateBuilder;
 import de.monticore.bpmn.workflow._ast.ASTEventType;
 import de.monticore.bpmn.workflow._ast.ASTFlowNode;
 import de.monticore.bpmn.workflow._ast.ASTGatewayDirection;
 import de.monticore.bpmn.workflow._ast.ASTGatewayTypeBuilder;
 import de.monticore.bpmn.workflow._ast.ASTIOSpecificationBuilder;
-import de.monticore.bpmn.workflow._ast.ASTNamedEventBuilder;
-import de.monticore.bpmn.workflow._ast.ASTNamedGatewayBuilder;
-import de.monticore.bpmn.workflow._ast.ASTSubProcessBuilder;
 import de.monticore.bpmn.workflow._ast.ASTSubProcessType;
-import de.monticore.bpmn.workflow._ast.ASTTaskBuilder;
 import de.monticore.bpmn.workflow._ast.SequenceFlow;
 import de.monticore.bpmn.workflow._ast.SequenceFlowBuilder;
 import de.se_rwth.commons.logging.Log;
@@ -35,6 +32,7 @@ class DefaultSubprocessTransformerTest {
   @BeforeEach
   void setUp() {
     Log.init();
+    WorkflowMill.init();
   }
 
   private SubProcessScope buildSubProcessScope(
@@ -45,23 +43,41 @@ class DefaultSubprocessTransformerTest {
       String endEventName,
       String termEventName) {
     var startEvent =
-        new ASTNamedEventBuilder().setName(startEventName).setType(ASTEventType.START).build();
-    var taskA = new ASTTaskBuilder().setName(taskAName).build();
-    var taskB = new ASTTaskBuilder().setName(taskBName).build();
+        WorkflowMill.namedEventBuilder()
+            .setName(startEventName)
+            .setType(ASTEventType.START)
+            .setModifier(WorkflowMill.modifierBuilder().setStereotypeAbsent().build())
+            .build();
+    var taskA =
+        WorkflowMill.taskBuilder()
+            .setName(taskAName)
+            .setModifier(WorkflowMill.modifierBuilder().setStereotypeAbsent().build())
+            .build();
+    var taskB =
+        WorkflowMill.taskBuilder()
+            .setName(taskBName)
+            .setModifier(WorkflowMill.modifierBuilder().setStereotypeAbsent().build())
+            .build();
     var xorGateway =
-        new ASTNamedGatewayBuilder()
+        WorkflowMill.namedGatewayBuilder()
             .setName(xorGatewayName)
             .setType(new ASTGatewayTypeBuilder().setExclusive(true).build())
             .setDirection(ASTGatewayDirection.SPLIT)
+            .setModifier(WorkflowMill.modifierBuilder().setStereotypeAbsent().build())
             .build();
     var termEvent =
-        new ASTNamedEventBuilder()
+        WorkflowMill.namedEventBuilder()
             .setName(termEventName)
             .setTrigger(new ASTEventTriggerTerminateBuilder().build())
             .setType(ASTEventType.END)
+            .setModifier(WorkflowMill.modifierBuilder().setStereotypeAbsent().build())
             .build();
     var endEvent =
-        new ASTNamedEventBuilder().setName(endEventName).setType(ASTEventType.END).build();
+        WorkflowMill.namedEventBuilder()
+            .setName(endEventName)
+            .setType(ASTEventType.END)
+            .setModifier(WorkflowMill.modifierBuilder().setStereotypeAbsent().build())
+            .build();
 
     var start2A = new SequenceFlowBuilder().setSource(startEvent).setTarget(taskA).build();
     var a2Xor = new SequenceFlowBuilder().setSource(taskA).setTarget(xorGateway).build();
@@ -84,11 +100,12 @@ class DefaultSubprocessTransformerTest {
     termEvent.getIncomingsList().add(b2Term);
 
     var subprocess =
-        new ASTSubProcessBuilder()
+        WorkflowMill.subProcessBuilder()
             .setName("T")
             .setType(ASTSubProcessType.SUBPROCESS)
             .setIOSpecification(new ASTIOSpecificationBuilder().build())
             .setFlowElementsList(List.of(startEvent, taskA, taskB, xorGateway, endEvent, termEvent))
+            .setModifier(WorkflowMill.modifierBuilder().setStereotypeAbsent().build())
             .build();
 
     return new SubProcessScope(subprocess);
