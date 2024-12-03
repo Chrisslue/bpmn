@@ -1,2 +1,0 @@
-
-process Concrete { event start S; task T1; S -> T3;}

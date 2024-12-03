@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class PredicateGenerator {
+public class PredicateBuilder {
 
   public static Predicate<List<WfNode>> postPredicate(WfNode node) {
     if (node.getSuccessors().isEmpty()) {
@@ -30,11 +30,54 @@ public class PredicateGenerator {
     return null;
   }
 
+  public static Predicate<List<WfNode>> prePredicate(WfNode node) {
+    if (node.getPredecessors().isEmpty()) {
+      return n -> true;
+    }
+
+    if (node.getPredecessors().size() == 1) {
+      return prePredicateRecursive(node.getPredecessors().iterator().next());
+    }
+
+    if (node.getNodeType().isGateway()) {
+      Log.error(String.format("cannot compute post predicate of %s", node));
+      assert false;
+    }
+
+    Log.error(
+        String.format(
+            "Trying to compute post predicate of a node %s having more than one successors", node));
+    assert false;
+    return null;
+  }
+
+  private static Predicate<List<WfNode>> prePredicateRecursive(WfNode node) {
+
+    List<Predicate<List<WfNode>>> prevprev =
+        node.getPredecessors().stream()
+            .map(PredicateBuilder::prePredicateRecursive)
+            .collect(Collectors.toList());
+
+    switch (node.getNodeType()) {
+      case TASK:
+      case EVENT:
+        return mkVar(node);
+      case XOR_MERGE:
+      case OR_MERGE:
+        return mkOr(prevprev);
+      case AND_MERGE:
+        return mkAnd(prevprev);
+      default:
+        assert prevprev.size() == 1;
+        return prevprev.iterator().next();
+    }
+  }
+
   private static Predicate<List<WfNode>> postPredicateRecursive(WfNode node) {
 
     List<Predicate<List<WfNode>>> sucsuc =
         node.getSuccessors().stream()
-            .map(PredicateGenerator::postPredicateRecursive)
+            .map(PredicateBuilder::postPredicateRecursive)
             .collect(Collectors.toList());
 
     switch (node.getNodeType()) {

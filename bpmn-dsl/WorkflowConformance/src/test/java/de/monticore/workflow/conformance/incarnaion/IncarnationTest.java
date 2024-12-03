@@ -19,7 +19,6 @@ public class IncarnationTest extends AbstractConfTest {
 
   ASTWorkflowCompilationUnit concrete;
   ASTWorkflowCompilationUnit reference;
-  private final String modelDir = "de.monticore.workflow.conformance.conf.";
 
   @BeforeEach
   public void setup() {

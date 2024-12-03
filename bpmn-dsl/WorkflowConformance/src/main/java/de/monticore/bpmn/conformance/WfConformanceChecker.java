@@ -24,13 +24,13 @@ public class WfConformanceChecker {
 
   private final Set<CheckResult> checkResult = new HashSet<>();
 
-  private Set<ConfUtils.WfConfParams> confParams = new HashSet<>();
+  private final Set<ConfUtils.WfConfParams> confParams = new HashSet<>();
 
   public WfConformanceChecker() {
     confParams.add(STEREOTYPES_MAPPING);
     confParams.add(NAME_MAPPING);
   }
-
+  //todo  return a CheckResult.Result instead ?
   /** procedure to check if a node conforms */
   public boolean checkConformance(
       ASTWorkflowCompilationUnit concrete, ASTWorkflowCompilationUnit reference, String mapping) {
@@ -66,27 +66,20 @@ public class WfConformanceChecker {
     return checkAndPrintResults();
   }
 
-  public IncarnationStrategy<WfNode> buildIncarnationStrategy(WfBuilder builder, String mapping) {
+  private IncarnationStrategy<WfNode> buildIncarnationStrategy(WfBuilder builder, String mapping) {
     ComposedIncStrategy incStrategy = new ComposedIncStrategy(builder, mapping);
 
     // in case conformance params strategies were not set
-    if (confParams == null
-        || (!confParams.contains(NAME_MAPPING) && !confParams.contains(STEREOTYPES_MAPPING))) {
-      Log.info(
-          "No mapping strategy not set. The Tool will use combined Name adn Stereotype Mapping",
-          logger);
+    incStrategy.addIncStrategy(new StereotypesIncStrategy(builder, mapping));
+    if (confParams.contains(NAME_MAPPING)) {
       incStrategy.addIncStrategy(new NameIncStrategy(builder));
-      incStrategy.addIncStrategy(new StereotypesIncStrategy(builder, mapping));
-    } else if (confParams.contains(NAME_MAPPING)) {
-      incStrategy.addIncStrategy(new NameIncStrategy(builder));
-    } else {
-      incStrategy.addIncStrategy(new StereotypesIncStrategy(builder, mapping));
     }
+
     return incStrategy;
   }
 
-  public void setConfParams(Set<ConfUtils.WfConfParams> confParams) {
-    this.confParams = confParams;
+  public void addConfParams(ConfUtils.WfConfParams param) {
+    this.confParams.add(param);
   }
 
   public Set<CheckResult> getCheckResult() {
@@ -102,7 +95,7 @@ public class WfConformanceChecker {
 
     List<WfNode> unKnown =
         checkResult.stream()
-            .filter(n -> n.getResult().equals(CheckResult.Result.NON_CONFORM))
+            .filter(n -> n.getResult().equals(CheckResult.Result.UNKNOWN))
             .map(CheckResult::getNode)
             .collect(Collectors.toList());
 

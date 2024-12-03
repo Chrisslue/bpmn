@@ -12,7 +12,6 @@ public class StereotypesIncStrategy implements IncarnationStrategy<WfNode> {
 
   public StereotypesIncStrategy(WfBuilder wfBuilder, String mapping) {
     this.wfBuilder = wfBuilder;
-
     this.mapping = mapping;
   }
 

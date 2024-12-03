@@ -22,22 +22,40 @@ public class ConfWfVisitor implements WfNodeVisitor {
 
   private final Set<WfNode> startNodes;
 
+  private boolean lowerBoundOnly = false;
+
+  private boolean isBackward = false;  //todo handle that differently
+
   private final Map<BranchID, CheckResult> lowerBoundResults;
   private final Map<BranchID, CheckResult> upperboundResults;
+
+  private enum AbortRule {
+    SATISFIED_PREDICATE,
+    LOOP_DISCOVERED,
+    END_NODE_REACHED,
+    RETURN_TO_START
+  }
 
   public ConfWfVisitor(
       WfNode conNode,
       Set<WfNode> startNodes,
       Predicate<List<WfNode>> predicate,
-      IncarnationStrategy<WfNode> inc) {
+      IncarnationStrategy<WfNode> inc,
+      boolean lowerBoundOnly) {
     this.predicate = predicate;
     this.inc = inc;
     this.node = conNode;
     this.startNodes = startNodes;
     this.upperboundResults = new HashMap<>();
     this.lowerBoundResults = new HashMap<>();
+    this.lowerBoundOnly = lowerBoundOnly;
   }
 
+  public void setBackward( ){
+    isBackward = true;
+  }
+
+  // todo break earlier when lower-bound only
   @Override
   public boolean accept(WfNode node, BranchID branchId) {
     if (lowerBoundResults.containsKey(branchId) && upperboundResults.containsKey(branchId)) {
@@ -87,7 +105,7 @@ public class ConfWfVisitor implements WfNodeVisitor {
       return false;
     }
 
-    if (node.isEnd() | node.getSuccessors().isEmpty()) {
+    if (  (isBackward && node.getPredecessors().isEmpty()) ||  (!isBackward && node.getSuccessors().isEmpty())) { //todo handel differently
       Log.info(
           String.format(
               "Aborting upper-bound,  branch %s, reason: %s", branchId, AbortRule.END_NODE_REACHED),
@@ -104,15 +122,56 @@ public class ConfWfVisitor implements WfNodeVisitor {
   }
 
   public List<WfNode> resolveReferenceNodes(BranchID branchId) {
-    return branchId.getNodeList().stream()
+     List<WfNode> concreteNodeList = new ArrayList<>(branchId.getNodeList());
+     concreteNodeList.remove(node);
+
+    return concreteNodeList.stream()
         .map(inc::getReferenceElements)
         .flatMap(List::stream)
         .collect(Collectors.toList());
   }
 
+  // todo  try to optimize it later
+  public CheckResult getResult() {
+    CheckResult lowerBoundRes = null;
+
+    for (CheckResult res : lowerBoundResults.values()) {
+      if (res.isNonConform()) {
+        lowerBoundRes = res;
+        break;
+      }
+    }
+
+    if (lowerBoundRes == null) {
+      return lowerBoundRes = CheckResult.mkConform(node);
+    }
+
+    if (lowerBoundOnly) {
+      return lowerBoundRes;
+    }
+
+    CheckResult upperBoundRes = null;
+    for (CheckResult res : upperboundResults.values()) {
+      if (res.isNonConform()) {
+        upperBoundRes = res;
+        break;
+      }
+    }
+
+    // upper bound is CONFORM than lower bound is also CONFORM
+    if (upperBoundRes == null) {
+      return CheckResult.mkConform(node);
+    }
+
+    // upper-bound NON-CONFORM && lower-bound NON-CONFORM
+    if (lowerBoundRes.isConform()) {
+      return CheckResult.mkUnknown(node, upperBoundRes.getBranchId().get());
+    } else {
+      return CheckResult.mkNonConform(node, upperBoundRes.getBranchId().get());
+    }
+  }
+
   public void printResult() {
-    Log.println("");
-    Log.info(String.format("--- Result for forward traversing of Node %s --- ", node), "");
 
     Log.println("");
 
@@ -124,43 +183,13 @@ public class ConfWfVisitor implements WfNodeVisitor {
 
     Log.println("");
 
-    Log.info("---------- upperbound Results: ----------", "");
+    if (!lowerBoundOnly) {
+      Log.info("---------- upperbound Results: ----------", "");
 
-    for (var res : upperboundResults.entrySet()) {
-      Log.info(String.format("branch: %s, res= %s", res.getKey(), res.getValue().getResult()), "");
-    }
-  }
-
-  public CheckResult getResult() {
-    CheckResult lowerBound = CheckResult.mkConform(this.node);
-    CheckResult upperBound = CheckResult.mkConform(this.node);
-
-    for (CheckResult res : lowerBoundResults.values()) {
-      if (res.isConform()) {
-        lowerBound = res;
+      for (var res : upperboundResults.entrySet()) {
+        Log.info(
+            String.format("branch: %s, res= %s", res.getKey(), res.getValue().getResult()), "");
       }
     }
-
-    for (CheckResult res : upperboundResults.values()) {
-      if (res.isNonConform()) {
-        upperBound = res;
-      }
-    }
-
-    if (upperBound.isConform()) {
-      return upperBound;
-    }
-
-    if (lowerBound.isConform()) {
-      return CheckResult.mkUnknown(this.node, upperBound.getBranchId().get());
-    }
-    return upperBound;
-  }
-
-  private enum AbortRule {
-    SATISFIED_PREDICATE,
-    LOOP_DISCOVERED,
-    END_NODE_REACHED,
-    RETURN_TO_START
   }
 }

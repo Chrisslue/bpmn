@@ -1,13 +1,10 @@
-package de.monticore.workflow.conformance.conformance;
+package de.monticore.workflow.conformance.conformance.predicate;
 
-import de.monticore.bpmn.conformance.conformance.ctlConformance.PredicateGenerator;
-import de.monticore.bpmn.conformance.datastructures.WfNodeFactory;
+import de.monticore.bpmn.conformance.conformance.ctlConformance.PredicateBuilder;
 import de.monticore.bpmn.conformance.datastructures.interf.WfBuilder;
 import de.monticore.bpmn.conformance.datastructures.interf.WfNode;
-import de.monticore.bpmn.workflow._ast.ASTWorkflowCompilationUnit;
 import de.monticore.workflow.conformance.AbstractConfTest;
 import de.se_rwth.commons.logging.Log;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -19,15 +16,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 class PredicateTest extends AbstractConfTest {
 
+  private final String modelDir = "de.monticore.workflow.conformance.predicate.";
   private WfBuilder builder;
-
-  public void init(String model) {
-    super.init();
-    String modelDir = "de.monticore.workflow.ctlConformance.predicate.";
-    ASTWorkflowCompilationUnit ast = loadModel(modelDir + model);
-
-    builder = WfNodeFactory.workflowBuilder(ast, "");
-  }
 
   @BeforeEach
   public void setup() {
@@ -35,24 +25,7 @@ class PredicateTest extends AbstractConfTest {
     Log.init();
   }
 
-  @ParameterizedTest
-  @MethodSource("xorSource")
-  public void testPostPredicateXor(List<String> nodeNames, boolean result) {
-    // given
-    init("XOR");
-    List<WfNode> tasks = resolveNode(nodeNames);
-
-    WfNode res = builder.getWfNode("S");
-
-    // when
-    Predicate<List<WfNode>> predicate = PredicateGenerator.postPredicate(res);
-
-    // then
-    Assertions.assertNotNull(predicate);
-    Assertions.assertEquals(predicate.test(tasks), result);
-  }
-
-  static Stream<Arguments> xorSource() {
+  static Stream<Arguments> xorSplitSource() {
     return Stream.of(
         Arguments.of(List.of("T1"), true),
         Arguments.of(List.of("T2"), true),
@@ -69,16 +42,36 @@ class PredicateTest extends AbstractConfTest {
   }
 
   @ParameterizedTest
-  @MethodSource("orSource")
-  public void testPostPredicateOr(List<String> nodeNames, boolean result) {
+  @MethodSource("xorSplitSource")
+  public void testPostPredicateXor(List<String> nodeNames, boolean result) {
     // given
-    init("OR");
-    List<WfNode> tasks = resolveNode(nodeNames);
+    builder = parseAndCreateBuilder(modelDir + "post.XOR", "");
+    List<WfNode> tasks = resolveNodeFormBuilder(nodeNames, builder);
+
+    WfNode res = builder.getWfNode("S");
 
     // when
-    Predicate<List<WfNode>> predicate = PredicateGenerator.postPredicate(builder.getWfNode("S"));
+    Predicate<List<WfNode>> predicate = PredicateBuilder.postPredicate(res);
 
     // then
+    Assertions.assertNotNull(predicate);
+    Assertions.assertEquals(predicate.test(tasks), result);
+  }
+
+  @ParameterizedTest
+  @MethodSource("xorSplitSource")
+  public void testPrePredicateXor(List<String> nodeNames, boolean result) {
+    // given
+    builder = parseAndCreateBuilder(modelDir + "post.XOR", "");
+    List<WfNode> tasks = resolveNodeFormBuilder(nodeNames, builder);
+
+    WfNode res = builder.getWfNode("S");
+
+    // when
+    Predicate<List<WfNode>> predicate = PredicateBuilder.postPredicate(res);
+
+    // then
+    Assertions.assertNotNull(predicate);
     Assertions.assertEquals(predicate.test(tasks), result);
   }
 
@@ -99,16 +92,17 @@ class PredicateTest extends AbstractConfTest {
   }
 
   @ParameterizedTest
-  @MethodSource("andSource")
-  public void testPostPredicateAnd(List<String> nodeNames, boolean result) {
+  @MethodSource("orSource")
+  public void testPostPredicateOr(List<String> nodeNames, boolean result) {
     // given
-    init("AND");
-    List<WfNode> tasks = resolveNode(nodeNames);
+    builder = parseAndCreateBuilder(modelDir + "post.OR", "");
+    List<WfNode> tasks = resolveNodeFormBuilder(nodeNames, builder);
 
     // when
-    Predicate<List<WfNode>> predicate = PredicateGenerator.postPredicate(builder.getWfNode("S"));
+    Predicate<List<WfNode>> predicate = PredicateBuilder.postPredicate(builder.getWfNode("S"));
 
     // then
+    Assertions.assertNotNull(predicate);
     Assertions.assertEquals(predicate.test(tasks), result);
   }
 
@@ -128,17 +122,30 @@ class PredicateTest extends AbstractConfTest {
   }
 
   @ParameterizedTest
-  @MethodSource("complexSource")
-  public void testPostPredicateCOMPLEX(List<String> nodeNames, boolean result) {
+  @MethodSource("andSource")
+  public void testPostPredicateAnd(List<String> nodeNames, boolean result) {
     // given
-    init("COMPLEX");
-    List<WfNode> tasks = resolveNode(nodeNames);
+    builder = parseAndCreateBuilder(modelDir + "post.AND", "");
+    List<WfNode> tasks = resolveNodeFormBuilder(nodeNames, builder);
 
     // when
-    Predicate<List<WfNode>> predicate = PredicateGenerator.postPredicate(builder.getWfNode("S"));
-
-    // then
+    Predicate<List<WfNode>> predicate = PredicateBuilder.postPredicate(builder.getWfNode("S"));
     Assertions.assertNotNull(predicate);
+    // then
+    Assertions.assertEquals(predicate.test(tasks), result);
+  }
+
+  @ParameterizedTest
+  @MethodSource("andSource")
+  public void testPrePredicateAnd(List<String> nodeNames, boolean result) {
+    // given
+    builder = parseAndCreateBuilder(modelDir + "pre.AND", "");
+    List<WfNode> tasks = resolveNodeFormBuilder(nodeNames, builder);
+
+    // when
+    Predicate<List<WfNode>> predicate = PredicateBuilder.prePredicate(builder.getWfNode("S"));
+    Assertions.assertNotNull(predicate);
+    // then
     Assertions.assertEquals(predicate.test(tasks), result);
   }
 
@@ -154,14 +161,18 @@ class PredicateTest extends AbstractConfTest {
         Arguments.of(List.of("T1", "T4"), false));
   }
 
-  public List<WfNode> resolveNode(List<String> nodeNames) {
-    List<WfNode> res = new ArrayList<>();
+  @ParameterizedTest
+  @MethodSource("complexSource")
+  public void testPostPredicateCOMPLEX(List<String> nodeNames, boolean result) {
+    // given
+    builder = parseAndCreateBuilder(modelDir + "COMPLEX", "");
+    List<WfNode> tasks = resolveNodeFormBuilder(nodeNames, builder);
 
-    for (String name : nodeNames) {
-      builder.getWfNode(name);
-      WfNode node = builder.getWfNode(name);
-      res.add(node);
-    }
-    return res;
+    // when
+    Predicate<List<WfNode>> predicate = PredicateBuilder.postPredicate(builder.getWfNode("S"));
+
+    // then
+    Assertions.assertNotNull(predicate);
+    Assertions.assertEquals(predicate.test(tasks), result);
   }
 }

@@ -126,12 +126,12 @@ public class IDWfNodeBuilder implements WfBuilder {
         if (predecessors.containsKey(tgt)) {
           predecessors.get(tgt).add(src);
         } else {
-          predecessors.put(src, new HashSet<>(List.of(src)));
+          predecessors.put(tgt, new HashSet<>(List.of(src)));
         }
       }
-
-      predecessors.forEach(IDWfNode::addAllPredecessors);
-      successors.forEach(IDWfNode::addAllSuccessors);
     }
+    predecessors.forEach(IDWfNode::addAllPredecessors);
+    successors.forEach(IDWfNode::addAllSuccessors);
+    System.out.println();
   }
 }

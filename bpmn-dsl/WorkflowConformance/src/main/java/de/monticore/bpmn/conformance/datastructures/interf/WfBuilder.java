@@ -27,8 +27,8 @@ public interface WfBuilder { // todo find solution with parameter
   void mkNamedGateway(ASTNamedGateway gateway);
 
   /***
-   * Transform the start event of the workflow  to a Workflow Node.
-   * @param label the label of the start  event.
+   * Transform the start event of the workflow to a Workflow Node.
+   * @param label the label of the start event.
    */
   void mkStartEvent(ASTNamedEvent label);
 

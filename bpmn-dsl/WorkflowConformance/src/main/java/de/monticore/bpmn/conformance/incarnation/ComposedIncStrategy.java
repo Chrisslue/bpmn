@@ -29,7 +29,6 @@ public class ComposedIncStrategy implements IncarnationStrategy<WfNode> {
         return refElements;
       }
     }
-
     return refElements;
   }
 
