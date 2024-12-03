@@ -1,7 +1,6 @@
 package de.monticore.workflow.conformance;
 
-import static de.monticore.bpmn.conformance.datastructures.utils.CheckResult.Result.CONFORM;
-import static de.monticore.bpmn.conformance.datastructures.utils.CheckResult.Result.NON_CONFORM;
+import static de.monticore.bpmn.conformance.datastructures.utils.CheckResult.Result.*;
 
 import de.monticore.bpmn.conformance.WfConformanceChecker;
 import de.monticore.bpmn.conformance.datastructures.utils.CheckResult;
@@ -9,8 +8,6 @@ import de.monticore.bpmn.workflow._ast.ASTWorkflowCompilationUnit;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
-
-import de.se_rwth.commons.logging.Log;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,13 +24,18 @@ class WfConformanceCheckerTest extends AbstractConfTest {
   public static Stream<Arguments> xorConformance() {
     return Stream.of(
         Arguments.of("Conform1", true, Map.of("T1", CONFORM, "S", CONFORM)),
-        Arguments.of("NonConform1", false, Map.of("S", NON_CONFORM)));
+        Arguments.of("Conform2", true, Map.of("T1", CONFORM, "T2", CONFORM, "S", CONFORM)),
+        Arguments.of("NonConform1", false, Map.of("S", NON_CONFORM)),
+        Arguments.of(
+            "NonConform2",
+            false,
+            Map.of("T1", CONFORM, "T2", CONFORM, "T3", CONFORM, "S", UNKNOWN)));
   }
 
   @BeforeEach
   public void setup() {
     init();
-    Log.initDEBUG();
+    // Log.initDEBUG();
   }
 
   @ParameterizedTest
@@ -50,7 +52,7 @@ class WfConformanceCheckerTest extends AbstractConfTest {
     boolean currentResult = checker.checkConformance(concrete, reference, "ref");
 
     // Then
-    Assertions.assertEquals( expected  ,currentResult);
+    Assertions.assertEquals(expected, currentResult);
 
     for (var node : nodes.entrySet()) {
       var currentNode = getResultOfNode(node.getKey(), checker.getCheckResult());

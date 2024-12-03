@@ -56,24 +56,24 @@ public class CTLConfStrategy implements ConformanceStrategy<WfNode> {
     // traversing the concrete model for node
     ConfWfTraverser traverser = new ConfWfTraverser();
     traverser.traverseForward(postVisitor, null, concrete);
+
     preVisitor.setBackward();
     traverser.traverseBackward(preVisitor, null, concrete);
-
 
     Log.info(String.format("--- Result for forward traversing of Node %s --- ", concrete), "");
     postVisitor.printResult();
 
     Log.info(String.format("--- Result for backward traversing of Node %s --- ", concrete), "");
     preVisitor.printResult();
-     var postResult = postVisitor.getResult();
-     var preResult = preVisitor.getResult();
+    var postResult = postVisitor.getResult();
+    var preResult = preVisitor.getResult();
 
-     if (postResult.isNonConform()) {
+    if (postResult.isNonConform()) {
       return postResult;
     } else if (preResult.isNonConform()) {
-      return preVisitor.getResult();
-    } else if (postVisitor.getResult().isUnknown()) {
-      return postVisitor.getResult();
+      return preResult;
+    } else if (postResult.isUnknown()) {
+      return postResult;
     } else {
       return CheckResult.mkConform(concrete);
     }

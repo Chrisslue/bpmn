@@ -24,7 +24,7 @@ public class ConfWfVisitor implements WfNodeVisitor {
 
   private boolean lowerBoundOnly = false;
 
-  private boolean isBackward = false;  //todo handle that differently
+  private boolean isBackward = false; // todo handle that differently
 
   private final Map<BranchID, CheckResult> lowerBoundResults;
   private final Map<BranchID, CheckResult> upperboundResults;
@@ -51,16 +51,16 @@ public class ConfWfVisitor implements WfNodeVisitor {
     this.lowerBoundOnly = lowerBoundOnly;
   }
 
-  public void setBackward( ){
+  public void setBackward() {
     isBackward = true;
   }
 
   // todo break earlier when lower-bound only
   @Override
   public boolean accept(WfNode node, BranchID branchId) {
-    if (lowerBoundResults.containsKey(branchId) && upperboundResults.containsKey(branchId)) {
+    /* if (lowerBoundResults.containsKey(branchId) && upperboundResults.containsKey(branchId)) {
       return false;
-    }
+    }*/
 
     branchId.addNode(node);
 
@@ -84,7 +84,7 @@ public class ConfWfVisitor implements WfNodeVisitor {
       Log.info(
           String.format(
               "Aborting lower and upper bound,  branch %s, reason: %s",
-              branchId, AbortRule.SATISFIED_PREDICATE),
+              branchId, AbortRule.LOOP_DISCOVERED),
           "");
       lowerBoundResults.putIfAbsent(branchId, CheckResult.mkConform(node));
       upperboundResults.putIfAbsent(branchId, CheckResult.mkConform(node));
@@ -101,11 +101,12 @@ public class ConfWfVisitor implements WfNodeVisitor {
       CheckResult checkRes =
           res ? CheckResult.mkConform(this.node) : CheckResult.mkNonConform(this.node, branchId);
       lowerBoundResults.putIfAbsent(branchId, checkRes);
-      upperboundResults.putIfAbsent(branchId, checkRes);
+      upperboundResults.put(branchId, checkRes);
       return false;
     }
 
-    if (  (isBackward && node.getPredecessors().isEmpty()) ||  (!isBackward && node.getSuccessors().isEmpty())) { //todo handel differently
+    if ((isBackward && node.getPredecessors().isEmpty())
+        || (!isBackward && node.getSuccessors().isEmpty())) { // todo handel differently
       Log.info(
           String.format(
               "Aborting upper-bound,  branch %s, reason: %s", branchId, AbortRule.END_NODE_REACHED),
@@ -114,7 +115,7 @@ public class ConfWfVisitor implements WfNodeVisitor {
       CheckResult checkRes =
           res ? CheckResult.mkConform(this.node) : CheckResult.mkNonConform(this.node, branchId);
       lowerBoundResults.putIfAbsent(branchId, checkRes);
-      upperboundResults.putIfAbsent(branchId, checkRes);
+      upperboundResults.put(branchId, checkRes);
       return false;
     }
 
@@ -122,8 +123,8 @@ public class ConfWfVisitor implements WfNodeVisitor {
   }
 
   public List<WfNode> resolveReferenceNodes(BranchID branchId) {
-     List<WfNode> concreteNodeList = new ArrayList<>(branchId.getNodeList());
-     concreteNodeList.remove(node);
+    List<WfNode> concreteNodeList = new ArrayList<>(branchId.getNodeList());
+    concreteNodeList.remove(node);
 
     return concreteNodeList.stream()
         .map(inc::getReferenceElements)
@@ -134,7 +135,6 @@ public class ConfWfVisitor implements WfNodeVisitor {
   // todo  try to optimize it later
   public CheckResult getResult() {
     CheckResult lowerBoundRes = null;
-
     for (CheckResult res : lowerBoundResults.values()) {
       if (res.isNonConform()) {
         lowerBoundRes = res;
@@ -143,7 +143,7 @@ public class ConfWfVisitor implements WfNodeVisitor {
     }
 
     if (lowerBoundRes == null) {
-      return lowerBoundRes = CheckResult.mkConform(node);
+      lowerBoundRes = CheckResult.mkConform(node);
     }
 
     if (lowerBoundOnly) {

@@ -1,0 +1,15 @@
+process NonConform2 {
+
+  event start S;
+  task T1;
+  task T2;
+  task T3;
+
+  split ior OR ;
+
+
+       OR ->  T1 ;
+  S -> OR ->  T2 ;
+       OR ->  T3;
+
+}

@@ -30,7 +30,7 @@ public class WfConformanceChecker {
     confParams.add(STEREOTYPES_MAPPING);
     confParams.add(NAME_MAPPING);
   }
-  //todo  return a CheckResult.Result instead ?
+  // todo  return a CheckResult.Result instead ?
   /** procedure to check if a node conforms */
   public boolean checkConformance(
       ASTWorkflowCompilationUnit concrete, ASTWorkflowCompilationUnit reference, String mapping) {
