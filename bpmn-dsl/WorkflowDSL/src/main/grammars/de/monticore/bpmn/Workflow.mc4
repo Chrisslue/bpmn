@@ -56,8 +56,7 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
    * can be atomic or non-atomic
    */
   interface symbol Activity extends FlowElement =
-      Name
-      LoopCharacteristics?
+      Modifier Name LoopCharacteristics?
     ;
 
   symbolrule Activity =
@@ -72,7 +71,7 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
    * "adhoc":        collection of activities with no required sequence relationships -> flexibility in task execution   
    */
   symbol scope SubProcess implements Activity =
-      type:["subprocess" | "transaction" | "adhoc" ] Name
+      Modifier type:["subprocess" | "transaction" | "adhoc" ] Name
       AdHocCharacteristics?
       LoopCharacteristics?
       "{"
@@ -106,7 +105,7 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
    * Example: a call activity "ShipOrder" calls a process named "ShippingProcess"
    */
   CallActivity implements Activity =
-      "call-activity" Name "calls" ":" calledElement:Name@Process
+      Modifier "call-activity" Name "calls" ":" calledElement:Name@Process
       LoopCharacteristics?
       (   "{"
             IORequirement*         // must match the I/O requirements of the called element
@@ -127,7 +126,7 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
    * "script":  execution of script directly within the process model
    */
   Task implements Activity =
-      type:["service" | "send" | "receive" | "user" | "manual" | "rule" | "script"]? "task" Name
+      Modifier type:["service" | "send" | "receive" | "user" | "manual" | "rule" | "script"]? "task" Name
       LoopCharacteristics?
       ( "{"
              TaskTypeAttributes?
@@ -177,7 +176,7 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
    * an implementation of the operation can be referenced
    */
   symbol Operation implements FlowElement, Variable =
-      "operation" Name "("
+      Modifier "operation" Name "("
       "in" ":" in:Name@Notification
       (";" "out" ":" out:Name@Notification)? ")"
       ("throws" ":" error:Name@Notification)?
@@ -237,9 +236,7 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
 
   /* describes a flow control element that allows converging and diverging sequence flows */
   symbol Gateway implements FlowElement =
-      direction:["split" | "merge"] 
-      type:GatewayType 
-      Name? 
+      Modifier direction:["split" | "merge"] type:GatewayType Name?
       ";"
     ;
   
@@ -280,7 +277,7 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
    * operation: MUST be specified for message task in an executable process
    */  
   symbol Event implements FlowElement =
-      "event" type:["start" | "end"]? Name?
+      Modifier "event" type:["start" | "end"]? Name?
       (throw:["send"] | catch:["receive"] (["noninterrupt"])?)
       trigger:EventTrigger?
       CompensationHandler?
