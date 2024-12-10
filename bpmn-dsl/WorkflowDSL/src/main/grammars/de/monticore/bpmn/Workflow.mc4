@@ -4,7 +4,6 @@ grammar Workflow
         extends de.monticore.ocl.OCL,
                 de.monticore.expressions.TimeExpressions,
                 de.monticore.symbols.OOSymbols,
-                de.monticore.UMLStereotype,
                 de.monticore.UMLModifier {
 
   start WorkflowCompilationUnit;

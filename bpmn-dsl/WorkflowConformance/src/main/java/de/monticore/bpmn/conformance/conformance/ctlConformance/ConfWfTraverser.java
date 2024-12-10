@@ -35,6 +35,8 @@ public class ConfWfTraverser {
 
       case AND_SPLIT:
       case AND_MERGE:
+        //todo  wait the other branches
+
       case XOR_MERGE:
       case OR_MERGE:
         BranchID finalBranchId1 = branchId;

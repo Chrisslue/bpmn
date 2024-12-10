@@ -6,6 +6,9 @@ import de.monticore.bpmn.workflow._ast.ASTSequenceFlow;
 import de.monticore.bpmn.workflow._ast.ASTTask;
 import java.util.Set;
 
+/***
+ * this interface to abstract form
+ */
 public interface WfBuilder { // todo find solution with parameter
 
   /****
