@@ -7,11 +7,12 @@ public class BranchID {
   private final int id;
   private final List<WfNode> nodeList;
   private boolean loopDetected = false;
+  private boolean inParallel = false;
 
   public BranchID(List<WfNode> nodeList, int id) {
     this.id = id;
     this.nodeList = nodeList;
-  }
+  } // todo handle when many parallel level
 
   public boolean isLoopDetected() {
     return loopDetected;
@@ -27,6 +28,11 @@ public class BranchID {
     }
     this.nodeList.add(node);
   }
+
+  public boolean isInParallel() {
+    return inParallel;
+  }
+  public void setInParallel(boolean inParallel) {this.inParallel = inParallel;}
 
   public List<WfNode> getNodeList() {
     return nodeList;

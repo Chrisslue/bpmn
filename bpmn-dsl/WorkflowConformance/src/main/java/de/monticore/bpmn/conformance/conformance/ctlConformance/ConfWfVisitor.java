@@ -68,7 +68,7 @@ public class ConfWfVisitor implements WfNodeVisitor {
 
     List<WfNode> referenceNodes = resolveReferenceNodes(branchId);
 
-    boolean res = predicate.test(referenceNodes);
+    boolean res = checkPredicate(branchId, predicate, referenceNodes);
     if (!lowerBoundResults.containsKey(branchId)) {
       if (res) {
         Log.info(
@@ -80,7 +80,7 @@ public class ConfWfVisitor implements WfNodeVisitor {
         lowerBoundResults.putIfAbsent(branchId, checkResult);
       }
     }
-    if (branchId.isLoopDetected()) {
+   if (branchId.isLoopDetected()) {
       Log.info(
           String.format(
               "Aborting lower and upper bound,  branch %s, reason: %s",
@@ -105,11 +105,10 @@ public class ConfWfVisitor implements WfNodeVisitor {
       return false;
     }
 
-    if ((isBackward && node.getPredecessors().isEmpty())
-        || (!isBackward && node.getSuccessors().isEmpty())) { // todo handel differently
+    if (((isBackward && node.getPredecessors().isEmpty()) || (!isBackward && node.getSuccessors().isEmpty()))) { // todo handel differently
       Log.info(
           String.format(
-              "Aborting upper-bound,  branch %s, reason: %s", branchId, AbortRule.END_NODE_REACHED),
+              "Aborting upper-bound and lower,  branch %s, reason: %s", branchId, AbortRule.END_NODE_REACHED),
           "");
 
       CheckResult checkRes =
@@ -120,6 +119,13 @@ public class ConfWfVisitor implements WfNodeVisitor {
     }
 
     return true;
+  }
+
+  private boolean checkPredicate(BranchID branchId, Predicate<List<WfNode>> predicate, List<WfNode> referenceNodes) {
+    if (branchId.isInParallel()){
+      return false;
+    }
+    return predicate.test(referenceNodes);
   }
 
   public List<WfNode> resolveReferenceNodes(BranchID branchId) {

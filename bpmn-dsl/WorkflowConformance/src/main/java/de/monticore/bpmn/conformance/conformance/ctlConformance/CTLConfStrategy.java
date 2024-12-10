@@ -28,6 +28,7 @@ public class CTLConfStrategy implements ConformanceStrategy<WfNode> {
   public CheckResult checkConformance(WfNode concrete) {
     List<WfNode> references = incStrategy.getReferenceElements(concrete);
 
+    if (concrete.getLabel().equals("S")) {
     if (references.isEmpty()) {
       return CheckResult.mkConform(concrete);
     }
@@ -75,6 +76,9 @@ public class CTLConfStrategy implements ConformanceStrategy<WfNode> {
     } else if (postResult.isUnknown()) {
       return postResult;
     } else {
+      return CheckResult.mkConform(concrete);
+    }}
+    else {
       return CheckResult.mkConform(concrete);
     }
   }

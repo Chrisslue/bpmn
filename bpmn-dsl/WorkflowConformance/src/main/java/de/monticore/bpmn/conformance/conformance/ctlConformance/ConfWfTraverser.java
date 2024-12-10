@@ -13,6 +13,8 @@ public class ConfWfTraverser {
 
   private final String errorMsg = "%s traversing of node wit type %s not implemented yet";
 
+  private Map<WfNode,Integer> mergeCounter = new HashMap<>();
+
   private int counter = 0;
 
   public void traverseForward(WfNodeVisitor wfVisitor, BranchID branchId, WfNode node) {
@@ -33,13 +35,28 @@ public class ConfWfTraverser {
         node.getSuccessors().forEach(suc -> this.traverseForward(wfVisitor, finalBranchId, suc));
         break;
 
-      case AND_SPLIT:
-      case AND_MERGE:
-        //todo  wait the other branches
 
+      case AND_MERGE:
+
+        BranchID finalBranchId0 = branchId;
+        if (mergeCounter.containsKey(node) && mergeCounter.get(node).equals(1)){
+          node.getSuccessors().forEach(suc -> this.traverseForward(wfVisitor, finalBranchId0, suc));
+          branchId.setInParallel(false);
+        } else if (mergeCounter.containsKey(node) && !mergeCounter.get(node).equals(1)) {
+        //  node.getSuccessors().forEach(suc -> this.traverseForward(wfVisitor, finalBranchId0, suc));
+          mergeCounter.put(node,mergeCounter.get(node)-1);
+        }else {
+          mergeCounter.put(node,node.getPredecessors().size() -1);
+         // node.getSuccessors().forEach(suc -> this.traverseForward(wfVisitor, finalBranchId0, suc));
+        }
+        break;
+
+
+      case AND_SPLIT:
       case XOR_MERGE:
       case OR_MERGE:
         BranchID finalBranchId1 = branchId;
+        branchId.setInParallel(true);
         node.getSuccessors().forEach(suc -> this.traverseForward(wfVisitor, finalBranchId1, suc));
         break;
 

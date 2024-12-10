@@ -2,6 +2,7 @@
 - Wf start and end with events
 - all task/event/gateways have names 
 - declaration of nodes is separate form links
+- each And split branch ends in an And Merge
 
 
 

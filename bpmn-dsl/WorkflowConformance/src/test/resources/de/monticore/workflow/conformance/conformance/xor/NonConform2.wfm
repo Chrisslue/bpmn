@@ -1,15 +1,18 @@
 process NonConform2 {
 
   event start S;
+  event start E;
   task T1;
   task T2;
   task T3;
+  task T4;
 
-  split ior OR ;
+  split and AND ;
+  merge and Merge ;
 
 
-       OR ->  T1 ;
-  S -> OR ->  T2 ;
-       OR ->  T3;
+       AND ->  T1 -> Merge -> T4 -> E ;
+  S -> AND ->  T2 -> Merge;
+       AND ->  T3 -> Merge;
 
 }
