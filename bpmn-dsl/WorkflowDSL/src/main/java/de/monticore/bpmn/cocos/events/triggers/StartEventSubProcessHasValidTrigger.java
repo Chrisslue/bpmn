@@ -26,8 +26,8 @@ public class StartEventSubProcessHasValidTrigger extends AbstractHasValidTrigger
 
   @Override
   public void check(final ASTSubProcess subProcess) {
-    if (subProcess.isTriggeredByEvent()) {
-      WorkflowCollectors.toEventsLocal(subProcess).stream()
+    if (subProcess.getSymbol().isTriggeredByEvent()) {
+      WorkflowCollectors.toEventsLocalSubProcess(subProcess).stream()
           .filter(ASTEvent::isStart)
           .forEach(this::check);
     }

@@ -10,8 +10,8 @@ public class SequenceFlowNodeReferencesExist implements WorkflowASTFlowTargetCoC
 
   @Override
   public void check(final ASTFlowTarget target) {
-    if (target.isPresentNodeRef()) {
-      String name = target.getNodeRef().getQName();
+    if (target.isPresentElement()) {
+      String name = target.getElement().getQName();
       WorkflowScope scope = (WorkflowScope) target.getEnclosingScope();
 
       if (!scope.resolveFlowNodeDown(name).isPresent()) {

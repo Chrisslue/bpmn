@@ -10,7 +10,7 @@ public class TaskContainsOnlyBoundaryEvents implements WorkflowASTTaskCoCo {
   @Override
   public void check(final ASTTask task) {
     task.getBoundaryEventList().stream()
-        .filter(event -> !event.isBoundary())
+        .filter(event -> !event.getSymbol().isBoundary())
         .forEach(
             event ->
                 Log.error(

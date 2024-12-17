@@ -13,7 +13,7 @@ public class IntermediateEventIsEitherThrowOrCatch implements WorkflowASTEventCo
 
   @Override
   public void check(final ASTEvent event) {
-    if (event.isIntermediate() && !event.isBoundary() && !event.isCatch() && !event.isThrow()) {
+    if (event.isIntermediate() && !event.getSymbol().isBoundary() && !event.isCatch() && !event.isThrow()) {
       Log.error(
           Messages.get("0xWFM2017", event.getName()),
           event.get_SourcePositionStart(),

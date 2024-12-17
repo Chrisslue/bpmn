@@ -46,7 +46,7 @@ public class ActivityModule extends PetriNetModule<ASTActivity> {
             ASTTransition tEvent = module.getTransitions().get(0);
 
             connect(pActive, tEvent);
-            if (module.getFlowNode().isNonInterrupt()) {
+            if (module.getFlowNode().isNoninterrupt()) {
               connect(tEvent, pActive);
             }
           });

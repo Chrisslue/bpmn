@@ -48,24 +48,28 @@ public class WorkflowFilters {
     return Stream.of(filter.getFiltered()).filter(Optional::isPresent).map(Optional::get);
   }
 
-  public static Stream<ASTEventTriggerMessage> isMessageTrigger(final ASTWorkflowNode node) {
-    WorkflowFilter<ASTEventTriggerMessage> filter =
-        new WorkflowFilter<ASTEventTriggerMessage>(node) {
+  public static Stream<ASTEventTriggerNotification> isMessageTrigger(final ASTWorkflowNode node) {
+    WorkflowFilter<ASTEventTriggerNotification> filter =
+        new WorkflowFilter<ASTEventTriggerNotification>(node) {
           @Override
-          public void visit(ASTEventTriggerMessage node) {
-            select(node);
+          public void visit(ASTEventTriggerNotification node) {
+            if(node.getType() == ASTConstantsWorkflow.MESSAGE){
+              select(node);
+            }
           }
         };
     filter.filter(filter);
     return Stream.of(filter.getFiltered()).filter(Optional::isPresent).map(Optional::get);
   }
 
-  public static Optional<ASTEventTriggerMessage> getMessageTrigger(final ASTWorkflowNode node) {
-    WorkflowFilter<ASTEventTriggerMessage> filter =
-        new WorkflowFilter<ASTEventTriggerMessage>(node) {
+  public static Optional<ASTEventTriggerNotification> getMessageTrigger(final ASTWorkflowNode node) {
+    WorkflowFilter<ASTEventTriggerNotification> filter =
+        new WorkflowFilter<ASTEventTriggerNotification>(node) {
           @Override
-          public void visit(ASTEventTriggerMessage node) {
-            select(node);
+          public void visit(ASTEventTriggerNotification node) {
+            if(node.getType() == ASTConstantsWorkflow.MESSAGE){
+              select(node);
+            }
           }
         };
     filter.filter(filter);

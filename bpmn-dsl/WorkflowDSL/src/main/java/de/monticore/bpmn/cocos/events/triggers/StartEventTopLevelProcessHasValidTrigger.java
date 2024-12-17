@@ -32,13 +32,10 @@ public class StartEventTopLevelProcessHasValidTrigger extends AbstractHasValidTr
     WorkflowVisitor2 visitor =
         new WorkflowVisitor2() {
           @Override
-          public void visit(final ASTEventTriggerEscalate trigger) {
-            logError(event);
-          }
-
-          @Override
-          public void visit(final ASTEventTriggerError trigger) {
-            logError(event);
+          public void visit(final ASTEventTriggerNotification trigger) {
+            if(trigger.getType() == ASTConstantsWorkflow.ESCALATE || trigger.getType() == ASTConstantsWorkflow.ERROR){
+              logError(event);
+            }
           }
 
           @Override

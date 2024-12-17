@@ -3,7 +3,7 @@ package de.monticore.bpmn.cocos.events.triggers;
 import de.monticore.bpmn.collectors.WorkflowCollectors;
 import de.monticore.bpmn.workflow.WorkflowMill;
 import de.monticore.bpmn.workflow._ast.*;
-import de.monticore.bpmn.workflow._cocos.WorkflowASTFlowElementContainerCoCo;
+import de.monticore.bpmn.workflow._cocos.WorkflowASTProcessCoCo;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
 import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
 
@@ -13,7 +13,7 @@ import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
  * Multiple.
  */
 public class EndEventHasValidTrigger extends AbstractHasValidTriggerCoCo
-    implements WorkflowASTFlowElementContainerCoCo {
+    implements WorkflowASTProcessCoCo {
 
   private static final String ERROR_CODE = "0xWFM2012";
 
@@ -22,7 +22,7 @@ public class EndEventHasValidTrigger extends AbstractHasValidTriggerCoCo
   }
 
   @Override
-  public void check(final ASTFlowElementContainer container) {
+  public void check(final ASTProcess container) {
     WorkflowCollectors.toEventsLocal(container).stream()
         .filter(ASTEvent::isEnd)
         .forEach(this::check);

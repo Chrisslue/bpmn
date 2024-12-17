@@ -6,11 +6,11 @@ import java.util.List;
 
 public class ASTFlowBranch extends ASTFlowBranchTOP {
 
-  public ListMultimap<ASTFlowNode, List<ASTFlowCondition>> asTarget() {
+  public ListMultimap<ASTFlowElement, List<ASTFlowCondition>> asTarget() {
     return getPath(0).asTarget();
   }
 
-  public Collection<ASTFlowNode> asSource() {
+  public Collection<ASTFlowElement> asSource() {
     return getPath(sizePath() - 1).asSource();
   }
 

@@ -16,7 +16,7 @@ public class AdHocSubProcessHasNoStartAndEndEvent implements WorkflowASTSubProce
   @Override
   public void check(final ASTSubProcess subProcess) {
     if (subProcess.isAdHoc()) {
-      WorkflowCollectors.toEventsLocal(subProcess).stream()
+      WorkflowCollectors.toEventsLocalSubProcess(subProcess).stream()
           .filter(event -> event.isStart() || event.isEnd())
           .forEach(
               event ->

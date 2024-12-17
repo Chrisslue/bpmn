@@ -19,7 +19,7 @@ public class AddSequenceFlowToFlowNodes extends WorkflowTransformation implement
 
   @Override
   public void visit(final ASTSequenceFlow flow) {
-    handlePath(flow.getPathList());
+    handlePath(flow.getFlowBranch().getPathList());
   }
 
   @Override
@@ -40,7 +40,7 @@ public class AddSequenceFlowToFlowNodes extends WorkflowTransformation implement
                               .entries()
                               .forEach(
                                   entry -> {
-                                    ASTFlowNode target = entry.getKey();
+                                    ASTFlowElement target = entry.getKey();
                                     List<ASTFlowCondition> conditions = entry.getValue();
 
                                     final SequenceFlow flow =

@@ -21,7 +21,7 @@ public class CompensateCatchEventIsNotPartOfNormalFlow implements WorkflowASTEve
         new WorkflowVisitor2() {
           @Override
           public void visit(final ASTEventTriggerCompensate trigger) {
-            if (event.isBoundary() && !event.isEmptyOutgoings()) {
+            if (event.getSymbol().isBoundary() && !event.isEmptyOutgoings()) {
               Log.error(
                   Messages.get("0xWFM2024", event.getName()),
                   event.get_SourcePositionStart(),

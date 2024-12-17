@@ -14,7 +14,7 @@ public class AdHocSubProcessContainsAtLeastOneActivity implements WorkflowASTSub
 
   @Override
   public void check(final ASTSubProcess subProcess) {
-    if (subProcess.isAdHoc() && WorkflowCollectors.toActivitiesLocal(subProcess).isEmpty()) {
+    if (subProcess.isAdHoc() && WorkflowCollectors.toActivitiesLocalSubProcess(subProcess).isEmpty()) {
       Log.error(
           Messages.get("0xWFM4002", subProcess.getName()),
           subProcess.get_SourcePositionStart(),

@@ -1,7 +1,7 @@
 package de.monticore.bpmn.trafos;
 
 import de.monticore.bpmn.workflow.WorkflowMill;
-import de.monticore.bpmn.workflow._ast.ASTFlowNode;
+import de.monticore.bpmn.workflow._ast.ASTFlowElement;
 import de.monticore.bpmn.workflow._ast.ASTLane;
 import de.monticore.bpmn.workflow._ast.ASTProcess;
 import de.monticore.bpmn.workflow._ast.ASTSubProcess;
@@ -40,7 +40,7 @@ public class AddReferenceToParentLane extends WorkflowTransformation implements 
   public void visit(final ASTLane astLane) {
     final Stack<ASTLane> currentStack = laneStacks.peek();
     if (!currentStack.empty()) {
-      astLane.setParentLane(currentStack.peek().getName());
+      astLane.getSymbol().setParentLane(currentStack.peek().getName());
     }
     currentStack.push(astLane);
   }
@@ -52,10 +52,10 @@ public class AddReferenceToParentLane extends WorkflowTransformation implements 
   }
 
   @Override
-  public void visit(final ASTFlowNode astFlowNode) {
+  public void visit(final ASTFlowElement ASTFlowElement ) {
     final Stack<ASTLane> currentStack = laneStacks.peek();
     if (!currentStack.empty()) {
-      astFlowNode.setLaneRef(currentStack.peek().getName());
+      ASTFlowElement.setLaneRef(currentStack.peek().getName());
     }
   }
 }

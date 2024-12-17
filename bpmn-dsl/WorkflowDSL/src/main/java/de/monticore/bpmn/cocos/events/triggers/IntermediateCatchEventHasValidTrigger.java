@@ -3,7 +3,7 @@ package de.monticore.bpmn.cocos.events.triggers;
 import de.monticore.bpmn.collectors.WorkflowCollectors;
 import de.monticore.bpmn.workflow.WorkflowMill;
 import de.monticore.bpmn.workflow._ast.*;
-import de.monticore.bpmn.workflow._cocos.WorkflowASTFlowElementContainerCoCo;
+import de.monticore.bpmn.workflow._cocos.WorkflowASTProcessCoCo;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
 import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
 
@@ -13,7 +13,7 @@ import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
  * Conditional, Link, Signal, Multiple, and Parallel Multiple.
  */
 public class IntermediateCatchEventHasValidTrigger extends AbstractHasValidTriggerCoCo
-    implements WorkflowASTFlowElementContainerCoCo {
+    implements WorkflowASTProcessCoCo {
 
   private static final String ERROR_CODE = "0xWFM2013";
 
@@ -22,11 +22,11 @@ public class IntermediateCatchEventHasValidTrigger extends AbstractHasValidTrigg
   }
 
   @Override
-  public void check(final ASTFlowElementContainer container) {
+  public void check(final ASTProcess container) {
     WorkflowCollectors.toEventsLocal(container).stream()
         .filter(ASTEvent::isIntermediate)
         .filter(ASTEvent::isCatch)
-        .filter(event -> !event.isBoundary())
+        .filter(event -> !event.getSymbol().isBoundary())
         .forEach(this::check);
   }
 
@@ -37,13 +37,10 @@ public class IntermediateCatchEventHasValidTrigger extends AbstractHasValidTrigg
     WorkflowVisitor2 visitor =
         new WorkflowVisitor2() {
           @Override
-          public void visit(final ASTEventTriggerEscalate trigger) {
-            logError(event);
-          }
-
-          @Override
-          public void visit(final ASTEventTriggerError trigger) {
-            logError(event);
+          public void visit(final ASTEventTriggerNotification trigger) {
+            if(trigger.getType() == ASTConstantsWorkflow.ERROR || trigger.getType() == ASTConstantsWorkflow.ESCALATE){
+              logError(event);
+            }
           }
 
           @Override

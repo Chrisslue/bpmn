@@ -14,7 +14,7 @@ public class BoundaryEventHasNoIncomingFlow implements WorkflowASTEventCoCo {
 
   @Override
   public void check(final ASTEvent event) {
-    if (event.isBoundary() && !event.isEmptyIncomings()) {
+    if (event.getSymbol().isBoundary() && !event.isEmptyIncomings()) {
       Log.error(
           Messages.get("0xWFM2005", event.getName()),
           event.get_SourcePositionStart(),

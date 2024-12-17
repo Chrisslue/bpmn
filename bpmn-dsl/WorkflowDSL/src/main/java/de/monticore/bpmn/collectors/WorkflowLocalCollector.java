@@ -5,8 +5,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import com.google.common.collect.Lists;
 import de.monticore.bpmn.visitors.WorkflowLocalVisitor;
 import de.monticore.bpmn.workflow.WorkflowMill;
-import de.monticore.bpmn.workflow._ast.ASTFlowElementContainer;
 import de.monticore.bpmn.workflow._ast.ASTWorkflowNode;
+import de.monticore.bpmn.workflow._ast.ASTFlowElement;
+import de.monticore.bpmn.workflow._ast.ASTProcess;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
 import java.util.List;
 
@@ -21,14 +22,15 @@ import java.util.List;
  * @see WorkflowCollector
  * @param <E> the type of node
  */
-public abstract class WorkflowLocalCollector<E extends ASTWorkflowNode>
+public abstract class WorkflowLocalCollector<E>
     extends WorkflowLocalVisitor {
 
   protected List<E> result;
 
-  public WorkflowLocalCollector(final ASTFlowElementContainer root) {
+  public WorkflowLocalCollector(final ASTWorkflowNode root) {
     super(root);
   }
+  
 
   /**
    * Collects and returns the selected nodes.

@@ -3,7 +3,7 @@ package de.monticore.bpmn.cocos.flow;
 import de.monticore.bpmn.Messages;
 import de.monticore.bpmn.collectors.WorkflowCollectors;
 import de.monticore.bpmn.workflow._ast.ASTEvent;
-import de.monticore.bpmn.workflow._ast.ASTFlowNode;
+import de.monticore.bpmn.workflow._ast.ASTFlowElement;
 import de.monticore.bpmn.workflow._ast.ASTProcess;
 import de.monticore.bpmn.workflow._ast.SequenceFlow;
 import de.monticore.bpmn.workflow._cocos.WorkflowASTProcessCoCo;
@@ -12,9 +12,10 @@ import de.se_rwth.commons.logging.Log;
 
 public class SequenceFlowDoesNotCrossSubProcessBoundaries implements WorkflowASTProcessCoCo {
 
+  /* method toSequenceFlow does not work as we do not have FlowElementContainers anymore */
   @Override
   public void check(final ASTProcess process) {
-    WorkflowCollectors.toSequenceFlow(process).forEach(this::check);
+    //WorkflowCollectors.toSequenceFlow(process).forEach(this::check);
   }
 
   public void check(final SequenceFlow sequenceFlow) {
@@ -34,7 +35,7 @@ public class SequenceFlowDoesNotCrossSubProcessBoundaries implements WorkflowAST
     }
   }
 
-  private boolean isBoundaryEvent(final ASTFlowNode flowNode) {
-    return flowNode instanceof ASTEvent && ((ASTEvent) flowNode).isBoundary();
+  private boolean isBoundaryEvent(final ASTFlowElement flowNode) {
+    return flowNode instanceof ASTEvent && ((ASTEvent) flowNode).getSymbol().isBoundary();
   }
 }

@@ -4,8 +4,8 @@ import de.monticore.bpmn.Messages;
 import de.monticore.bpmn.utils.WorkflowFilters;
 import de.monticore.bpmn.workflow._ast.ASTGateway;
 import de.monticore.bpmn.workflow._ast.ASTTask;
-import de.monticore.bpmn.workflow._ast.ASTTaskType;
 import de.monticore.bpmn.workflow._ast.SequenceFlow;
+import de.monticore.bpmn.workflow._ast.ASTConstantsWorkflow;
 import de.monticore.bpmn.workflow._cocos.WorkflowASTGatewayCoCo;
 import de.se_rwth.commons.logging.Log;
 
@@ -22,8 +22,7 @@ public class EventGatewayTargetReceiveTaskHasNoBoundaryEvents implements Workflo
           .streamOutgoings()
           .map(SequenceFlow::getTarget)
           .flatMap(WorkflowFilters::isTask)
-          .filter(ASTTask::isPresentType)
-          .filter(task -> task.getType() == ASTTaskType.RECEIVE)
+          .filter(task -> task.getType() == ASTConstantsWorkflow.RECEIVE)
           .filter(receiveTask -> !receiveTask.isEmptyBoundaryEvent())
           .forEach(
               receiveTask ->

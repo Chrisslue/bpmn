@@ -24,10 +24,10 @@ public class CancelIntermediateEventIsAttachedToTransaction
 
   @Override
   public void check(final ASTSubProcess subProcess) {
-    List<ASTEvent> events = WorkflowCollectors.toEventsLocal(subProcess);
+    List<ASTEvent> events = WorkflowCollectors.toEventsLocalSubProcess(subProcess);
     events.forEach(
         event -> {
-          if (!subProcess.isTransaction() || !event.isBoundary()) {
+          if (!subProcess.isTransaction() || !event.getSymbol().isBoundary()) {
             logErrorIfCancelIntermediateEvent(event);
           }
         });

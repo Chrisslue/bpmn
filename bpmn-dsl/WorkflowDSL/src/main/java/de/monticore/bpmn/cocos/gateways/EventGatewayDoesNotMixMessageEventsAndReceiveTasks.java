@@ -33,8 +33,7 @@ public class EventGatewayDoesNotMixMessageEventsAndReceiveTasks implements Workf
               .streamOutgoings()
               .map(SequenceFlow::getTarget)
               .flatMap(WorkflowFilters::isTask)
-              .filter(ASTTaskTOP::isPresentType)
-              .filter(task -> task.getType() == ASTTaskType.RECEIVE)
+              .filter(task -> task.getType() == ASTConstantsWorkflow.RECEIVE)
               .collect(Collectors.toList());
 
       if ((messageEvents.size() > 0) && (receiveTasks.size() > 0)) {

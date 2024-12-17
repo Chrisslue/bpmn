@@ -6,18 +6,18 @@ import java.util.Optional;
 
 public class SequenceFlowBuilder {
 
-  private ASTFlowNode source;
-  private ASTFlowNode target;
+  private ASTFlowElement source;
+  private ASTFlowElement target;
   private List<ASTFlowCondition> conditions = Lists.newArrayList();
 
   public SequenceFlowBuilder() {}
 
-  public SequenceFlowBuilder setSource(final ASTFlowNode source) {
+  public SequenceFlowBuilder setSource(final ASTFlowElement source) {
     this.source = source;
     return this;
   }
 
-  public SequenceFlowBuilder setTarget(final ASTFlowNode target) {
+  public SequenceFlowBuilder setTarget(final ASTFlowElement target) {
     this.target = target;
     return this;
   }

@@ -17,11 +17,11 @@ public class SetSubProcessTriggeredByEvent extends WorkflowTransformation {
           @Override
           public void visit(final ASTSubProcess subProcess) {
             boolean triggeredByEvent =
-                WorkflowCollectors.toStartEventsLocal(subProcess).stream()
+                WorkflowCollectors.toStartEventsLocalSubProcess(subProcess).stream()
                     .filter(ASTEvent::isStart)
                     .anyMatch(ASTEvent::isPresentTrigger);
 
-            subProcess.setTriggeredByEvent(triggeredByEvent);
+            subProcess.getSymbol().setTriggeredByEvent(triggeredByEvent);
           }
         };
 

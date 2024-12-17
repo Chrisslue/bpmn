@@ -3,7 +3,7 @@ package de.monticore.bpmn.cocos.events.triggers;
 import de.monticore.bpmn.collectors.WorkflowCollectors;
 import de.monticore.bpmn.workflow.WorkflowMill;
 import de.monticore.bpmn.workflow._ast.*;
-import de.monticore.bpmn.workflow._cocos.WorkflowASTFlowElementContainerCoCo;
+import de.monticore.bpmn.workflow._cocos.WorkflowASTProcessCoCo;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
 import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
 
@@ -13,7 +13,7 @@ import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
  * Conditional, Link, Signal, Multiple, and Parallel Multiple.
  */
 public class IntermediateThrowEventHasValidTrigger extends AbstractHasValidTriggerCoCo
-    implements WorkflowASTFlowElementContainerCoCo {
+    implements WorkflowASTProcessCoCo {
 
   private static final String ERROR_CODE = "0xWFM2014";
 
@@ -22,7 +22,7 @@ public class IntermediateThrowEventHasValidTrigger extends AbstractHasValidTrigg
   }
 
   @Override
-  public void check(final ASTFlowElementContainer container) {
+  public void check(final ASTProcess container) {
     WorkflowCollectors.toEventsLocal(container).stream()
         .filter(ASTEvent::isIntermediate)
         .filter(ASTEvent::isThrow)
@@ -43,8 +43,11 @@ public class IntermediateThrowEventHasValidTrigger extends AbstractHasValidTrigg
           }
 
           @Override
-          public void visit(final ASTEventTriggerError trigger) {
-            logError(event);
+          public void visit(final ASTEventTriggerNotification trigger) {
+            if(trigger.getType() == ASTConstantsWorkflow.ERROR){
+              logError(event);
+            }
+            
           }
 
           @Override

@@ -16,7 +16,7 @@ public class IntermediateEventHasOneOrMoreIncomingFlows implements WorkflowASTEv
 
   @Override
   public void check(final ASTEvent event) {
-    if (event.isIntermediate() && !event.isBoundary() && event.isEmptyIncomings()) {
+    if (event.isIntermediate() && !event.getSymbol().isBoundary() && event.isEmptyIncomings()) {
       Log.error(
           Messages.get("0xWFM2020", event.getName()),
           event.get_SourcePositionStart(),

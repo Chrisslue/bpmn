@@ -23,7 +23,7 @@ public class IsEventSubProcessVisitor implements WorkflowHandler {
 
   @Override
   public void handle(final ASTSubProcess subProcess) {
-    isEventSubProcess = subProcess.isTriggeredByEvent();
+    isEventSubProcess = subProcess.getSymbol().isTriggeredByEvent();
   }
 
   public boolean isEventSubProcess() {

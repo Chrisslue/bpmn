@@ -6,8 +6,8 @@ import com.google.common.graph.EndpointPair;
 import de.monticore.bpmn.Messages;
 import de.monticore.bpmn.utils.WorkflowFilters;
 import de.monticore.bpmn.workflow.WorkflowMill;
-import de.monticore.bpmn.workflow._ast.ASTFlowElementContainer;
-import de.monticore.bpmn.workflow._ast.ASTFlowNode;
+import de.monticore.bpmn.workflow._ast.ASTFlowElement;
+import de.monticore.bpmn.workflow._ast.ASTProcess;
 import de.monticore.bpmn.workflow._ast.ASTGateway;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
 import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
@@ -22,7 +22,7 @@ public class ProcessHasNoSyncDeadlock extends CommonAntiPatternCoCo {
 
   @Override
   protected void check(
-      Graph<ASTFlowNode, EndpointPair<ASTFlowNode>> processGraph, ASTFlowElementContainer process) {
+      Graph<ASTFlowElement, EndpointPair<ASTFlowElement>> processGraph, ASTProcess process) {
     WorkflowTraverser traverser = WorkflowMill.inheritanceTraverser();
     traverser.add4Workflow(new ProcessHasNoSyncDeadlockVisitor());
     process.accept(traverser);
@@ -37,7 +37,7 @@ public class ProcessHasNoSyncDeadlock extends CommonAntiPatternCoCo {
             .forEach(
                 pair -> {
                   // Step 1: Find split gateway(s) (LCA)
-                  Optional<ASTFlowNode> lca =
+                  Optional<ASTFlowElement> lca =
                       Optional.ofNullable(lcaFinder.getLCA(pair.get(0), pair.get(1)));
                   if (!lca.isPresent()) { // parallel gateway used to merge independent branches
                     reportDeadlock(mergeGateway);
@@ -52,7 +52,7 @@ public class ProcessHasNoSyncDeadlock extends CommonAntiPatternCoCo {
                                 reportDeadlock(splitGateway, mergeGateway);
                               } else {
                                 // Step 3: Find path entries an exits
-                                List<GraphPath<ASTFlowNode, EndpointPair<ASTFlowNode>>> paths =
+                                List<GraphPath<ASTFlowElement, EndpointPair<ASTFlowElement>>> paths =
                                     pathFinder.getAllPaths(splitGateway, mergeGateway, true, null);
                                 paths.forEach(
                                     path -> {
@@ -92,7 +92,7 @@ public class ProcessHasNoSyncDeadlock extends CommonAntiPatternCoCo {
     }
 
     private void reportPathEntry(
-        final ASTGateway splitGateway, final ASTGateway mergeGateway, final ASTFlowNode entry) {
+        final ASTGateway splitGateway, final ASTGateway mergeGateway, final ASTFlowElement entry) {
       Log.warn(
           Messages.get("0xWFM7004", entry.getName(), splitGateway.getName()),
           entry.get_SourcePositionStart(),
@@ -100,7 +100,7 @@ public class ProcessHasNoSyncDeadlock extends CommonAntiPatternCoCo {
     }
 
     private void reportPathExit(
-        final ASTGateway splitGateway, final ASTGateway mergeGateway, final ASTFlowNode exit) {
+        final ASTGateway splitGateway, final ASTGateway mergeGateway, final ASTFlowElement exit) {
       Log.warn(
           Messages.get("0xWFM7003", exit.getName(), mergeGateway.getName()),
           exit.get_SourcePositionStart(),

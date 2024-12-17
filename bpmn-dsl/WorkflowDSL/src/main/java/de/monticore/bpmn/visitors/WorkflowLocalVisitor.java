@@ -21,20 +21,21 @@ public abstract class WorkflowLocalVisitor implements WorkflowVisitor2, Workflow
   }
 
   /** The root of the process level to traverse. */
-  protected final ASTFlowElementContainer localRoot;
+  protected final ASTWorkflowNode localRoot;
 
-  public WorkflowLocalVisitor(final ASTFlowElementContainer localRoot) {
+  public WorkflowLocalVisitor(final ASTWorkflowNode localRoot) {
     this.localRoot = localRoot;
   }
 
+  /*
   @Override
   public void traverse(final ASTSubProcess subProcess) {
     if (subProcess == localRoot) {
       if (subProcess.isPresentAdHocCharacteristics()) {
         subProcess.getAdHocCharacteristics().accept(getTraverser());
       }
-      if (null != subProcess.getIOSpecification()) {
-        subProcess.getIOSpecification().accept(getTraverser());
+      for(ASTIORequirement requirement : subProcess.getIORequirementList()){
+        requirement.accept(getTraverser());
       }
       for (ASTLane astLane : subProcess.getLaneList()) {
         astLane.accept(getTraverser());
@@ -42,9 +43,9 @@ public abstract class WorkflowLocalVisitor implements WorkflowVisitor2, Workflow
       for (ASTFlowElement astFlowElement : subProcess.getFlowElementList()) {
         astFlowElement.accept(getTraverser());
       }
-      if (subProcess.isPresentCompensationHandler()) {
-        subProcess.getCompensationHandler().accept(getTraverser());
-      }
+      //if (subProcess.isPresentCompensationHandler()) {
+      //  subProcess.getCompensationHandler().accept(getTraverser());
+      //}
       if (subProcess.isPresentLoopCharacteristics()) {
         subProcess.getLoopCharacteristics().accept(getTraverser());
       }
@@ -60,15 +61,17 @@ public abstract class WorkflowLocalVisitor implements WorkflowVisitor2, Workflow
       if (subProcess.isPresentAdHocCharacteristics()) {
         subProcess.getAdHocCharacteristics().accept(getTraverser());
       }
-      if (null != subProcess.getIOSpecification()) {
-        subProcess.getIOSpecification().accept(getTraverser());
+      for(ASTIORequirement requirement : subProcess.getIORequirementList()){
+        requirement.accept(getTraverser());
       }
-      if (subProcess.isPresentCompensationHandler()) {
-        subProcess.getCompensationHandler().accept(getTraverser());
-      }
+      //if (subProcess.isPresentCompensationHandler()) {
+      //  subProcess.getCompensationHandler().accept(getTraverser());
+      //}
       if (subProcess.isPresentLoopCharacteristics()) {
         subProcess.getLoopCharacteristics().accept(getTraverser());
       }
     }
   }
+
+  */
 }

@@ -11,8 +11,13 @@ public class WorkflowPrettyPrinter extends WorkflowPrettyPrinterTOP {
   }
 
   @Override
-  public void handle(ASTNamedEvent node) {
+  public void handle(ASTEvent node) {
+    if(node.isPresentName()){
     getPrinter().print("event " + node.getName() + " ");
+    }
+    else{
+    getPrinter().print("event " + " ");
+    }
     getTraverser().traverse(node);
     getPrinter().println(";");
   }
@@ -34,23 +39,15 @@ public class WorkflowPrettyPrinter extends WorkflowPrettyPrinterTOP {
   }
 
   @Override
-  public void handle(ASTNamedGateway node) {
-    getPrinter().print("gateway " + node.getName() + " ");
+  public void handle(ASTGateway node) {
+    if(node.isPresentName()){
+      getPrinter().print("gateway " + node.getName() + " ");
+    }
+    else{
+       getPrinter().print("gateway " + " ");
+    }
     getTraverser().traverse(node);
     getPrinter().println(";");
   }
 
-  @Override
-  public void handle(ASTInlineGateway node) {
-    getPrinter().print("gateway " + node.getName() + " ");
-    getTraverser().traverse(node);
-    getPrinter().println(";");
-  }
-
-  @Override
-  public void handle(ASTInlineEvent node) {
-    getPrinter().print("event " + node.getName() + " ");
-    getTraverser().traverse(node);
-    getPrinter().println(";");
-  }
 }

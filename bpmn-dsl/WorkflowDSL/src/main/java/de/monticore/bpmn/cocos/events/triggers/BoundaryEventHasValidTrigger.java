@@ -23,7 +23,7 @@ public class BoundaryEventHasValidTrigger extends AbstractHasValidTriggerCoCo
 
   @Override
   public void check(final ASTEvent event) {
-    if (!event.isBoundary()) {
+    if (!event.getSymbol().isBoundary()) {
       return;
     }
 

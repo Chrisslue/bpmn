@@ -17,9 +17,9 @@ public class WorkflowGraphConverter extends WorkflowLocalVisitor {
 
   // prefer: https://github.com/google/guava/wiki/GraphsExplained#basic-graph-example
   // requires more recent guava version (conflicts with MC version)
-  private MutableGraph<ASTFlowNode> graph;
+  private MutableGraph<ASTFlowElement> graph;
 
-  public WorkflowGraphConverter(ASTFlowElementContainer localRoot) {
+  public WorkflowGraphConverter(ASTProcess localRoot) {
     super(localRoot);
   }
 
@@ -28,7 +28,7 @@ public class WorkflowGraphConverter extends WorkflowLocalVisitor {
    *
    * @return the control flow graph of the process or sub-process
    */
-  public ImmutableGraph<ASTFlowNode> getGraph() {
+  public ImmutableGraph<ASTFlowElement> getGraph() {
     return ImmutableGraph.copyOf(graph);
   }
 
@@ -52,7 +52,7 @@ public class WorkflowGraphConverter extends WorkflowLocalVisitor {
   }
 
   @Override
-  public void visit(final ASTFlowNode flowNode) {
+  public void visit(final ASTFlowElement flowNode) {
     if (flowNode.equals(localRoot)) { // sub-process is handled in parent execution
       return;
     }

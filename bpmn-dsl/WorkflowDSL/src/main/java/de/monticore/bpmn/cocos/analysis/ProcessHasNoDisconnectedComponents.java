@@ -3,8 +3,8 @@ package de.monticore.bpmn.cocos.analysis;
 import com.google.common.graph.EndpointPair;
 import de.monticore.bpmn.Messages;
 import de.monticore.bpmn.workflow.WorkflowMill;
-import de.monticore.bpmn.workflow._ast.ASTFlowElementContainer;
-import de.monticore.bpmn.workflow._ast.ASTFlowNode;
+import de.monticore.bpmn.workflow._ast.ASTProcess;
+import de.monticore.bpmn.workflow._ast.ASTFlowElement;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
 import de.se_rwth.commons.logging.Log;
 import java.util.List;
@@ -17,16 +17,16 @@ public class ProcessHasNoDisconnectedComponents extends ProcessGraphCoCo {
 
   @Override
   public void check(
-      final Graph<ASTFlowNode, EndpointPair<ASTFlowNode>> processGraph,
-      final ASTFlowElementContainer process) {
+      final Graph<ASTFlowElement, EndpointPair<ASTFlowElement>> processGraph,
+      final ASTProcess process) {
     if (process
         .isEmptyFlowElements()) { // allow empty processes (an empty process is disconnected by
       // definition)
       return;
     }
-    ConnectivityInspector<ASTFlowNode, EndpointPair<ASTFlowNode>> inspector =
+    ConnectivityInspector<ASTFlowElement, EndpointPair<ASTFlowElement>> inspector =
         new ConnectivityInspector<>(processGraph);
-    List<Set<ASTFlowNode>> components =
+    List<Set<ASTFlowElement>> components =
         inspector.connectedSets().stream()
             .filter(
                 component -> !isEventSubProcess(component) && !isCompensationActivity(component))
@@ -38,7 +38,7 @@ public class ProcessHasNoDisconnectedComponents extends ProcessGraphCoCo {
                   set ->
                       "{"
                           + set.stream()
-                              .map(ASTFlowNode::getName)
+                              .map(ASTFlowElement::getName)
                               .sorted()
                               .collect(Collectors.joining(", "))
                           + "}")
@@ -48,7 +48,7 @@ public class ProcessHasNoDisconnectedComponents extends ProcessGraphCoCo {
     }
   }
 
-  private boolean isEventSubProcess(final Set<ASTFlowNode> nodes) {
+  private boolean isEventSubProcess(final Set<ASTFlowElement> nodes) {
     if (!nodes.isEmpty()) {
       IsEventSubProcessVisitor visitor = new IsEventSubProcessVisitor();
 
@@ -60,7 +60,7 @@ public class ProcessHasNoDisconnectedComponents extends ProcessGraphCoCo {
     return false;
   }
 
-  private boolean isCompensationActivity(final Set<ASTFlowNode> nodes) {
+  private boolean isCompensationActivity(final Set<ASTFlowElement> nodes) {
     IsForCompensationVisitor visitor = new IsForCompensationVisitor();
 
     WorkflowTraverser traverser = WorkflowMill.traverser();

@@ -19,11 +19,11 @@ public class CancelEndEventIsContainedWithinTransaction
 
   @Override
   public void check(final ASTSubProcess subProcess) {
-    if (subProcess.getType() == ASTSubProcessType.TRANSACTION) {
+    if (subProcess.getType() == ASTConstantsWorkflow.TRANSACTION) {
       return;
     }
 
-    hasNoCancelEndEvent(subProcess);
+    hasNoCancelEndEventSubProcess(subProcess);
   }
 
   @Override
@@ -31,8 +31,29 @@ public class CancelEndEventIsContainedWithinTransaction
     hasNoCancelEndEvent(process);
   }
 
-  private void hasNoCancelEndEvent(final ASTFlowElementContainer container) {
+  private void hasNoCancelEndEvent(final ASTProcess container) {
     WorkflowCollectors.toEndEventsLocal(container)
+        .forEach(
+            event -> {
+              WorkflowVisitor2 visitor =
+                  new WorkflowVisitor2() {
+                    @Override
+                    public void endVisit(ASTEventTriggerCancel node) {
+                      Log.error(
+                          Messages.get("0xWFM2022", event.getName()),
+                          event.get_SourcePositionStart(),
+                          event.get_SourcePositionEnd());
+                    }
+                  };
+
+              WorkflowTraverser traverser = WorkflowMill.traverser();
+              traverser.add4Workflow(visitor);
+              event.accept(traverser);
+            });
+  }
+
+  private void hasNoCancelEndEventSubProcess(final ASTSubProcess container) {
+    WorkflowCollectors.toEndEventsLocalSubProcess(container)
         .forEach(
             event -> {
               WorkflowVisitor2 visitor =

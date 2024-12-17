@@ -60,7 +60,7 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
     ;
 
   symbolrule Activity =
-    isCompensating:boolean
+    compensating:boolean
     compensates:ActivitySymbol
   ;
 
@@ -285,7 +285,7 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
     ;
 
   symbolrule Event =
-      isBoundary:boolean
+      boundary:boolean
     ;
 
   interface EventTrigger;
@@ -297,7 +297,7 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
   EventTriggerTerminate    implements EventTrigger = "terminate";
   EventTriggerTimer        implements EventTrigger = "timer"       ":" "[" condition:TimerCondition "]";
   EventTriggerMultiple     implements EventTrigger = ("one" | parallelMultiple:["all"]) "{" trigger:(EventTrigger || ",")+ "}";
-  EventTriggerNotification implements EventTrigger = ("error" | "escalate" | "message" | "signal") ":" Name@Notification ;
+  EventTriggerNotification implements EventTrigger = type:["error" | "escalate" | "message" | "signal"] ":" Name@Notification ;
 
   /*
    * designates compensating activity for a boundary event

@@ -14,7 +14,7 @@ public class EventSubProcessHasNoIncomingOrOutgoingFlow implements WorkflowASTSu
 
   @Override
   public void check(final ASTSubProcess subProcess) {
-    if (subProcess.isTriggeredByEvent()) {
+    if (subProcess.getSymbol().isTriggeredByEvent()) {
       subProcess
           .streamIncomings()
           .map(SequenceFlow::getSource)

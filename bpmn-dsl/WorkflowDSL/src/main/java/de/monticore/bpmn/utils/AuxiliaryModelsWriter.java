@@ -9,7 +9,7 @@ import de.monticore.bpmn.analysis.lola.LoLaFormulae;
 import de.monticore.bpmn.analysis.petrinet.PetriNetAptPrinter;
 import de.monticore.bpmn.analysis.petrinet.PetriNetLoLaPrinter;
 import de.monticore.bpmn.analysis.petrinet.WorkflowNet;
-import de.monticore.bpmn.workflow._ast.ASTFlowNode;
+import de.monticore.bpmn.workflow._ast.ASTFlowElement;
 import de.monticore.bpmn.workflow._ast.ASTProcess;
 import de.monticore.prettyprint.IndentPrinter;
 import de.se_rwth.commons.Joiners;
@@ -43,7 +43,7 @@ public class AuxiliaryModelsWriter {
   }
 
   private void printGraphModels(final Path outputDir) throws IOException {
-    final Graph<ASTFlowNode, EndpointPair<ASTFlowNode>> graph =
+    final Graph<ASTFlowElement, EndpointPair<ASTFlowElement>> graph =
         GraphUtils.processGraphFrom(workflow);
 
     final String name = workflow.getName();

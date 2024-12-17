@@ -13,7 +13,7 @@ public class BoundaryEventIsNotThrowing implements WorkflowASTEventCoCo {
 
   @Override
   public void check(final ASTEvent event) {
-    if (event.isBoundary() && event.isThrow()) {
+    if (event.getSymbol().isBoundary() && event.isThrow()) {
       Log.error(
           Messages.get("0xWFM2015", event.getName()),
           event.get_SourcePositionStart(),

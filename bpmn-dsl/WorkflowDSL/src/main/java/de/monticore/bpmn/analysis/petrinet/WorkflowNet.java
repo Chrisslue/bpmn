@@ -2,8 +2,8 @@ package de.monticore.bpmn.analysis.petrinet;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import de.monticore.bpmn.workflow._ast.ASTFlowElementContainer;
-import de.monticore.bpmn.workflow._ast.ASTFlowNode;
+import de.monticore.bpmn.workflow._ast.ASTProcess;
+import de.monticore.bpmn.workflow._ast.ASTFlowElement;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -38,7 +38,7 @@ public class WorkflowNet {
   private final List<WorkflowNetConverter.Warning> warnings;
 
   // reverse mapping from Petri net nodes to BPMN flow nodes
-  private final Map<ASTPetriNode, Set<ASTFlowNode>> mapping;
+  private final Map<ASTPetriNode, Set<ASTFlowElement>> mapping;
 
   // transition connecting sink to source
   private ASTTransition shortCircuit;
@@ -48,7 +48,7 @@ public class WorkflowNet {
       final ASTPlace source,
       final ASTPlace sink,
       final List<WorkflowNetConverter.Warning> warnings,
-      final Map<ASTPetriNode, Set<ASTFlowNode>> mapping) {
+      final Map<ASTPetriNode, Set<ASTFlowElement>> mapping) {
     this.petrinet = petrinet;
     this.source = source;
     this.sink = sink;
@@ -69,7 +69,7 @@ public class WorkflowNet {
    * @param container the process or sub-process
    * @return the WF-net for the process or sub-process
    */
-  public static WorkflowNet from(final ASTFlowElementContainer container) {
+  public static WorkflowNet from(final ASTProcess container) {
     return new WorkflowNetConverter(container).convert();
   }
 
@@ -168,7 +168,7 @@ public class WorkflowNet {
    *
    * @return the mapping
    */
-  public Map<ASTPetriNode, Set<ASTFlowNode>> getMapping() {
+  public Map<ASTPetriNode, Set<ASTFlowElement>> getMapping() {
     return mapping;
   }
 

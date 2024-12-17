@@ -16,8 +16,8 @@ public class EventSubProcessHasOnlyOneStartEvent implements WorkflowASTSubProces
 
   @Override
   public void check(final ASTSubProcess subProcess) {
-    if (subProcess.isTriggeredByEvent()) {
-      Collection<ASTEvent> startEvents = WorkflowCollectors.toStartEventsLocal(subProcess);
+    if (subProcess.getSymbol().isTriggeredByEvent()) {
+      Collection<ASTEvent> startEvents = WorkflowCollectors.toStartEventsLocalSubProcess(subProcess);
       if (startEvents.size() > 1) {
         startEvents.forEach(
             event ->

@@ -12,7 +12,8 @@ public class BoundaryEventIsContainedByActivity implements WorkflowASTProcessCoC
   @Override
   public void check(final ASTProcess process) {
     WorkflowCollectors.toEventsLocal(process).stream()
-        .filter(ASTEvent::isBoundary)
+        .filter(event -> event instanceof ASTEvent)
+        .filter(event -> event.getSymbol().isBoundary())
         .forEach(
             event ->
                 Log.error(

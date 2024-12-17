@@ -3,8 +3,8 @@ package de.monticore.bpmn.cocos.analysis;
 import com.google.common.graph.EndpointPair;
 import de.monticore.bpmn.Messages;
 import de.monticore.bpmn.utils.WorkflowFilters;
-import de.monticore.bpmn.workflow._ast.ASTFlowElementContainer;
-import de.monticore.bpmn.workflow._ast.ASTFlowNode;
+import de.monticore.bpmn.workflow._ast.ASTProcess;
+import de.monticore.bpmn.workflow._ast.ASTFlowElement;
 import de.se_rwth.commons.logging.Log;
 import org.jgrapht.Graph;
 import org.jgrapht.alg.cycle.CycleDetector;
@@ -13,8 +13,8 @@ public class ProcessHasNoInfiniteLoop extends ProcessGraphCoCo {
 
   @Override
   protected void check(
-      final Graph<ASTFlowNode, EndpointPair<ASTFlowNode>> processGraph,
-      final ASTFlowElementContainer process) {
+      final Graph<ASTFlowElement, EndpointPair<ASTFlowElement>> processGraph,
+      final ASTProcess process) {
     new CycleDetector<>(processGraph)
         .findCycles().stream()
             .flatMap(WorkflowFilters::isGateway)

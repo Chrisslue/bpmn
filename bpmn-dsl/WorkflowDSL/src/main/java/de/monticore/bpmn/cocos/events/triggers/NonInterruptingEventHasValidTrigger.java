@@ -17,15 +17,17 @@ public class NonInterruptingEventHasValidTrigger extends AbstractHasValidTrigger
 
   @Override
   public void check(final ASTEvent event) {
-    if (!event.isNonInterrupt()) {
+    if (!event.isNoninterrupt()) {
       return;
     }
 
     WorkflowVisitor2 visitor =
         new WorkflowVisitor2() {
           @Override
-          public void visit(final ASTEventTriggerError trigger) {
-            logError(event);
+          public void visit(final ASTEventTriggerNotification trigger) {
+            if(trigger.getType() == ASTConstantsWorkflow.ERROR){
+              logError(event);
+            }
           }
 
           @Override

@@ -32,12 +32,12 @@ public class EventGatewayHasValidTarget implements WorkflowASTGatewayCoCo {
     }
   }
 
-  private boolean isInvalidTarget(final ASTFlowNode flowNode) {
-    WorkflowFilter<ASTFlowNode> filter =
-        new WorkflowFilter<ASTFlowNode>(flowNode) {
+  private boolean isInvalidTarget(final ASTFlowElement flowNode) {
+    WorkflowFilter<ASTFlowElement> filter =
+        new WorkflowFilter<ASTFlowElement>(flowNode) {
           @Override
           public void visit(ASTTask node) {
-            if (node.isPresentType() && node.getType() == ASTTaskType.RECEIVE) {
+            if (node.getType() == ASTConstantsWorkflow.RECEIVE) {
               select(node);
             }
           }
@@ -57,15 +57,12 @@ public class EventGatewayHasValidTarget implements WorkflowASTGatewayCoCo {
   private boolean hasValidTrigger(final ASTEvent event) {
     // collect invalid triggers (multiple events may have nested triggers)
     WorkflowCollector<ASTEventTrigger> collector =
-        new WorkflowCollector<>(event) {
+        new WorkflowCollector<ASTEventTrigger>(event) {
           @Override
-          public void visit(final ASTEventTriggerEscalate trigger) {
-            select(trigger);
-          }
-
-          @Override
-          public void visit(final ASTEventTriggerError trigger) {
-            select(trigger);
+          public void visit(final ASTEventTriggerNotification trigger) {
+            if(trigger.getType() == ASTConstantsWorkflow.ERROR || trigger.getType() == ASTConstantsWorkflow.ESCALATE){
+              select(trigger);
+            }
           }
 
           @Override

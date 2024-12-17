@@ -15,15 +15,15 @@ public class NonInterruptingEventIsSubProcessStartOrBoundary
   @Override
   public void check(final ASTProcess process) {
     WorkflowCollectors.toEventsLocal(process).stream()
-        .filter(ASTEvent::isNonInterrupt)
+        .filter(ASTEvent::isNoninterrupt)
         .forEach(this::logError);
   }
 
   @Override
   public void check(final ASTSubProcess subProcess) {
-    WorkflowCollectors.toEventsLocal(subProcess).stream()
-        .filter(ASTEvent::isNonInterrupt)
-        .filter(event -> (event.isIntermediate() && !event.isBoundary()) || event.isEnd())
+    WorkflowCollectors.toEventsLocalSubProcess(subProcess).stream()
+        .filter(ASTEvent::isNoninterrupt)
+        .filter(event -> (event.isIntermediate() && !event.getSymbol().isBoundary()) || event.isEnd())
         .forEach(this::logError);
   }
 

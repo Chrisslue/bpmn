@@ -19,7 +19,7 @@ public class ASTFlowBlock extends ASTFlowBlockTOP {
    *     <p>output: [TaskA:[cond1, cond2], TaskB:[cond1, cond3], TaskC:[cond1, default],
    *     TaskA:[cond4]]
    */
-  ListMultimap<ASTFlowNode, List<ASTFlowCondition>> asTarget() {
+  ListMultimap<ASTFlowElement, List<ASTFlowCondition>> asTarget() {
     return getBranchList().stream()
         .map(ASTFlowBranch::asTarget)
         .map(Multimap::entries)
@@ -31,7 +31,7 @@ public class ASTFlowBlock extends ASTFlowBlockTOP {
                 MultimapBuilder.hashKeys().arrayListValues()::build));
   }
 
-  List<ASTFlowNode> asSource() {
+  List<ASTFlowElement> asSource() {
     return getBranchList().stream()
         .map(ASTFlowBranch::asSource)
         .flatMap(Collection::stream)
