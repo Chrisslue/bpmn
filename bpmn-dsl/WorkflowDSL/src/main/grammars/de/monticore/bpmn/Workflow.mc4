@@ -23,7 +23,16 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
   /* represents a model element that can appear in a process e.g. activity, gateway, event ... */
   interface FlowElement;
 
-  /* represents a process which contains lanes and flow elements in any order
+  astrule FlowElement = 
+      parentRef:String?
+      laneRef:String?
+      incomings:List<de.monticore.bpmn.workflow._ast.SequenceFlow>
+      outgoings:List<de.monticore.bpmn.workflow._ast.SequenceFlow>
+    ;
+
+
+  /** 
+   * represents a process which contains lanes and flow elements in any order
    * a process may be designated as public or private
    */
   symbol scope Process =
@@ -35,7 +44,7 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
 
   /**
    * sub-partition within a process which contains flow elements and sub-lanes
-   *every lane has a name and denotes for example a business function or a role
+   * every lane has a name and denotes for example a business function or a role
    */
   symbol Lane =
       "lane" Name "{"
@@ -169,7 +178,7 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
       )
     ;
 
-  /* 
+  /** 
    * describes the invoked operation by a task
    * exactly one ingoing message but at most one outgoing message
    * can specify error elements which may be returned
@@ -237,7 +246,7 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
   /* describes a flow control element that allows converging and diverging sequence flows */
   symbol Gateway implements FlowElement =
       Modifier direction:["split" | "merge"] type:GatewayType Name?
-      ";"
+      (";")?
     ;
   
   /** 
@@ -248,7 +257,8 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
       activationCount:NatLiteral?
     ;
     
-  /** possible Types of Gateways 
+  /** 
+   * possible Types of Gateways 
    * "receive first": first event determines the path to follow 
    * "receive all":  waits for each event before following each outgoing path
    * "complex": Gateway is connected to a guard
@@ -277,11 +287,11 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
    * operation: MUST be specified for message task in an executable process
    */  
   symbol Event implements FlowElement =
-      Modifier "event" type:["start" | "end"]? Name?
-      (throw:["send"] | catch:["receive"] (["noninterrupt"])?)
+      Modifier type:["start" | "end"]? "event" Name?
+      (throw:["send"] | catch:["receive"] (["noninterrupt"])?)?
       trigger:EventTrigger?
       CompensationHandler?
-      ("{" ("operation" ":" operation:Name@Operation ";")? IOSet? "}" | ";")
+      ("{" ("operation" ":" operation:Name@Operation ";")? IOSet? "}" | (";")?)
     ;
 
   symbolrule Event =
@@ -346,7 +356,7 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
 
   /* represents a data object or data store */
   DataObject implements FlowElement, Variable =
-      ("data" | ["store"]) Name ":" MCType ";"
+      (["data"] | ["store"]) Name ":" MCType ";"
     ;
 
 

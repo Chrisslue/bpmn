@@ -57,7 +57,7 @@ public class WorkflowParserTest extends AbstractTest {
     Optional<ASTTask> task =
         parser.parseTask(
             new StringReader(
-                "task user FillHolidayCardEntry {\n" + "    io: {} -> { holidayCard };\n" + "  }"));
+                  "user task FillHolidayCardEntry {\n" + "    io: {} -> { holidayCard };\n" + "  }"));
 
     assertFalse(parser.hasErrors());
     assertTrue(task.isPresent());
@@ -66,6 +66,18 @@ public class WorkflowParserTest extends AbstractTest {
   @Test
   public void testStereotypes() {
     String modelName = "de.monticore.bpmn.stereotypes.Stereotypes";
+    parseModel(modelName);
+  }
+
+  @Test
+  public void testReferencModel() {
+    String modelName = "de.monticore.bpmn.conformance.ReferenceModel";
+    parseModel(modelName);
+  }
+
+  @Test
+  public void testBachelorThesis() {
+    String modelName = "de.monticore.bpmn.conformance.BachelorThesis";
     parseModel(modelName);
   }
 }

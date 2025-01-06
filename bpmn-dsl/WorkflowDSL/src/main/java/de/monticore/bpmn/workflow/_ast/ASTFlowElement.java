@@ -12,26 +12,8 @@ import java.util.stream.Stream;
 
 public interface ASTFlowElement extends ASTFlowElementTOP {
 
-  /**
-   * Extended FlowElement by a Name a List with all incoming SequenceFlows a List with all outgoing SequenceFlows
-   * Methodes need to be checked for correctness!!!
-   */
-
-  /*
-  List<SequenceFlow> getIncomingsList();
-
-  List<SequenceFlow> getOutgoingsList();
-
-  
-  
-  
-  */
   default String getName(){
     return "";
-  }
-
-  default void setLaneRef(String ref){
-    
   }
 
   default Set<ASTFlowElement> getSuccessors() {
@@ -41,40 +23,7 @@ public interface ASTFlowElement extends ASTFlowElementTOP {
   default Set<ASTFlowElement> getPredecessors() {
     return getIncomingsList().stream().map(SequenceFlow::getSource).collect(Collectors.toSet());
   }
-
-  default  List<SequenceFlow> getIncomingsList (){
-    return null;
-  }
-
-  default  List<SequenceFlow> getOutgoingsList (){
-    return null;
-  }
   
-  default  boolean addOutgoings (de.monticore.bpmn.workflow._ast.SequenceFlow element){
-    return getOutgoingsList().add(element);
-  }
-
-  default  boolean addIncomings (de.monticore.bpmn.workflow._ast.SequenceFlow element){
-    return getIncomingsList().add(element);
-  }
-
-  default  boolean isEmptyIncomings (){
-    return getIncomingsList().isEmpty();
-  }
-
-  default  boolean isEmptyOutgoings (){
-    return getOutgoingsList().isEmpty();
-  }
-
-  default  Stream<de.monticore.bpmn.workflow._ast.SequenceFlow> streamIncomings (){
-    return getIncomingsList().stream();
-  }
-
-  default  Stream<de.monticore.bpmn.workflow._ast.SequenceFlow> streamOutgoings (){
-    return getOutgoingsList().stream();
-  }
-  
-
   /**
    * Determines the flow element container (process or sub-process) that directly contains this
    * node.

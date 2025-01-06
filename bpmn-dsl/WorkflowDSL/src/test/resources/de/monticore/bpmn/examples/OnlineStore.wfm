@@ -9,48 +9,50 @@ process OnlineStore {
     data order:Order;
 
     store customer:Customer;
-/*
+
+    /*
     global task service CheckArticleAvailability {
       in: article:Article;
     }
-*/
-    task CheckArticleAvailability template:CheckArticleAvailability {
+    */
+
+    task CheckArticleAvailability /*template:CheckArticleAvailability*/ {
       in: article;
     }
 
-    event start OrderReceived receive message:orderMsg {
+    start event OrderReceived receive message:orderMsg {
       out: order;
     //order <- orderMsg.order;
     }
 
     OrderReceived -> OrderFulfillment;
-
+    
     subprocess OrderFulfillment {
-      message lateShippingNotice:LateShippingNotice;
+      //message lateShippingNotice:LateShippingNotice;
 
       subprocess ReserveArticle /* multi parallel */ {
         in: order.articles[i] as article;
 
-        task service CheckArticleAvailability;
+        //task service CheckArticleAvailability;
 
-        task ProcureArticle template:ProcureArticle;
+        task ProcureArticle /* template:ProcureArticle */ ;
 
         /* TODO
         //TODO: add rollback concept to grammar?
         task service ReserveArticle rollback:RemoveReservation;
         rollback task service RemoveReservation;
 
-        event start -> CheckArticleAvailability -> split xor {
+        start event -> CheckArticleAvailability -> split xor {
           [article.isAvailable]: continue;
           else: ProcureArticle;
         } merge xor -> end event ArticleReserved;
 
 
         subprocess  {
-          event start receive rollback -> event CancelReservation send rollback:ReserveArticle async -> end event;
+          start event  receive rollback -> event CancelReservation send rollback:ReserveArticle async -> end event;
         }
 
-        <<boundary>> event LateShipping receive nocancel escalation:lateShipping;
+        boundary event LateShipping receive nocancel escalation:lateShipping;
         */
       }
 
@@ -70,11 +72,11 @@ process OnlineStore {
         task service GetCreditRatingCompanyB;
 
         /* TODO
-        event start -> split and {
+        start event  -> split and {
           InternalRiskAssessment;
           GetCreditRatingCompanyA;
           GetCreditRatingCompanyB;
-        } merge complex [activationCount >= 2] -> event end;  // TODO BPMN model instance variables
+        } merge complex [activationCount >= 2] -> end event;  // TODO BPMN model instance variables
         */
       }
 
@@ -88,18 +90,18 @@ process OnlineStore {
         */
 
         task ChargeCreditCard template:CollectPayment {
-          <<boundary>> event CreditCardFailed receive error:creditCardFailed;
+          boundary event CreditCardFailed receive error:creditCardFailed;
         }
-        ChargeCreditCard.CreditCardFailed -> event end send cancel;
+        ChargeCreditCard.CreditCardFailed -> end event  send cancel;
         /* TODO
-        event start
+        start event 
 
-        PaymentRequested -> DeductStoreCredit -> ChargeCreditCard -> event end PaymentSucceeded;
+        PaymentRequested -> DeductStoreCredit -> ChargeCreditCard -> end event PaymentSucceeded;
         */
     
       }
 
-      ProcessPayment.PaymentFailed -> event  send cancel;
+      ProcessPayment.PaymentFailed -> event send cancel;
 
       subprocess PreparePackage {
         data shippingNote:ShippingNote;
@@ -119,7 +121,7 @@ process OnlineStore {
         }
 
         /* TODO
-        event start -> split and {
+        start event -> split and {
           DetermineCarrier -> split ior {
             [order.requiresInsurance]: TakeOutShippingInsurance;
             else: PrintShippingLabel;
@@ -127,13 +129,13 @@ process OnlineStore {
           PrintShippingNote -> PackageArticles;
         } merge and -> FinalizePackage -> end event ArticlesPackaged;
         */
-        <<boundary>> event ShippingAddressUpdated receive signal:shippingAddressUpdated;
+        boundary event ShippingAddressUpdated receive signal:shippingAddressUpdated;
       }
 
       PreparePackage.ShippingAddressUpdated -> PreparePackage; // re-start sub-process
 
       /* TODO
-      event start -> split and {
+      start event -> split and {
         ReserveArticle;
         ComputeFinalDiscount -> split xor {
           [order.amount >= 1000]: #CheckCreditCardRating -> split xor {
@@ -147,19 +149,19 @@ process OnlineStore {
                  
       // event sub-processes
       subprocess Bla {
-        // TODO event start NotShippable receive error:notShippable -> event send rollback -> end event OrderCancelled;
+        // TODO start event NotShippable receive error:notShippable -> event send rollback -> end event OrderCancelled;
       }
 
       message orderCancellation:OrderCancellationRequest;
       subprocess Bla2 {
-        // TODO event start orderCancellationRequested receive message:orderCancellation -> end event OrderCancelled send rollback;
+        // TODO start event orderCancellationRequested receive message:orderCancellation -> end event OrderCancelled send rollback;
       }
 
       message addressUpdate:ShippingAddressUpdateRequest;
       signal shippingAddressUpdated:ShippingAddressUpdatedSignal;
       subprocess Bla3 {
         /* TODO
-        event start ShippingAddressUpdateRequested receive nocancel message:addressUpdate
+        start event ShippingAddressUpdateRequested receive nocancel message:addressUpdate
           -> task service UpdateDeliveryAddress -> end event send signal:shippingAddressUpdated;
         */
       }
@@ -168,10 +170,12 @@ process OnlineStore {
       signal paymemntMethodUpdated:PaymentMethodUpdatedSignal;
       subprocess Bla4 {
         /* TODO
-        event start PaymentMethodUpdateRequested receive nocancel message:paymentMethodUpdate
+        start event PaymentMethodUpdateRequested receive nocancel message:paymentMethodUpdate
           -> task service UpdatePaymentMethod -> end event send signal:paymemntMethodUpdated;
         */
       }
+    
+
     }
 
     message shippingNotification:ShippingNotification;
@@ -187,13 +191,14 @@ process OnlineStore {
 
       task CollectInstallment template:CollectPayment;
 
-      // TODO event start IthMonthAfterPurchase receive timeout:[after "3d"] -> task CollectInstallment;
+      // TODO start event IthMonthAfterPurchase receive timeout:[after "3d"] -> task CollectInstallment;
 
-      <<boundary>> event CreditCardFailed receive error:creditCardFailed;
+      boundary event CreditCardFailed receive error:creditCardFailed;
     }
 
     ProcessRecurringPayment.CreditCardFailed -> event send escalate:recurringPaymentFailed;
   }
+      
 
   lane CustomerSupport {
     message complaint:Complaint;
@@ -216,7 +221,7 @@ process OnlineStore {
       task receive ReceiveMoreInformation message:moreInfoResponse;
 
       /* TODO
-      event start -> CheckComplaint -> split xor {
+      start event -> CheckComplaint -> split xor {
         [complaintNotice.status == ACCEPTED]:
           DetermineCredit -> UpdateStoreCredit -> end event ComplaintResolved send message:complaintResolved;
         [complaintNotice.status == REJECTED]:
@@ -282,12 +287,12 @@ process OnlineStore {
     }
 
     signal publication:SalesReport;
-    event end PublishReport send message:publication {
+    end event PublishReport send message:publication {
       in: report;
     }
 
     /* TODO
-    event start FirstDayOfMonth receive timeout:[every "month"] -> CollectSalesData -> PrepareSalesReport -> ReviewReport -> split xor {
+    start event FirstDayOfMonth receive timeout:[every "month"] -> CollectSalesData -> PrepareSalesReport -> ReviewReport -> split xor {
       [report.accepted ]: PublishReport;
       [!report.accepted]: UpdateReport -> ReviewReport;
     };
@@ -298,14 +303,16 @@ process OnlineStore {
 
   lane Inventory {
     task ReorderArticle template:ProcureArticle {
-      <<boundary>> event NotShippable receive error:notShippable;
+      boundary event NotShippable receive error:notShippable;
     }
     /* TODO
     ReorderArticle.NotShippable -> task service RemoveArticle;
 
-    event start StockLevelBelowMinimum receive when:[exists a in Article: a.stock < 10]
+    start event StockLevelBelowMinimum receive when:[exists a in Article: a.stock < 10]
       -> ReorderArticle -> task service UpdateStockCount -> end event ArticleProcured;
     */
   }
 
+  
+  
 }

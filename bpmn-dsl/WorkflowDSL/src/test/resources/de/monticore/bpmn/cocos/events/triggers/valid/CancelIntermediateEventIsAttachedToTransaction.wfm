@@ -3,7 +3,7 @@ package de.monticore.bpmn.cocos.events.triggers.valid;
 process CancelIntermediateEventIsAttachedToTransaction {
 
   transaction T1 {
-    <<boundary>> event E1 cancel;
+    boundary event E1 cancel;
   }
 
 }
