@@ -81,7 +81,7 @@ public class BranchVisitor {
       }
     }
 
-    /*  if (branchId.isLoopDetected()) {
+      if (branchId.isLoopDetected()) {
       Log.info(
           String.format(
               "Aborting lower and upper bound,  branch %s, reason: %s",
@@ -90,7 +90,7 @@ public class BranchVisitor {
       lowerBoundResults.putIfAbsent(branchId, CheckResult.mkConform(node));
       upperboundResults.putIfAbsent(branchId, CheckResult.mkConform(node));
       return false;
-    }*/
+    }
 
     if (!startNodes.contains(this.node)
         && startNodes.contains(branchId.getNodeList().get(branchId.getNodeList().size() - 1))) {
@@ -99,6 +99,7 @@ public class BranchVisitor {
               "Aborting lower and upper bound, branch %s, reason: %s",
               branchId, AbortReason.RETURN_TO_START),
           "");
+      Log.trace("Result:" + res, "");
       CheckResult checkRes =
           res ? CheckResult.mkConform(this.node) : CheckResult.mkNonConform(this.node, branchId);
       lowerBoundResults.putIfAbsent(branchId, checkRes);

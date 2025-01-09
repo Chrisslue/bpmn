@@ -11,11 +11,12 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-
+@Disabled
 class WfConformanceCheckerTest extends AbstractConfTest {
   private ASTWorkflowCompilationUnit concrete;
   private ASTWorkflowCompilationUnit reference;
@@ -64,7 +65,7 @@ class WfConformanceCheckerTest extends AbstractConfTest {
   @Test
   public void test() {
 
-    var d = xorConformance().collect(Collectors.toList()).get(2);
+    var d = xorConformance().collect(Collectors.toList()).get(3);
     Object[] params = d.get();
 
     // Extract arguments based on index

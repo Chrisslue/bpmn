@@ -3,6 +3,8 @@ package de.monticore.bpmn.conformance.datastructures.utils;
 import de.monticore.bpmn.conformance.datastructures.interf.WfNode;
 import java.util.List;
 
+import static de.monticore.bpmn.conformance.datastructures.utils.NodeType.*;
+
 public class BranchID {
   private final int id;
   private final List<WfNode> nodeList;
@@ -26,8 +28,9 @@ public class BranchID {
 
   public void addNode(WfNode node) {
     if (!nodeList.contains(node)) {
-      // loopDetected =  nodeList.indexOf(node) != nodeList.size()-1;
       this.nodeList.add(node);
+    }else if (List.of(TASK,EVENT,XOR_SPLIT,OR_SPLIT,AND_SPLIT ).contains(node.getNodeType())) { //todo handle it properly
+      loopDetected = true;
     }
   }
 

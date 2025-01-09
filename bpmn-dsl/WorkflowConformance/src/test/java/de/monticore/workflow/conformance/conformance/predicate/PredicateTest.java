@@ -108,6 +108,30 @@ class PredicateTest extends AbstractConfTest {
     Assertions.assertEquals(predicate.test(tasks), result);
   }
 
+  static Stream<Arguments> loopSource() {
+    return Stream.of(
+        Arguments.of(List.of("T"), true),
+        Arguments.of(List.of("T", "END"), false),
+        Arguments.of(List.of("END"), true));
+  }
+
+  @ParameterizedTest
+  @MethodSource("loopSource")
+  public void testPostPredicateLoop(List<String> nodeNames, boolean result) {
+    // given
+    builder = parseAndCreateBuilder(modelDir + "post.LOOP", "");
+    List<WfNode> tasks = resolveNodeFormBuilder(nodeNames, builder);
+
+    // when
+    WfPredicate predicate = PredicateBuilder.postPredicate(builder.getWfNode("T"));
+    Assertions.assertNotNull(predicate);
+    Log.println(predicate.toString());
+
+    // then
+    Assertions.assertNotNull(predicate);
+    Assertions.assertEquals(predicate.test(tasks), result);
+  }
+
   static Stream<Arguments> andSource() {
     return Stream.of(
         Arguments.of(List.of("T1"), false),
@@ -167,7 +191,7 @@ class PredicateTest extends AbstractConfTest {
   @MethodSource("complexSource")
   public void testPostPredicateCOMPLEX(List<String> nodeNames, boolean result) {
     // given
-    builder = parseAndCreateBuilder(modelDir + "COMPLEX", "");
+    builder = parseAndCreateBuilder(modelDir + "post.COMPLEX", "");
     List<WfNode> tasks = resolveNodeFormBuilder(nodeNames, builder);
 
     // when

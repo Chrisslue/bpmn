@@ -2,6 +2,7 @@ package de.monticore.bpmn.conformance.conformance.ctlConformance;
 
 import de.monticore.bpmn.conformance.datastructures.interf.WfNode;
 import de.se_rwth.commons.logging.Log;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -52,16 +53,20 @@ public class PredicateBuilder {
 
   private static WfPredicate prePredicateRecursive(WfNode node) {
 
-    List<WfPredicate> prevprev =
-        node.getPredecessors().stream()
-            .map(PredicateBuilder::prePredicateRecursive)
-            .collect(Collectors.toList());
+    List<WfPredicate> prevprev = new ArrayList<>();
+    if (node.getNodeType().isGateway()) {
+      prevprev =
+          node.getPredecessors().stream()
+              .map(PredicateBuilder::prePredicateRecursive)
+              .collect(Collectors.toList());
+    }
 
     switch (node.getNodeType()) {
       case TASK:
       case EVENT:
         return mkVar(node);
       case XOR_MERGE:
+        return mkXor(prevprev);
       case OR_MERGE:
         return mkOr(prevprev);
       case AND_MERGE:
@@ -74,10 +79,13 @@ public class PredicateBuilder {
 
   private static WfPredicate postPredicateRecursive(WfNode node) {
 
-    List<WfPredicate> sucsuc =
-        node.getSuccessors().stream()
-            .map(PredicateBuilder::postPredicateRecursive)
-            .collect(Collectors.toList());
+    List<WfPredicate> sucsuc = new ArrayList<>();
+    if (node.getNodeType().isGateway()) {
+      sucsuc =
+          node.getSuccessors().stream()
+              .map(PredicateBuilder::postPredicateRecursive)
+              .collect(Collectors.toList());
+    }
 
     switch (node.getNodeType()) {
       case TASK:
@@ -97,7 +105,7 @@ public class PredicateBuilder {
 
   public static WfPredicate mkVar(WfNode left) {
     Predicate<List<WfNode>> pred = confWfNodes -> confWfNodes.contains(left);
-    return new WfPredicate(pred, "List.contains(" + left + ")");
+    return new WfPredicate(pred,  left+"" );
   }
 
   public static WfPredicate mkAnd(List<WfPredicate> formulas) {
@@ -105,7 +113,7 @@ public class PredicateBuilder {
     String predicateString = "true";
     for (var formula : formulas) {
       res = res.and(formula.getPredicate());
-      predicateString = predicateString.concat(" and " + formula);
+      predicateString = "("+ predicateString.concat(" and " + formula ) +")";
     }
     return new WfPredicate(res, predicateString);
   }

@@ -21,9 +21,12 @@ public class BFSConfWfTraverser {
   }
 
   public boolean stepForward() {
+
     Log.println("");
     Log.trace(String.format("--- Start traversing forward step %s ---", stepCounter), "");
     Log.trace(String.format("Node %s will be visited ", nextNodes.keySet()), "");
+
+    Set<BranchID> abortedBranch = new HashSet<>();
 
     if (nextNodes.isEmpty()) {
       visitor.abort();
@@ -53,7 +56,7 @@ public class BFSConfWfTraverser {
             break;
 
           case AND_MERGE:
-            if (visitedNodes.containsAll(node.getPredecessors())) {
+            if (visitedNodes.containsAll(node.getPredecessors()) || getActiveNodesInBranch(currentBranch).size() == 1 ) {
               currentBranch.addNode(node);
               for (WfNode suc : node.getSuccessors()) {
                 addEntry(newBranchMap, suc, currentBranch);
@@ -93,7 +96,14 @@ public class BFSConfWfTraverser {
 
     Log.trace(String.format("--- Checking Conformance for step %s ---", stepCounter), "");
 
-    nextNodes.values().stream().flatMap(Set::stream).forEach(visitor::accept);
+    nextNodes.values().stream().flatMap(Set::stream).forEach(branchID -> {
+      boolean notAbort = visitor.accept(branchID);
+      if (!notAbort){
+        abortedBranch.add(branchID);
+      }
+    });
+
+    removeAborted(newBranchMap,abortedBranch);
     nextNodes.clear();
     nextNodes.putAll(newBranchMap);
 
@@ -112,7 +122,7 @@ public class BFSConfWfTraverser {
     }
 
     Map<WfNode, Set<BranchID>> newBranchMap = new HashMap<>();
-
+    Set<BranchID> abortedBranch = new HashSet<>();
     for (Map.Entry<WfNode, Set<BranchID>> entry : nextNodes.entrySet()) {
 
       for (BranchID currentBranch : entry.getValue()) {
@@ -134,7 +144,7 @@ public class BFSConfWfTraverser {
             break;
 
           case AND_SPLIT:
-            if (visitedNodes.containsAll(node.getSuccessors())) {
+            if (visitedNodes.containsAll(node.getSuccessors()) || getActiveNodesInBranch(currentBranch).size() == 1) {
               currentBranch.addNode(node);
               for (WfNode suc : node.getPredecessors()) {
                 addEntry(newBranchMap, suc, currentBranch);
@@ -154,8 +164,16 @@ public class BFSConfWfTraverser {
     Log.trace(String.format("--- End traversing backward step %s ---", stepCounter), "");
 
     Log.trace(String.format("--- Checking Conformance for step %s ---", stepCounter), "");
-    nextNodes.values().stream().flatMap(Set::stream).forEach(visitor::accept);
+
+    nextNodes.values().stream().flatMap(Set::stream).forEach(branchID -> {
+      boolean notAbort = visitor.accept(branchID);
+      if (!notAbort){
+        abortedBranch.add(branchID);
+      }
+    });
+
     nextNodes.clear();
+    removeAborted(newBranchMap,abortedBranch);
     nextNodes.putAll(newBranchMap);
 
     stepCounter++;
@@ -168,5 +186,25 @@ public class BFSConfWfTraverser {
     } else {
       branchMap.put(node, new HashSet<>(Set.of(branchID)));
     }
+  }
+
+  private void removeAborted(Map<WfNode, Set<BranchID>> branchMap, Set<BranchID> abortedBranches) {
+
+    Map<WfNode, Set<BranchID>> copy = new HashMap<>(branchMap);
+    for (Map.Entry<WfNode, Set<BranchID>> entry : copy.entrySet()) {
+      Set<BranchID> branches = entry.getValue();
+
+      branches.removeIf(abortedBranches::contains);
+       if (branches.isEmpty()) {
+         branchMap.remove(entry.getKey());
+       }
+    }
+  }
+
+
+  public Set<WfNode> getActiveNodesInBranch(BranchID branchID){
+    Set<WfNode> res = new HashSet<>();
+    nextNodes.entrySet().stream().filter(entry -> entry.getValue().contains(branchID)).forEach(entry -> res.add(entry.getKey()));
+    return  res;
   }
 }
