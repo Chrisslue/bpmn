@@ -1,5 +1,5 @@
 package de.monticore.bpmn;
-
+// todo import modifiers grammar and add  modifiers by task and events
 grammar Workflow
         extends de.monticore.ocl.OCL,
                 de.monticore.expressions.TimeExpressions,

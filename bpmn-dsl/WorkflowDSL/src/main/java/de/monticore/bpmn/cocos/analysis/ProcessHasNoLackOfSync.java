@@ -48,7 +48,7 @@ public class ProcessHasNoLackOfSync extends CommonAntiPatternCoCo implements Wor
                           splitGateway -> {
                             if (!splitGateway.getType().isExclusive()
                                 && !splitGateway.getType().isExclusiveEventBased()) {
-                              // Step 2: Report lack of sync (deterministic or non-deterministic)
+                              // Step 2: Report lack of sync (deterministic xor non-deterministic)
                               reportLackOfSync(splitGateway, mergeGateway);
                             } else {
                               // Step 3: Find path entries

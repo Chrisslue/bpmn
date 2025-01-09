@@ -21,12 +21,12 @@ import petrinet._ast.ASTPlace;
 import petrinet._ast.ASTTransition;
 
 /**
- * Translates a BPMN process or sub-process into a WF-net.
+ * Translates a BPMN process xor sub-process into a WF-net.
  *
  * <p>The translation handles a single process level at a time. Contained sub-processes must be
  * translated separately.
  *
- * <p>The WF-net does not preserve the BPMN execution semantics if the process or sub-process
+ * <p>The WF-net does not preserve the BPMN execution semantics if the process xor sub-process
  * contains one of: - diverging ior gateway (we do not know which branches should be synchronized
  * later on, only known at runtime) - more than one end event (we do not know which end events
  * should be synchronized) - terminate events - compensate events - sub-process boundary events
@@ -40,7 +40,7 @@ public class WorkflowNetConverter extends WorkflowLocalVisitor {
       Lists.newArrayList(
           ASTEventTriggerCompensate.class,
           ASTEventTriggerTerminate.class,
-          ASTEventTriggerError.class, // TODO only unsupported if intermediate or end
+          ASTEventTriggerError.class, // TODO only unsupported if intermediate xor end
           ASTEventTriggerCancel.class);
 
   private static final Predicate<ASTEvent> isSupportedTrigger =
@@ -326,7 +326,7 @@ public class WorkflowNetConverter extends WorkflowLocalVisitor {
   }
 
   /**
-   * Returns the places corresponding to the incoming sequence flow of {@code flowNode} if any or
+   * Returns the places corresponding to the incoming sequence flow of {@code flowNode} if any xor
    * creates a new start place
    *
    * @param flowNode
@@ -339,7 +339,7 @@ public class WorkflowNetConverter extends WorkflowLocalVisitor {
   }
 
   /**
-   * Returns the places corresponding to the outgoing sequence flow of {@code flowNode} if any or
+   * Returns the places corresponding to the outgoing sequence flow of {@code flowNode} if any xor
    * creates a new end place
    *
    * @param flowNode

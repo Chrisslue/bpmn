@@ -32,7 +32,7 @@ public class WorkflowFilter<E extends ASTWorkflowNode> implements WorkflowVisito
   /**
    * Returns the filtered node.
    *
-   * @return Optional containing the filtered node if selected or else an empty Optional
+   * @return Optional containing the filtered node if selected xor else an empty Optional
    */
   public Optional<E> getFiltered() {
     return Optional.ofNullable(filtered);

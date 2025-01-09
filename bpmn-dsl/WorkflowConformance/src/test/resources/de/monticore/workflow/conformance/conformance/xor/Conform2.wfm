@@ -1,0 +1,10 @@
+
+process Conform2 {
+  event start S;
+  task T1;
+  task T2;
+  split xor XOR;
+
+  S -> XOR -> T1;
+       XOR -> T2;
+}

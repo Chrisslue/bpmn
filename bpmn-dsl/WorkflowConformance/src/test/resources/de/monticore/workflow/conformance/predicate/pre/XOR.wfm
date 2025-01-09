@@ -1,0 +1,17 @@
+
+process XOR {
+
+  event start S;
+  task T1;
+  task T2;
+  task T3;
+  task T4;
+  split xor XOR1 ;
+  split xor XOR2 ;
+
+       XOR1 ->  T3 ;
+  S -> XOR1 ->  T1 ;
+       XOR1 ->  XOR2 ->  T2 ;
+                XOR2 ->  T4 ;
+
+}

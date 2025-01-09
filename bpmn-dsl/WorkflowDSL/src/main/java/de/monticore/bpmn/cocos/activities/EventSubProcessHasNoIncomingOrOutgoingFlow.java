@@ -8,7 +8,7 @@ import de.se_rwth.commons.logging.Log;
 
 /**
  * Source: https://www.omg.org/spec/BPMN/2.0/PDF Page: 174 Description: An Event Sub-Process MUST
- * NOT have any incoming or outgoing Sequence Flows
+ * NOT have any incoming xor outgoing Sequence Flows
  */
 public class EventSubProcessHasNoIncomingOrOutgoingFlow implements WorkflowASTSubProcessCoCo {
 

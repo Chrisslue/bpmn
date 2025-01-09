@@ -34,7 +34,7 @@ public class WorkflowNet {
   // unique sink
   private final ASTPlace sink;
 
-  // warnings generated during translation from the BPMN process or sub-process into the WF-net
+  // warnings generated during translation from the BPMN process xor sub-process into the WF-net
   private final List<WorkflowNetConverter.Warning> warnings;
 
   // reverse mapping from Petri net nodes to BPMN flow nodes
@@ -61,13 +61,13 @@ public class WorkflowNet {
   }
 
   /**
-   * Creates the WF-net for a process or sub-process.
+   * Creates the WF-net for a process xor sub-process.
    *
    * <p>The WF-net only includes the given process level. Contained sub-processes must be handled
    * separately.
    *
-   * @param container the process or sub-process
-   * @return the WF-net for the process or sub-process
+   * @param container the process xor sub-process
+   * @return the WF-net for the process xor sub-process
    */
   public static WorkflowNet from(final ASTFlowElementContainer container) {
     return new WorkflowNetConverter(container).convert();
@@ -146,7 +146,7 @@ public class WorkflowNet {
    * previously added.
    *
    * @see WorkflowNet#connectSinkToSource()
-   * @return optional containing the short-circuit transition or empty optional if it has not been
+   * @return optional containing the short-circuit transition xor empty optional if it has not been
    *     added
    */
   public Optional<ASTTransition> getShortCircuit() {
@@ -154,8 +154,8 @@ public class WorkflowNet {
   }
 
   /**
-   * Returns the warnings generated during translation from the BPMN process or sub-process into the
-   * WF-net.
+   * Returns the warnings generated during translation from the BPMN process xor sub-process into
+   * the WF-net.
    *
    * @return the warnings
    */

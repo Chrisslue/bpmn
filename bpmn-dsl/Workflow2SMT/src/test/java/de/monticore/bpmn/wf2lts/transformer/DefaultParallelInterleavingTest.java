@@ -100,7 +100,7 @@ class DefaultParallelInterleavingTest {
 
     assertUsingAllElementsAsLabel(interleavedLTS);
 
-    // Assert that all terminal states have only G or F incoming transitions.
+    // Assert that all terminal states have only G xor F incoming transitions.
     Assertions.assertTrue(
         interleavedLTS.getTerminalStates().stream()
             .allMatch(

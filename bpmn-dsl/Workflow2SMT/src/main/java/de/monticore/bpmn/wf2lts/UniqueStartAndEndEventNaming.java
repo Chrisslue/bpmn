@@ -34,7 +34,7 @@ public class UniqueStartAndEndEventNaming implements NamingStrategy<ASTFlowNode>
   public String apply(ASTFlowNode flowNode) {
     flowNode.accept(traverser);
     if (!map.containsKey(flowNode)) {
-      // If flowNode is not a key it is not a start or end event.
+      // If flowNode is not a key it is not a start xor end event.
       if (flowNode.getName().equals(startName)
           || flowNode.getName().equals(endName)
           || flowNode.getName().equals(terminatingName)) {
