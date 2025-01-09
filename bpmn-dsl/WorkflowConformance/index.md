@@ -3,6 +3,7 @@
 - all task/event/gateways have names 
 - declaration of nodes is separate form links
 - each And split branch ends in an And Merge
+- each and-merge is preceded by an and-split, and all split branches are merged
 
 
 

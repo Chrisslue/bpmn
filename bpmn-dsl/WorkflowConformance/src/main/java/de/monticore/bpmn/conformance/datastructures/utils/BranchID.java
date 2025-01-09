@@ -8,9 +8,11 @@ public class BranchID {
   private final List<WfNode> nodeList;
   private boolean loopDetected = false;
   private boolean inParallel = false;
+  private static int counter = 0;
+  private boolean aborted = false;
 
-  public BranchID(List<WfNode> nodeList, int id) {
-    this.id = id;
+  public BranchID(List<WfNode> nodeList) {
+    this.id = counter++;
     this.nodeList = nodeList;
   } // todo handle when many parallel level
 
@@ -23,16 +25,19 @@ public class BranchID {
   }
 
   public void addNode(WfNode node) {
-    if (nodeList.contains(node)) {
-      loopDetected = true;
+    if (!nodeList.contains(node)) {
+      // loopDetected =  nodeList.indexOf(node) != nodeList.size()-1;
+      this.nodeList.add(node);
     }
-    this.nodeList.add(node);
   }
 
   public boolean isInParallel() {
     return inParallel;
   }
-  public void setInParallel(boolean inParallel) {this.inParallel = inParallel;}
+
+  public void setInParallel(boolean inParallel) {
+    this.inParallel = inParallel;
+  }
 
   public List<WfNode> getNodeList() {
     return nodeList;
@@ -45,5 +50,13 @@ public class BranchID {
   @Override
   public String toString() {
     return "id:" + id + " " + nodeList.toString();
+  }
+
+  public void setAborted() {
+    this.aborted = true;
+  }
+
+  public boolean isAborted() {
+    return aborted;
   }
 }

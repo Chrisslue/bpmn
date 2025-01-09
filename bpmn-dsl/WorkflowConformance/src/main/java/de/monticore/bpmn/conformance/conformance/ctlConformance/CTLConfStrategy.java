@@ -8,7 +8,6 @@ import de.monticore.bpmn.conformance.incarnation.IncarnationStrategy;
 import de.se_rwth.commons.logging.Log;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class CTLConfStrategy implements ConformanceStrategy<WfNode> {
@@ -29,56 +28,61 @@ public class CTLConfStrategy implements ConformanceStrategy<WfNode> {
     List<WfNode> references = incStrategy.getReferenceElements(concrete);
 
     if (concrete.getLabel().equals("S")) {
-    if (references.isEmpty()) {
-      return CheckResult.mkConform(concrete);
-    }
+      if (references.isEmpty()) {
+        return CheckResult.mkConform(concrete);
+      }
 
-    if (references.size() > 1) {
-      Log.error("Found more than one reference to the concrete element  " + concrete);
-      assert false;
-    }
+      if (references.size() > 1) {
+        Log.error("Found more than one reference to the concrete element  " + concrete);
+        assert false;
+      }
 
-    Set<WfNode> startNodes =
-        con.getAllNodes().stream().filter(WfNode::isStart).collect(Collectors.toSet());
+      Set<WfNode> startNodes =
+          con.getAllNodes().stream().filter(WfNode::isStart).collect(Collectors.toSet());
 
-    Log.println("");
-    Log.info(String.format("Checking Conformance of %s to %s", concrete, references.get(0)), "");
+      Log.println("");
+      Log.info(String.format("Checking Conformance of %s to %s", concrete, references.get(0)), "");
 
-    // building pre- and post-predicates
-    Predicate<List<WfNode>> postPredicate = PredicateBuilder.postPredicate(references.get(0));
-    Predicate<List<WfNode>> prePredicate = PredicateBuilder.prePredicate(references.get(0));
+      // building pre- and post-predicates
+      WfPredicate postPredicate = PredicateBuilder.postPredicate(references.get(0));
+      WfPredicate prePredicate = PredicateBuilder.prePredicate(references.get(0));
 
-    // building a pre- and post-conformance visitor
-    ConfWfVisitor postVisitor =
-        new ConfWfVisitor(concrete, startNodes, postPredicate, incStrategy, false);
-    ConfWfVisitor preVisitor =
-        new ConfWfVisitor(concrete, startNodes, prePredicate, incStrategy, true);
+      // building a pre- and post-conformance visitor
+      BranchVisitor forwardVisitor =
+          BranchVisitor.mkForwardVisitor(concrete, startNodes, postPredicate, incStrategy);
+      BranchVisitor backwardVisitor =
+          BranchVisitor.mkBackwardVisitor(concrete, startNodes, prePredicate, incStrategy);
 
-    // traversing the concrete model for node
-    ConfWfTraverser traverser = new ConfWfTraverser();
-    traverser.traverseForward(postVisitor, null, concrete);
+      // traversing the concrete model for node
+      BFSConfWfTraverser fwdTraverser = new BFSConfWfTraverser(forwardVisitor, concrete);
+      while (fwdTraverser.stepForward())
+        ;
 
-    preVisitor.setBackward();
-    traverser.traverseBackward(preVisitor, null, concrete);
+      BFSConfWfTraverser bwdTraverser = new BFSConfWfTraverser(backwardVisitor, concrete);
+      while (bwdTraverser.stepBackward())
+        ;
 
-    Log.info(String.format("--- Result for forward traversing of Node %s --- ", concrete), "");
-    postVisitor.printResult();
+      Log.info(String.format("--- Result for forward traversing of Node %s --- ", concrete), "");
+      forwardVisitor.printResult();
 
-    Log.info(String.format("--- Result for backward traversing of Node %s --- ", concrete), "");
-    preVisitor.printResult();
-    var postResult = postVisitor.getResult();
-    var preResult = preVisitor.getResult();
+      Log.println("");
 
-    if (postResult.isNonConform()) {
-      return postResult;
-    } else if (preResult.isNonConform()) {
-      return preResult;
-    } else if (postResult.isUnknown()) {
-      return postResult;
+      Log.info(String.format("--- Result for backward traversing of Node %s --- ", concrete), "");
+      backwardVisitor.printResult();
+
+      var postResult = forwardVisitor.getResult();
+      var preResult = backwardVisitor.getResult();
+
+      if (postResult.isNonConform()) {
+        return postResult;
+      } else if (preResult.isNonConform()) {
+        return preResult;
+      } else if (postResult.isUnknown()) {
+        return postResult;
+      } else {
+        return CheckResult.mkConform(concrete);
+      }
     } else {
-      return CheckResult.mkConform(concrete);
-    }}
-    else {
       return CheckResult.mkConform(concrete);
     }
   }

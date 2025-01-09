@@ -1,20 +1,18 @@
 package de.monticore.bpmn.conformance.conformance.ctlConformance;
 
 import de.monticore.bpmn.conformance.datastructures.interf.WfNode;
-import de.monticore.bpmn.conformance.datastructures.interf.WfNodeVisitor;
 import de.monticore.bpmn.conformance.datastructures.utils.BranchID;
 import de.monticore.bpmn.conformance.datastructures.utils.CheckResult;
 import de.monticore.bpmn.conformance.incarnation.IncarnationStrategy;
 import de.se_rwth.commons.logging.Log;
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 // todo optimization possibilities: - stop traversing of all branches node when lower and upper are
 // non conformed
 
-public class ConfWfVisitor implements WfNodeVisitor {
+public class BranchVisitor {
 
-  private final Predicate<List<WfNode>> predicate;
+  private final WfPredicate predicate;
 
   private final IncarnationStrategy<WfNode> inc;
 
@@ -24,22 +22,15 @@ public class ConfWfVisitor implements WfNodeVisitor {
 
   private boolean lowerBoundOnly = false;
 
-  private boolean isBackward = false; // todo handle that differently
-
   private final Map<BranchID, CheckResult> lowerBoundResults;
   private final Map<BranchID, CheckResult> upperboundResults;
 
-  private enum AbortRule {
-    SATISFIED_PREDICATE,
-    LOOP_DISCOVERED,
-    END_NODE_REACHED,
-    RETURN_TO_START
-  }
+  private Set<BranchID> branchIDSet = new HashSet<>();
 
-  public ConfWfVisitor(
+  private BranchVisitor(
       WfNode conNode,
       Set<WfNode> startNodes,
-      Predicate<List<WfNode>> predicate,
+      WfPredicate predicate,
       IncarnationStrategy<WfNode> inc,
       boolean lowerBoundOnly) {
     this.predicate = predicate;
@@ -51,66 +42,63 @@ public class ConfWfVisitor implements WfNodeVisitor {
     this.lowerBoundOnly = lowerBoundOnly;
   }
 
-  public void setBackward() {
-    isBackward = true;
+  public static BranchVisitor mkForwardVisitor(
+      WfNode conNode,
+      Set<WfNode> startNodes,
+      WfPredicate predicate,
+      IncarnationStrategy<WfNode> inc) {
+    return new BranchVisitor(conNode, startNodes, predicate, inc, false);
+  }
+
+  public static BranchVisitor mkBackwardVisitor(
+      WfNode conNode,
+      Set<WfNode> startNodes,
+      WfPredicate predicate,
+      IncarnationStrategy<WfNode> inc) {
+    return new BranchVisitor(conNode, startNodes, predicate, inc, true);
   }
 
   // todo break earlier when lower-bound only
-  @Override
-  public boolean accept(WfNode node, BranchID branchId) {
-    /* if (lowerBoundResults.containsKey(branchId) && upperboundResults.containsKey(branchId)) {
-      return false;
-    }*/
 
-    branchId.addNode(node);
+  public boolean accept(BranchID branchId) {
 
-    Log.debug(String.format("Testing branch %s with predicate", branchId), "");
+    branchIDSet.add(branchId);
+
+    Log.debug(String.format("Testing branch %s with predicate [%s]", branchId, predicate), "");
 
     List<WfNode> referenceNodes = resolveReferenceNodes(branchId);
-
-    boolean res = checkPredicate(branchId, predicate, referenceNodes);
+    boolean res = predicate.test(referenceNodes);
+    Log.trace("Result:" + res, "");
     if (!lowerBoundResults.containsKey(branchId)) {
       if (res) {
-        Log.info(
+        Log.trace(
             String.format(
                 "Aborting lower-bound, branch %s, reason: %s",
-                branchId, AbortRule.SATISFIED_PREDICATE),
+                branchId, AbortReason.SATISFIED_PREDICATE),
             "");
         CheckResult checkResult = CheckResult.mkConform(this.node);
         lowerBoundResults.putIfAbsent(branchId, checkResult);
       }
     }
-   if (branchId.isLoopDetected()) {
+
+    /*  if (branchId.isLoopDetected()) {
       Log.info(
           String.format(
               "Aborting lower and upper bound,  branch %s, reason: %s",
-              branchId, AbortRule.LOOP_DISCOVERED),
+              branchId, AbortReason.LOOP_DISCOVERED),
           "");
       lowerBoundResults.putIfAbsent(branchId, CheckResult.mkConform(node));
       upperboundResults.putIfAbsent(branchId, CheckResult.mkConform(node));
       return false;
-    }
+    }*/
 
     if (!startNodes.contains(this.node)
         && startNodes.contains(branchId.getNodeList().get(branchId.getNodeList().size() - 1))) {
-      Log.info(
+      Log.trace(
           String.format(
               "Aborting lower and upper bound, branch %s, reason: %s",
-              branchId, AbortRule.RETURN_TO_START),
+              branchId, AbortReason.RETURN_TO_START),
           "");
-      CheckResult checkRes =
-          res ? CheckResult.mkConform(this.node) : CheckResult.mkNonConform(this.node, branchId);
-      lowerBoundResults.putIfAbsent(branchId, checkRes);
-      upperboundResults.put(branchId, checkRes);
-      return false;
-    }
-
-    if (((isBackward && node.getPredecessors().isEmpty()) || (!isBackward && node.getSuccessors().isEmpty()))) { // todo handel differently
-      Log.info(
-          String.format(
-              "Aborting upper-bound and lower,  branch %s, reason: %s", branchId, AbortRule.END_NODE_REACHED),
-          "");
-
       CheckResult checkRes =
           res ? CheckResult.mkConform(this.node) : CheckResult.mkNonConform(this.node, branchId);
       lowerBoundResults.putIfAbsent(branchId, checkRes);
@@ -121,11 +109,25 @@ public class ConfWfVisitor implements WfNodeVisitor {
     return true;
   }
 
-  private boolean checkPredicate(BranchID branchId, Predicate<List<WfNode>> predicate, List<WfNode> referenceNodes) {
-    if (branchId.isInParallel()){
-      return false;
+  public boolean abort() {
+    branchIDSet = branchIDSet.stream().filter(n -> !n.isAborted()).collect(Collectors.toSet());
+    for (var branchId : branchIDSet) {
+
+      branchIDSet.add(branchId);
+      List<WfNode> referenceNodes = resolveReferenceNodes(branchId);
+      boolean res = predicate.test(referenceNodes);
+      Log.trace(
+          String.format(
+              "Aborting upper-bound and lower,  branch %s, reason: %s",
+              branchId, AbortReason.END_NODE_REACHED),
+          "");
+
+      CheckResult checkRes =
+          res ? CheckResult.mkConform(this.node) : CheckResult.mkNonConform(this.node, branchId);
+      lowerBoundResults.putIfAbsent(branchId, checkRes);
+      upperboundResults.put(branchId, checkRes);
     }
-    return predicate.test(referenceNodes);
+    return false;
   }
 
   public List<WfNode> resolveReferenceNodes(BranchID branchId) {

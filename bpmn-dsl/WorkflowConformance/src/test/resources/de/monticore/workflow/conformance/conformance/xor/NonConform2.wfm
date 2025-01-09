@@ -6,13 +6,14 @@ process NonConform2 {
   task T2;
   task T3;
   task T4;
+  task T5;
 
   split and AND ;
   merge and Merge ;
 
 
-       AND ->  T1 -> Merge -> T4 -> E ;
-  S -> AND ->  T2 -> Merge;
+       AND ->  T1 -> Merge -> T4     -> E ;
+  S -> AND ->  T2 -> T5    -> Merge;
        AND ->  T3 -> Merge;
 
 }
