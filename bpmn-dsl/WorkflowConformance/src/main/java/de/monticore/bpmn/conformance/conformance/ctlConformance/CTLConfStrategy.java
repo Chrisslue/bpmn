@@ -27,7 +27,7 @@ public class CTLConfStrategy implements ConformanceStrategy<WfNode> {
   @Override
   public CheckResult checkConformance(WfNode concrete) {
 
-    if (Objects.equals(concrete.getLabel(), "Introduction")) {
+    if (Objects.equals(concrete.getLabel(), "S")) {
       List<WfNode> references = incStrategy.getReferenceElements(concrete);
 
       if (references.isEmpty()) {
@@ -40,7 +40,7 @@ public class CTLConfStrategy implements ConformanceStrategy<WfNode> {
       }
 
       Set<WfNode> startNodes =
-              con.getAllNodes().stream().filter(WfNode::isStart).collect(Collectors.toSet());
+          con.getAllNodes().stream().filter(WfNode::isStart).collect(Collectors.toSet());
 
       Log.println("");
       Log.info(String.format("Checking Conformance of %s to %s", concrete, references.get(0)), "");
@@ -51,9 +51,9 @@ public class CTLConfStrategy implements ConformanceStrategy<WfNode> {
 
       // building a pre- and post-conformance visitor
       BranchVisitor forwardVisitor =
-              BranchVisitor.mkForwardVisitor(concrete, startNodes, postPredicate, incStrategy);
+          BranchVisitor.mkForwardVisitor(concrete, startNodes, postPredicate, incStrategy);
       BranchVisitor backwardVisitor =
-              BranchVisitor.mkBackwardVisitor(concrete, startNodes, prePredicate, incStrategy);
+          BranchVisitor.mkBackwardVisitor(concrete, startNodes, prePredicate, incStrategy);
 
       // traversing the concrete model for node
       BFSConfWfTraverser fwdTraverser = new BFSConfWfTraverser(forwardVisitor, concrete);
@@ -84,8 +84,8 @@ public class CTLConfStrategy implements ConformanceStrategy<WfNode> {
       } else {
         return CheckResult.mkConform(concrete);
       }
-    }else {
-      return  CheckResult.mkConform(concrete);
+    } else {
+      return CheckResult.mkConform(concrete);
     }
   }
 }

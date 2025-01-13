@@ -1,9 +1,9 @@
 package de.monticore.bpmn.conformance.datastructures.utils;
 
+import static de.monticore.bpmn.conformance.datastructures.utils.NodeType.*;
+
 import de.monticore.bpmn.conformance.datastructures.interf.WfNode;
 import java.util.List;
-
-import static de.monticore.bpmn.conformance.datastructures.utils.NodeType.*;
 
 public class BranchID {
   private final int id;
@@ -27,11 +27,12 @@ public class BranchID {
   }
 
   public void addNode(WfNode node) {
-    if (!nodeList.contains(node)) {
-      this.nodeList.add(node);
-    }else if (List.of(TASK,EVENT,XOR_SPLIT,OR_SPLIT,AND_SPLIT ).contains(node.getNodeType())) { //todo handle it properly
+    if (nodeList.contains(node)
+        && !node.getNodeType().equals(AND_MERGE)) { // todo handle it properly
       loopDetected = true;
     }
+
+    this.nodeList.add(node);
   }
 
   public boolean isInParallel() {
