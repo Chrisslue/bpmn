@@ -8,6 +8,9 @@ import de.se_rwth.commons.logging.Log;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class CaseStudyTest extends AbstractConfTest {
 
@@ -17,13 +20,29 @@ class CaseStudyTest extends AbstractConfTest {
     Log.initDEBUG();
   }
 
-  @Test
-  public void checkConformance() {
+  @ParameterizedTest
+  @ValueSource(strings = {"PaperAuthoringReferenceProcess","PaperAuthoringConcreteProcess1","SequentialWithLoop"})
+  public void checkConformance(String con) {
     // given
     String modelDir = "de.monticore.workflow.conformance.caseStudy.";
 
     ASTWorkflowCompilationUnit reference = loadModel(modelDir + "PaperAuthoringReferenceProcess");
-    ASTWorkflowCompilationUnit concrete = loadModel(modelDir + "PaperAuthoringReferenceProcess");
+    ASTWorkflowCompilationUnit concrete = loadModel(modelDir +con);
+
+    // when
+    WfConformanceChecker checker = new WfConformanceChecker();
+    boolean currentResult = checker.checkConformance(concrete, reference, "ref");
+
+    Assertions.assertTrue(currentResult);
+  }
+
+@Test
+  public void checkConfornknknknkknknknknknknknknknmance() {
+    // given
+    String modelDir = "de.monticore.workflow.conformance.caseStudy.";
+
+    ASTWorkflowCompilationUnit reference = loadModel(modelDir + "PaperAuthoringReferenceProcess");
+    ASTWorkflowCompilationUnit concrete = loadModel(modelDir + "SequentialWithLoop");
 
     // when
     WfConformanceChecker checker = new WfConformanceChecker();

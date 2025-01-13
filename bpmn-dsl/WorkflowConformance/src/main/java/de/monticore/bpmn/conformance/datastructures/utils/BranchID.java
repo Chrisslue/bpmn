@@ -3,7 +3,10 @@ package de.monticore.bpmn.conformance.datastructures.utils;
 import static de.monticore.bpmn.conformance.datastructures.utils.NodeType.*;
 
 import de.monticore.bpmn.conformance.datastructures.interf.WfNode;
+
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class BranchID {
   private final int id;
@@ -12,6 +15,18 @@ public class BranchID {
   private boolean inParallel = false;
   private static int counter = 0;
   private boolean aborted = false;
+  private Set<WfNode> waitingAndMerge = new HashSet<>();
+
+
+
+  public void  merge(WfNode andMerge){
+    waitingAndMerge.remove(andMerge);
+  }
+
+  public void  wait(WfNode andMerge){
+    assert  andMerge.getNodeType().equals(AND_MERGE);
+    waitingAndMerge.add(andMerge);
+  }
 
   public BranchID(List<WfNode> nodeList) {
     this.id = counter++;
@@ -22,14 +37,14 @@ public class BranchID {
     return loopDetected;
   }
 
-  public int getId() {
-    return id;
-  }
 
   public void addNode(WfNode node) {
-    if (nodeList.contains(node)
-        && !node.getNodeType().equals(AND_MERGE)) { // todo handle it properly
+    if (node.getNodeType().equals(AND_MERGE) && waitingAndMerge.contains(node)){
+      return;
+    }
+    if (nodeList.contains(node)) { // todo handle it properly
       loopDetected = true;
+      aborted= true;
     }
 
     this.nodeList.add(node);

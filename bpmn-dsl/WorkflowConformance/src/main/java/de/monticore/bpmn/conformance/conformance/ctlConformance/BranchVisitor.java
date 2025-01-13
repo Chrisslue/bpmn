@@ -87,6 +87,7 @@ public class BranchVisitor {
               "Aborting lower and upper bound,  branch %s, reason: %s",
               branchId, AbortReason.LOOP_DISCOVERED),
           "");
+      branchId.setAborted();
       lowerBoundResults.putIfAbsent(branchId, CheckResult.mkConform(node));
       upperboundResults.putIfAbsent(branchId, CheckResult.mkConform(node));
       return false;
