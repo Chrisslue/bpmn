@@ -62,7 +62,7 @@ Further examples can be found here.
 This sections lists the context conditions for the BPMN language.
 
 
-All context conditions for activities:
+Context conditions for activities:
 
 * [```AdHocSubProcessContainsAtLeastOneActivity```](../../../../java/de/monticore/bpmn/cocos/activities/AdHocSubProcessContainsAtLeastOneActivity.java)  
 
@@ -82,7 +82,7 @@ All context conditions for activities:
 
 
 
-All context conditions for analysis:
+Context conditions for analysis:
 
 * [```ProcessHasNoDeadNodes```](../../../../java/de/monticore/bpmn/cocos/analysis/ProcessHasNoDeadNodes.java) 
 
@@ -97,7 +97,7 @@ All context conditions for analysis:
 * [```ProcessNetIsSound```](../../../../java/de/monticore/bpmn/cocos/analysis/ProcessNetIsSound.java) 
 
 
-All context conditions for event triggers:
+Context conditions for event triggers:
 
 * [```BoundaryEventHasValidTrigger```](../../../../java/de/monticore/bpmn/cocos/event/triggers/BoundaryEventHasValidTrigger.java) 
 
@@ -118,7 +118,7 @@ All context conditions for event triggers:
 * [```StartEventTopLevelProcessHasValidTrigger```](../../../../java/de/monticore/bpmn/cocos/event/triggers/StartEventTopLevelProcessHasValidTrigger.java) 
 
 
-All context conditions for events:
+Context conditions for events:
 
 * [```AtLeastOneEndEventIfStartEventIsUsed```](../../../../java/de/monticore/bpmn/cocos/event/triggers/AtLeastOneEndEventIfStartEventIsUsed.java) 
 
@@ -141,7 +141,7 @@ All context conditions for events:
 * [```StartEventOutgoingFlowHasNoCondition```](../../../../java/de/monticore/bpmn/cocos/event/triggers/StartEventOutgoingFlowHasNoCondition.java)
 
 
-All context conditions for flow:
+Context conditions for flow:
 
 * [```AtMostOneDefaultBranch```](../../../../java/de/monticore/bpmn/cocos/flow/AtMostOneDefaultBranch.java)
 
@@ -180,7 +180,7 @@ All context conditions for flow:
 * [```StartEventHasOneOrMoreOutgoingFlows```](../../../../java/de/monticore/bpmn/cocos/flow/StartEventHasOneOrMoreOutgoingFlows.java)
 
 
-All context conditions for gateways:
+Context conditions for gateways:
 
 * [```EventGatewayDoesNotMixMessageEventsAndReceiveTasks```](../../../../java/de/monticore/bpmn/cocos/gateways/EventGatewayDoesNotMixMessageEventsAndReceiveTasks.java)
 
