@@ -81,18 +81,20 @@ public class BranchVisitor {
       }
     }
 
-      if (branchId.isLoopDetected()) {
+    if (branchId.isLoopDetected()) {
       Log.info(
           String.format(
               "Aborting lower and upper bound,  branch %s, reason: %s",
               branchId, AbortReason.LOOP_DISCOVERED),
           "");
+      branchId.setAborted();
       lowerBoundResults.putIfAbsent(branchId, CheckResult.mkConform(node));
       upperboundResults.putIfAbsent(branchId, CheckResult.mkConform(node));
       return false;
     }
 
     if (!startNodes.contains(this.node)
+        && !branchId.getNodeList().isEmpty()
         && startNodes.contains(branchId.getNodeList().get(branchId.getNodeList().size() - 1))) {
       Log.trace(
           String.format(
@@ -133,7 +135,6 @@ public class BranchVisitor {
 
   public List<WfNode> resolveReferenceNodes(BranchID branchId) {
     List<WfNode> concreteNodeList = new ArrayList<>(branchId.getNodeList());
-    concreteNodeList.remove(node);
 
     return concreteNodeList.stream()
         .map(inc::getReferenceElements)

@@ -105,7 +105,7 @@ public class PredicateBuilder {
 
   public static WfPredicate mkVar(WfNode left) {
     Predicate<List<WfNode>> pred = confWfNodes -> confWfNodes.contains(left);
-    return new WfPredicate(pred,  left+"" );
+    return new WfPredicate(pred, left + "");
   }
 
   public static WfPredicate mkAnd(List<WfPredicate> formulas) {
@@ -113,7 +113,7 @@ public class PredicateBuilder {
     String predicateString = "true";
     for (var formula : formulas) {
       res = res.and(formula.getPredicate());
-      predicateString = "("+ predicateString.concat(" and " + formula ) +")";
+      predicateString = "(" + predicateString.concat(" and " + formula) + ")";
     }
     return new WfPredicate(res, predicateString);
   }

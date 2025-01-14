@@ -1,0 +1,18 @@
+// in the cas the work is perform sequentially
+
+process PaperAuthoringConcreteProcess1 {
+
+  event start Start;
+  event end Done;
+
+   task  Introduction;
+   task  Main;
+   task Conclusion;
+   task Draft;
+
+
+  Start -> Draft  -> Introduction  -> Main -> Conclusion -> Done;
+
+
+
+}

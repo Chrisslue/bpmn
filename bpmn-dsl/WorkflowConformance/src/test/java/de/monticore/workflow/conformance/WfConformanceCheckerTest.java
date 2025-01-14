@@ -5,18 +5,18 @@ import static de.monticore.bpmn.conformance.datastructures.utils.CheckResult.Res
 import de.monticore.bpmn.conformance.WfConformanceChecker;
 import de.monticore.bpmn.conformance.datastructures.utils.CheckResult;
 import de.monticore.bpmn.workflow._ast.ASTWorkflowCompilationUnit;
+import de.se_rwth.commons.logging.Log;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-@Disabled
+
 class WfConformanceCheckerTest extends AbstractConfTest {
   private ASTWorkflowCompilationUnit concrete;
   private ASTWorkflowCompilationUnit reference;
@@ -37,7 +37,7 @@ class WfConformanceCheckerTest extends AbstractConfTest {
   @BeforeEach
   public void setup() {
     init();
-    // Log.initDEBUG();
+    Log.initDEBUG();
   }
 
   @ParameterizedTest
