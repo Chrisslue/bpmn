@@ -1,0 +1,20 @@
+
+process SequentialWithLoop {
+
+  event start Start;
+  event end Done;
+
+   task  Introduction;
+   task  Main;
+   task Conclusion;
+   task Draft;
+
+   merge xor StartIteration;
+   split xor EndIteration;
+
+
+  Start -> Draft -> StartIteration -> Introduction -> Main -> Conclusion  -> EndIteration -> Done;
+                                       EndIteration -> StartIteration;
+
+
+}

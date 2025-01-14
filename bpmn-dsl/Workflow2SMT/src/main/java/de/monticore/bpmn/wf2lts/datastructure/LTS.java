@@ -164,7 +164,7 @@ public class LTS extends IntermediateGraph<LTS.State, LTS.Transition> {
 
   public void addTransitionsOf(LTS otherLTS) {
     // Only add transitions -> implicitly adds source and target states.
-    // Resulting lts only contains states with at least one incoming or outgoing transition.
+    // Resulting lts only contains states with at least one incoming xor outgoing transition.
     otherLTS.getEdges().forEach((state, transitions) -> transitions.forEach(this::addTransition));
   }
 

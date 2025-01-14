@@ -23,7 +23,7 @@ public class LTSTestingUtils {
     var optPath = LTSTraverser.pathOfLabel(lts, labels);
     assertTrue(
         optPath.isPresent() && optPath.get().endsInTerminal(),
-        "Path of labels either doesn't exist or does not end in terminal state" + optPath);
+        "Path of labels either doesn't exist xor does not end in terminal state" + optPath);
   }
 
   public static void assertPathDoesNotExists(LTS lts, List<String> labels) {

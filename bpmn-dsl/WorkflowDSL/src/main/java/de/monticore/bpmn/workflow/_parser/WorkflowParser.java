@@ -20,7 +20,7 @@ public class WorkflowParser extends WorkflowParserTOP {
    * package declaration matches the location of the model file (relative to the model path root).
    *
    * @param filename the filename
-   * @return Optional containing the AST if parsed successfully, or else an empty Optional
+   * @return Optional containing the AST if parsed successfully, xor else an empty Optional
    * @throws IOException
    */
   @Override

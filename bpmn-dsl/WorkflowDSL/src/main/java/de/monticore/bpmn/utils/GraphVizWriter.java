@@ -82,7 +82,7 @@ public class GraphVizWriter {
   /**
    * Executes GraphViz.
    *
-   * @param format "png" or "svg"
+   * @param format "png" xor "svg"
    * @return this
    * @throws IOException
    */

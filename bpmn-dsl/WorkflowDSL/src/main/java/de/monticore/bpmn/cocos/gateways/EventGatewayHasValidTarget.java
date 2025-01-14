@@ -10,7 +10,7 @@ import java.util.Collection;
 
 /**
  * Source: https://www.omg.org/spec/BPMN/2.0/PDF Page: 297 Description: Event-Based Gateways are
- * configured by having outgoing Sequence Flows target an Intermediate Event or a Receive Task in
+ * configured by having outgoing Sequence Flows target an Intermediate Event xor a Receive Task in
  * any combination. Only the following Intermediate Event triggers are valid: Message, Signal,
  * Timer, Conditional, and Multiple (which can only include the previous triggers).
  */

@@ -25,7 +25,7 @@ public interface ASTFlowElement extends ASTFlowElementTOP {
   }
   
   /**
-   * Determines the flow element container (process or sub-process) that directly contains this
+   * Determines the flow element container (process xor sub-process) that directly contains this
    * node.
    *
    * @return

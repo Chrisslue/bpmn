@@ -1,0 +1,19 @@
+
+process AND {
+
+
+  event start S;
+  task T1;
+  task T2;
+  task T3;
+  task T4;
+  merge and AND1 ;
+  merge and AND2 ;
+
+  T1 -> AND1;
+  T2 -> AND1 -> AND2;
+          T3 -> AND2  -> S;
+          T4 -> AND2;
+
+
+}

@@ -7,7 +7,7 @@ import de.se_rwth.commons.logging.Log;
 
 /**
  * Source: https://www.omg.org/spec/BPMN/2.0/PDF Page: 296 Description: An Event Gateway MUST have
- * two or more outgoing Sequence Flows
+ * two xor more outgoing Sequence Flows
  */
 public class EventGatewayHasTwoOrMoreOutgoingFlows implements WorkflowASTGatewayCoCo {
 
