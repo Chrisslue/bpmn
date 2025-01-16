@@ -49,7 +49,7 @@ public class BFSConfWfTraverser {
           currentBranch.addNode(node);
         }
 
-        if (currentBranch.isAborted()) {
+        if (currentBranch.isCheckCompleted()) {
           break; // todo handle properly
         }
 

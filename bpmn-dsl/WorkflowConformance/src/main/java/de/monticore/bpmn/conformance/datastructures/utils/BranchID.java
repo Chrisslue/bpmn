@@ -6,6 +6,7 @@ import de.monticore.bpmn.conformance.datastructures.interf.WfNode;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 /*****
  * This class stores information for a given branch during the traversal of the BPMN.
  *
@@ -26,10 +27,12 @@ public class BranchID {
 
   private boolean inParallel = false;
   private static int counter = 0;
-  private boolean aborted = false;
-  private boolean ignore = false;
+  private boolean checkCompleted = false;
+  private boolean checkAborted = false;
   private Set<WfNode> waitingAndMerge = new HashSet<>();
 
+  CheckResult loweBoundResult;
+  CheckResult upperBoundResult;
   public void merge(WfNode andMerge) {
     waitingAndMerge.remove(andMerge);
   }
@@ -44,14 +47,12 @@ public class BranchID {
     this.nodeList = nodeList;
   } // todo handle when many parallel level
 
-
-
   public void addNode(WfNode node) {
     if (node.getNodeType().equals(AND_MERGE) && waitingAndMerge.contains(node)) {
       return;
     }
     if (nodeList.contains(node)) { // todo handle it properly
-      aborted = true;
+      checkCompleted = true;
     }
 
     this.nodeList.add(node);
@@ -78,19 +79,33 @@ public class BranchID {
     return "id:" + id + " " + nodeList.toString();
   }
 
-  public void setAborted() {
-    this.aborted = true;
+  public void completeCheck() {
+    this.checkCompleted = true;
   }
 
-  public boolean isAborted() {
-    return aborted;
+  public boolean isCheckCompleted() {
+    return checkCompleted;
   }
 
   public void setIgnore() {
-    this.ignore = true;
+    this.checkAborted = true;
   }
 
-  public boolean isIgnore() {
-    return ignore;
+  public boolean isCheckAborted() {
+    return checkAborted;
   }
+
+  public void abortCheck() {
+    this.checkAborted = true;
+  }
+
+  public void setUpperBoundResult(CheckResult upperBoundResult) {
+    this.upperBoundResult = upperBoundResult;
+  }
+
+  public void setLoweBoundResult(CheckResult loweBoundResult) {
+    this.loweBoundResult = loweBoundResult;
+  }
+
+
 }
