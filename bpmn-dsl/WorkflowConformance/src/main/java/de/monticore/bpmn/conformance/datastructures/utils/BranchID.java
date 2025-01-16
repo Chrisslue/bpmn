@@ -14,6 +14,7 @@ public class BranchID {
   private boolean inParallel = false;
   private static int counter = 0;
   private boolean aborted = false;
+  private boolean ignore = false;
   private Set<WfNode> waitingAndMerge = new HashSet<>();
 
   public void merge(WfNode andMerge) {
@@ -73,5 +74,13 @@ public class BranchID {
 
   public boolean isAborted() {
     return aborted;
+  }
+
+  public void setIgnore() {
+    this.ignore = true;
+  }
+
+  public boolean isIgnore() {
+    return ignore;
   }
 }

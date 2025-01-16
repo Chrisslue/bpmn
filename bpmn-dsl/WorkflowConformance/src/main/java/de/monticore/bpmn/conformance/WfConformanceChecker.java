@@ -119,4 +119,11 @@ public class WfConformanceChecker {
     Log.info("--- All node are Conformed to their reference ---", logger);
     return true;
   }
+
+  public List<WfNode> getNonConformNodes() {
+    return checkResult.stream()
+        .filter(n -> n.getResult().equals(CheckResult.Result.NON_CONFORM))
+        .map(CheckResult::getNode)
+        .collect(Collectors.toList());
+  }
 }

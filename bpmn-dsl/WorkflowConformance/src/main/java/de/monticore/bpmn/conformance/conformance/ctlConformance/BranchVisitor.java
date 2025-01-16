@@ -76,6 +76,7 @@ public class BranchVisitor {
                 "Aborting lower-bound, branch %s, reason: %s",
                 branchId, AbortReason.SATISFIED_PREDICATE),
             "");
+        branchId.setAborted();
         CheckResult checkResult = CheckResult.mkConform(this.node);
         lowerBoundResults.putIfAbsent(branchId, checkResult);
       }
@@ -102,6 +103,7 @@ public class BranchVisitor {
               branchId, AbortReason.RETURN_TO_START),
           "");
       Log.trace("Result:" + res, "");
+      branchId.setAborted();
       CheckResult checkRes =
           res ? CheckResult.mkConform(this.node) : CheckResult.mkNonConform(this.node, branchId);
       lowerBoundResults.putIfAbsent(branchId, checkRes);
@@ -113,7 +115,7 @@ public class BranchVisitor {
   }
 
   public boolean abort() {
-    branchIDSet = branchIDSet.stream().filter(n -> !n.isAborted()).collect(Collectors.toSet());
+    branchIDSet = branchIDSet.stream().filter(n -> !n.isIgnore()).collect(Collectors.toSet());
     for (var branchId : branchIDSet) {
 
       branchIDSet.add(branchId);
@@ -124,7 +126,7 @@ public class BranchVisitor {
               "Aborting upper-bound and lower,  branch %s, reason: %s",
               branchId, AbortReason.END_NODE_REACHED),
           "");
-
+      branchId.setAborted();
       CheckResult checkRes =
           res ? CheckResult.mkConform(this.node) : CheckResult.mkNonConform(this.node, branchId);
       lowerBoundResults.putIfAbsent(branchId, checkRes);
@@ -184,7 +186,8 @@ public class BranchVisitor {
   public void printResult() {
 
     Log.println("");
-
+    Log.info("------------------------ Predicate ------------------------", "");
+    Log.info(predicate.toString(), "");
     Log.info("---------- Lower bound Results: ---------", "");
 
     for (var res : lowerBoundResults.entrySet()) {

@@ -9,7 +9,7 @@ process MultipleIncarnation {
 
   <<ref="Main">>  task  SummarizingNewFeatures;
    <<ref="Main">>  task  AddNewSections;
-
+   task  ConceptOfNewFeatures;
    task Draft;
    task Implementation;
    task Research;
@@ -21,14 +21,14 @@ process MultipleIncarnation {
 
 
   Start ->
-  Research ->
-  Draft ->
-  StartIteration ->
-  Implementation -> SplitWork -> Introduction -> MergeWork;
-                    SplitWork -> Implementation -> MergeWork;
-                    SplitWork -> AddNewSections -> MergeWork;
-                    SplitWork -> Conclusion -> MergeWork -> MergeWork-> SummarizingNewFeatures -> EndIteration -> Done;
-                                                                                                   EndIteration -> StartIteration;
+     Research ->
+       Draft ->
+          StartIteration ->
+            ConceptOfNewFeatures -> SplitWork -> Introduction   -> MergeWork;
+                                    SplitWork -> Implementation -> MergeWork;
+                                    SplitWork -> AddNewSections -> MergeWork -> SummarizingNewFeatures -> EndIteration -> Done;
+                                    SplitWork -> Conclusion     -> MergeWork;
+                                                                                            EndIteration -> StartIteration;
 
 
 

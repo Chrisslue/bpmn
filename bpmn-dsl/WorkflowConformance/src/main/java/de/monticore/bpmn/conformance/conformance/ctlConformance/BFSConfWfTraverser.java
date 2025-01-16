@@ -88,7 +88,7 @@ public class BFSConfWfTraverser {
               BranchID newBranch = new BranchID(new ArrayList<>(currentBranch.getNodeList()));
               addEntry(newBranchMap, suc, newBranch);
             }
-            currentBranch.setAborted();
+            currentBranch.setIgnore();
             break;
 
           case OR_SPLIT:
@@ -100,7 +100,7 @@ public class BFSConfWfTraverser {
                 addEntry(newBranchMap, suc, newBranch);
               }
             }
-            currentBranch.setAborted();
+            currentBranch.setIgnore();
             break;
         }
       }
