@@ -82,7 +82,7 @@ public class BranchVisitor {
       }
     }
 
-    if (branchId.isLoopDetected()) {
+    if (new HashSet<>(branchId.getNodeList()).size() < branchId.getNodeList().size()) {
       Log.info(
           String.format(
               "Aborting lower and upper bound,  branch %s, reason: %s",
