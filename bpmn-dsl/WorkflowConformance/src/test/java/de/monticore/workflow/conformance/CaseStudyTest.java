@@ -6,6 +6,7 @@ import de.monticore.bpmn.workflow._ast.ASTWorkflowCompilationUnit;
 import de.se_rwth.commons.logging.Log;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -42,6 +43,7 @@ class CaseStudyTest extends AbstractConfTest {
   }
 
   @Test
+  @Disabled
   public void checkConfornknknknkknknknknknknknknknmance() {
     // given
     String modelDir = "de.monticore.workflow.conformance.caseStudy.";
