@@ -1,0 +1,26 @@
+
+process AddingNewTasks {
+
+  event start Start;
+  event end Done;
+
+   task  Introduction;
+   task  Main;
+   task Conclusion;
+   task Draft;
+   task Implementation;
+  task  Research;
+   merge xor StartIteration;
+   split xor EndIteration;
+   split and SplitWork;
+   merge and MergeWork;
+
+
+  Start -> Research -> Draft -> StartIteration -> SplitWork -> Introduction   -> MergeWork;
+                                      SplitWork -> Implementation -> MergeWork;
+                                      SplitWork -> Main           -> MergeWork -> EndIteration -> Done;
+                                      SplitWork -> Conclusion     -> MergeWork;
+                                                                                  EndIteration -> StartIteration;
+
+
+}

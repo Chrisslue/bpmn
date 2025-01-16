@@ -1,5 +1,5 @@
 
-process PaperAuthoringReferenceProcess {
+process PaperAuthoring {
 
   event start Start;
   event end Done;

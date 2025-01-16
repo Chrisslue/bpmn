@@ -43,14 +43,14 @@ public class BFSConfWfTraverser {
 
         WfNode node = entry.getKey();
 
-        updateVisitedNode(node,currentBranch);
+        updateVisitedNode(node, currentBranch);
 
         if (stepCounter != 0 || !node.equals(startNode)) {
           currentBranch.addNode(node);
         }
 
-        if (currentBranch.isAborted()){
-          break; //todo handle properly
+        if (currentBranch.isAborted()) {
+          break; // todo handle properly
         }
 
         switch (node.getNodeType()) {
@@ -59,15 +59,12 @@ public class BFSConfWfTraverser {
           case AND_SPLIT:
           case XOR_MERGE:
           case OR_MERGE:
-
-
             for (WfNode suc : node.getSuccessors()) {
               addEntry(newBranchMap, suc, currentBranch);
             }
             break;
 
           case AND_MERGE:
-
             if (visitedNodes.get(currentBranch).containsAll(node.getPredecessors())
                 || getActiveNodesInBranch(currentBranch).size() == 1) {
 
@@ -164,7 +161,8 @@ public class BFSConfWfTraverser {
             break;
 
           case AND_SPLIT:
-            if ((visitedNodes.containsKey(currentBranch) && visitedNodes.get(currentBranch).containsAll(node.getSuccessors()))
+            if ((visitedNodes.containsKey(currentBranch)
+                    && visitedNodes.get(currentBranch).containsAll(node.getSuccessors()))
                 || getActiveNodesInBranch(currentBranch).size() == 1) {
               currentBranch.addNode(node);
               for (WfNode suc : node.getPredecessors()) {

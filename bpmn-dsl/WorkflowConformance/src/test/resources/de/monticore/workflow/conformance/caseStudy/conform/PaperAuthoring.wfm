@@ -1,0 +1,23 @@
+
+process PaperAuthoring {
+
+  event start Start;
+  event end Done;
+
+   task  Introduction;
+   task  Main;
+   task Conclusion;
+   task Draft;
+
+   merge xor StartIteration;
+   split xor EndIteration;
+   split and SplitWork;
+   merge and MergeWork;
+
+
+  Start -> Draft -> StartIteration -> SplitWork -> Introduction -> MergeWork -> EndIteration;
+                                      SplitWork -> Main         -> MergeWork -> EndIteration -> Done;
+                                      SplitWork -> Conclusion   -> MergeWork -> EndIteration -> StartIteration;
+
+
+}
