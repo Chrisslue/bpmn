@@ -7,7 +7,7 @@ process MultipleIncarnation {
    task  Introduction;
    task  Conclusion;
 
-  <<ref="Main">>  task  SummarizingNewFeatures;
+   <<ref="Main">>  task  SummarizingNewFeatures;
    <<ref="Main">>  task  AddNewSections;
    task  ConceptOfNewFeatures;
    task Draft;

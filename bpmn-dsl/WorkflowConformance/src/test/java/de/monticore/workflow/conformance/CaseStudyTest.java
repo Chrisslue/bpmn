@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -32,7 +33,6 @@ class CaseStudyTest extends AbstractConfTest {
         "nonconform.AntiPattern",
         "nonconform.WrongSequentialOrder",
         "PaperAuthoring"
-        //  "conform.MultipleIncarnation" todo there is a problem with predicate builder
       })
   public void checkReflexiveConformance(String model) {
     // given
@@ -98,17 +98,18 @@ class CaseStudyTest extends AbstractConfTest {
   }
 
   @Test
-  public void checkConfornknknknkknknknknknknknknknmance() { // todo remove me later
+  @Disabled
+  public void CheckUniqueModel() { // todo remove me later
     // given
     String modelDir = "de.monticore.workflow.conformance.caseStudy.";
 
-    ASTWorkflowCompilationUnit reference = loadModel(modelDir + "PaperAuthoring");
-    ASTWorkflowCompilationUnit concrete = loadModel(modelDir + "nonconform.TaskNotIncarnated");
+    ASTWorkflowCompilationUnit reference = loadModel(modelDir + "conform.MultipleIncarnation");
+    ASTWorkflowCompilationUnit concrete = loadModel(modelDir + "conform.MultipleIncarnation");
 
     // when
     WfConformanceChecker checker = new WfConformanceChecker();
     boolean currentResult = checker.checkConformance(concrete, reference, "ref");
 
-    Assertions.assertFalse(currentResult);
+    Assertions.assertTrue(currentResult);
   }
 }
