@@ -5,7 +5,6 @@ import static de.monticore.bpmn.conformance.datastructures.utils.CheckResult.Res
 import de.monticore.bpmn.conformance.WfConformanceChecker;
 import de.monticore.bpmn.conformance.datastructures.utils.CheckResult;
 import de.monticore.bpmn.workflow._ast.ASTWorkflowCompilationUnit;
-import de.se_rwth.commons.logging.Log;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;

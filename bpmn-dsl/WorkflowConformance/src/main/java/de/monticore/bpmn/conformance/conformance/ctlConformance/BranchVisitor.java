@@ -49,12 +49,10 @@ public class BranchVisitor {
     return new BranchVisitor(conNode, startNodes, predicate, inc, true);
   }
 
-
-
   public boolean accept(BranchID branchId) {
-   if ( branchId.isCheckAborted() || branchId.isCheckCompleted()){
-     return  false;
-   }
+    if (branchId.isCheckAborted() || branchId.isCheckCompleted()) {
+      return false;
+    }
     branchIDSet.add(branchId);
 
     Log.trace(String.format("Checking branch %s with predicate [%s]", branchId, predicate), "");
@@ -64,17 +62,14 @@ public class BranchVisitor {
 
     Log.trace("Result:" + res, "");
 
-
-      if (res) {
-        Log.trace(
-            String.format(
-                "Aborting lower-bound, branch %s, reason: %s",
-                branchId, AbortReason.SATISFIED_PREDICATE),
-            "");
-        branchId.completeCheck();
-        CheckResult checkResult = CheckResult.mkConform(this.branchOrigin);
-        branchId.setLoweBoundResult(checkResult);
-
+    if (res) {
+      Log.trace(
+          String.format(
+              "Aborting lower-bound, branch %s, reason: %s",
+              branchId, AbortReason.SATISFIED_PREDICATE),
+          "");
+      CheckResult checkResult = CheckResult.mkConform(this.branchOrigin);
+      branchId.setLoweBoundResult(checkResult);
     }
 
     if (new HashSet<>(branchId.getNodeList()).size() < branchId.getNodeList().size()) {
@@ -83,9 +78,10 @@ public class BranchVisitor {
               "Aborting lower and upper bound,  branch %s, reason: %s",
               branchId, AbortReason.LOOP_DISCOVERED),
           "");
-      branchId.completeCheck();
+
       branchId.setLoweBoundResult(CheckResult.mkConform(branchOrigin));
       branchId.setUpperBoundResult(CheckResult.mkConform(branchOrigin));
+      branchId.completeCheck();
       return false;
     }
 
@@ -98,13 +94,14 @@ public class BranchVisitor {
               branchId, AbortReason.RETURN_TO_START),
           "");
       Log.trace("Result:" + res, "");
-      branchId.completeCheck();
+
       CheckResult checkRes =
           res
               ? CheckResult.mkConform(this.branchOrigin)
               : CheckResult.mkNonConform(this.branchOrigin, branchId);
       branchId.setLoweBoundResult(checkRes);
       branchId.setUpperBoundResult(checkRes);
+      branchId.completeCheck();
       return false;
     }
 
@@ -123,13 +120,14 @@ public class BranchVisitor {
               "Aborting upper-bound and lower,  branch %s, reason: %s",
               branchId, AbortReason.END_NODE_REACHED),
           "");
-      branchId.completeCheck();
+
       CheckResult checkRes =
           res
               ? CheckResult.mkConform(this.branchOrigin)
               : CheckResult.mkNonConform(this.branchOrigin, branchId);
       branchId.setLoweBoundResult(checkRes);
       branchId.setUpperBoundResult(checkRes);
+      branchId.completeCheck();
     }
     return false;
   }

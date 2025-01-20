@@ -32,6 +32,7 @@ public class BranchID {
 
   CheckResult loweBoundResult;
   CheckResult upperBoundResult;
+
   public void merge(WfNode andMerge) {
     waitingAndMerge.remove(andMerge);
   }
@@ -56,8 +57,6 @@ public class BranchID {
 
     this.nodeList.add(node);
   }
-
-
 
   public List<WfNode> getNodeList() {
     return nodeList;
@@ -88,16 +87,15 @@ public class BranchID {
     return checkAborted;
   }
 
-
-
   public void setUpperBoundResult(CheckResult upperBoundResult) {
     this.upperBoundResult = upperBoundResult;
   }
 
   public void setLoweBoundResult(CheckResult loweBoundResult) {
-    this.loweBoundResult = loweBoundResult;
+    if (this.loweBoundResult == null) {
+      this.loweBoundResult = loweBoundResult;
+    }
   }
-
 
   public CheckResult getUpperBoundResult() {
     return upperBoundResult;
