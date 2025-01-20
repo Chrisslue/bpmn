@@ -14,7 +14,7 @@ public class BFSConfWfTraverser {
   private final Map<BranchID, Set<WfNode>> visitedNodes = new HashMap<>();
   private final BranchVisitor visitor;
   private int stepCounter = 0;
-  private WfNode startNode;
+  private final WfNode startNode;
 
   public BFSConfWfTraverser(BranchVisitor wfVisitor, WfNode startNode) {
     this.visitor = wfVisitor;
@@ -88,7 +88,7 @@ public class BFSConfWfTraverser {
               BranchID newBranch = new BranchID(new ArrayList<>(currentBranch.getNodeList()));
               addEntry(newBranchMap, suc, newBranch);
             }
-            currentBranch.setIgnore();
+            currentBranch.abortCheck();
             break;
 
           case OR_SPLIT:
@@ -100,7 +100,7 @@ public class BFSConfWfTraverser {
                 addEntry(newBranchMap, suc, newBranch);
               }
             }
-            currentBranch.setIgnore();
+            currentBranch.abortCheck();
             break;
         }
       }

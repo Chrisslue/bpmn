@@ -52,7 +52,9 @@ public class BranchVisitor {
 
 
   public boolean accept(BranchID branchId) {
-
+   if ( branchId.isCheckAborted() || branchId.isCheckCompleted()){
+     return  false;
+   }
     branchIDSet.add(branchId);
 
     Log.trace(String.format("Checking branch %s with predicate [%s]", branchId, predicate), "");
@@ -101,8 +103,8 @@ public class BranchVisitor {
           res
               ? CheckResult.mkConform(this.branchOrigin)
               : CheckResult.mkNonConform(this.branchOrigin, branchId);
-      lowerBoundResults.putIfAbsent(branchId, checkRes);
-      upperboundResults.put(branchId, checkRes);
+      branchId.setLoweBoundResult(checkRes);
+      branchId.setUpperBoundResult(checkRes);
       return false;
     }
 
@@ -126,8 +128,8 @@ public class BranchVisitor {
           res
               ? CheckResult.mkConform(this.branchOrigin)
               : CheckResult.mkNonConform(this.branchOrigin, branchId);
-      lowerBoundResults.putIfAbsent(branchId, checkRes);
-      upperboundResults.put(branchId, checkRes);
+      branchId.setLoweBoundResult(checkRes);
+      branchId.setUpperBoundResult(checkRes);
     }
     return false;
   }
@@ -144,9 +146,9 @@ public class BranchVisitor {
   // todo  try to optimize it later
   public CheckResult getResult() {
     CheckResult lowerBoundRes = null;
-    for (CheckResult res : lowerBoundResults.values()) {
-      if (res.isNonConform()) {
-        lowerBoundRes = res;
+    for (BranchID res : branchIDSet) {
+      if (res.getLoweBoundResult().isNonConform()) {
+        lowerBoundRes = res.getLoweBoundResult();
         break;
       }
     }
@@ -160,9 +162,9 @@ public class BranchVisitor {
     }
 
     CheckResult upperBoundRes = null;
-    for (CheckResult res : upperboundResults.values()) {
-      if (res.isNonConform()) {
-        upperBoundRes = res;
+    for (var res : branchIDSet) {
+      if (res.getUpperBoundResult().isNonConform()) {
+        upperBoundRes = res.getUpperBoundResult();
         break;
       }
     }
@@ -187,8 +189,8 @@ public class BranchVisitor {
     Log.info(predicate.toString(), "");
     Log.info("---------- Lower bound Results: ---------", "");
 
-    for (var res : lowerBoundResults.entrySet()) {
-      Log.info(String.format("branch: %s, res= %s", res.getKey(), res.getValue().getResult()), "");
+    for (var res : branchIDSet) {
+      Log.info(String.format("branch: %s, res= %s", res, res.getLoweBoundResult().getResult()), "");
     }
 
     Log.println("");
@@ -196,9 +198,9 @@ public class BranchVisitor {
     if (!lowerBoundOnly) {
       Log.info("---------- upperbound Results: ----------", "");
 
-      for (var res : upperboundResults.entrySet()) {
+      for (var res : branchIDSet) {
         Log.info(
-            String.format("branch: %s, res= %s", res.getKey(), res.getValue().getResult()), "");
+            String.format("branch: %s, res= %s", res, res.getUpperBoundResult().getResult()), "");
       }
     }
   }

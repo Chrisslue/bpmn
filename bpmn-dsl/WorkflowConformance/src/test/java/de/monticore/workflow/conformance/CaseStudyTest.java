@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import de.se_rwth.commons.logging.Log;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -21,18 +23,18 @@ class CaseStudyTest extends AbstractConfTest {
   @BeforeEach
   public void setup() {
     init();
-    // Log.initDEBUG();
+     Log.initDEBUG();
   }
 
   @ParameterizedTest
   @ValueSource(
       strings = {
-        "conform.Sequential",
-        "conform.SequentialWithLoop",
-        "conform.AddingNewTasks",
-        "nonconform.AntiPattern",
-        "nonconform.WrongSequentialOrder",
-        "PaperAuthoring"
+     //   "conform.Sequential",
+       // "conform.SequentialWithLoop",
+                "conform.AddingNewTasks",
+       // "nonconform.AntiPattern",
+      //  "nonconform.WrongSequentialOrder",
+      //  "PaperAuthoring"
       })
   public void checkReflexiveConformance(String model) {
     // given

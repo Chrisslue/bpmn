@@ -37,7 +37,7 @@ class WfConformanceCheckerTest extends AbstractConfTest {
   @BeforeEach
   public void setup() {
     init();
-    Log.initDEBUG();
+    // Log.initDEBUG();
   }
 
   @ParameterizedTest

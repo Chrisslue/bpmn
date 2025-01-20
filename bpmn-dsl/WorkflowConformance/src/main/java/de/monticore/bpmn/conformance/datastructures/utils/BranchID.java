@@ -25,7 +25,6 @@ public class BranchID {
   private final int id;
   private final List<WfNode> nodeList;
 
-  private boolean inParallel = false;
   private static int counter = 0;
   private boolean checkCompleted = false;
   private boolean checkAborted = false;
@@ -58,13 +57,7 @@ public class BranchID {
     this.nodeList.add(node);
   }
 
-  public boolean isInParallel() {
-    return inParallel;
-  }
 
-  public void setInParallel(boolean inParallel) {
-    this.inParallel = inParallel;
-  }
 
   public List<WfNode> getNodeList() {
     return nodeList;
@@ -87,7 +80,7 @@ public class BranchID {
     return checkCompleted;
   }
 
-  public void setIgnore() {
+  public void abortCheck() {
     this.checkAborted = true;
   }
 
@@ -95,9 +88,7 @@ public class BranchID {
     return checkAborted;
   }
 
-  public void abortCheck() {
-    this.checkAborted = true;
-  }
+
 
   public void setUpperBoundResult(CheckResult upperBoundResult) {
     this.upperBoundResult = upperBoundResult;
@@ -108,4 +99,11 @@ public class BranchID {
   }
 
 
+  public CheckResult getUpperBoundResult() {
+    return upperBoundResult;
+  }
+
+  public CheckResult getLoweBoundResult() {
+    return loweBoundResult;
+  }
 }
