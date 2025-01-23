@@ -1,40 +1,63 @@
 package de.monticore.timer;
 
-/* In WorkflowDSL integrieren*/
 grammar TimerConditions extends de.monticore.literals.MCCommonLiterals {
 
+  /**
+     This grammar defines a dsl for the specification of timer based conditions.
+     It extends MCCommonLiterals to make use of existing numeric literals.
+     TODO: Use DateTime of MSm in future.
+   */
+
+  // This interface is implemented by each specific timer condition.
   interface TimerCondition;
 
+  // It represents a condition that is triggered at a specific time point of a day.
   AtTimeCondition implements TimerCondition =
       "at" Time
     ;
 
+  // It defines a condition that is triggered on a specific date, optionally at a specific time.
   OnDateCondition implements TimerCondition =
       "on" Date AtTimeCondition?
     ;
 
+  // It specifies a condition that is triggered after a specified period of time.
   AfterPeriodCondition implements TimerCondition =
       "after" period:Period
     ;
 
+  /**
+   * It represents a repeating condition that is triggered every period.
+   * Optionally a starting date and time can be specified. 
+   * Additionally, the number of occurrences can be limited.
+   */
   EveryTimeCondition implements TimerCondition =
       ("start" start:OnDateCondition ",")? (times:NatLiteral "times")? "every" period:Period
     ;
 
+  // It allows for the specification of cron expression.
   CronCondition implements TimerCondition =
       "cron" value:String
     ;
 
-  //Todo: DateTime von MSm nehmen!
-
+  /**
+   * This nonterminal specifies a point in time that includes hours and minutes,
+     with seconds as an additional option.
+   */ 
   Time =
-      hours:NatLiteral ":" {noSpace()}? minutes:NatLiteral {noSpace()}? (":" {noSpace()}? seconds:NatLiteral {noSpace()}?)?
+      hours:NatLiteral ":" {noSpace()}? 
+      minutes:NatLiteral {noSpace()}? 
+      (":" {noSpace()}? seconds:NatLiteral {noSpace()}?)?
     ;
 
+  // This nonterminal defines a specific date that includes the year, the month and the day.
   Date =
-      year:NatLiteral "-" {noSpace()}? month:NatLiteral {noSpace()}? "-" {noSpace()}? day:NatLiteral {noSpace()}?
+      year:NatLiteral "-" {noSpace()}? 
+      month:NatLiteral {noSpace()}? "-" {noSpace()}? 
+      day:NatLiteral {noSpace()}?
     ;
 
-  Period = value:Name; //PERIOD;
+  // It allows for the specification of time periods.
+  Period = value:Name;
 
 }

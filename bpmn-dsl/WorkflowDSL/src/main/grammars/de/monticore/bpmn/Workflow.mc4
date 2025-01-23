@@ -7,8 +7,6 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
                          de.monticore.symbols.OOSymbols,
                          de.monticore.UMLModifier{
 
-  /* Expression Language, e. g. OCL */
-
   WorkflowCompilationUnit =
       MCPackageDeclaration?
       MCImportStatement*
@@ -17,22 +15,21 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
 
   /**
     Workflow describes a textual representation of business process models
-    that is based on BPMN 2.0 standard. It focusses on modelling of business 
-    processes, with the aim of providing a structured notation for elements 
-    in a workflow and their interaction.
-    It covers [sub]processes, lanes, events, gateways, various types of 
-    activities and more.
+    that is based on BPMN 2.0 standard. It focuses on the modelling of business 
+    processes, with the aim of providing a structured notation for the elements 
+    of a workflow and their interactions.
+    It covers (sub-)processes, lanes, events, gateways, various types of 
+    activities, etc.
 
     The grammar builds on
     * LambdaExpressions, AssignmentExpressions and CommonExpressions
-        to allow for different types of expressions
+        to allow the definition of various kinds of conditions for the workflow execution
     * TimerConditions
-        for the specification of timing constraints
+        for the specification of different timing constraints
     * OOSymbols
-        to include types, variables and methods
+        to include types, variables, and methods
     * UMLModifier
-        to stereotype the elements for conformance checking 
-
+        to add access modifiers to processes and stereotype elements for conformance checking 
    */
 
   /*========================================================================*/
@@ -40,46 +37,29 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
   /*========================================================================*/
 
   /**
-   * FlowElement describes general elements of a workflow process.
-     which includes sequenceflows lanes dataobjects and notifications.
+   * FlowElement represents elements that can appear in a workflow process.
+   * It includes lanes, activities, gateways, events, sequence flows, notifications etc.
    */ 
-  interface FlowElement;
-
-  /**
-   * FlowNode extends FlowElement and represents specific nodes that can appear in a
-     sequence flow  e.g. subprocess, task, callActivity, gateway, event etc.
-   */ 
-  interface FlowNode extends FlowElement;
+  interface FlowElement; 
 
   /** 
-   * The astrule will generate attributes and corresponding methods in the AST-classes that 
-     implement the interface FlowNode.
-   * This avoids additional attributes and methods in the handwritten AST-classes.
-   */  
-  astrule FlowNode = 
-      incomings:List<de.monticore.bpmn.workflow._ast.SequenceFlow>
-      outgoings:List<de.monticore.bpmn.workflow._ast.SequenceFlow>
-    ;
-
-
-  /** 
-   * WFProcess describes a workflow which contains lanes and flow elements in any order.
-   * A process may be designated with a Modifier and can have io-requirements.
+   * WFProcess describes a workflow which contains flow elements in any order.
+   * A process has a modifier, a name and may contain I/O requirements.
    */
   symbol scope WFProcess =
       Modifier "process" Name "{"
         IORequirement*
-        ( FlowElement | ";" )*
+        ( FlowElement ";" )*
       "}"
     ;
 
   /**
-   * WFLane represents a sub-partition within a process which contains flow elements and sub-lanes.
+   * WFLane represents a sub-partition within a process which contains flow elements.
    * Every lane has a name and denotes for example a business function or a role.
    */
   WFLane implements FlowElement =
               "lane" Name "{"
-                ( FlowElement | ";" )*
+                ( FlowElement ";" )*
               "}"
             ;
 
@@ -90,15 +70,16 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
 
   /** 
    * WFActivity denotes a unit of work performed within a business process.
-   * It can be atomic or non-atomic.
+   * An activity can be atomic or non-atomic.
+   * This interface is implemented by the nontermials WFSubProcess, WFTask and WFCallActivity.
    */
-  interface symbol WFActivity extends FlowNode =
+  interface symbol WFActivity extends FlowElement =
       Modifier Name LoopCharacteristics?
     ;
 
   /**
-   * This symbolrule describes whether the corresponding activity compensates
-     for another activity and, in this case, refers to one. 
+   * This rule describes whether the corresponding activity compensates for another activity
+     and, in this case, refers to one. 
    */
   symbolrule WFActivity =
     compensating:boolean
@@ -118,15 +99,16 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
       AdHocCharacteristics?
       LoopCharacteristics?
       "{"
-        ( FlowElement | ";" )*
+        ( FlowElement ";" )*
       "}"
     ;
 
-
   /** 
    * AdHocCharacteristics is required if it is an ad-hoc subprocess.
-   * An ad-hoc subprocess does not require any sequence relationships.
-   * TODO: Add a coco that checks if this nonterminal is set if it is an ad-hoc subprocess.
+   * The condition defines when the execution should be completed.
+   * It specifies whether activities should be executed in parallel or sequentially.
+   * The "noninterrupt" tag indicates if the remaining activities should be cancelled 
+     when the first one finishes.
    */
   AdHocCharacteristics =
       ("until" ":" "[" completionCondition:Expression "]")
@@ -134,10 +116,11 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
     ;
 
   /**
-   * CallActivity calls another reusable process or global task. 
-   * In this grammar, global tasks are modelled as a processes with only one task.
+   * WFCallActivity calls another reusable process or global task. 
+   * In this grammar, global tasks are modelled as processes containing only one task.
    * Example: A call activity "ShipOrder" calls a process named "ShippingProcess".
-   * TODO: Add a coco that checks if the I/O requirements match with the ones of the called element.
+   * The activity may contain I/O requirements.
+   * It can specify a boundary event to catch potential event triggers.
    */
   WFCallActivity implements WFActivity =
       Modifier "call-activity" Name "calls" ":" calledElement:Name@WFProcess
@@ -149,14 +132,15 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
     ;
 
   /** 
-   * Task represents an atomic activity within a workflow.
-   * "service": automated by software and can use external applications
-   * "send":    sending message to an external system or participant
-   * "receive": waiting for an incoming message from an external system or participant
-   * "user":    performed by a person with the support of software
-   * "manual":  performed physically without the aid of software
-   * "rule":    used to interact with a business rule engine
-   * "script":  execution of script directly within the process model
+   * WFTask represents an atomic activity within a workflow.
+   * "service": It is automated by software and can use external applications.
+   * "send":    It sends a message to an external system or participant.
+   * "receive": It waits for an incoming message from an external system or participant.
+   * "user":    It is performed by a person with the support of software.
+   * "manual":  It is performed physically without the aid of software.
+   * "rule":    It is used to interact with a business rule engine.
+   * "script":  It executes the script directly within the process model.
+   * A task can specify a boundary event to catch potential event triggers.
    */
   WFTask implements WFActivity =
       Modifier type:["service"|"send"|"receive"|"user"|"manual"|"rule"|"script"]? "task" Name
@@ -168,17 +152,15 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
           "}" )?
     ;
   
-
   /**
    * TaskTypeAttributes describes potential attributes for all types of tasks.
-   * service: used webservice and optionally the operation triggered by the task
-   * send:    used webservice, message and the operation triggered by the task
-   * receive: used webservice, message and the operation triggered by the task
-   * user:    used webservice   
-   * manual:  needed resources
-   * rule:    used webservice
-   * script:  used script and the format of the script
-   * TODO: Add a coco that checks if the attributes are set for the specific task type.
+   * "service": It contains the used webservice and optionally the operation triggered by the task.
+   * "send":    It contains the used webservice, a message and the operation triggered by the task.
+   * "receive": It contains the used webservice, a message and the operation triggered by the task.
+   * "user":    It only contains the used webservice.   
+   * "manual":  It only contain the needed resources.
+   * "rule":    It only contains the used webservice.
+   * "script":  It contains the used script and the format of the script.
    */ 
   TaskTypeAttributes =
       (
@@ -216,15 +198,19 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
   // LoopCharacteristics describes an interface for standard and multi-instance loops. 
   interface LoopCharacteristics;
 
-  // This nonterminal specifies the looping behavior for standart loops.
+  /**
+   * StandardLoop specifies the looping behavior for normal loops.
+   * Along with a loop condition, a while or do-while loop can be specified.
+   * It is also possible to set the maximum number of iterations.
+   */ 
   StandardLoop implements LoopCharacteristics =
       type:["while"|"until"] ":" "[" loopCondition:Expression "]" 
       ("max" ":" loopMaximum:NatLiteral)?
     ;
 
   /** 
-   * MILoop allows to create multiple instances of Activities. 
-   * It can be executed in parallel or sequential.
+   * MILoop allows to create multiple instances of activities. 
+   * The loops can be executed in parallel or sequentially.
    * It will only loop to the completion condition if one is specified.
    */
   MILoop implements LoopCharacteristics =
@@ -244,20 +230,24 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
     ;
 
   /** 
-   * This nonterminal describes the behavior in case a trigger is thrown.
-   * event:    defines the event trigger to be thrown
-   * implicit: controls when the event trigger shall be thrown
+   * MIImplicitEventBehavior describes if an event shall be thrown after an instance completes.
+   * The implimplicitEventDef defines the event trigger to be thrown.
+   * The trigger can be thrown at a specific time point or depending on a condition.
    */
   MIImplicitEventBehavior =
       "event" ":" implicitEventDef:EventTrigger
       ("implicit" ":" ( when:["none"|"first"|"every"] | "[" complexCondition:Expression "]"))?
     ;
 
-  // It controls the number of activities created by a MILoop.  
+  /**
+   * LoopCardinality controls the number of activities created by a MILoop. 
+   * It can be an integer value, an expression that resolves to an integer,
+     or a collection-valued data object.
+   */  
   LoopCardinality =
       count:NatLiteral
     | ("[" expression:Expression "]")
-    | collection:Name // a collection-valued data object
+    | collection:Name 
     ;
 
 
@@ -265,8 +255,12 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
   /*=============================== GATEWAYS ===============================*/
   /*========================================================================*/
 
-  // Gateway describes a flow control element that allows converging and diverging sequence flows. 
-  symbol WFGateway implements FlowNode =
+  /**
+   * WFGateway describes a flow control element.
+   * It allows for converging and diverging sequence flows.
+   * There are several types of gateways.
+   */ 
+  symbol WFGateway implements FlowElement =
       Modifier direction:["split"|"merge"] type:GatewayType Name?
     ;
   
@@ -280,9 +274,9 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
     
   /** 
    * There are different types of gateways.
-   * "receive first": first event determines the path to follow 
-   * "receive all":   waits for each event before following each outgoing path
-   * "complex":       gateway is connected to a guard
+   * "receive first": The first event determines the path to follow. 
+   * "receive all":   It waits for each event before following each outgoing path.
+   * "complex":       The gateway is connected to a guard.
    */
   GatewayType =
       [exclusive:"xor"]
@@ -299,16 +293,13 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
   /*========================================================================*/
 
   /** 
-   * Event defines something that happens during the course of workflow.  
-   * They are either catching or throwing. 
-   * throw: emits the event trigger 
-   * catch: listens and waits for the event trigger to occur
-   * Interrupting boundary events cancel the activity to which it is attached as it occurs. 
-   * CompensationHandler: specifies compensating activity for boundary events
-   * operation: MUST be specified for message task in an executable process
-   * TODO: Discuss the use of optional for send and receive ?
+   * WFEvent defines an occurrence that happens during the course of workflow.  
+   * It is either catching or throwing. Throw events emit the trigger,
+     whereas catch events listen for the trigger to occur.
+   * Interrupting boundary events cancel the activity to which they are attached. 
+   * An operation must be specified for message tasks in an executable process.
    */  
-  symbol WFEvent implements FlowNode =
+  symbol WFEvent implements FlowElement =
       Modifier type:["start"|"end"]? "event" Name?
       (throw:["send"] | catch:["receive"] (["noninterrupt"])?)?
       trigger:EventTrigger?
@@ -316,14 +307,15 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
       ( "{" ("operation" ":" operation:Name@Operation ";")? IOSet? "}" )?
     ;
 
-  // This symbolrule indicated if the event is a boundary event.
+  // This rule indicates if an event is a boundary event.
   symbolrule WFEvent =
       boundary:boolean
     ;
 
+  // This interface is implemented by all event triggers in this grammar.
   interface EventTrigger;
 
-  // Below all BPMN triggers except the link trigger are listed.
+  // Below all triggers of the BPMN except the link trigger are listed.
   EventTriggerCancel       implements EventTrigger = "cancel";
   EventTriggerCompensate   implements EventTrigger = "compensate" (":" activity:Name)? ["async"]?;
   EventTriggerConditional  implements EventTrigger = "when"        ":" "[" Expression "]";
@@ -335,34 +327,32 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
                                                      ":" Name@Notification ;
 
   /*
-   * CompensationHandler designates compensating activity for a boundary event.
+   * CompensationHandler designates an compensating activity for a boundary event.
    * Compensation is done to, e.g., undo the effects of an activity.
    */
   CompensationHandler =
       "with" ":" activity:Name@WFActivity
     ;
 
+
   /*========================================================================*/
   /*============================= CONTROL FLOW =============================*/
   /*========================================================================*/
 
-  // SequenceFlow defines a flow target. 
+  // SequenceFlow defines a series of flow targets. 
   SequenceFlow implements FlowElement =
       path:(FlowTarget || "->")+
     ;
 
-  // TODO: Include this? Better coco?
-  astrule SequenceFlow = path:FlowTarget min=2 ;
-
-  // FlowBlock allows to specify a set of parallel sequence flow branches. 
+  // FlowBlock allows to specify a set of parallel branches in a sequence flow. 
   FlowBlock =
       "{" branch:(SequenceFlow || ",")+ "}"
     ;
 
-  //TODO: Include this? Better coco?
-  astrule FlowBlock = branch:SequenceFlow min=2 ;
-
-  // Flow target references a flow element or defines an inline gateway, event or flow block. 
+  /**
+   * FlowTarget references a flow element or flow block or defines an inline gateway or event. 
+   * A flow restriction condition can also be set.
+   */
   FlowTarget =
       condition:FlowCondition?
       (element:MCQualifiedName | gateway:WFGateway | event:WFEvent | block:FlowBlock)
@@ -374,17 +364,17 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
     | default:["default"]
     ;
 
+
   /*========================================================================*/
   /*================================ DATA ==================================*/
   /*========================================================================*/
 
   /** 
-   * DataObject represents a data object or a data store.
+   * This nonterminal represents a data object or a data store.
    * It has a name and a type.
-   * TODO: Omit or force ";" here?
    */
   DataObject implements FlowElement, Variable =
-      (type:["data"|"store"]) Name ":" MCType ";"
+      type:["data"|"store"] Name ":" MCType 
     ;
 
 
@@ -392,7 +382,7 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
   /*========================== I/O REQUIREMENTS ============================*/
   /*========================================================================*/
 
-  // IORequirement is implemented by the classes "IOSet" and "IORule".
+  // IORequirement is implemented by the nontermials IOSet and IORule.
   interface IORequirement;
 
   // IOSet specifies an input or an output dataset. 
@@ -403,15 +393,15 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
       "io" ":" inputSet:DataSet "->" outputSet:DataSet ";"
     ;
 
-  // Dataset consists set of input and/or output data. 
+  // Dataset consists of one or more input or output data.
   DataSet  =  DataIO | "{" (DataIO || ",")* "}" ;
 
   /** 
    * DataIO specifies a data input or a data output.
-   * [i]: the use of a collection-valued data input
-   * "?": optional data input or output 
-   * "!": data that can be produced or evaluated while executing
-   * MCQualifiedName: name of the consumed or produced data element
+   * MCQualifiedNam defines the name of the consumed or produced data element
+   * [i]: The tag indicates the use of a collection-valued data input.
+   * "?": It marks the input or output data as optional.
+   * "!": It specifies that the data can be produced or evaluated while executing.
    */
   DataIO =
       MCQualifiedName
@@ -427,10 +417,14 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
   /*================================ MISC ==================================*/
   /*========================================================================*/
   
+  /**
+   * Notification allows for the definition of different kinds of messages.
+   * Every notification has a name and a type.
+   */
   symbol Notification implements FlowElement, Variable =
-    kind:["error"|"escalation"|"message"|"signal"] Name ":" MCType ";" ;
+    kind:["error"|"escalation"|"message"|"signal"] Name ":" MCType ;
 
-  // TODO: Is this necessary?
+  // This rule adds methods to easily distinguish between the types of a notification.
   symbolrule Notification =
     isError: boolean
     isEscalation: boolean
