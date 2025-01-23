@@ -1,33 +1,35 @@
 package de.monticore.timer;
 
-grammar TimerConditions extends de.monticore.literals.MCCommonLiterals {
+grammar TimerConditions extends de.monticore.literals.MCCommonLiterals
+{
 
   /**
-     This grammar defines a dsl for the specification of timer based conditions.
+     This grammar defines a DSL for the specification of timer based conditions primarily used by
+     EventTriggerTimer in the Workflow DSL to trigger WFEvents.
      It extends MCCommonLiterals to make use of existing numeric literals.
-     TODO: Use DateTime of MSm in future.
+     TODO: Use custom DateTime DSL for Date and Time concepts.
    */
 
   // This interface is implemented by each specific timer condition.
   interface TimerCondition;
 
-  // It represents a condition that is triggered at a specific time point of a day.
+  // This condition is used to specify a trigger at a specific time of day.
   AtTimeCondition implements TimerCondition =
       "at" Time
     ;
 
-  // It defines a condition that is triggered on a specific date, optionally at a specific time.
+  // This condition specifies a trigger for a specific date, and optionally at a specific time.
   OnDateCondition implements TimerCondition =
       "on" Date AtTimeCondition?
     ;
 
-  // It specifies a condition that is triggered after a specified period of time.
+  // This condition specifies a trigger that occurs after a specified period of time.
   AfterPeriodCondition implements TimerCondition =
       "after" period:Period
     ;
 
   /**
-   * It represents a repeating condition that is triggered every period.
+   * This condition is repeatedly triggered everytime a specified period of time elapses.
    * Optionally a starting date and time can be specified. 
    * Additionally, the number of occurrences can be limited.
    */
@@ -35,7 +37,9 @@ grammar TimerConditions extends de.monticore.literals.MCCommonLiterals {
       ("start" start:OnDateCondition ",")? (times:NatLiteral "times")? "every" period:Period
     ;
 
-  // It allows for the specification of cron expression.
+  /* This is used to allow the specification of a ISO8701 cron expression.
+   * The format is enforced via the TOP-mechanism.
+   */
   CronCondition implements TimerCondition =
       "cron" value:String
     ;
@@ -50,14 +54,17 @@ grammar TimerConditions extends de.monticore.literals.MCCommonLiterals {
       (":" {noSpace()}? seconds:NatLiteral {noSpace()}?)?
     ;
 
-  // This nonterminal defines a specific date that includes the year, the month and the day.
+  // This nonterminal defines a specific date that includes the year, the month, and the day.
   Date =
       year:NatLiteral "-" {noSpace()}? 
       month:NatLiteral {noSpace()}? "-" {noSpace()}? 
       day:NatLiteral {noSpace()}?
     ;
 
-  // It allows for the specification of time periods.
+  /* This nonterminal allows for the specification of ISO8701 time periods,
+     e.g., "P2Y3M2W1DT2H13M20S".
+   * The format is enforced via the TOP-mechanism.
+   */
   Period = value:Name;
 
 }

@@ -25,7 +25,7 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
     * LambdaExpressions, AssignmentExpressions and CommonExpressions
         to allow the definition of various kinds of conditions for the workflow execution
     * TimerConditions
-        for the specification of different timing constraints
+        for the specification of different timing constraints regarding workflow events
     * OOSymbols
         to include types, variables, and methods
     * UMLModifier
@@ -37,8 +37,8 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
   /*========================================================================*/
 
   /**
-   * FlowElement represents elements that can appear in a workflow process.
-   * It includes lanes, activities, gateways, events, sequence flows, notifications etc.
+   * FlowElement represents any element that can appear in a workflow process.
+   * It encompasses lanes, activities, gateways, events, sequence flows, notifications etc.
    */ 
   interface FlowElement; 
 
@@ -55,7 +55,7 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
 
   /**
    * WFLane represents a sub-partition within a process which contains flow elements.
-   * Every lane has a name and denotes for example a business function or a role.
+   * Every lane has a name and denotes, e.g., a business function or a role.
    */
   WFLane implements FlowElement =
               "lane" Name "{"
@@ -78,8 +78,8 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
     ;
 
   /**
-   * This rule describes whether the corresponding activity compensates for another activity
-     and, in this case, refers to one. 
+   * This rule adds a variable that indicates whether the corresponding activity compensates another
+     activity as well as a variable that refers to that activity.
    */
   symbolrule WFActivity =
     compensating:boolean
@@ -88,10 +88,10 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
 
   /**
    * WFSubprocess represents a sub-workflow that is modelled using tasks, gateways, events etc.  
-   * "subprocess":  It describes an embedded subprocess.
-   * "transaction": It models complex business scenarios and ensures that all parts are completed
+   * "subprocess":  This describes an embedded subprocess.
+   * "transaction": This models complex business scenarios and ensures that all parts are completed
                     successfully or are handled in case of failure. 
-   * "adhoc":       It represents a collection of activities with no required sequence 
+   * "adhoc":       This represents a collection of activities with no required sequence
                     relationships. This means that the subprocess is flexible in its task execution.   
    */
   symbol scope WFSubProcess implements WFActivity =
@@ -104,7 +104,7 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
     ;
 
   /** 
-   * AdHocCharacteristics is required if it is an ad-hoc subprocess.
+   * AdHocCharacteristics are required for an ad-hoc subprocess.
    * The condition defines when the execution should be completed.
    * It specifies whether activities should be executed in parallel or sequentially.
    * The "noninterrupt" tag indicates if the remaining activities should be cancelled 
@@ -232,7 +232,7 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
   /** 
    * MIImplicitEventBehavior describes if an event shall be thrown after an instance completes.
    * The implimplicitEventDef defines the event trigger to be thrown.
-   * The trigger can be thrown at a specific time point or depending on a condition.
+   * The trigger can be thrown at a specific point in time or depending on a condition.
    */
   MIImplicitEventBehavior =
       "event" ":" implicitEventDef:EventTrigger
@@ -307,7 +307,7 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
       ( "{" ("operation" ":" operation:Name@Operation ";")? IOSet? "}" )?
     ;
 
-  // This rule indicates if an event is a boundary event.
+  // This rule adds a variable that indicates if an event is a boundary event.
   symbolrule WFEvent =
       boundary:boolean
     ;
@@ -418,8 +418,9 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
   /*========================================================================*/
   
   /**
-   * Notification allows for the definition of different kinds of messages.
+   * Different kinds of notifications can be send by event triggers, tasks, and operations.
    * Every notification has a name and a type.
+   * CoCos ensure the right kinds of Notification are used at the right place.
    */
   symbol Notification implements FlowElement, Variable =
     kind:["error"|"escalation"|"message"|"signal"] Name ":" MCType ;
