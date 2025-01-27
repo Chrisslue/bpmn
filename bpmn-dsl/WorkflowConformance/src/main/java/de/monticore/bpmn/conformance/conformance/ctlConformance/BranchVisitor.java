@@ -7,28 +7,26 @@ import de.monticore.bpmn.conformance.incarnation.IncarnationStrategy;
 import de.se_rwth.commons.logging.Log;
 import java.util.*;
 import java.util.stream.Collectors;
-// todo optimization possibilities: - stop traversing of all branches node when lower and upper are
-// non conformed
 
 public class BranchVisitor {
 
   private final WfPredicate predicate;
   private final IncarnationStrategy<WfNode> incarnationStrategy;
   private final WfNode branchOrigin;
-  private final Set<WfNode> startNodes;
+  private final Set<WfNode> bpmnStartNodes;
   private final boolean lowerBoundOnly;
   private Set<BranchID> branchIDSet = new HashSet<>();
 
   private BranchVisitor(
       WfNode conNode,
-      Set<WfNode> startNodes,
+      Set<WfNode> bpmnStartNodes,
       WfPredicate predicate,
       IncarnationStrategy<WfNode> incarnationStrategy,
       boolean lowerBoundOnly) {
     this.predicate = predicate;
     this.incarnationStrategy = incarnationStrategy;
     this.branchOrigin = conNode;
-    this.startNodes = startNodes;
+    this.bpmnStartNodes = bpmnStartNodes;
 
     this.lowerBoundOnly = lowerBoundOnly;
   }
@@ -85,9 +83,9 @@ public class BranchVisitor {
       return false;
     }
 
-    if (!startNodes.contains(this.branchOrigin)
+    if (!bpmnStartNodes.contains(this.branchOrigin)
         && !branchId.getNodeList().isEmpty()
-        && startNodes.contains(branchId.getNodeList().get(branchId.getNodeList().size() - 1))) {
+        && bpmnStartNodes.contains(branchId.getNodeList().get(branchId.getNodeList().size() - 1))) {
       Log.trace(
           String.format(
               "Aborting lower and upper bound, branch %s, reason: %s",
@@ -108,7 +106,7 @@ public class BranchVisitor {
     return true;
   }
 
-  public boolean abort() {
+  public void abort() {
     branchIDSet = branchIDSet.stream().filter(n -> !n.isCheckAborted()).collect(Collectors.toSet());
     for (var branchId : branchIDSet) {
 
@@ -129,7 +127,6 @@ public class BranchVisitor {
       branchId.setUpperBoundResult(checkRes);
       branchId.completeCheck();
     }
-    return false;
   }
 
   public List<WfNode> resolveReferenceNodes(BranchID branchId) {
@@ -182,22 +179,23 @@ public class BranchVisitor {
 
   public void printResult() {
 
-    Log.println("");
-    Log.info("------------------------ Predicate ------------------------", "");
-    Log.info(predicate.toString(), "");
-    Log.info("---------- Lower bound Results: ---------", "");
+    Log.trace("", "");
+    Log.trace("------------------------ Predicate ------------------------", "");
+    Log.trace(predicate.toString(), "");
+    Log.trace("---------- Lower bound Results: ---------", "");
 
     for (var res : branchIDSet) {
-      Log.info(String.format("branch: %s, res= %s", res, res.getLoweBoundResult().getResult()), "");
+      Log.trace(
+          String.format("branch: %s, res= %s", res, res.getLoweBoundResult().getResult()), "");
     }
 
-    Log.println("");
+    Log.trace("", "");
 
     if (!lowerBoundOnly) {
-      Log.info("---------- upperbound Results: ----------", "");
+      Log.trace("---------- upperbound Results: ----------", "");
 
       for (var res : branchIDSet) {
-        Log.info(
+        Log.trace(
             String.format("branch: %s, res= %s", res, res.getUpperBoundResult().getResult()), "");
       }
     }

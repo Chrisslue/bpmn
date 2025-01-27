@@ -1,7 +1,5 @@
 package de.monticore.workflow.conformance;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import de.monticore.bpmn.cocos.flow.SequenceFlowNodeReferencesExist;
 import de.monticore.bpmn.conformance.datastructures.WfNodeFactory;
 import de.monticore.bpmn.conformance.datastructures.interf.WfBuilder;
@@ -12,7 +10,6 @@ import de.monticore.bpmn.workflow.WorkflowTool;
 import de.monticore.bpmn.workflow._ast.ASTWorkflowCompilationUnit;
 import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
 import de.monticore.bpmn.workflow._parser.WorkflowParser;
-import de.monticore.bpmn.workflow._symboltable.IWorkflowGlobalScope;
 import de.monticore.bpmn.workflow._symboltable.WorkflowSTCompleter;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
 import de.monticore.symbols.basicsymbols.BasicSymbolsMill;
@@ -25,13 +22,10 @@ import java.util.Optional;
 
 public abstract class AbstractConfTest {
 
-  protected static final String MODEL_AUX_DIR = "out/";
 
   protected static final String MODEL_DIR = "src/test/resources/";
 
-  private IWorkflowGlobalScope globalScope;
-
-  public void init() {
+    public void init() {
     Log.init();
     WorkflowMill.init();
     WorkflowMill.globalScope().clear();
@@ -101,10 +95,10 @@ public abstract class AbstractConfTest {
     return res;
   }
 
-  protected WfBuilder parseAndCreateBuilder(String model, String prefix) {
+  protected WfBuilder parseAndCreateBuilder(String model) {
 
     ASTWorkflowCompilationUnit ast = loadModel(model);
 
-    return WfNodeFactory.workflowBuilder(ast, prefix);
+    return WfNodeFactory.workflowBuilder(ast, "");
   }
 }

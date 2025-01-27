@@ -46,7 +46,7 @@ class PredicateTest extends AbstractConfTest {
   @MethodSource("xorSplitSource")
   public void testPostPredicateXor(List<String> nodeNames, boolean result) {
     // given
-    builder = parseAndCreateBuilder(modelDir + "post.XOR", "");
+    builder = parseAndCreateBuilder(modelDir + "post.XOR");
     List<WfNode> tasks = resolveNodeFormBuilder(nodeNames, builder);
 
     WfNode res = builder.getWfNode("S");
@@ -64,7 +64,7 @@ class PredicateTest extends AbstractConfTest {
   @MethodSource("xorSplitSource")
   public void testPrePredicateXor(List<String> nodeNames, boolean result) {
     // given
-    builder = parseAndCreateBuilder(modelDir + "post.XOR", "");
+    builder = parseAndCreateBuilder(modelDir + "post.XOR");
     List<WfNode> tasks = resolveNodeFormBuilder(nodeNames, builder);
 
     WfNode res = builder.getWfNode("S");
@@ -97,7 +97,7 @@ class PredicateTest extends AbstractConfTest {
   @MethodSource("orSource")
   public void testPostPredicateOr(List<String> nodeNames, boolean result) {
     // given
-    builder = parseAndCreateBuilder(modelDir + "post.OR", "");
+    builder = parseAndCreateBuilder(modelDir + "post.OR");
     List<WfNode> tasks = resolveNodeFormBuilder(nodeNames, builder);
 
     // when
@@ -119,7 +119,7 @@ class PredicateTest extends AbstractConfTest {
   @MethodSource("loopSource")
   public void testPostPredicateLoop(List<String> nodeNames, boolean result) {
     // given
-    builder = parseAndCreateBuilder(modelDir + "post.LOOP", "");
+    builder = parseAndCreateBuilder(modelDir + "post.LOOP");
     List<WfNode> tasks = resolveNodeFormBuilder(nodeNames, builder);
 
     // when
@@ -151,7 +151,7 @@ class PredicateTest extends AbstractConfTest {
   @MethodSource("andSource")
   public void testPostPredicateAnd(List<String> nodeNames, boolean result) {
     // given
-    builder = parseAndCreateBuilder(modelDir + "post.AND", "");
+    builder = parseAndCreateBuilder(modelDir + "post.AND");
     List<WfNode> tasks = resolveNodeFormBuilder(nodeNames, builder);
 
     // when
@@ -165,7 +165,7 @@ class PredicateTest extends AbstractConfTest {
   @MethodSource("andSource")
   public void testPrePredicateAnd(List<String> nodeNames, boolean result) {
     // given
-    builder = parseAndCreateBuilder(modelDir + "pre.AND", "");
+    builder = parseAndCreateBuilder(modelDir + "pre.AND");
     List<WfNode> tasks = resolveNodeFormBuilder(nodeNames, builder);
 
     // when
@@ -191,7 +191,7 @@ class PredicateTest extends AbstractConfTest {
   @MethodSource("complexSource")
   public void testPostPredicateCOMPLEX(List<String> nodeNames, boolean result) {
     // given
-    builder = parseAndCreateBuilder(modelDir + "post.COMPLEX", "");
+    builder = parseAndCreateBuilder(modelDir + "post.COMPLEX");
     List<WfNode> tasks = resolveNodeFormBuilder(nodeNames, builder);
 
     // when

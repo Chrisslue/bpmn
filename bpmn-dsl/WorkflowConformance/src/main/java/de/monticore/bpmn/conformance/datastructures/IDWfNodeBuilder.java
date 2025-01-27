@@ -132,6 +132,5 @@ public class IDWfNodeBuilder implements WfBuilder {
     }
     predecessors.forEach(IDWfNode::addAllPredecessors);
     successors.forEach(IDWfNode::addAllSuccessors);
-    System.out.println();
   }
 }

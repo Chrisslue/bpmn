@@ -12,37 +12,39 @@ import java.util.stream.Collectors;
 
 public class CTLConfStrategy implements ConformanceStrategy<WfNode> {
 
-  protected WfBuilder ref;
-  protected WfBuilder con;
+  protected WfBuilder reference;
+  protected WfBuilder concrete;
+  protected IncarnationStrategy<WfNode> incarnationStrategy;
 
-  protected IncarnationStrategy<WfNode> incStrategy;
-
-  public CTLConfStrategy(WfBuilder con, WfBuilder ref, IncarnationStrategy<WfNode> incStrategy) {
-    this.con = con;
-    this.ref = ref;
-    this.incStrategy = incStrategy;
+  public CTLConfStrategy(
+      WfBuilder concrete, WfBuilder reference, IncarnationStrategy<WfNode> incarnationStrategy) {
+    this.concrete = concrete;
+    this.reference = reference;
+    this.incarnationStrategy = incarnationStrategy;
   }
 
   @Override
   public CheckResult checkConformance(WfNode concrete) {
 
-    // if (concrete.getLabel().equals("ConceptOfNewFeatures")) {
-    List<WfNode> references = incStrategy.getReferenceElements(concrete);
+    List<WfNode> references = incarnationStrategy.getReferenceElements(concrete);
 
+    // the node always conforms in the case it is no incarnated
     if (references.isEmpty()) {
       return CheckResult.mkConform(concrete);
     }
 
+    // incarnation of multiple elements not yet implemented
     if (references.size() > 1) {
       Log.error("Found more than one reference to the concrete element  " + concrete);
       assert false;
     }
 
     Set<WfNode> startNodes =
-        con.getAllNodes().stream().filter(WfNode::isStart).collect(Collectors.toSet());
+        this.concrete.getAllNodes().stream().filter(WfNode::isStart).collect(Collectors.toSet());
 
-    Log.println("");
-    Log.info(String.format("Checking Conformance of %s to %s", concrete, references.get(0)), "");
+    Log.trace("", "");
+    Log.trace(
+        String.format("Checking Conformance of [%s] to [%s]", concrete, references.get(0)), "");
 
     // building pre- and post-predicates
     WfPredicate postPredicate = PredicateBuilder.postPredicate(references.get(0));
@@ -50,9 +52,9 @@ public class CTLConfStrategy implements ConformanceStrategy<WfNode> {
 
     // building a pre- and post-conformance visitor
     BranchVisitor forwardVisitor =
-        BranchVisitor.mkForwardVisitor(concrete, startNodes, postPredicate, incStrategy);
+        BranchVisitor.mkForwardVisitor(concrete, startNodes, postPredicate, incarnationStrategy);
     BranchVisitor backwardVisitor =
-        BranchVisitor.mkBackwardVisitor(concrete, startNodes, prePredicate, incStrategy);
+        BranchVisitor.mkBackwardVisitor(concrete, startNodes, prePredicate, incarnationStrategy);
 
     // traversing the concrete model for node
     BFSConfWfTraverser fwdTraverser = new BFSConfWfTraverser(forwardVisitor, concrete);
@@ -63,17 +65,16 @@ public class CTLConfStrategy implements ConformanceStrategy<WfNode> {
     while (bwdTraverser.stepBackward())
       ;
 
-    Log.info(String.format("--- Result for forward traversing of Node %s --- ", concrete), "");
+    Log.trace(String.format("--- Result for forward traversing of Node %s --- ", concrete), "");
     forwardVisitor.printResult();
 
-    Log.println("");
-
-    Log.info(String.format("--- Result for backward traversing of Node %s --- ", concrete), "");
+    Log.trace(String.format("--- Result for backward traversing of Node %s --- ", concrete), "");
     backwardVisitor.printResult();
 
     var postResult = forwardVisitor.getResult();
     var preResult = backwardVisitor.getResult();
 
+    //build the result by combining pre and post
     if (postResult.isNonConform()) {
       return postResult;
     } else if (preResult.isNonConform()) {
@@ -83,8 +84,5 @@ public class CTLConfStrategy implements ConformanceStrategy<WfNode> {
     } else {
       return CheckResult.mkConform(concrete);
     }
-    //    } else {
-    //   return CheckResult.mkConform(concrete);
-    // }
   }
 }

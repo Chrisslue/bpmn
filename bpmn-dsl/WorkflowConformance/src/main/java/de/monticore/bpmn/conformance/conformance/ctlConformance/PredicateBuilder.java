@@ -66,10 +66,9 @@ public class PredicateBuilder {
       case EVENT:
         return mkVar(node);
       case XOR_MERGE:
-        return mkXor(prevprev);
-      case OR_MERGE:
-        return mkOr(prevprev);
-      case AND_MERGE:
+        case OR_MERGE:
+            return mkOr(prevprev);
+        case AND_MERGE:
         return mkAnd(prevprev);
       default:
         assert prevprev.size() == 1;

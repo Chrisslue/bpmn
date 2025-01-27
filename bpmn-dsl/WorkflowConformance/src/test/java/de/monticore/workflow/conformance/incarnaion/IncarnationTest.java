@@ -42,7 +42,7 @@ public class IncarnationTest extends AbstractConfTest {
     references = incStrategy.getReferenceElements(conBuilder.getWfNode("S"));
 
     Assertions.assertEquals(1, references.size());
-    Assertions.assertEquals(references.get(0).getLabel(), "S");
+    Assertions.assertEquals("S", references.get(0).getLabel());
   }
 
   @Test
@@ -62,7 +62,7 @@ public class IncarnationTest extends AbstractConfTest {
     // node T1 is incarnate by T2
     references = incStrategy.getReferenceElements(conBuilder.getWfNode("T2"));
     Assertions.assertEquals(1, references.size());
-    Assertions.assertEquals(references.get(0).getLabel(), "Ref:T1");
+    Assertions.assertEquals("Ref:T1", references.get(0).getLabel());
 
     // node S has no incarnation
     references = incStrategy.getReferenceElements(conBuilder.getWfNode("S"));
@@ -87,11 +87,11 @@ public class IncarnationTest extends AbstractConfTest {
     // node T1 is incarnate by T2
     references = incStrategy.getReferenceElements(conBuilder.getWfNode("T2"));
     Assertions.assertEquals(1, references.size());
-    Assertions.assertEquals(references.get(0).getLabel(), "T1");
+    Assertions.assertEquals("T1", references.get(0).getLabel());
 
     // node S has no incarnation
     references = incStrategy.getReferenceElements(conBuilder.getWfNode("S"));
     Assertions.assertEquals(1, references.size());
-    Assertions.assertEquals(references.get(0).getLabel(), "S");
+    Assertions.assertEquals("S", references.get(0).getLabel());
   }
 }

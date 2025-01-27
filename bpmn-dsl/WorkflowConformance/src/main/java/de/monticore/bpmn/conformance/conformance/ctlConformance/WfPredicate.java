@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class WfPredicate {
-  private String predicateString;
-  private Predicate<List<WfNode>> predicate;
+  private final String predicateString;
+  private final Predicate<List<WfNode>> predicate;
 
   public WfPredicate(Predicate<List<WfNode>> predicate, String predicateString) {
     this.predicateString = predicateString;
