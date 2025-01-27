@@ -22,10 +22,9 @@ import java.util.Optional;
 
 public abstract class AbstractConfTest {
 
-
   protected static final String MODEL_DIR = "src/test/resources/";
 
-    public void init() {
+  public void init() {
     Log.init();
     WorkflowMill.init();
     WorkflowMill.globalScope().clear();

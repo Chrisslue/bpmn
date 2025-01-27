@@ -8,6 +8,10 @@ import de.se_rwth.commons.logging.Log;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/***
+ * this class visits each branch at each step of the traversal.
+ *
+ */
 public class BranchVisitor {
 
   private final WfPredicate predicate;
@@ -47,6 +51,11 @@ public class BranchVisitor {
     return new BranchVisitor(conNode, startNodes, predicate, inc, true);
   }
 
+  /*****
+   * check if the branch conforms using the incarnation strategy and the predicate.
+   * @param branchId the branch to be checked
+   * @return true if the check is completed.
+   */
   public boolean accept(BranchID branchId) {
     if (branchId.isCheckAborted() || branchId.isCheckCompleted()) {
       return false;
@@ -61,21 +70,16 @@ public class BranchVisitor {
     Log.trace("Result:" + res, "");
 
     if (res) {
-      Log.trace(
-          String.format(
-              "Aborting lower-bound, branch %s, reason: %s",
-              branchId, AbortReason.SATISFIED_PREDICATE),
-          "");
+      String trace = "Aborting lower-bound, branch %s, reason: %s";
+      Log.trace(String.format(trace, branchId, AbortReason.SATISFIED_PREDICATE), "");
+
       CheckResult checkResult = CheckResult.mkConform(this.branchOrigin);
       branchId.setLoweBoundResult(checkResult);
     }
 
     if (new HashSet<>(branchId.getNodeList()).size() < branchId.getNodeList().size()) {
-      Log.info(
-          String.format(
-              "Aborting lower and upper bound,  branch %s, reason: %s",
-              branchId, AbortReason.LOOP_DISCOVERED),
-          "");
+      String trace = "Aborting lower and upper bound,  branch %s, reason: %s";
+      Log.info(String.format(trace, branchId, AbortReason.LOOP_DISCOVERED), "");
 
       branchId.setLoweBoundResult(CheckResult.mkConform(branchOrigin));
       branchId.setUpperBoundResult(CheckResult.mkConform(branchOrigin));
@@ -86,17 +90,16 @@ public class BranchVisitor {
     if (!bpmnStartNodes.contains(this.branchOrigin)
         && !branchId.getNodeList().isEmpty()
         && bpmnStartNodes.contains(branchId.getNodeList().get(branchId.getNodeList().size() - 1))) {
-      Log.trace(
-          String.format(
-              "Aborting lower and upper bound, branch %s, reason: %s",
-              branchId, AbortReason.RETURN_TO_START),
-          "");
-      Log.trace("Result:" + res, "");
+      String trace = "Aborting lower and upper bound, branch %s, reason: %s";
+      Log.trace(String.format(trace, branchId, AbortReason.RETURN_TO_START), "");
 
-      CheckResult checkRes =
-          res
-              ? CheckResult.mkConform(this.branchOrigin)
-              : CheckResult.mkNonConform(this.branchOrigin, branchId);
+      CheckResult checkRes;
+      if (res) {
+        checkRes = CheckResult.mkConform(this.branchOrigin);
+      } else {
+        checkRes = CheckResult.mkNonConform(this.branchOrigin, branchId);
+      }
+
       branchId.setLoweBoundResult(checkRes);
       branchId.setUpperBoundResult(checkRes);
       branchId.completeCheck();
@@ -113,16 +116,16 @@ public class BranchVisitor {
       branchIDSet.add(branchId);
       List<WfNode> referenceNodes = resolveReferenceNodes(branchId);
       boolean res = predicate.test(referenceNodes);
-      Log.trace(
-          String.format(
-              "Aborting upper-bound and lower,  branch %s, reason: %s",
-              branchId, AbortReason.END_NODE_REACHED),
-          "");
+      String trace = "Aborting upper-bound and lower,  branch %s, reason: %s";
+      Log.trace(String.format(trace, branchId, AbortReason.END_NODE_REACHED), "");
 
-      CheckResult checkRes =
-          res
-              ? CheckResult.mkConform(this.branchOrigin)
-              : CheckResult.mkNonConform(this.branchOrigin, branchId);
+      CheckResult checkRes;
+      if (res) {
+        checkRes = CheckResult.mkConform(this.branchOrigin);
+      } else {
+        checkRes = CheckResult.mkNonConform(this.branchOrigin, branchId);
+      }
+
       branchId.setLoweBoundResult(checkRes);
       branchId.setUpperBoundResult(checkRes);
       branchId.completeCheck();
@@ -141,6 +144,7 @@ public class BranchVisitor {
   // todo  try to optimize it later
   public CheckResult getResult() {
     CheckResult lowerBoundRes = null;
+
     for (BranchID res : branchIDSet) {
       if (res.getLoweBoundResult().isNonConform()) {
         lowerBoundRes = res.getLoweBoundResult();

@@ -74,7 +74,7 @@ public class CTLConfStrategy implements ConformanceStrategy<WfNode> {
     var postResult = forwardVisitor.getResult();
     var preResult = backwardVisitor.getResult();
 
-    //build the result by combining pre and post
+    // build the result by combining pre and post
     if (postResult.isNonConform()) {
       return postResult;
     } else if (preResult.isNonConform()) {
