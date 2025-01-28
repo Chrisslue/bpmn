@@ -74,7 +74,7 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
    * This interface is implemented by the nontermials WFSubProcess, WFTask and WFCallActivity.
    */
   interface symbol WFActivity extends FlowElement =
-      Modifier Name LoopCharacteristics?
+      Modifier Name WFLoopCharacteristic ?
     ;
 
   /**
@@ -97,7 +97,7 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
   symbol scope WFSubProcess implements WFActivity =
       Modifier type:["subprocess" | "transaction" | "adhoc" ] Name
       AdHocCharacteristics?
-      LoopCharacteristics?
+      WFLoopCharacteristic ?
       "{"
         ( FlowElement ";" )*
       "}"
@@ -124,7 +124,7 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
    */
   WFCallActivity implements WFActivity =
       Modifier "call-activity" Name "calls" ":" calledElement:Name@WFProcess
-      LoopCharacteristics?
+      WFLoopCharacteristic ?
       (   "{"
             IORequirement*        
             ("boundary" boundaryEvent:WFEvent)*
@@ -144,7 +144,7 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
    */
   WFTask implements WFActivity =
       Modifier type:["service"|"send"|"receive"|"user"|"manual"|"rule"|"script"]? "task" Name
-      LoopCharacteristics?
+      WFLoopCharacteristic ?
       (   "{"
              TaskTypeAttributes?
              IORequirement*
@@ -164,19 +164,21 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
    */ 
   TaskTypeAttributes =
       (
-          // valid Strings are ##unspecified, ##webservice or a URI 
-          ("webservice" "=" webservice:String ";")
+          // The BPMN standard expects a valid URI of a webservice, ##unspecified or ##webservice.
+          ("webservice" "="
+            (webservice:String | noWebservice:["##unspecified" | "##webservice"]) ";"
+          )
 
-          // references an operation
-          ("operation" ":" operation:Name@Operation ";")?
+          // Service, send, and receive tasks (may) reference an operation.
+          ("operation" ":" operation:Name@WFOperation ";")?
 
-          // used in send and receive tasks for communication 
-          ("message" ":" message:Name@Notification ";")?
+          // Messages are used in send and receive tasks for communication.
+          ("message" ":" message:Name@WFNotification ";")?
         |
-          // format of the script and a script that can be run when a task is performed 
+          // Script tasks specify a script and its format that can be run when a task is performed.
           "script" "(" scriptFormat:String ")" "=" "{" script:String "}" ";"
         |
-          // human resources or other resources assigned to tasks 
+          // Manual tasks specify human resources or other resources assigned to tasks.
           "resources" ":" resources:(MCQualifiedName || ",")+ ";"
       )
     ;
@@ -187,64 +189,64 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
    * It can specify error elements which may be returned.
    * An implementation of the operation can be referenced.
    */
-  symbol Operation implements Method =
+  symbol WFOperation implements Method =
       Modifier "operation" Name "("
-      "in" ":" in:Name@Notification
-      (";" "out" ":" out:Name@Notification)? ")"
-      ("throws" ":" error:Name@Notification)?
+      "in" ":" in:Name@WFNotification
+      (";" "out" ":" out:Name@WFNotification)? ")"
+      ("throws" ":" error:Name@WFNotification)?
       ("{" "implementation" "=" impl:String ";" "}" | ";")
     ;
 
-  // LoopCharacteristics describes an interface for standard and multi-instance loops. 
-  interface LoopCharacteristics;
+  // WFLoopCharacteristic  describes an interface for standard and multi-instance loops. 
+  interface WFLoopCharacteristic ;
 
   /**
-   * StandardLoop specifies the looping behavior for normal loops.
+   * WFStandardLoop specifies the looping behavior for normal loops.
    * Along with a loop condition, a while or do-while loop can be specified.
    * It is also possible to set the maximum number of iterations.
    */ 
-  StandardLoop implements LoopCharacteristics =
+  WFStandardLoop implements WFLoopCharacteristic  =
       type:["while"|"until"] ":" "[" loopCondition:Expression "]" 
       ("max" ":" loopMaximum:NatLiteral)?
     ;
 
   /** 
-   * MILoop allows to create multiple instances of activities. 
+   * WFMILoop allows to create multiple instances of activities. 
    * The loops can be executed in parallel or sequentially.
    * It will only loop to the completion condition if one is specified.
    */
-  MILoop implements LoopCharacteristics =
-      "count" ":" LoopCardinality
+  WFMILoop implements WFLoopCharacteristic  =
+      "count" ":" WFLoopCardinality
       (type:["parallel"|"sequential"])?
       ("until" ":" "[" completionCondition:Expression "]")?
-      MIImplicitEventBehavior?  
+      WFMIImplicitEventBehavior?  
     ;
 
   /**
-   * LoopDataInput describes a list of items that is used for multi-instance-activities.
+   * loopDataInput describes a list of items that is used for multi-instance-activities.
    * Example: loopDataInput = ["Person1", "Person2", "Person3"]
    */
-  astrule MILoop =
+  astrule WFMILoop =
       loopDataInput: Name+
       loopDataOutput: Name+
     ;
 
   /** 
-   * MIImplicitEventBehavior describes if an event shall be thrown after an instance completes.
+   * WFMIImplicitEventBehavior describes if an event shall be thrown after an instance completes.
    * The implimplicitEventDef defines the event trigger to be thrown.
    * The trigger can be thrown at a specific point in time or depending on a condition.
    */
-  MIImplicitEventBehavior =
-      "event" ":" implicitEventDef:EventTrigger
+  WFMIImplicitEventBehavior =
+      "event" ":" implicitEventDef:WFEventTrigger
       ("implicit" ":" ( when:["none"|"first"|"every"] | "[" complexCondition:Expression "]"))?
     ;
 
   /**
-   * LoopCardinality controls the number of activities created by a MILoop. 
+   * WFLoopCardinality controls the number of activities created by a WFMILoop.
    * It can be an integer value, an expression that resolves to an integer,
      or a collection-valued data object.
    */  
-  LoopCardinality =
+  WFLoopCardinality =
       count:NatLiteral
     | ("[" expression:Expression "]")
     | collection:Name 
@@ -302,9 +304,9 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
   symbol WFEvent implements FlowElement =
       Modifier type:["start"|"end"]? "event" Name?
       (throw:["send"] | catch:["receive"] (["noninterrupt"])?)?
-      trigger:EventTrigger?
+      trigger:WFEventTrigger?
       CompensationHandler?
-      ( "{" ("operation" ":" operation:Name@Operation ";")? IOSet? "}" )?
+      ( "{" ("operation" ":" operation:Name@WFOperation ";")? WFIOSet? "}" )?
     ;
 
   // This rule adds a variable that indicates if an event is a boundary event.
@@ -313,18 +315,18 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
     ;
 
   // This interface is implemented by all event triggers in this grammar.
-  interface EventTrigger;
+  interface WFEventTrigger;
 
   // Below all triggers of the BPMN except the link trigger are listed.
-  EventTriggerCancel       implements EventTrigger = "cancel";
-  EventTriggerCompensate   implements EventTrigger = "compensate" (":" activity:Name)? ["async"]?;
-  EventTriggerConditional  implements EventTrigger = "when"        ":" "[" Expression "]";
-  EventTriggerTerminate    implements EventTrigger = "terminate";
-  EventTriggerTimer        implements EventTrigger = "timer" ":" "[" condition:TimerCondition "]";
-  EventTriggerMultiple     implements EventTrigger = ("one" | parallelMultiple:["all"]) 
-                                                     "{" trigger:(EventTrigger || ",")+ "}";
-  EventTriggerNotification implements EventTrigger = type:["error"|"escalate"|"message"|"signal"]
-                                                     ":" Name@Notification ;
+  WFEventTriggerCancel       implements WFEventTrigger = "cancel";
+  WFEventTriggerCompensate   implements WFEventTrigger = "compensate" (":" activity:Name)? ["async"]?;
+  WFEventTriggerConditional  implements WFEventTrigger = "when"        ":" "[" Expression "]";
+  WFEventTriggerTerminate    implements WFEventTrigger = "terminate";
+  WFEventTriggerTimer        implements WFEventTrigger = "timer" ":" "[" condition:TimerCondition "]";
+  WFEventTriggerMultiple     implements WFEventTrigger = ("one" | parallelMultiple:["all"]) 
+                                                     "{" trigger:(WFEventTrigger || ",")+ "}";
+  WFEventTriggerNotification implements WFEventTrigger = type:["error"|"escalate"|"message"|"signal"]
+                                                     ":" Name@WFNotification ;
 
   /*
    * CompensationHandler designates an compensating activity for a boundary event.
@@ -373,7 +375,7 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
    * This nonterminal represents a data object or a data store.
    * It has a name and a type.
    */
-  DataObject implements FlowElement, Variable =
+  WFDataObject implements FlowElement, Variable =
       type:["data"|"store"] Name ":" MCType 
     ;
 
@@ -382,28 +384,28 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
   /*========================== I/O REQUIREMENTS ============================*/
   /*========================================================================*/
 
-  // IORequirement is implemented by the nontermials IOSet and IORule.
+  // IORequirement is implemented by the nontermials WFIOSet and IORule.
   interface IORequirement;
 
-  // IOSet specifies an input or an output dataset. 
-  IOSet implements IORequirement = dir:["in"|"out"] ":" DataSet ";" ;
+  // WFIOSet specifies an input or an output WFDataSet. 
+  WFIOSet implements IORequirement = dir:["in"|"out"] ":" WFDataSet ";" ;
 
   // IORule maps an input set to an output set. 
   IORule implements IORequirement =
-      "io" ":" inputSet:DataSet "->" outputSet:DataSet ";"
+      "io" ":" inputSet:WFDataSet "->" outputSet:WFDataSet ";"
     ;
 
-  // Dataset consists of one or more input or output data.
-  DataSet  =  DataIO | "{" (DataIO || ",")* "}" ;
+  // WFDataSet consists of one or more input or output data.
+  WFDataSet  =  WFDataIO | "{" (WFDataIO || ",")* "}" ;
 
   /** 
-   * DataIO specifies a data input or a data output.
+   * WFDataIO specifies a data input or a data output.
    * MCQualifiedNam defines the name of the consumed or produced data element
    * [i]: The tag indicates the use of a collection-valued data input.
    * "?": It marks the input or output data as optional.
    * "!": It specifies that the data can be produced or evaluated while executing.
    */
-  DataIO =
+  WFDataIO =
       MCQualifiedName
       (loop:["[i]"])?  
       (":" MCType)?     
@@ -422,11 +424,11 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
    * Every notification has a name and a type.
    * CoCos ensure the right kinds of Notification are used at the right place.
    */
-  symbol Notification implements FlowElement, Variable =
+  symbol WFNotification implements FlowElement, Variable =
     kind:["error"|"escalation"|"message"|"signal"] Name ":" MCType ;
 
   // This rule adds methods to easily distinguish between the types of a notification.
-  symbolrule Notification =
+  symbolrule WFNotification =
     isError: boolean
     isEscalation: boolean
     isMessage: boolean
