@@ -1,5 +1,7 @@
 package de.monticore.workflow.conformance.incarnaion;
 
+import static de.monticore.bpmn.conformance.BPMNConformanceUtils.parseBPMNString;
+
 import de.monticore.bpmn.conformance.datastructures.WfNodeFactory;
 import de.monticore.bpmn.conformance.datastructures.interf.WfBuilder;
 import de.monticore.bpmn.conformance.datastructures.interf.WfNode;
@@ -29,8 +31,8 @@ public class IncarnationTest extends AbstractConfTest {
   @Test
   public void testNameIncarnationStrategy() {
     // given
-    concrete = parse_str("process Concrete { event start S; task T1; S -> T1;}");
-    reference = parse_str("process Reference { event start S; task T1; S -> T1;}");
+    concrete = parseBPMNString("process Concrete { event start S; task T1; S -> T1;}");
+    reference = parseBPMNString("process Reference { event start S; task T1; S -> T1;}");
 
     // when
     WfBuilder conBuilder = WfNodeFactory.workflowBuilder(concrete, "");
@@ -48,8 +50,9 @@ public class IncarnationTest extends AbstractConfTest {
   @Test
   public void testStereotypeIncarnationStrategy() {
     // given
-    concrete = parse_str("process Reference { event start S; <<ref=\"T1\">> task T2; S -> T2;}");
-    reference = parse_str("process Concrete { event start S; task T1; S -> T1;}");
+    concrete =
+        parseBPMNString("process Reference { event start S; <<ref=\"T1\">> task T2; S -> T2;}");
+    reference = parseBPMNString("process Concrete { event start S; task T1; S -> T1;}");
 
     // when
     WfBuilder conBuilder = WfNodeFactory.workflowBuilder(concrete, ConfUtils.CONCRETE_PREFIX);
@@ -72,8 +75,9 @@ public class IncarnationTest extends AbstractConfTest {
   @Test
   public void testComposedIncarnationStrategy() {
     // given
-    concrete = parse_str("process Reference { event start S; <<ref=\"T1\">> task T2; S -> T2;}");
-    reference = parse_str("process Concrete { event start S; task T1; S -> T1;}");
+    concrete =
+        parseBPMNString("process Reference { event start S; <<ref=\"T1\">> task T2; S -> T2;}");
+    reference = parseBPMNString("process Concrete { event start S; task T1; S -> T1;}");
 
     // when
     WfBuilder conBuilder = WfNodeFactory.workflowBuilder(concrete, "");

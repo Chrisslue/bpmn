@@ -37,8 +37,8 @@ class CaseStudyTest extends AbstractConfTest {
   public void checkReflexiveConformance(String model) {
     // given
     String modelDir = "de.monticore.workflow.conformance.caseStudy.";
-    ASTWorkflowCompilationUnit reference = loadModel(modelDir + model);
-    ASTWorkflowCompilationUnit concrete = loadModel(modelDir + model);
+    ASTWorkflowCompilationUnit reference = loadBPMN(modelDir + model);
+    ASTWorkflowCompilationUnit concrete = loadBPMN(modelDir + model);
 
     // when
     WfConformanceChecker checker = new WfConformanceChecker();
@@ -60,8 +60,8 @@ class CaseStudyTest extends AbstractConfTest {
     // given
     String modelDir = "de.monticore.workflow.conformance.caseStudy.";
 
-    ASTWorkflowCompilationUnit reference = loadModel(modelDir + "PaperAuthoring");
-    ASTWorkflowCompilationUnit concrete = loadModel(modelDir + model);
+    ASTWorkflowCompilationUnit reference = loadBPMN(modelDir + "PaperAuthoring");
+    ASTWorkflowCompilationUnit concrete = loadBPMN(modelDir + model);
 
     // when
     WfConformanceChecker checker = new WfConformanceChecker();
@@ -83,8 +83,8 @@ class CaseStudyTest extends AbstractConfTest {
     // given
     String modelDir = "de.monticore.workflow.conformance.caseStudy.";
 
-    ASTWorkflowCompilationUnit reference = loadModel(modelDir + "PaperAuthoring");
-    ASTWorkflowCompilationUnit concrete = loadModel(modelDir + "nonconform." + model);
+    ASTWorkflowCompilationUnit reference = loadBPMN(modelDir + "PaperAuthoring");
+    ASTWorkflowCompilationUnit concrete = loadBPMN(modelDir + "nonconform." + model);
 
     // when
     WfConformanceChecker checker = new WfConformanceChecker();
@@ -102,8 +102,8 @@ class CaseStudyTest extends AbstractConfTest {
     // given
     String modelDir = "de.monticore.workflow.conformance.caseStudy.";
 
-    ASTWorkflowCompilationUnit reference = loadModel(modelDir + "PaperAuthoring");
-    ASTWorkflowCompilationUnit concrete = loadModel(modelDir + "conform.SequentialWithLoop");
+    ASTWorkflowCompilationUnit reference = loadBPMN(modelDir + "PaperAuthoring");
+    ASTWorkflowCompilationUnit concrete = loadBPMN(modelDir + "conform.SequentialWithLoop");
 
     // when
     WfConformanceChecker checker = new WfConformanceChecker();

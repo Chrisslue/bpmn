@@ -45,8 +45,8 @@ class WfConformanceCheckerTest extends AbstractConfTest {
       String input, boolean expected, Map<String, CheckResult.Result> nodes) {
 
     // given
-    reference = loadModel(modelDir + "xor.Reference");
-    concrete = loadModel(modelDir + "xor." + input);
+    reference = loadBPMN(modelDir + "xor.Reference");
+    concrete = loadBPMN(modelDir + "xor." + input);
 
     // when
     WfConformanceChecker checker = new WfConformanceChecker();
@@ -80,8 +80,8 @@ class WfConformanceCheckerTest extends AbstractConfTest {
   public void check(String input, boolean expected, Map<String, CheckResult.Result> nodes) {
 
     // given
-    reference = loadModel(modelDir + "xor.Reference");
-    concrete = loadModel(modelDir + "xor." + input);
+    reference = loadBPMN(modelDir + "xor.Reference");
+    concrete = loadBPMN(modelDir + "xor." + input);
 
     // when
     WfConformanceChecker checker = new WfConformanceChecker();
