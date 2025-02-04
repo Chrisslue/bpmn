@@ -1,0 +1,37 @@
+
+process MultipleIncarnation {
+
+  event start Start;
+  event end Done;
+
+   task  Introduction;
+   task  Conclusion;
+
+   <<ref="Main">>  task  SummarizingNewFeatures;
+   <<ref="Main">>  task  AddNewSections;
+   task  ConceptOfNewFeatures;
+   task Draft;
+   task Implementation;
+   task Research;
+
+   merge xor StartIteration;
+   split xor EndIteration;
+   split and SplitWork;
+   merge and MergeWork;
+
+
+  Start ->
+     Research ->
+       Draft ->
+          StartIteration ->
+            ConceptOfNewFeatures -> SplitWork -> Introduction   -> MergeWork;
+                                    SplitWork -> Implementation -> MergeWork;
+                                    SplitWork -> AddNewSections -> MergeWork -> SummarizingNewFeatures -> EndIteration -> Done;
+                                    SplitWork -> Conclusion     -> MergeWork;
+                                                                                            EndIteration -> StartIteration;
+
+
+
+
+
+}

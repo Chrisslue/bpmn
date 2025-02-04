@@ -7,38 +7,31 @@ import de.monticore.bpmn.conformance.incarnation.IncarnationStrategy;
 import de.se_rwth.commons.logging.Log;
 import java.util.*;
 import java.util.stream.Collectors;
-// todo optimization possibilities: - stop traversing of all branches node when lower and upper are
-// non conformed
 
+/***
+ * this class visits each branch at each step of the traversal.
+ *
+ */
 public class BranchVisitor {
 
   private final WfPredicate predicate;
-
-  private final IncarnationStrategy<WfNode> inc;
-
-  private final WfNode node;
-
-  private final Set<WfNode> startNodes;
-
-  private boolean lowerBoundOnly = false;
-
-  private final Map<BranchID, CheckResult> lowerBoundResults;
-  private final Map<BranchID, CheckResult> upperboundResults;
-
+  private final IncarnationStrategy<WfNode> incarnationStrategy;
+  private final WfNode branchOrigin;
+  private final Set<WfNode> bpmnStartNodes;
+  private final boolean lowerBoundOnly;
   private Set<BranchID> branchIDSet = new HashSet<>();
 
   private BranchVisitor(
       WfNode conNode,
-      Set<WfNode> startNodes,
+      Set<WfNode> bpmnStartNodes,
       WfPredicate predicate,
-      IncarnationStrategy<WfNode> inc,
+      IncarnationStrategy<WfNode> incarnationStrategy,
       boolean lowerBoundOnly) {
     this.predicate = predicate;
-    this.inc = inc;
-    this.node = conNode;
-    this.startNodes = startNodes;
-    this.upperboundResults = new HashMap<>();
-    this.lowerBoundResults = new HashMap<>();
+    this.incarnationStrategy = incarnationStrategy;
+    this.branchOrigin = conNode;
+    this.bpmnStartNodes = bpmnStartNodes;
+
     this.lowerBoundOnly = lowerBoundOnly;
   }
 
@@ -58,86 +51,92 @@ public class BranchVisitor {
     return new BranchVisitor(conNode, startNodes, predicate, inc, true);
   }
 
-  // todo break earlier when lower-bound only
-
+  /*****
+   * check if the branch conforms using the incarnation strategy and the predicate.
+   * @param branchId the branch to be checked
+   * @return true if the check is completed.
+   */
   public boolean accept(BranchID branchId) {
-
+    if (branchId.isCheckAborted() || branchId.isCheckCompleted()) {
+      return false;
+    }
     branchIDSet.add(branchId);
 
-    Log.debug(String.format("Testing branch %s with predicate [%s]", branchId, predicate), "");
+    Log.trace(String.format("Checking branch %s with predicate [%s]", branchId, predicate), "");
 
     List<WfNode> referenceNodes = resolveReferenceNodes(branchId);
     boolean res = predicate.test(referenceNodes);
+
     Log.trace("Result:" + res, "");
-    if (!lowerBoundResults.containsKey(branchId)) {
-      if (res) {
-        Log.trace(
-            String.format(
-                "Aborting lower-bound, branch %s, reason: %s",
-                branchId, AbortReason.SATISFIED_PREDICATE),
-            "");
-        CheckResult checkResult = CheckResult.mkConform(this.node);
-        lowerBoundResults.putIfAbsent(branchId, checkResult);
-      }
+
+    if (res) {
+      String trace = "Aborting lower-bound, branch %s, reason: %s";
+      Log.trace(String.format(trace, branchId, AbortReason.SATISFIED_PREDICATE), "");
+
+      CheckResult checkResult = CheckResult.mkConform(this.branchOrigin);
+      branchId.setLoweBoundResult(checkResult);
     }
 
-    if (branchId.isLoopDetected()) {
-      Log.info(
-          String.format(
-              "Aborting lower and upper bound,  branch %s, reason: %s",
-              branchId, AbortReason.LOOP_DISCOVERED),
-          "");
-      branchId.setAborted();
-      lowerBoundResults.putIfAbsent(branchId, CheckResult.mkConform(node));
-      upperboundResults.putIfAbsent(branchId, CheckResult.mkConform(node));
+    if (new HashSet<>(branchId.getNodeList()).size() < branchId.getNodeList().size()) {
+      String trace = "Aborting lower and upper bound,  branch %s, reason: %s";
+      Log.info(String.format(trace, branchId, AbortReason.LOOP_DISCOVERED), "");
+
+      branchId.setLoweBoundResult(CheckResult.mkConform(branchOrigin));
+      branchId.setUpperBoundResult(CheckResult.mkConform(branchOrigin));
+      branchId.completeCheck();
       return false;
     }
 
-    if (!startNodes.contains(this.node)
+    if (!bpmnStartNodes.contains(this.branchOrigin)
         && !branchId.getNodeList().isEmpty()
-        && startNodes.contains(branchId.getNodeList().get(branchId.getNodeList().size() - 1))) {
-      Log.trace(
-          String.format(
-              "Aborting lower and upper bound, branch %s, reason: %s",
-              branchId, AbortReason.RETURN_TO_START),
-          "");
-      Log.trace("Result:" + res, "");
-      CheckResult checkRes =
-          res ? CheckResult.mkConform(this.node) : CheckResult.mkNonConform(this.node, branchId);
-      lowerBoundResults.putIfAbsent(branchId, checkRes);
-      upperboundResults.put(branchId, checkRes);
+        && bpmnStartNodes.contains(branchId.getNodeList().get(branchId.getNodeList().size() - 1))) {
+      String trace = "Aborting lower and upper bound, branch %s, reason: %s";
+      Log.trace(String.format(trace, branchId, AbortReason.RETURN_TO_START), "");
+
+      CheckResult checkRes;
+      if (res) {
+        checkRes = CheckResult.mkConform(this.branchOrigin);
+      } else {
+        checkRes = CheckResult.mkNonConform(this.branchOrigin, branchId);
+      }
+
+      branchId.setLoweBoundResult(checkRes);
+      branchId.setUpperBoundResult(checkRes);
+      branchId.completeCheck();
       return false;
     }
 
     return true;
   }
 
-  public boolean abort() {
-    branchIDSet = branchIDSet.stream().filter(n -> !n.isAborted()).collect(Collectors.toSet());
+  public void abort() {
+    branchIDSet = branchIDSet.stream().filter(n -> !n.isCheckAborted()).collect(Collectors.toSet());
     for (var branchId : branchIDSet) {
 
       branchIDSet.add(branchId);
       List<WfNode> referenceNodes = resolveReferenceNodes(branchId);
       boolean res = predicate.test(referenceNodes);
-      Log.trace(
-          String.format(
-              "Aborting upper-bound and lower,  branch %s, reason: %s",
-              branchId, AbortReason.END_NODE_REACHED),
-          "");
+      String trace = "Aborting upper-bound and lower,  branch %s, reason: %s";
+      Log.trace(String.format(trace, branchId, AbortReason.END_NODE_REACHED), "");
 
-      CheckResult checkRes =
-          res ? CheckResult.mkConform(this.node) : CheckResult.mkNonConform(this.node, branchId);
-      lowerBoundResults.putIfAbsent(branchId, checkRes);
-      upperboundResults.put(branchId, checkRes);
+      CheckResult checkRes;
+      if (res) {
+        checkRes = CheckResult.mkConform(this.branchOrigin);
+      } else {
+        checkRes = CheckResult.mkNonConform(this.branchOrigin, branchId);
+      }
+
+      branchId.setLoweBoundResult(checkRes);
+      branchId.setUpperBoundResult(checkRes);
+      branchId.completeCheck();
     }
-    return false;
   }
 
   public List<WfNode> resolveReferenceNodes(BranchID branchId) {
     List<WfNode> concreteNodeList = new ArrayList<>(branchId.getNodeList());
 
     return concreteNodeList.stream()
-        .map(inc::getReferenceElements)
+        .map(incarnationStrategy::getReferenceElements)
         .flatMap(List::stream)
         .collect(Collectors.toList());
   }
@@ -145,15 +144,16 @@ public class BranchVisitor {
   // todo  try to optimize it later
   public CheckResult getResult() {
     CheckResult lowerBoundRes = null;
-    for (CheckResult res : lowerBoundResults.values()) {
-      if (res.isNonConform()) {
-        lowerBoundRes = res;
+
+    for (BranchID res : branchIDSet) {
+      if (res.getLoweBoundResult().isNonConform()) {
+        lowerBoundRes = res.getLoweBoundResult();
         break;
       }
     }
 
     if (lowerBoundRes == null) {
-      lowerBoundRes = CheckResult.mkConform(node);
+      lowerBoundRes = CheckResult.mkConform(branchOrigin);
     }
 
     if (lowerBoundOnly) {
@@ -161,44 +161,46 @@ public class BranchVisitor {
     }
 
     CheckResult upperBoundRes = null;
-    for (CheckResult res : upperboundResults.values()) {
-      if (res.isNonConform()) {
-        upperBoundRes = res;
+    for (var res : branchIDSet) {
+      if (res.getUpperBoundResult().isNonConform()) {
+        upperBoundRes = res.getUpperBoundResult();
         break;
       }
     }
 
     // upper bound is CONFORM than lower bound is also CONFORM
     if (upperBoundRes == null) {
-      return CheckResult.mkConform(node);
+      return CheckResult.mkConform(branchOrigin);
     }
 
     // upper-bound NON-CONFORM && lower-bound NON-CONFORM
     if (lowerBoundRes.isConform()) {
-      return CheckResult.mkUnknown(node, upperBoundRes.getBranchId().get());
+      return CheckResult.mkUnknown(branchOrigin, upperBoundRes.getBranchId().get());
     } else {
-      return CheckResult.mkNonConform(node, upperBoundRes.getBranchId().get());
+      return CheckResult.mkNonConform(branchOrigin, upperBoundRes.getBranchId().get());
     }
   }
 
   public void printResult() {
 
-    Log.println("");
+    Log.trace("", "");
+    Log.trace("------------------------ Predicate ------------------------", "");
+    Log.trace(predicate.toString(), "");
+    Log.trace("---------- Lower bound Results: ---------", "");
 
-    Log.info("---------- Lower bound Results: ---------", "");
-
-    for (var res : lowerBoundResults.entrySet()) {
-      Log.info(String.format("branch: %s, res= %s", res.getKey(), res.getValue().getResult()), "");
+    for (var res : branchIDSet) {
+      Log.trace(
+          String.format("branch: %s, res= %s", res, res.getLoweBoundResult().getResult()), "");
     }
 
-    Log.println("");
+    Log.trace("", "");
 
     if (!lowerBoundOnly) {
-      Log.info("---------- upperbound Results: ----------", "");
+      Log.trace("---------- upperbound Results: ----------", "");
 
-      for (var res : upperboundResults.entrySet()) {
-        Log.info(
-            String.format("branch: %s, res= %s", res.getKey(), res.getValue().getResult()), "");
+      for (var res : branchIDSet) {
+        Log.trace(
+            String.format("branch: %s, res= %s", res, res.getUpperBoundResult().getResult()), "");
       }
     }
   }

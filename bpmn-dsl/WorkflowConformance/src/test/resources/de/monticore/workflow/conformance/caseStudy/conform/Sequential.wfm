@@ -1,17 +1,18 @@
 // in the cas the work is perform sequentially
 
-process PaperAuthoringConcreteProcess1 {
+process  Sequential {
 
   event start Start;
   event end Done;
 
    task  Introduction;
+   task  Research;
    task  Main;
    task Conclusion;
    task Draft;
 
 
-  Start -> Draft  -> Introduction  -> Main -> Conclusion -> Done;
+  Start -> Research ->  Draft  -> Introduction  -> Main -> Conclusion -> Done;
 
 
 

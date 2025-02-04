@@ -9,7 +9,7 @@ import java.util.Set;
 /***
  * this interface to abstract form
  */
-public interface WfBuilder { // todo find solution with parameter
+public interface WfBuilder {
 
   /****
    * Transform a task to a Workflow node. the tasks are uniquely identifying bei their names.
@@ -18,7 +18,7 @@ public interface WfBuilder { // todo find solution with parameter
   void mkNamedTask(ASTTask task);
 
   /****
-   * Transform an event to a Workflow node. the events are uniquely identify by their names.
+   * Transform an event to a Workflow node. the events are uniquely identified by their names.
    * @param event the label of the event.
    */
   void mkNamedEvent(ASTNamedEvent event);

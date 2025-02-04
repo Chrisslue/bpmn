@@ -29,7 +29,7 @@ public class WfNodeFactoryTest extends AbstractConfTest {
   @Test
   public void testBuilderConstruction() {
 
-    WfBuilder builder = parseAndCreateBuilder(modelDir + "datastructures.Example", "");
+    WfBuilder builder = parseAndCreateBuilder(modelDir + "datastructures.Example");
     Assertions.assertNotNull(builder);
 
     WfNode s = builder.getWfNode("S");

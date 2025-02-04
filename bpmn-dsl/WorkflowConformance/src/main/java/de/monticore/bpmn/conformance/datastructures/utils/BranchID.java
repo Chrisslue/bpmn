@@ -3,59 +3,58 @@ package de.monticore.bpmn.conformance.datastructures.utils;
 import static de.monticore.bpmn.conformance.datastructures.utils.NodeType.*;
 
 import de.monticore.bpmn.conformance.datastructures.interf.WfNode;
-
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
+
+/*****
+ * This class stores information for a given branch during the traversal of the BPMN.
+ *
+ * @author valdes-voufo
+ * It stores:
+ * - id: the ID of the branch.
+ * - nodeList: the list of visited nodes in the visiting order.
+ * - checkCompleted: true when the check is completed on the branch, and it will not be expanded anymore.
+ * - checkAborted: true when the branch is abandoned, for example, after an XOR split.
+ * - waitingAndMerge: a list of nodes of type AND_MERGE that are waiting to be merged.
+ *
+ */
 
 public class BranchID {
   private final int id;
   private final List<WfNode> nodeList;
-  private boolean loopDetected = false;
-  private boolean inParallel = false;
-  private static int counter = 0;
-  private boolean aborted = false;
-  private Set<WfNode> waitingAndMerge = new HashSet<>();
 
+  private boolean checkCompleted = false;
+  private boolean checkAborted = false;
+  private final Set<WfNode> andMergeNodesWaitingToBeMerge = new HashSet<>();
 
+  private CheckResult loweBoundResult;
+  private CheckResult upperBoundResult;
 
-  public void  merge(WfNode andMerge){
-    waitingAndMerge.remove(andMerge);
+  public void merge(WfNode andMerge) {
+    andMergeNodesWaitingToBeMerge.remove(andMerge);
   }
 
-  public void  wait(WfNode andMerge){
-    assert  andMerge.getNodeType().equals(AND_MERGE);
-    waitingAndMerge.add(andMerge);
+  public void wait(WfNode andMerge) {
+    assert andMerge.getNodeType().equals(AND_MERGE);
+    andMergeNodesWaitingToBeMerge.add(andMerge);
   }
 
   public BranchID(List<WfNode> nodeList) {
-    this.id = counter++;
+    this.id = new Random().nextInt();
     this.nodeList = nodeList;
-  } // todo handle when many parallel level
-
-  public boolean isLoopDetected() {
-    return loopDetected;
   }
 
-
   public void addNode(WfNode node) {
-    if (node.getNodeType().equals(AND_MERGE) && waitingAndMerge.contains(node)){
+    if (node.getNodeType().equals(AND_MERGE) && andMergeNodesWaitingToBeMerge.contains(node)) {
       return;
     }
-    if (nodeList.contains(node)) { // todo handle it properly
-      loopDetected = true;
-      aborted= true;
+    if (nodeList.contains(node)) {
+      checkCompleted = true;
     }
 
     this.nodeList.add(node);
-  }
-
-  public boolean isInParallel() {
-    return inParallel;
-  }
-
-  public void setInParallel(boolean inParallel) {
-    this.inParallel = inParallel;
   }
 
   public List<WfNode> getNodeList() {
@@ -71,11 +70,37 @@ public class BranchID {
     return "id:" + id + " " + nodeList.toString();
   }
 
-  public void setAborted() {
-    this.aborted = true;
+  public void completeCheck() {
+    this.checkCompleted = true;
   }
 
-  public boolean isAborted() {
-    return aborted;
+  public boolean isCheckCompleted() {
+    return checkCompleted;
+  }
+
+  public void abortCheck() {
+    this.checkAborted = true;
+  }
+
+  public boolean isCheckAborted() {
+    return checkAborted;
+  }
+
+  public void setUpperBoundResult(CheckResult upperBoundResult) {
+    this.upperBoundResult = upperBoundResult;
+  }
+
+  public void setLoweBoundResult(CheckResult loweBoundResult) {
+    if (this.loweBoundResult == null) {
+      this.loweBoundResult = loweBoundResult;
+    }
+  }
+
+  public CheckResult getUpperBoundResult() {
+    return upperBoundResult;
+  }
+
+  public CheckResult getLoweBoundResult() {
+    return loweBoundResult;
   }
 }
