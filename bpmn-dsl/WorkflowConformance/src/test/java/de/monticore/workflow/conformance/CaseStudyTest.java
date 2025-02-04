@@ -21,7 +21,7 @@ class CaseStudyTest extends AbstractConfTest {
   @BeforeEach
   public void setup() {
     init();
-    Log.initDEBUG();
+    Log.init();
   }
 
   @ParameterizedTest
