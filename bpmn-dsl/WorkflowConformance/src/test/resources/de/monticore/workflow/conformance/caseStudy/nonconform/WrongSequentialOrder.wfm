@@ -1,0 +1,24 @@
+
+process WrongSequentialOrder {
+
+  event start Start;
+  event end Done;
+
+   task  Introduction;
+   task  Main;
+   task Conclusion;
+   task Draft;
+   task Research;
+
+   merge xor StartIteration;
+   split xor EndIteration;
+   split and SplitWork;
+   merge and MergeWork;
+
+
+  Start -> Draft -> Research -> StartIteration -> SplitWork -> Introduction -> MergeWork -> EndIteration;
+                                                  SplitWork -> Main         -> MergeWork -> EndIteration -> Done;
+                                                  SplitWork -> Conclusion   -> MergeWork -> EndIteration -> StartIteration;
+
+
+}

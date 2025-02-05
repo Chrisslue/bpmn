@@ -8,12 +8,13 @@ process SequentialWithLoop {
    task  Main;
    task Conclusion;
    task Draft;
+   task Research;
 
    merge xor StartIteration;
    split xor EndIteration;
 
 
-  Start -> Draft -> StartIteration -> Introduction -> Main -> Conclusion  -> EndIteration -> Done;
+  Start -> Research  -> Draft  -> StartIteration -> Introduction -> Main -> Conclusion  -> EndIteration -> Done;
                                        EndIteration -> StartIteration;
 
 

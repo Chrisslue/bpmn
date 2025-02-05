@@ -3,6 +3,7 @@ package de.monticore.bpmn.conformance.datastructures.utils;
 import de.monticore.bpmn.conformance.datastructures.interf.WfNode;
 import java.util.Optional;
 import javax.annotation.Nonnull;
+import javax.swing.*;
 
 public class CheckResult {
 
@@ -14,6 +15,10 @@ public class CheckResult {
     this.result = result;
     this.node = node;
     this.branchId = Optional.ofNullable(branchId);
+  }
+
+  public String printWitness() {
+    return branchId.get().getNodeList().toString();
   }
 
   public static CheckResult mkConform(WfNode node) {

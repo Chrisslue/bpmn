@@ -1,5 +1,5 @@
 
-process PaperAuthoringReferenceProcess {
+process  AntiPattern {
 
   event start Start;
   event end Done;
@@ -8,14 +8,15 @@ process PaperAuthoringReferenceProcess {
    task  Main;
    task Conclusion;
    task Draft;
+   task Research;
 
    merge xor StartIteration;
    split xor EndIteration;
-   split and SplitWork;
+   split xor SplitWork;
    merge and MergeWork;
 
 
-  Start -> Draft -> StartIteration -> SplitWork -> Introduction -> MergeWork -> EndIteration;
+  Start -> Research-> Draft -> StartIteration -> SplitWork -> Introduction -> MergeWork -> EndIteration;
                                       SplitWork -> Main         -> MergeWork -> EndIteration -> Done;
                                       SplitWork -> Conclusion   -> MergeWork -> EndIteration -> StartIteration;
 

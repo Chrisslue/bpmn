@@ -1,5 +1,7 @@
 package de.monticore.workflow.conformance.incarnaion;
 
+import static de.monticore.bpmn.conformance.BPMNConformanceUtils.parseBPMNString;
+
 import de.monticore.bpmn.conformance.datastructures.WfNodeFactory;
 import de.monticore.bpmn.conformance.datastructures.interf.WfBuilder;
 import de.monticore.bpmn.conformance.datastructures.interf.WfNode;
@@ -29,8 +31,8 @@ public class IncarnationTest extends AbstractConfTest {
   @Test
   public void testNameIncarnationStrategy() {
     // given
-    concrete = parse_str("process Concrete { event start S; task T1; S -> T1;}");
-    reference = parse_str("process Reference { event start S; task T1; S -> T1;}");
+    concrete = parseBPMNString("process Concrete { event start S; task T1; S -> T1;}");
+    reference = parseBPMNString("process Reference { event start S; task T1; S -> T1;}");
 
     // when
     WfBuilder conBuilder = WfNodeFactory.workflowBuilder(concrete, "");
@@ -42,14 +44,15 @@ public class IncarnationTest extends AbstractConfTest {
     references = incStrategy.getReferenceElements(conBuilder.getWfNode("S"));
 
     Assertions.assertEquals(1, references.size());
-    Assertions.assertEquals(references.get(0).getLabel(), "S");
+    Assertions.assertEquals("S", references.get(0).getLabel());
   }
 
   @Test
   public void testStereotypeIncarnationStrategy() {
     // given
-    concrete = parse_str("process Reference { event start S; <<ref=\"T1\">> task T2; S -> T2;}");
-    reference = parse_str("process Concrete { event start S; task T1; S -> T1;}");
+    concrete =
+        parseBPMNString("process Reference { event start S; <<ref=\"T1\">> task T2; S -> T2;}");
+    reference = parseBPMNString("process Concrete { event start S; task T1; S -> T1;}");
 
     // when
     WfBuilder conBuilder = WfNodeFactory.workflowBuilder(concrete, ConfUtils.CONCRETE_PREFIX);
@@ -62,7 +65,7 @@ public class IncarnationTest extends AbstractConfTest {
     // node T1 is incarnate by T2
     references = incStrategy.getReferenceElements(conBuilder.getWfNode("T2"));
     Assertions.assertEquals(1, references.size());
-    Assertions.assertEquals(references.get(0).getLabel(), "Ref:T1");
+    Assertions.assertEquals("Ref:T1", references.get(0).getLabel());
 
     // node S has no incarnation
     references = incStrategy.getReferenceElements(conBuilder.getWfNode("S"));
@@ -72,8 +75,9 @@ public class IncarnationTest extends AbstractConfTest {
   @Test
   public void testComposedIncarnationStrategy() {
     // given
-    concrete = parse_str("process Reference { event start S; <<ref=\"T1\">> task T2; S -> T2;}");
-    reference = parse_str("process Concrete { event start S; task T1; S -> T1;}");
+    concrete =
+        parseBPMNString("process Reference { event start S; <<ref=\"T1\">> task T2; S -> T2;}");
+    reference = parseBPMNString("process Concrete { event start S; task T1; S -> T1;}");
 
     // when
     WfBuilder conBuilder = WfNodeFactory.workflowBuilder(concrete, "");
@@ -87,11 +91,11 @@ public class IncarnationTest extends AbstractConfTest {
     // node T1 is incarnate by T2
     references = incStrategy.getReferenceElements(conBuilder.getWfNode("T2"));
     Assertions.assertEquals(1, references.size());
-    Assertions.assertEquals(references.get(0).getLabel(), "T1");
+    Assertions.assertEquals("T1", references.get(0).getLabel());
 
     // node S has no incarnation
     references = incStrategy.getReferenceElements(conBuilder.getWfNode("S"));
     Assertions.assertEquals(1, references.size());
-    Assertions.assertEquals(references.get(0).getLabel(), "S");
+    Assertions.assertEquals("S", references.get(0).getLabel());
   }
 }

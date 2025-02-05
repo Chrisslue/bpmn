@@ -5,7 +5,6 @@ import static de.monticore.bpmn.conformance.datastructures.utils.CheckResult.Res
 import de.monticore.bpmn.conformance.WfConformanceChecker;
 import de.monticore.bpmn.conformance.datastructures.utils.CheckResult;
 import de.monticore.bpmn.workflow._ast.ASTWorkflowCompilationUnit;
-import de.se_rwth.commons.logging.Log;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -37,7 +36,7 @@ class WfConformanceCheckerTest extends AbstractConfTest {
   @BeforeEach
   public void setup() {
     init();
-    Log.initDEBUG();
+    // Log.initDEBUG();
   }
 
   @ParameterizedTest
@@ -46,8 +45,8 @@ class WfConformanceCheckerTest extends AbstractConfTest {
       String input, boolean expected, Map<String, CheckResult.Result> nodes) {
 
     // given
-    reference = loadModel(modelDir + "xor.Reference");
-    concrete = loadModel(modelDir + "xor." + input);
+    reference = loadBPMN(modelDir + "xor.Reference");
+    concrete = loadBPMN(modelDir + "xor." + input);
 
     // when
     WfConformanceChecker checker = new WfConformanceChecker();
@@ -81,8 +80,8 @@ class WfConformanceCheckerTest extends AbstractConfTest {
   public void check(String input, boolean expected, Map<String, CheckResult.Result> nodes) {
 
     // given
-    reference = loadModel(modelDir + "xor.Reference");
-    concrete = loadModel(modelDir + "xor." + input);
+    reference = loadBPMN(modelDir + "xor.Reference");
+    concrete = loadBPMN(modelDir + "xor." + input);
 
     // when
     WfConformanceChecker checker = new WfConformanceChecker();

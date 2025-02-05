@@ -19,24 +19,27 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class WfConformanceChecker {
-
-  private final String logger = "";
+  private ASTWorkflowCompilationUnit concrete;
+  private ASTWorkflowCompilationUnit reference;
+  private ComposedIncStrategy incarnationStrategy;
 
   private final Set<CheckResult> checkResult = new HashSet<>();
-
   private final Set<ConfUtils.WfConfParams> confParams = new HashSet<>();
 
   public WfConformanceChecker() {
     confParams.add(STEREOTYPES_MAPPING);
     confParams.add(NAME_MAPPING);
   }
-  // todo  return a CheckResult.Result instead ?
-  /** procedure to check if a node conforms */
+
   public boolean checkConformance(
       ASTWorkflowCompilationUnit concrete, ASTWorkflowCompilationUnit reference, String mapping) {
-
-    Log.println("");
-    Log.info("Start Checking Conformance of Concrete to Reference", logger);
+    this.concrete = concrete;
+    this.reference = reference;
+    Log.info(
+        String.format(
+            "Checking Conformance of [Concrete:%s] to [Reference:%s]\n",
+            concrete.getProcess().getName(), reference.getProcess().getName()),
+        "");
 
     // reference model &&  concrete model
     WfBuilder refBuilder;
@@ -53,29 +56,29 @@ public class WfConformanceChecker {
     IncarnationStrategy<WfNode> incarnationStrategy = buildIncarnationStrategy(refBuilder, mapping);
 
     // build conformance strategy
-    CTLConfStrategy checker = new CTLConfStrategy(conBuilder, refBuilder, incarnationStrategy);
+    CTLConfStrategy nodeChecker = new CTLConfStrategy(conBuilder, refBuilder, incarnationStrategy);
 
     // check conformance for non-gateway nodes
     for (var con : conBuilder.getAllNodes()) {
       if (!con.getNodeType().isGateway()) {
-        checkResult.add(checker.checkConformance(con));
+        checkResult.add(nodeChecker.checkConformance(con));
       }
     }
 
     // check and print the results
-    return checkAndPrintResults();
+    return printCheckResults();
   }
 
   private IncarnationStrategy<WfNode> buildIncarnationStrategy(WfBuilder builder, String mapping) {
-    ComposedIncStrategy incStrategy = new ComposedIncStrategy(builder, mapping);
+    this.incarnationStrategy = new ComposedIncStrategy(builder, mapping);
 
     // in case conformance params strategies were not set
-    incStrategy.addIncStrategy(new StereotypesIncStrategy(builder, mapping));
+    incarnationStrategy.addIncStrategy(new StereotypesIncStrategy(builder, mapping));
     if (confParams.contains(NAME_MAPPING)) {
-      incStrategy.addIncStrategy(new NameIncStrategy(builder));
+      incarnationStrategy.addIncStrategy(new NameIncStrategy(builder));
     }
 
-    return incStrategy;
+    return incarnationStrategy;
   }
 
   public void addConfParams(ConfUtils.WfConfParams param) {
@@ -86,7 +89,7 @@ public class WfConformanceChecker {
     return checkResult;
   }
 
-  private boolean checkAndPrintResults() {
+  private boolean printCheckResults() {
     List<WfNode> nonConform =
         checkResult.stream()
             .filter(n -> n.getResult().equals(CheckResult.Result.NON_CONFORM))
@@ -99,24 +102,61 @@ public class WfConformanceChecker {
             .map(CheckResult::getNode)
             .collect(Collectors.toList());
 
-    Log.println("");
-    Log.info("--- Final Result of Conformance Checking ---", logger);
-
-    for (CheckResult result : checkResult) {
-      Log.info(result.toString(), "");
-    }
+    Log.info("--- Final Result of Conformance Checking ---", "");
 
     if (!nonConform.isEmpty()) {
-      Log.info("The following node are non conform: " + nonConform, logger);
-      return false;
+      Log.info("The following nodes do not conform: " + nonConform + "\n", "");
     }
 
     if (!unKnown.isEmpty()) {
-      Log.info("The status of following node is unknown: " + nonConform, logger);
-      return false;
+      Log.info("The status of the following nodes is unknown: " + nonConform + "\n", "");
     }
 
-    Log.info("--- All node are Conformed to their reference ---", logger);
-    return true;
+    if (unKnown.isEmpty() && nonConform.isEmpty()) {
+      Log.info("--- All nodes conform to their reference ---\n", "");
+    }
+
+    Log.info("-------- Explanations --------: \n", "");
+    for (CheckResult result : checkResult) {
+      String con = concrete.getProcess().getName();
+      String ref = reference.getProcess().getName();
+
+      if (result.getResult().equals(CheckResult.Result.NON_CONFORM)) {
+        var refNode = this.incarnationStrategy.getReferenceElements(result.getNode()).get(0);
+        Log.info(
+            String.format(
+                "Result: Node [%s:%s] does not conform to Node [%s:%s]",
+                con, result.getNode(), ref, refNode),
+            "");
+        Log.info(
+            String.format(
+                "Counter example: The following run %s is possible in [%s] but not in [%s].\n",
+                result.printWitness(), con, ref),
+            "");
+      }
+
+      if (result.getResult().equals(CheckResult.Result.UNKNOWN)) {
+        var refNode = this.incarnationStrategy.getReferenceElements(result.getNode()).get(0);
+        Log.info(
+            String.format(
+                "Result: Node [%s:%s] may not conform to Node [%s:%s]",
+                con, result.getNode(), ref, refNode),
+            "");
+        Log.info(
+            String.format(
+                "Counter example: The following run %s is possible in [%s] but may not be possible in [%s].\n",
+                result.printWitness(), con, ref),
+            "");
+      }
+    }
+    System.out.println("\n\n");
+    return nonConform.isEmpty() && unKnown.isEmpty();
+  }
+
+  public List<WfNode> getNonConformNodes() {
+    return checkResult.stream()
+        .filter(n -> n.getResult().equals(CheckResult.Result.NON_CONFORM))
+        .map(CheckResult::getNode)
+        .collect(Collectors.toList());
   }
 }
