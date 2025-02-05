@@ -363,7 +363,7 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
   // Either a flow target is preceded by a flow condition or it is a default sequence flow. 
   FlowCondition =
       "[" Expression "]"
-    | default:["default"]
+    | default:["<<default>>"]
     ;
 
 

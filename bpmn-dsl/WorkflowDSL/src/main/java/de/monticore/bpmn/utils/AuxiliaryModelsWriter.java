@@ -10,7 +10,7 @@ import de.monticore.bpmn.analysis.petrinet.PetriNetAptPrinter;
 import de.monticore.bpmn.analysis.petrinet.PetriNetLoLaPrinter;
 import de.monticore.bpmn.analysis.petrinet.WorkflowNet;
 import de.monticore.bpmn.workflow._ast.ASTFlowElement;
-import de.monticore.bpmn.workflow._ast.ASTProcess;
+import de.monticore.bpmn.workflow._ast.ASTWFProcess;
 import de.monticore.prettyprint.IndentPrinter;
 import de.se_rwth.commons.Joiners;
 import de.se_rwth.commons.logging.Log;
@@ -28,9 +28,9 @@ import petrinet.prettyprint.PetrinetDotPrinter;
 /** Creates and writes auxiliary models to disk. */
 public class AuxiliaryModelsWriter {
 
-  private final ASTProcess workflow;
+  private final ASTWFProcess workflow;
 
-  public AuxiliaryModelsWriter(final ASTProcess workflow) {
+  public AuxiliaryModelsWriter(final ASTWFProcess workflow) {
     this.workflow = workflow;
   }
 

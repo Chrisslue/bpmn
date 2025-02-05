@@ -1,7 +1,7 @@
 package de.monticore.bpmn.analysis.petrinet.modules;
 
 import com.google.common.collect.Sets;
-import de.monticore.bpmn.workflow._ast.ASTGateway;
+import de.monticore.bpmn.workflow._ast.ASTWFGateway;
 import java.util.List;
 import petrinet._ast.ASTPlace;
 import petrinet._ast.ASTTransition;
@@ -9,7 +9,7 @@ import petrinet._ast.ASTTransition;
 public class InclusiveGatewayModule extends GatewayModule {
 
   public InclusiveGatewayModule(
-      ASTGateway flowNode, List<ASTPlace> inputPlaces, List<ASTPlace> outputPlaces) {
+      ASTWFGateway flowNode, List<ASTPlace> inputPlaces, List<ASTPlace> outputPlaces) {
     super(flowNode, inputPlaces, outputPlaces);
 
     initModule();

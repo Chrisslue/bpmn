@@ -11,7 +11,7 @@ import de.monticore.bpmn.cocos.events.*;
 import de.monticore.bpmn.cocos.events.triggers.*;
 import de.monticore.bpmn.cocos.flow.*;
 import de.monticore.bpmn.cocos.gateways.*;
-import de.monticore.bpmn.workflow._cocos.WorkflowASTSubProcessCoCo;
+import de.monticore.bpmn.workflow._cocos.WorkflowASTWFSubProcessCoCo;
 import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
 import de.monticore.timer.timerconditions.cocos.TemporalExpressionsCoCos;
 
@@ -141,8 +141,8 @@ public class WorkflowCoCos {
   public static WorkflowCoCoChecker getEventTriggerChecker() {
     WorkflowCoCoChecker checker = new WorkflowCoCoChecker();
     checker.addCoCo(
-        (WorkflowASTSubProcessCoCo) new CancelIntermediateEventIsAttachedToTransaction());
-    checker.addCoCo((WorkflowASTSubProcessCoCo) new CancelEndEventIsContainedWithinTransaction());
+        (WorkflowASTWFSubProcessCoCo) new CancelIntermediateEventIsAttachedToTransaction());
+    checker.addCoCo((WorkflowASTWFSubProcessCoCo) new CancelEndEventIsContainedWithinTransaction());
     checker.addCoCo(new StartEventTopLevelProcessHasValidTrigger());
     checker.addCoCo(new StartEventSubProcessHasValidTrigger());
     checker.addCoCo(new IntermediateCatchEventHasValidTrigger());
@@ -151,7 +151,7 @@ public class WorkflowCoCos {
     checker.addCoCo(new EndEventHasValidTrigger());
     checker.addCoCo(new NonInterruptingEventHasValidTrigger());
     checker.addCoCo(
-        (WorkflowASTSubProcessCoCo) new NonInterruptingEventIsSubProcessStartOrBoundary());
+        (WorkflowASTWFSubProcessCoCo) new NonInterruptingEventIsSubProcessStartOrBoundary());
     checker.addCoCo(new CompensateCatchEventIsNotPartOfNormalFlow());
     return checker;
   }

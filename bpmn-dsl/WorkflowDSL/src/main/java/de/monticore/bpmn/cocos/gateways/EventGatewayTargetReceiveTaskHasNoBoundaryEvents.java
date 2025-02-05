@@ -2,21 +2,21 @@ package de.monticore.bpmn.cocos.gateways;
 
 import de.monticore.bpmn.Messages;
 import de.monticore.bpmn.utils.WorkflowFilters;
-import de.monticore.bpmn.workflow._ast.ASTGateway;
-import de.monticore.bpmn.workflow._ast.ASTTask;
+import de.monticore.bpmn.workflow._ast.ASTWFGateway;
+import de.monticore.bpmn.workflow._ast.ASTWFTask;
 import de.monticore.bpmn.workflow._ast.SequenceFlow;
 import de.monticore.bpmn.workflow._ast.ASTConstantsWorkflow;
-import de.monticore.bpmn.workflow._cocos.WorkflowASTGatewayCoCo;
+import de.monticore.bpmn.workflow._cocos.WorkflowASTWFGatewayCoCo;
 import de.se_rwth.commons.logging.Log;
 
 /**
  * Source: https://www.omg.org/spec/BPMN/2.0/PDF Page: 297 Description: Receive Tasks used in an
  * Event Gateway configuration MUST NOT have any attached Intermediate Events.
  */
-public class EventGatewayTargetReceiveTaskHasNoBoundaryEvents implements WorkflowASTGatewayCoCo {
+public class EventGatewayTargetReceiveTaskHasNoBoundaryEvents implements WorkflowASTWFGatewayCoCo {
 
   @Override
-  public void check(final ASTGateway gateway) {
+  public void check(final ASTWFGateway gateway) {
     if (gateway.getType().isEventBased()) {
       gateway
           .streamOutgoings()

@@ -9,14 +9,14 @@ import de.monticore.types3.TypeCheck3;
 
 public class WorkflowSTCompleter implements WorkflowVisitor2 {
   @Override
-  public void visit(ASTDataObject node) {
+  public void visit(ASTWFDataObject node) {
     SymTypeExpression typeSymbolRef = createTypeSymbolRef(node.getMCType());
 
     node.getSymbol().setType(typeSymbolRef);
   }
 
   @Override
-  public void visit(ASTNotification node) {
+  public void visit(ASTWFNotification node) {
     SymTypeExpression typeSymbolRef = createTypeSymbolRef(node.getMCType());
 
     node.getSymbol().setType(typeSymbolRef);

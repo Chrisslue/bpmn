@@ -19,12 +19,7 @@ public class AddSequenceFlowToFlowNodes extends WorkflowTransformation implement
 
   @Override
   public void visit(final ASTSequenceFlow flow) {
-    handlePath(flow.getFlowBranch().getPathList());
-  }
-
-  @Override
-  public void visit(final ASTFlowBranch branch) {
-    handlePath(branch.getPathList());
+    handlePath(flow.getPathList());
   }
 
   private void handlePath(final List<ASTFlowTarget> path) {

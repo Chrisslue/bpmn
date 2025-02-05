@@ -1,8 +1,8 @@
 package de.monticore.bpmn.trafos;
 
 import de.monticore.bpmn.workflow.WorkflowMill;
-import de.monticore.bpmn.workflow._ast.ASTEvent;
-import de.monticore.bpmn.workflow._ast.ASTGateway;
+import de.monticore.bpmn.workflow._ast.ASTWFEvent;
+import de.monticore.bpmn.workflow._ast.ASTWFGateway;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
 import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
 
@@ -23,12 +23,12 @@ public class AddNameToInlineFlowNodes extends WorkflowTransformation implements 
   }
 
   @Override
-  public void visit(final ASTGateway gateway) {
+  public void visit(final ASTWFGateway gateway) {
     gateway.setName("_Gateway_" + getNextId());
   }
 
   @Override
-  public void visit(final ASTEvent event) {
+  public void visit(final ASTWFEvent event) {
     event.setName("_Event_" + getNextId());
   }
 }

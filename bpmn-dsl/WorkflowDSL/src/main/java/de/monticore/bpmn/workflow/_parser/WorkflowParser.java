@@ -33,7 +33,7 @@ public class WorkflowParser extends WorkflowParserTOP {
       String pathName = Paths.get(filename).toString();
 
       String simpleFileName = Files.getNameWithoutExtension(pathName);
-      String modelName = ast.getProcess().getName();
+      String modelName = ast.getWFProcess().getName();
 
       String packageName = Names.getPackageFromPath(Names.getPathFromFilename(pathName));
 

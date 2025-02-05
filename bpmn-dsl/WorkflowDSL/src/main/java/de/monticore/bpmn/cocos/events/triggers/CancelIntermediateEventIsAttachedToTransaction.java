@@ -3,12 +3,12 @@ package de.monticore.bpmn.cocos.events.triggers;
 import de.monticore.bpmn.Messages;
 import de.monticore.bpmn.collectors.WorkflowCollectors;
 import de.monticore.bpmn.workflow.WorkflowMill;
-import de.monticore.bpmn.workflow._ast.ASTEvent;
-import de.monticore.bpmn.workflow._ast.ASTEventTriggerCancel;
-import de.monticore.bpmn.workflow._ast.ASTProcess;
-import de.monticore.bpmn.workflow._ast.ASTSubProcess;
-import de.monticore.bpmn.workflow._cocos.WorkflowASTProcessCoCo;
-import de.monticore.bpmn.workflow._cocos.WorkflowASTSubProcessCoCo;
+import de.monticore.bpmn.workflow._ast.ASTWFEvent;
+import de.monticore.bpmn.workflow._ast.ASTWFEventTriggerCancel;
+import de.monticore.bpmn.workflow._ast.ASTWFProcess;
+import de.monticore.bpmn.workflow._ast.ASTWFSubProcess;
+import de.monticore.bpmn.workflow._cocos.WorkflowASTWFProcessCoCo;
+import de.monticore.bpmn.workflow._cocos.WorkflowASTWFSubProcessCoCo;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
 import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
 import de.se_rwth.commons.logging.Log;
@@ -20,11 +20,11 @@ import java.util.List;
  * any normal flow and cannot be attached to a non-Transaction Sub-Process.
  */
 public class CancelIntermediateEventIsAttachedToTransaction
-    implements WorkflowASTProcessCoCo, WorkflowASTSubProcessCoCo {
+    implements WorkflowASTWFProcessCoCo, WorkflowASTWFSubProcessCoCo {
 
   @Override
-  public void check(final ASTSubProcess subProcess) {
-    List<ASTEvent> events = WorkflowCollectors.toEventsLocalSubProcess(subProcess);
+  public void check(final ASTWFSubProcess subProcess) {
+    List<ASTWFEvent> events = WorkflowCollectors.toEventsLocalSubProcess(subProcess);
     events.forEach(
         event -> {
           if (!subProcess.isTransaction() || !event.getSymbol().isBoundary()) {
@@ -34,19 +34,19 @@ public class CancelIntermediateEventIsAttachedToTransaction
   }
 
   @Override
-  public void check(final ASTProcess process) {
-    List<ASTEvent> events = WorkflowCollectors.toEventsLocal(process);
+  public void check(final ASTWFProcess process) {
+    List<ASTWFEvent> events = WorkflowCollectors.toEventsLocal(process);
     events.forEach(this::logErrorIfCancelIntermediateEvent);
   }
 
-  private void logErrorIfCancelIntermediateEvent(final ASTEvent event) {
+  private void logErrorIfCancelIntermediateEvent(final ASTWFEvent event) {
     if (!event.isIntermediate()) {
       return;
     }
     WorkflowVisitor2 visitor =
         new WorkflowVisitor2() {
           @Override
-          public void endVisit(ASTEventTriggerCancel node) {
+          public void endVisit(ASTWFEventTriggerCancel node) {
             Log.error(
                 Messages.get("0xWFM2023", event.getName()),
                 event.get_SourcePositionStart(),

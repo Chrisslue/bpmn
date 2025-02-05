@@ -1,20 +1,20 @@
 package de.monticore.bpmn.cocos.activities;
 
 import de.monticore.bpmn.Messages;
-import de.monticore.bpmn.workflow._ast.ASTCallActivity;
-import de.monticore.bpmn.workflow._ast.ASTProcess;
-import de.monticore.bpmn.workflow._cocos.WorkflowASTCallActivityCoCo;
+import de.monticore.bpmn.workflow._ast.ASTWFCallActivity;
+import de.monticore.bpmn.workflow._ast.ASTWFProcess;
+import de.monticore.bpmn.workflow._cocos.WorkflowASTWFCallActivityCoCo;
 import de.monticore.bpmn.workflow._symboltable.WorkflowScope;
 import de.se_rwth.commons.logging.Log;
 import java.util.Optional;
 
-public class CalledElementDoesExist implements WorkflowASTCallActivityCoCo {
+public class CalledElementDoesExist implements WorkflowASTWFCallActivityCoCo {
 
   @Override
-  public void check(final ASTCallActivity callActivity) {
+  public void check(final ASTWFCallActivity callActivity) {
     // enclosing scope is always an Workflow scope
     final WorkflowScope enclosingScope = (WorkflowScope) callActivity.getEnclosingScope();
-    final Optional<ASTProcess> node =
+    final Optional<ASTWFProcess> node =
         enclosingScope.resolveCalledElement(callActivity.getCalledElement());
     if (!node.isPresent()) {
       Log.error(

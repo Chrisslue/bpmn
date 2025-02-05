@@ -8,10 +8,10 @@ import de.monticore.bpmn.analysis.petrinet.WorkflowNet;
 import de.monticore.bpmn.analysis.petrinet.WorkflowNetConverter;
 import de.monticore.bpmn.collectors.WorkflowCollectors;
 import de.monticore.bpmn.utils.FileUtils;
-import de.monticore.bpmn.workflow._ast.ASTProcess;
+import de.monticore.bpmn.workflow._ast.ASTWFProcess;
 import de.monticore.bpmn.workflow._ast.ASTFlowElement;
-import de.monticore.bpmn.workflow._ast.ASTGateway;
-import de.monticore.bpmn.workflow._cocos.WorkflowASTProcessCoCo;
+import de.monticore.bpmn.workflow._ast.ASTWFGateway;
+import de.monticore.bpmn.workflow._cocos.WorkflowASTWFProcessCoCo;
 import de.se_rwth.commons.logging.Log;
 import java.io.File;
 import java.io.IOException;
@@ -20,12 +20,12 @@ import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import petrinet._ast.ASTPetriNode;
 
-public class ProcessNetIsSound implements WorkflowASTProcessCoCo {
+public class ProcessNetIsSound implements WorkflowASTWFProcessCoCo {
 
   private boolean isSound = true;
 
   @Override
-  public void check(final ASTProcess root) {
+  public void check(final ASTWFProcess root) {
     // TODO skip ad-hoc sub-processes
     if (!LoLaChecker.isAvailable()) {
       Log.warn(Messages.get("0xWFM8001", root.getName()));
@@ -94,7 +94,7 @@ public class ProcessNetIsSound implements WorkflowASTProcessCoCo {
   private void checkOptionToComplete(
       final WorkflowNet wfNet,
       final File lolaInput,
-      final ASTProcess root,
+      final ASTWFProcess root,
       final Map<ASTPetriNode, Set<ASTFlowElement>> mapping) {
     // LoLa: check liveness of the final marking (a marking is live if it is reachable from any
     // reachable marking)
@@ -127,7 +127,7 @@ public class ProcessNetIsSound implements WorkflowASTProcessCoCo {
   private void checkSafeness(
       final WorkflowNet wfNet,
       final File lolaInput,
-      final ASTProcess root,
+      final ASTWFProcess root,
       final Map<ASTPetriNode, Set<ASTFlowElement>> mapping) {
     List<ASTFlowElement> unsafeNodes =
         wfNet.getPlaces().stream()
@@ -175,7 +175,7 @@ public class ProcessNetIsSound implements WorkflowASTProcessCoCo {
   private void checkLiveness(
       final WorkflowNet wfNet,
       final File lolaInput,
-      final ASTProcess root,
+      final ASTWFProcess root,
       final Map<ASTPetriNode, Set<ASTFlowElement>> mapping) { // no dead transitions
     List<ASTFlowElement> deadNodes =
         wfNet.getTransitions().stream()
@@ -201,7 +201,7 @@ public class ProcessNetIsSound implements WorkflowASTProcessCoCo {
             .filter(Objects::nonNull)
             .flatMap(Collection::stream)
             .distinct()
-            .filter(flowNode -> !(flowNode instanceof ASTGateway))
+            .filter(flowNode -> !(flowNode instanceof ASTWFGateway))
             .collect(Collectors.toList());
 
     if (deadNodes.size() > 0) {

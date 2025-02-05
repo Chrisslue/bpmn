@@ -132,7 +132,7 @@ public abstract class AbstractTest {
             .resolve(get(getPathFromQualifiedName(qualifiedModelName)))
             .resolve(getSimpleName(qualifiedModelName).toLowerCase());
     try {
-      new AuxiliaryModelsWriter(unit.getProcess()).print(out);
+      new AuxiliaryModelsWriter(unit.getWFProcess()).print(out);
     } catch (IOException ignored) {
     }
   }

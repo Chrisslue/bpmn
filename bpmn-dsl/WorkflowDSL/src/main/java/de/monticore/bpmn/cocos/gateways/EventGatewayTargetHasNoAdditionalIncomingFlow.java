@@ -1,9 +1,9 @@
 package de.monticore.bpmn.cocos.gateways;
 
 import de.monticore.bpmn.Messages;
-import de.monticore.bpmn.workflow._ast.ASTGateway;
+import de.monticore.bpmn.workflow._ast.ASTWFGateway;
 import de.monticore.bpmn.workflow._ast.SequenceFlow;
-import de.monticore.bpmn.workflow._cocos.WorkflowASTGatewayCoCo;
+import de.monticore.bpmn.workflow._cocos.WorkflowASTWFGatewayCoCo;
 import de.se_rwth.commons.logging.Log;
 
 /**
@@ -11,10 +11,10 @@ import de.se_rwth.commons.logging.Log;
  * Gateway configuration MUST NOT have any additional incoming Sequence Flows (other than that from
  * the Event Gateway)
  */
-public class EventGatewayTargetHasNoAdditionalIncomingFlow implements WorkflowASTGatewayCoCo {
+public class EventGatewayTargetHasNoAdditionalIncomingFlow implements WorkflowASTWFGatewayCoCo {
 
   @Override
-  public void check(final ASTGateway gateway) {
+  public void check(final ASTWFGateway gateway) {
     if (gateway.getType().isEventBased()) {
       gateway
           .streamOutgoings()

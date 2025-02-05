@@ -19,7 +19,7 @@ public class WorkflowGraphConverter extends WorkflowLocalVisitor {
   // requires more recent guava version (conflicts with MC version)
   private MutableGraph<ASTFlowElement> graph;
 
-  public WorkflowGraphConverter(ASTProcess localRoot) {
+  public WorkflowGraphConverter(ASTWFProcess localRoot) {
     super(localRoot);
   }
 
@@ -47,7 +47,7 @@ public class WorkflowGraphConverter extends WorkflowLocalVisitor {
   }
 
   @Override
-  public void visit(final ASTActivity activity) {
+  public void visit(final ASTWFActivity activity) {
     activity.getBoundaryEvents().forEach(boundaryEvent -> graph.putEdge(activity, boundaryEvent));
   }
 

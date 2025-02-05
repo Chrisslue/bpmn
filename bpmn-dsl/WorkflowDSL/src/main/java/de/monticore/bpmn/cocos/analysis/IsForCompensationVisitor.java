@@ -1,7 +1,7 @@
 /* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.cocos.analysis;
 
-import de.monticore.bpmn.workflow._ast.ASTActivity;
+import de.monticore.bpmn.workflow._ast.ASTWFActivity;
 import de.monticore.bpmn.workflow._visitor.WorkflowHandler;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
 
@@ -22,7 +22,7 @@ public class IsForCompensationVisitor implements WorkflowHandler {
   }
 
   @Override
-  public void handle(final ASTActivity activity) {
+  public void handle(final ASTWFActivity activity) {
     isForCompensation = activity.isForCompensation();
   }
 

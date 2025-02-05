@@ -7,7 +7,7 @@ import de.monticore.bpmn.visitors.WorkflowLocalVisitor;
 import de.monticore.bpmn.workflow.WorkflowMill;
 import de.monticore.bpmn.workflow._ast.ASTWorkflowNode;
 import de.monticore.bpmn.workflow._ast.ASTFlowElement;
-import de.monticore.bpmn.workflow._ast.ASTProcess;
+import de.monticore.bpmn.workflow._ast.ASTWFProcess;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
 import java.util.List;
 

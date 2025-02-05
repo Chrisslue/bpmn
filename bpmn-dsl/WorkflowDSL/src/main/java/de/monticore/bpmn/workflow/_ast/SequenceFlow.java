@@ -4,6 +4,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
 import java.util.List;
+import java.util.stream.Stream;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class SequenceFlow {
 
@@ -88,4 +91,6 @@ public class SequenceFlow {
   }
 
   public void accept(WorkflowTraverser traverser) {}
+
+  
 }

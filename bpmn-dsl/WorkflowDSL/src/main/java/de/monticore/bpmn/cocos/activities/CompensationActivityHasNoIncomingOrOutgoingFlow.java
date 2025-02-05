@@ -1,19 +1,19 @@
 package de.monticore.bpmn.cocos.activities;
 
 import de.monticore.bpmn.Messages;
-import de.monticore.bpmn.workflow._ast.ASTActivity;
+import de.monticore.bpmn.workflow._ast.ASTWFActivity;
 import de.monticore.bpmn.workflow._ast.SequenceFlow;
-import de.monticore.bpmn.workflow._cocos.WorkflowASTActivityCoCo;
+import de.monticore.bpmn.workflow._cocos.WorkflowASTWFActivityCoCo;
 import de.se_rwth.commons.logging.Log;
 
 /**
  * Source: https://www.omg.org/spec/BPMN/2.0/PDF Page: 302 Description: Compensation Association
  * occurs outside the normal flow.
  */
-public class CompensationActivityHasNoIncomingOrOutgoingFlow implements WorkflowASTActivityCoCo {
+public class CompensationActivityHasNoIncomingOrOutgoingFlow implements WorkflowASTWFActivityCoCo {
 
   @Override
-  public void check(final ASTActivity activity) {
+  public void check(final ASTWFActivity activity) {
     if (activity.isForCompensation()) {
       activity
           .streamIncomings()

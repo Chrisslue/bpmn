@@ -2,11 +2,11 @@ package de.monticore.bpmn.cocos.events.triggers;
 
 import de.monticore.bpmn.collectors.WorkflowCollectors;
 import de.monticore.bpmn.workflow.WorkflowMill;
-import de.monticore.bpmn.workflow._ast.ASTEvent;
-import de.monticore.bpmn.workflow._ast.ASTEventTriggerCancel;
-import de.monticore.bpmn.workflow._ast.ASTEventTriggerTerminate;
-import de.monticore.bpmn.workflow._ast.ASTSubProcess;
-import de.monticore.bpmn.workflow._cocos.WorkflowASTSubProcessCoCo;
+import de.monticore.bpmn.workflow._ast.ASTWFEvent;
+import de.monticore.bpmn.workflow._ast.ASTWFEventTriggerCancel;
+import de.monticore.bpmn.workflow._ast.ASTWFEventTriggerTerminate;
+import de.monticore.bpmn.workflow._ast.ASTWFSubProcess;
+import de.monticore.bpmn.workflow._cocos.WorkflowASTWFSubProcessCoCo;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
 import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
 
@@ -16,36 +16,38 @@ import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
  * Conditional, Signal, Multiple, and Parallel.
  */
 public class StartEventSubProcessHasValidTrigger extends AbstractHasValidTriggerCoCo
-    implements WorkflowASTSubProcessCoCo {
-
+    implements WorkflowASTWFSubProcessCoCo {
+      
   private static final String ERROR_CODE = "0xWFM2011";
 
   public StartEventSubProcessHasValidTrigger() {
     super(ERROR_CODE);
   }
-
+  
   @Override
-  public void check(final ASTSubProcess subProcess) {
+  public void check(final ASTWFSubProcess subProcess) {
+    /*
     if (subProcess.getSymbol().isTriggeredByEvent()) {
       WorkflowCollectors.toEventsLocalSubProcess(subProcess).stream()
-          .filter(ASTEvent::isStart)
+          .filter(ASTWFEvent::isStart)
           .forEach(this::check);
     }
+    */
   }
 
-  private void check(final ASTEvent event) {
+  private void check(final ASTWFEvent event) {
     if (!event.isPresentTrigger()) {
       logError(event);
     }
     WorkflowVisitor2 visitor =
         new WorkflowVisitor2() {
           @Override
-          public void visit(final ASTEventTriggerCancel trigger) {
+          public void visit(final ASTWFEventTriggerCancel trigger) {
             logError(event);
           }
 
           @Override
-          public void visit(final ASTEventTriggerTerminate trigger) {
+          public void visit(final ASTWFEventTriggerTerminate trigger) {
             logError(event);
           }
         };
@@ -54,4 +56,5 @@ public class StartEventSubProcessHasValidTrigger extends AbstractHasValidTrigger
     traverser.add4Workflow(visitor);
     event.accept(traverser);
   }
+  
 }

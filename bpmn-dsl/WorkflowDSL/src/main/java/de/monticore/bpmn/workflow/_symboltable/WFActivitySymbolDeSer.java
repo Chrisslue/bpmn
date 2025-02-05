@@ -4,16 +4,16 @@ import de.monticore.symboltable.serialization.json.JsonObject;
 import de.monticore.types.check.SymTypeExpression;
 import de.monticore.types.check.SymTypeExpressionDeSer;
 
-public class ActivitySymbolDeSer extends ActivitySymbolDeSerTOP {
+public class WFActivitySymbolDeSer extends WFActivitySymbolDeSerTOP {
   // TODO: implement Methods  
   @Override
-  protected  ActivitySymbol deserializeCompensates (JsonObject symbolJson){
+  protected  WFActivitySymbol deserializeCompensates (JsonObject symbolJson){
     
     return null;
   }
 
   @Override
-  protected  void serializeCompensates (ActivitySymbol compensates, WorkflowSymbols2Json s2j){
+  protected  void serializeCompensates (WFActivitySymbol compensates, WorkflowSymbols2Json s2j){
 
   }
 

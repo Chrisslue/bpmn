@@ -7,6 +7,6 @@ import de.monticore.bpmn.workflow._ast.ASTWorkflowCompilationUnit;
 public class NamesHelper {
 
   public static String getXmlFileName(final ASTWorkflowCompilationUnit ast) {
-    return CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_HYPHEN, ast.getProcess().getName());
+    return CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_HYPHEN, ast.getWFProcess().getName());
   }
 }

@@ -3,7 +3,7 @@ package de.monticore.bpmn.cocos.analysis;
 import com.google.common.graph.EndpointPair;
 import de.monticore.bpmn.Messages;
 import de.monticore.bpmn.utils.WorkflowFilters;
-import de.monticore.bpmn.workflow._ast.ASTProcess;
+import de.monticore.bpmn.workflow._ast.ASTWFProcess;
 import de.monticore.bpmn.workflow._ast.ASTFlowElement;
 import de.se_rwth.commons.logging.Log;
 import org.jgrapht.Graph;
@@ -14,7 +14,7 @@ public class ProcessHasNoInfiniteLoop extends ProcessGraphCoCo {
   @Override
   protected void check(
       final Graph<ASTFlowElement, EndpointPair<ASTFlowElement>> processGraph,
-      final ASTProcess process) {
+      final ASTWFProcess process) {
     new CycleDetector<>(processGraph)
         .findCycles().stream()
             .flatMap(WorkflowFilters::isGateway)

@@ -3,7 +3,7 @@ package de.monticore.bpmn.cocos.gateways;
 import de.monticore.bpmn.Messages;
 import de.monticore.bpmn.utils.WorkflowFilters;
 import de.monticore.bpmn.workflow._ast.*;
-import de.monticore.bpmn.workflow._cocos.WorkflowASTGatewayCoCo;
+import de.monticore.bpmn.workflow._cocos.WorkflowASTWFGatewayCoCo;
 import de.se_rwth.commons.logging.Log;
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -13,22 +13,22 @@ import java.util.stream.Collectors;
  * Events are used in the configuration, then Receive Tasks MUST NOT be used in that configuration
  * and vice versa.
  */
-public class EventGatewayDoesNotMixMessageEventsAndReceiveTasks implements WorkflowASTGatewayCoCo {
+public class EventGatewayDoesNotMixMessageEventsAndReceiveTasks implements WorkflowASTWFGatewayCoCo {
 
   @Override
-  public void check(final ASTGateway gateway) {
+  public void check(final ASTWFGateway gateway) {
     if (gateway.getType().isEventBased()) {
-      Collection<ASTEvent> messageEvents =
+      Collection<ASTWFEvent> messageEvents =
           gateway
               .streamOutgoings()
               .map(SequenceFlow::getTarget)
               .flatMap(WorkflowFilters::isEvent)
-              .filter(ASTEvent::isIntermediate)
-              .filter(ASTEvent::isPresentTrigger)
+              .filter(ASTWFEvent::isIntermediate)
+              .filter(ASTWFEvent::isPresentTrigger)
               .filter(event -> WorkflowFilters.getMessageTrigger(event.getTrigger()).isPresent())
               .collect(Collectors.toList());
 
-      Collection<ASTTask> receiveTasks =
+      Collection<ASTWFTask> receiveTasks =
           gateway
               .streamOutgoings()
               .map(SequenceFlow::getTarget)

@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ASTFlowBlock extends ASTFlowBlockTOP {
 
@@ -21,7 +22,7 @@ public class ASTFlowBlock extends ASTFlowBlockTOP {
    */
   ListMultimap<ASTFlowElement, List<ASTFlowCondition>> asTarget() {
     return getBranchList().stream()
-        .map(ASTFlowBranch::asTarget)
+        .map(ASTSequenceFlow::asTarget)
         .map(Multimap::entries)
         .flatMap(Collection::stream)
         .collect(
@@ -33,7 +34,7 @@ public class ASTFlowBlock extends ASTFlowBlockTOP {
 
   List<ASTFlowElement> asSource() {
     return getBranchList().stream()
-        .map(ASTFlowBranch::asSource)
+        .map(ASTSequenceFlow::asSource)
         .flatMap(Collection::stream)
         .collect(Collectors.toList());
   }

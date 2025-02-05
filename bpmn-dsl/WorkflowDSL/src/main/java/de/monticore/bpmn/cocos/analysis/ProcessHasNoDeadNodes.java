@@ -5,7 +5,7 @@ import com.google.common.graph.EndpointPair;
 import de.monticore.bpmn.Messages;
 import de.monticore.bpmn.analysis.graph.ReachabilityInspector;
 import de.monticore.bpmn.collectors.WorkflowCollectors;
-import de.monticore.bpmn.workflow._ast.ASTProcess;
+import de.monticore.bpmn.workflow._ast.ASTWFProcess;
 import de.monticore.bpmn.workflow._ast.ASTFlowElement;
 import de.se_rwth.commons.logging.Log;
 import java.util.Set;
@@ -16,7 +16,7 @@ public class ProcessHasNoDeadNodes extends ProcessGraphCoCo {
   @Override
   protected void check(
       final Graph<ASTFlowElement, EndpointPair<ASTFlowElement>> processGraph,
-      final ASTProcess process) {
+      final ASTWFProcess process) {
     final Set<ASTFlowElement> startNodes =
         Sets.newHashSet(WorkflowCollectors.toStartNodesLocal(process));
 

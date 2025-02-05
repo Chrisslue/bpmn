@@ -29,7 +29,7 @@ public abstract class WorkflowLocalVisitor implements WorkflowVisitor2, Workflow
 
   /*
   @Override
-  public void traverse(final ASTSubProcess subProcess) {
+  public void traverse(final ASTWFSubProcess subProcess) {
     if (subProcess == localRoot) {
       if (subProcess.isPresentAdHocCharacteristics()) {
         subProcess.getAdHocCharacteristics().accept(getTraverser());
@@ -37,7 +37,7 @@ public abstract class WorkflowLocalVisitor implements WorkflowVisitor2, Workflow
       for(ASTIORequirement requirement : subProcess.getIORequirementList()){
         requirement.accept(getTraverser());
       }
-      for (ASTLane astLane : subProcess.getLaneList()) {
+      for (ASTWFLane astLane : subProcess.getLaneList()) {
         astLane.accept(getTraverser());
       }
       for (ASTFlowElement astFlowElement : subProcess.getFlowElementList()) {

@@ -4,8 +4,8 @@ import de.monticore.bpmn.Messages;
 import de.monticore.bpmn.collectors.WorkflowCollectors;
 import de.monticore.bpmn.workflow.WorkflowMill;
 import de.monticore.bpmn.workflow._ast.*;
-import de.monticore.bpmn.workflow._cocos.WorkflowASTProcessCoCo;
-import de.monticore.bpmn.workflow._cocos.WorkflowASTSubProcessCoCo;
+import de.monticore.bpmn.workflow._cocos.WorkflowASTWFProcessCoCo;
+import de.monticore.bpmn.workflow._cocos.WorkflowASTWFSubProcessCoCo;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
 import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
 import de.se_rwth.commons.logging.Log;
@@ -15,10 +15,10 @@ import de.se_rwth.commons.logging.Log;
  * be used within a transaction Sub-Process.
  */
 public class CancelEndEventIsContainedWithinTransaction
-    implements WorkflowASTProcessCoCo, WorkflowASTSubProcessCoCo {
+    implements WorkflowASTWFProcessCoCo, WorkflowASTWFSubProcessCoCo {
 
   @Override
-  public void check(final ASTSubProcess subProcess) {
+  public void check(final ASTWFSubProcess subProcess) {
     if (subProcess.getType() == ASTConstantsWorkflow.TRANSACTION) {
       return;
     }
@@ -27,18 +27,18 @@ public class CancelEndEventIsContainedWithinTransaction
   }
 
   @Override
-  public void check(final ASTProcess process) {
+  public void check(final ASTWFProcess process) {
     hasNoCancelEndEvent(process);
   }
 
-  private void hasNoCancelEndEvent(final ASTProcess container) {
+  private void hasNoCancelEndEvent(final ASTWFProcess container) {
     WorkflowCollectors.toEndEventsLocal(container)
         .forEach(
             event -> {
               WorkflowVisitor2 visitor =
                   new WorkflowVisitor2() {
                     @Override
-                    public void endVisit(ASTEventTriggerCancel node) {
+                    public void endVisit(ASTWFEventTriggerCancel node) {
                       Log.error(
                           Messages.get("0xWFM2022", event.getName()),
                           event.get_SourcePositionStart(),
@@ -52,14 +52,14 @@ public class CancelEndEventIsContainedWithinTransaction
             });
   }
 
-  private void hasNoCancelEndEventSubProcess(final ASTSubProcess container) {
+  private void hasNoCancelEndEventSubProcess(final ASTWFSubProcess container) {
     WorkflowCollectors.toEndEventsLocalSubProcess(container)
         .forEach(
             event -> {
               WorkflowVisitor2 visitor =
                   new WorkflowVisitor2() {
                     @Override
-                    public void endVisit(ASTEventTriggerCancel node) {
+                    public void endVisit(ASTWFEventTriggerCancel node) {
                       Log.error(
                           Messages.get("0xWFM2022", event.getName()),
                           event.get_SourcePositionStart(),
@@ -73,5 +73,5 @@ public class CancelEndEventIsContainedWithinTransaction
             });
   }
 
-  private void logErrorIfCancelEndEvent(final ASTEvent event) {}
+  private void logErrorIfCancelEndEvent(final ASTWFEvent event) {}
 }

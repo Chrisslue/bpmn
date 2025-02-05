@@ -3,7 +3,7 @@ package de.monticore.bpmn.analysis.apt;
 import de.monticore.bpmn.analysis.petrinet.PetriNetAptPrinter;
 import de.monticore.bpmn.analysis.petrinet.WorkflowNet;
 import de.monticore.bpmn.utils.FileUtils;
-import de.monticore.bpmn.workflow._ast.ASTProcess;
+import de.monticore.bpmn.workflow._ast.ASTWFProcess;
 import de.se_rwth.commons.logging.Log;
 import java.io.File;
 import java.nio.file.Path;
@@ -21,7 +21,7 @@ public class AptChecker {
 
   private final Path APT_PATH = Paths.get("../lib/apt.jar");
 
-  public void check(final ASTProcess process) {
+  public void check(final ASTWFProcess process) {
     final WorkflowNet wfNet = WorkflowNet.from(process);
 
     final String apt =

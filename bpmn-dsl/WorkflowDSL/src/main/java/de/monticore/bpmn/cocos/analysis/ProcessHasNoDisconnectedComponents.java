@@ -3,7 +3,7 @@ package de.monticore.bpmn.cocos.analysis;
 import com.google.common.graph.EndpointPair;
 import de.monticore.bpmn.Messages;
 import de.monticore.bpmn.workflow.WorkflowMill;
-import de.monticore.bpmn.workflow._ast.ASTProcess;
+import de.monticore.bpmn.workflow._ast.ASTWFProcess;
 import de.monticore.bpmn.workflow._ast.ASTFlowElement;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
 import de.se_rwth.commons.logging.Log;
@@ -18,7 +18,7 @@ public class ProcessHasNoDisconnectedComponents extends ProcessGraphCoCo {
   @Override
   public void check(
       final Graph<ASTFlowElement, EndpointPair<ASTFlowElement>> processGraph,
-      final ASTProcess process) {
+      final ASTWFProcess process) {
     if (process
         .isEmptyFlowElements()) { // allow empty processes (an empty process is disconnected by
       // definition)

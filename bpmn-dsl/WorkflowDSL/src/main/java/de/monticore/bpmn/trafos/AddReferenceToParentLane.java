@@ -2,9 +2,9 @@ package de.monticore.bpmn.trafos;
 
 import de.monticore.bpmn.workflow.WorkflowMill;
 import de.monticore.bpmn.workflow._ast.ASTFlowElement;
-import de.monticore.bpmn.workflow._ast.ASTLane;
-import de.monticore.bpmn.workflow._ast.ASTProcess;
-import de.monticore.bpmn.workflow._ast.ASTSubProcess;
+import de.monticore.bpmn.workflow._ast.ASTWFLane;
+import de.monticore.bpmn.workflow._ast.ASTWFProcess;
+import de.monticore.bpmn.workflow._ast.ASTWFSubProcess;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
 import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
 import java.util.Stack;
@@ -12,7 +12,7 @@ import java.util.Stack;
 /** Adds a reference to the enclosing lane to flow nodes, if any. */
 public class AddReferenceToParentLane extends WorkflowTransformation implements WorkflowVisitor2 {
 
-  private final Stack<Stack<ASTLane>> laneStacks = new Stack<>();
+  private final Stack<Stack<ASTWFLane>> laneStacks = new Stack<>();
 
   @Override
   protected void transform() {
@@ -22,38 +22,35 @@ public class AddReferenceToParentLane extends WorkflowTransformation implements 
   }
 
   @Override
-  public void visit(final ASTProcess astProcess) { // root lane stack
+  public void visit(final ASTWFProcess astProcess) { // root lane stack
     laneStacks.push(new Stack<>());
   }
 
   @Override
-  public void visit(final ASTSubProcess astSubProcess) { // create new local lane stack
+  public void visit(final ASTWFSubProcess astSubProcess) { // create new local lane stack
     laneStacks.push(new Stack<>());
   }
 
   @Override
-  public void endVisit(final ASTSubProcess astSubProcess) { // exit local lane stack
+  public void endVisit(final ASTWFSubProcess astSubProcess) { // exit local lane stack
     laneStacks.pop();
   }
 
   @Override
-  public void visit(final ASTLane astLane) {
-    final Stack<ASTLane> currentStack = laneStacks.peek();
-    if (!currentStack.empty()) {
-      astLane.getSymbol().setParentLane(currentStack.peek().getName());
-    }
+  public void visit(final ASTWFLane astLane) {
+    final Stack<ASTWFLane> currentStack = laneStacks.peek();
     currentStack.push(astLane);
   }
 
   @Override
-  public void endVisit(final ASTLane astLane) {
-    final Stack<ASTLane> currentStack = laneStacks.peek();
+  public void endVisit(final ASTWFLane astLane) {
+    final Stack<ASTWFLane> currentStack = laneStacks.peek();
     currentStack.pop();
   }
 
   @Override
   public void visit(final ASTFlowElement ASTFlowElement ) {
-    final Stack<ASTLane> currentStack = laneStacks.peek();
+    final Stack<ASTWFLane> currentStack = laneStacks.peek();
     if (!currentStack.empty()) {
       ASTFlowElement.setLaneRef(currentStack.peek().getName());
     }

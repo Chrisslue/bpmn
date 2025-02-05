@@ -6,9 +6,9 @@ import com.google.common.graph.EndpointPair;
 import de.monticore.bpmn.Messages;
 import de.monticore.bpmn.utils.WorkflowFilters;
 import de.monticore.bpmn.workflow.WorkflowMill;
-import de.monticore.bpmn.workflow._ast.ASTProcess;
+import de.monticore.bpmn.workflow._ast.ASTWFProcess;
 import de.monticore.bpmn.workflow._ast.ASTFlowElement;
-import de.monticore.bpmn.workflow._ast.ASTGateway;
+import de.monticore.bpmn.workflow._ast.ASTWFGateway;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
 import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
 import de.se_rwth.commons.logging.Log;
@@ -22,7 +22,7 @@ public class ProcessHasNoLackOfSync extends CommonAntiPatternCoCo implements Wor
 
   @Override
   protected void check(
-      Graph<ASTFlowElement, EndpointPair<ASTFlowElement>> processGraph, ASTProcess process) {
+      Graph<ASTFlowElement, EndpointPair<ASTFlowElement>> processGraph, ASTWFProcess process) {
     WorkflowTraverser traverser = WorkflowMill.inheritanceTraverser();
     traverser.add4Workflow(new ProcessHasNoLackOfSyncVisitor());
     process.accept(traverser);
@@ -30,7 +30,7 @@ public class ProcessHasNoLackOfSync extends CommonAntiPatternCoCo implements Wor
 
   class ProcessHasNoLackOfSyncVisitor implements WorkflowVisitor2 {
     @Override
-    public void visit(final ASTGateway mergeGateway) {
+    public void visit(final ASTWFGateway mergeGateway) {
       if (mergeGateway.isConverging() && mergeGateway.getType().isExclusive()) {
         Sets.combinations(mergeGateway.getPredecessors(), 2).stream()
             .map(Lists::newArrayList)
@@ -69,7 +69,7 @@ public class ProcessHasNoLackOfSync extends CommonAntiPatternCoCo implements Wor
       }
     }
 
-    private void reportLackOfSync(final ASTGateway splitGateway, final ASTGateway mergeGateway) {
+    private void reportLackOfSync(final ASTWFGateway splitGateway, final ASTWFGateway mergeGateway) {
       Log.warn(
           Messages.get("0xWFM7002", splitGateway.getName(), mergeGateway.getName()),
           splitGateway.get_SourcePositionStart(),
@@ -77,7 +77,7 @@ public class ProcessHasNoLackOfSync extends CommonAntiPatternCoCo implements Wor
     }
 
     private void reportPathEntry(
-        final ASTGateway splitGateway, final ASTGateway mergeGateway, final ASTFlowElement entry) {
+        final ASTWFGateway splitGateway, final ASTWFGateway mergeGateway, final ASTFlowElement entry) {
       Log.warn(
           Messages.get("0xWFM7005", entry.getName(), splitGateway.getName()),
           entry.get_SourcePositionStart(),

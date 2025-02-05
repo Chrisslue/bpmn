@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 // functions will not work properly as we decided to drop the terminal ASTFlowElementContainer
 public class WorkflowCollectors {
 
-  public static List<ASTFlowElement> toFlowElements(final ASTProcess root) {
+  public static List<ASTFlowElement> toFlowElements(final ASTWFProcess root) {
 
     WorkflowCollector<ASTFlowElement> collector =
         new WorkflowCollector<ASTFlowElement>(root) {
@@ -35,7 +35,7 @@ public class WorkflowCollectors {
     return collector.collect(collector);
   }
 
-  public static List<ASTFlowElement> toFlowElementsLocal(final ASTProcess root) {
+  public static List<ASTFlowElement> toFlowElementsLocal(final ASTWFProcess root) {
     WorkflowLocalCollector<ASTFlowElement> collector =
         new WorkflowLocalCollector<ASTFlowElement>(root) {
           @Override
@@ -53,7 +53,7 @@ public class WorkflowCollectors {
     return collector.collect(collector);
   }
 
-  public static List<ASTFlowElement> toFlowNodes(final ASTProcess root) {
+  public static List<ASTFlowElement> toFlowNodes(final ASTWFProcess root) {
     WorkflowCollector<ASTFlowElement> collector =
         new WorkflowCollector<ASTFlowElement>(root) {
           @Override
@@ -64,7 +64,7 @@ public class WorkflowCollectors {
     return collector.collect(collector);
   }
 
-  public static List<ASTFlowElement> toFlowNodesLocal(final ASTProcess root) {
+  public static List<ASTFlowElement> toFlowNodesLocal(final ASTWFProcess root) {
     WorkflowLocalCollector<ASTFlowElement> collector =
         new WorkflowLocalCollector<ASTFlowElement>(root) {
           @Override
@@ -75,223 +75,223 @@ public class WorkflowCollectors {
     return collector.collect(collector);
   }
 
-  public static List<ASTActivity> toActivities(final ASTProcess root) {
-    WorkflowCollector<ASTActivity> collector =
-        new WorkflowCollector<ASTActivity>(root) {
+  public static List<ASTWFActivity> toActivities(final ASTWFProcess root) {
+    WorkflowCollector<ASTWFActivity> collector =
+        new WorkflowCollector<ASTWFActivity>(root) {
           @Override
-          public void visit(ASTActivity node) {
+          public void visit(ASTWFActivity node) {
             select(node);
           }
         };
     return collector.collect(collector);
   }
 
-  public static List<ASTActivity> toActivitiesLocal(final ASTProcess root) {
-    WorkflowLocalCollector<ASTActivity> collector =
-        new WorkflowLocalCollector<ASTActivity>(root) {
+  public static List<ASTWFActivity> toActivitiesLocal(final ASTWFProcess root) {
+    WorkflowLocalCollector<ASTWFActivity> collector =
+        new WorkflowLocalCollector<ASTWFActivity>(root) {
           @Override
-          public void visit(ASTActivity node) {
-            select(node);
-          }
-        };
-    return collector.collect(collector);
-  }
-  
-  public static List<ASTActivity> toActivitiesLocalSubProcess(final ASTSubProcess root) {
-    WorkflowLocalCollector<ASTActivity> collector =
-        new WorkflowLocalCollector<ASTActivity>(root) {
-          @Override
-          public void visit(ASTActivity node) {
+          public void visit(ASTWFActivity node) {
             select(node);
           }
         };
     return collector.collect(collector);
   }
   
-  public static List<ASTSubProcess> toSubProcesses(final ASTProcess root) {
-    WorkflowCollector<ASTSubProcess> collector =
-        new WorkflowCollector<ASTSubProcess>(root) {
+  public static List<ASTWFActivity> toActivitiesLocalSubProcess(final ASTWFSubProcess root) {
+    WorkflowLocalCollector<ASTWFActivity> collector =
+        new WorkflowLocalCollector<ASTWFActivity>(root) {
           @Override
-          public void visit(ASTSubProcess node) {
+          public void visit(ASTWFActivity node) {
+            select(node);
+          }
+        };
+    return collector.collect(collector);
+  }
+  
+  public static List<ASTWFSubProcess> toSubProcesses(final ASTWFProcess root) {
+    WorkflowCollector<ASTWFSubProcess> collector =
+        new WorkflowCollector<ASTWFSubProcess>(root) {
+          @Override
+          public void visit(ASTWFSubProcess node) {
             select(node);
           }
         };
     return collector.collect(collector);
   }
 
-  public static List<ASTSubProcess> toSubProcessesLocal(final ASTProcess root) {
-    WorkflowLocalCollector<ASTSubProcess> collector =
-        new WorkflowLocalCollector<ASTSubProcess>(root) {
+  public static List<ASTWFSubProcess> toSubProcessesLocal(final ASTWFProcess root) {
+    WorkflowLocalCollector<ASTWFSubProcess> collector =
+        new WorkflowLocalCollector<ASTWFSubProcess>(root) {
           @Override
-          public void visit(ASTSubProcess node) {
+          public void visit(ASTWFSubProcess node) {
             select(node);
           }
         };
     return collector.collect(collector);
   }
 
-  public static List<ASTCallActivity> toCallActivities(final ASTProcess root) {
-    WorkflowCollector<ASTCallActivity> collector =
-        new WorkflowCollector<ASTCallActivity>(root) {
+  public static List<ASTWFCallActivity> toCallActivities(final ASTWFProcess root) {
+    WorkflowCollector<ASTWFCallActivity> collector =
+        new WorkflowCollector<ASTWFCallActivity>(root) {
           @Override
-          public void visit(ASTCallActivity node) {
+          public void visit(ASTWFCallActivity node) {
             select(node);
           }
         };
     return collector.collect(collector);
   }
 
-  public static List<ASTCallActivity> toCallActivitiesLocal(final ASTProcess root) {
-    WorkflowLocalCollector<ASTCallActivity> collector =
-        new WorkflowLocalCollector<ASTCallActivity>(root) {
+  public static List<ASTWFCallActivity> toCallActivitiesLocal(final ASTWFProcess root) {
+    WorkflowLocalCollector<ASTWFCallActivity> collector =
+        new WorkflowLocalCollector<ASTWFCallActivity>(root) {
           @Override
-          public void visit(ASTCallActivity node) {
+          public void visit(ASTWFCallActivity node) {
             select(node);
           }
         };
     return collector.collect(collector);
   }
 
-  public static List<ASTTask> toTasks(final ASTProcess root) {
-    WorkflowCollector<ASTTask> collector =
-        new WorkflowCollector<ASTTask>(root) {
+  public static List<ASTWFTask> toTasks(final ASTWFProcess root) {
+    WorkflowCollector<ASTWFTask> collector =
+        new WorkflowCollector<ASTWFTask>(root) {
           @Override
-          public void visit(ASTTask node) {
+          public void visit(ASTWFTask node) {
             select(node);
           }
         };
     return collector.collect(collector);
   }
 
-  public static List<ASTTask> toTasksLocal(final ASTProcess root) {
-    WorkflowLocalCollector<ASTTask> collector =
-        new WorkflowLocalCollector<ASTTask>(root) {
+  public static List<ASTWFTask> toTasksLocal(final ASTWFProcess root) {
+    WorkflowLocalCollector<ASTWFTask> collector =
+        new WorkflowLocalCollector<ASTWFTask>(root) {
           @Override
-          public void visit(ASTTask node) {
+          public void visit(ASTWFTask node) {
             select(node);
           }
         };
     return collector.collect(collector);
   }
 
-  public static List<ASTGateway> toGateways(final ASTProcess root) {
-    WorkflowCollector<ASTGateway> collector =
-        new WorkflowCollector<ASTGateway>(root) {
+  public static List<ASTWFGateway> toGateways(final ASTWFProcess root) {
+    WorkflowCollector<ASTWFGateway> collector =
+        new WorkflowCollector<ASTWFGateway>(root) {
           @Override
-          public void visit(ASTGateway node) {
+          public void visit(ASTWFGateway node) {
             select(node);
           }
         };
     return collector.collect(collector);
   }
 
-  public static List<ASTGateway> toGatewaysLocal(final ASTProcess root) {
-    WorkflowLocalCollector<ASTGateway> collector =
-        new WorkflowLocalCollector<ASTGateway>(root) {
+  public static List<ASTWFGateway> toGatewaysLocal(final ASTWFProcess root) {
+    WorkflowLocalCollector<ASTWFGateway> collector =
+        new WorkflowLocalCollector<ASTWFGateway>(root) {
           @Override
-          public void visit(ASTGateway node) {
+          public void visit(ASTWFGateway node) {
             select(node);
           }
         };
     return collector.collect(collector);
   }
 
-  public static List<ASTEvent> toEvents(final ASTProcess root) {
-    WorkflowCollector<ASTEvent> collector =
-        new WorkflowCollector<ASTEvent>(root) {
+  public static List<ASTWFEvent> toEvents(final ASTWFProcess root) {
+    WorkflowCollector<ASTWFEvent> collector =
+        new WorkflowCollector<ASTWFEvent>(root) {
           @Override
-          public void visit(ASTEvent node) {
+          public void visit(ASTWFEvent node) {
             select(node);
           }
         };
     return collector.collect(collector);
   }
 
-  public static List<ASTEvent> toEventsLocal(final ASTProcess root) {
+  public static List<ASTWFEvent> toEventsLocal(final ASTWFProcess root) {
     return root.getFlowElementList().stream()
-        .filter(elem -> elem instanceof ASTEvent)
-        .map(elem -> (ASTEvent) elem)
+        .filter(elem -> elem instanceof ASTWFEvent)
+        .map(elem -> (ASTWFEvent) elem)
         .collect(Collectors.toList());
   }
 
-  public static List<ASTEvent> toEventsLocalSubProcess(final ASTSubProcess root) {
+  public static List<ASTWFEvent> toEventsLocalSubProcess(final ASTWFSubProcess root) {
     return root.getFlowElementList().stream()
-        .filter(elem -> elem instanceof ASTEvent)
-        .map(elem -> (ASTEvent) elem)
+        .filter(elem -> elem instanceof ASTWFEvent)
+        .map(elem -> (ASTWFEvent) elem)
         .collect(Collectors.toList());
   }
 
-  public static List<ASTDataObject> toDataObjects(final ASTProcess root) {
-    WorkflowCollector<ASTDataObject> collector =
-        new WorkflowCollector<ASTDataObject>(root) {
+  public static List<ASTWFDataObject> toDataObjects(final ASTWFProcess root) {
+    WorkflowCollector<ASTWFDataObject> collector =
+        new WorkflowCollector<ASTWFDataObject>(root) {
           @Override
-          public void visit(ASTDataObject node) {
+          public void visit(ASTWFDataObject node) {
             select(node);
           }
         };
     return collector.collect(collector);
   }
 
-  public static List<ASTDataObject> toDataObjectsLocal(final ASTProcess root) {
-    WorkflowLocalCollector<ASTDataObject> collector =
-        new WorkflowLocalCollector<ASTDataObject>(root) {
+  public static List<ASTWFDataObject> toDataObjectsLocal(final ASTWFProcess root) {
+    WorkflowLocalCollector<ASTWFDataObject> collector =
+        new WorkflowLocalCollector<ASTWFDataObject>(root) {
           @Override
-          public void visit(ASTDataObject node) {
+          public void visit(ASTWFDataObject node) {
             select(node);
           }
         };
     return collector.collect(collector);
   }
 
-  public static List<ASTTask> toUserTasks(final ASTProcess root) {
+  public static List<ASTWFTask> toUserTasks(final ASTWFProcess root) {
     return WorkflowCollectors.toTasks(root).stream()
         .filter(task -> task.getType() == ASTConstantsWorkflow.USER)
         .collect(Collectors.toList());
   }
 
-  public static List<ASTTask> toServiceTasks(final ASTProcess root) {
+  public static List<ASTWFTask> toServiceTasks(final ASTWFProcess root) {
     return WorkflowCollectors.toTasks(root).stream()
         .filter(task -> task.getType() == ASTConstantsWorkflow.SERVICE)
         .collect(Collectors.toList());
   }
 
-  public static List<ASTFlowElement> toStartNodesLocal(final ASTProcess root) {
+  public static List<ASTFlowElement> toStartNodesLocal(final ASTWFProcess root) {
     return WorkflowCollectors.toFlowNodesLocal(root).stream()
         .filter(ASTFlowElement::isEmptyIncomings)
         .collect(Collectors.toList());
   }
 
-  public static List<ASTFlowElement> toEndNodesLocal(final ASTProcess root) {
+  public static List<ASTFlowElement> toEndNodesLocal(final ASTWFProcess root) {
     return WorkflowCollectors.toFlowNodesLocal(root).stream()
         .filter(ASTFlowElement::isEmptyOutgoings)
         .collect(Collectors.toList());
   }
 
-  public static List<ASTEvent> toStartEventsLocal(final ASTProcess root) {
+  public static List<ASTWFEvent> toStartEventsLocal(final ASTWFProcess root) {
     return WorkflowCollectors.toEventsLocal(root).stream()
-        .filter(ASTEvent::isStart)
+        .filter(ASTWFEvent::isStart)
         .collect(Collectors.toList());
   }
 
-  public static List<ASTEvent> toStartEventsLocalSubProcess(final ASTSubProcess root) {
+  public static List<ASTWFEvent> toStartEventsLocalSubProcess(final ASTWFSubProcess root) {
     return WorkflowCollectors.toEventsLocalSubProcess(root).stream()
-        .filter(ASTEvent::isStart)
+        .filter(ASTWFEvent::isStart)
         .collect(Collectors.toList());
   }
 
-  public static List<ASTEvent> toEndEventsLocalSubProcess(final ASTSubProcess root) {
+  public static List<ASTWFEvent> toEndEventsLocalSubProcess(final ASTWFSubProcess root) {
     return WorkflowCollectors.toEventsLocalSubProcess(root).stream()
-        .filter(ASTEvent::isEnd)
+        .filter(ASTWFEvent::isEnd)
         .collect(Collectors.toList());
   }
 
-  public static List<ASTEvent> toEndEventsLocal(final ASTProcess root) {
+  public static List<ASTWFEvent> toEndEventsLocal(final ASTWFProcess root) {
     return WorkflowCollectors.toEventsLocal(root).stream()
-        .filter(ASTEvent::isEnd)
+        .filter(ASTWFEvent::isEnd)
         .collect(Collectors.toList());
   }
 
-  public static List<SequenceFlow> toSequenceFlowLocal(final ASTProcess root) {
+  public static List<SequenceFlow> toSequenceFlowLocal(final ASTWFProcess root) {
     List<ASTFlowElement> flowNodes = toFlowNodesLocal(root);
 
     return Streams.concat(
@@ -301,7 +301,7 @@ public class WorkflowCollectors {
         .collect(Collectors.toList());
   }
 
-  public static List<SequenceFlow> toSequenceFlow(final ASTProcess root) {
+  public static List<SequenceFlow> toSequenceFlow(final ASTWFProcess root) {
     List<ASTFlowElement> flowNodes = toFlowNodes(root);
 
     return Streams.concat(

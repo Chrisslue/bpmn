@@ -5,7 +5,7 @@ import de.monticore.symboltable.serialization.json.JsonObject;
 import de.monticore.types.check.SymTypeExpression;
 import de.monticore.types.check.SymTypeExpressionDeSer;
 
-public class DataObjectSymbolDeSer {
+public class WFDataObjectSymbolDeSer {
 // does not exist anymore
 //extends DataObjectSymbolDeSerTOP
   /*

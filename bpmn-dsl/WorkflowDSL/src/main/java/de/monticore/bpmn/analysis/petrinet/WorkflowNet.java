@@ -2,7 +2,7 @@ package de.monticore.bpmn.analysis.petrinet;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import de.monticore.bpmn.workflow._ast.ASTProcess;
+import de.monticore.bpmn.workflow._ast.ASTWFProcess;
 import de.monticore.bpmn.workflow._ast.ASTFlowElement;
 import java.util.List;
 import java.util.Map;
@@ -69,7 +69,7 @@ public class WorkflowNet {
    * @param container the process xor sub-process
    * @return the WF-net for the process xor sub-process
    */
-  public static WorkflowNet from(final ASTProcess container) {
+  public static WorkflowNet from(final ASTWFProcess container) {
     return new WorkflowNetConverter(container).convert();
   }
 

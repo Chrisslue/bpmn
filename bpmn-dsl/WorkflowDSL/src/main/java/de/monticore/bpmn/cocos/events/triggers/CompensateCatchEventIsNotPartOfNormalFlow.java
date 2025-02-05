@@ -3,7 +3,7 @@ package de.monticore.bpmn.cocos.events.triggers;
 import de.monticore.bpmn.Messages;
 import de.monticore.bpmn.workflow.WorkflowMill;
 import de.monticore.bpmn.workflow._ast.*;
-import de.monticore.bpmn.workflow._cocos.WorkflowASTEventCoCo;
+import de.monticore.bpmn.workflow._cocos.WorkflowASTWFEventCoCo;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
 import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
 import de.se_rwth.commons.logging.Log;
@@ -13,14 +13,14 @@ import de.se_rwth.commons.logging.Log;
  * Intermediate Event MUST only be attached to the boundary of an Activity and, thus, MAY NOT be
  * used in normal flow.
  */
-public class CompensateCatchEventIsNotPartOfNormalFlow implements WorkflowASTEventCoCo {
+public class CompensateCatchEventIsNotPartOfNormalFlow implements WorkflowASTWFEventCoCo {
 
   @Override
-  public void check(final ASTEvent event) {
+  public void check(final ASTWFEvent event) {
     WorkflowVisitor2 visitor =
         new WorkflowVisitor2() {
           @Override
-          public void visit(final ASTEventTriggerCompensate trigger) {
+          public void visit(final ASTWFEventTriggerCompensate trigger) {
             if (event.getSymbol().isBoundary() && !event.isEmptyOutgoings()) {
               Log.error(
                   Messages.get("0xWFM2024", event.getName()),

@@ -1,7 +1,7 @@
 package de.monticore.bpmn.cocos.events.triggers;
 
 import de.monticore.bpmn.Messages;
-import de.monticore.bpmn.workflow._ast.ASTEvent;
+import de.monticore.bpmn.workflow._ast.ASTWFEvent;
 import de.se_rwth.commons.logging.Log;
 
 class AbstractHasValidTriggerCoCo {
@@ -12,7 +12,7 @@ class AbstractHasValidTriggerCoCo {
     this.errorCode = errorCode;
   }
 
-  protected void logError(final ASTEvent event) {
+  protected void logError(final ASTWFEvent event) {
     Log.error(
         Messages.get(errorCode, event.getName()),
         event.get_SourcePositionStart(),

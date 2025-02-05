@@ -38,12 +38,12 @@ public class WorkflowNetConverter extends WorkflowLocalVisitor {
 
   private static final List<Class> UNSUPPORTED_TRIGGERS =
       Lists.newArrayList(
-          ASTEventTriggerCompensate.class,
-          ASTEventTriggerTerminate.class,
-          ASTEventTriggerNotification.class, // TODO only unsupported if intermediate xor end
-          ASTEventTriggerCancel.class);
+          ASTWFEventTriggerCompensate.class,
+          ASTWFEventTriggerTerminate.class,
+          ASTWFEventTriggerNotification.class, // TODO only unsupported if intermediate xor end
+          ASTWFEventTriggerCancel.class);
 
-  private static final Predicate<ASTEvent> isSupportedTrigger =
+  private static final Predicate<ASTWFEvent> isSupportedTrigger =
       event -> {
         if (event.isPresentTrigger()) {
           return UNSUPPORTED_TRIGGERS.stream()
@@ -66,12 +66,12 @@ public class WorkflowNetConverter extends WorkflowLocalVisitor {
 
   private List<Warning> warnings;
 
-  public WorkflowNetConverter(final ASTProcess localRoot) {
+  public WorkflowNetConverter(final ASTWFProcess localRoot) {
     super(localRoot);
   }
 
   public WorkflowNet convert() {
-    petrinet = PetriNetFactory.createEmptyPetriNet(((ASTProcess) localRoot).getName());
+    petrinet = PetriNetFactory.createEmptyPetriNet(((ASTWFProcess) localRoot).getName());
     flow2Place = Maps.newHashMap();
     modules = Maps.newHashMap();
 
@@ -88,7 +88,7 @@ public class WorkflowNetConverter extends WorkflowLocalVisitor {
   }
 
   @Override
-  public void visit(final ASTProcess container) {
+  public void visit(final ASTWFProcess container) {
     // sequence flow has to be handled before all other nodes
     if (localRoot == container) {
       handleSequenceFlow();
@@ -96,27 +96,28 @@ public class WorkflowNetConverter extends WorkflowLocalVisitor {
   }
 
   @Override
-  public void endVisit(final ASTProcess container) {
+  public void endVisit(final ASTWFProcess container) {
     if (localRoot == container) {
       makeSourceAndSink();
     }
   }
 
   @Override
-  public void endVisit(final ASTSubProcess subProcess) {
+  public void endVisit(final ASTWFSubProcess subProcess) {
     if (localRoot == subProcess) { // do not handle local root
       return;
     }
+    /*
     if (subProcess.getSymbol().isTriggeredByEvent()) { // event sub-process is not not part of normal flow
       return;
     }
-
+    */
     handleSubProcess(subProcess);
   }
 
   @Override
-  public void endVisit(final ASTActivity activity) {
-    if (activity instanceof ASTCallActivity || activity instanceof ASTTask) { // compensation activity is not part of normal flow
+  public void endVisit(final ASTWFActivity activity) {
+    if (activity instanceof ASTWFCallActivity || activity instanceof ASTWFTask) { // compensation activity is not part of normal flow
       if(activity.getSymbol().isCompensating()){
         return;
       }
@@ -126,12 +127,12 @@ public class WorkflowNetConverter extends WorkflowLocalVisitor {
   }
 
   @Override
-  public void endVisit(final ASTGateway gateway) {
+  public void endVisit(final ASTWFGateway gateway) {
     handleGateway(gateway);
   }
 
   @Override
-  public void endVisit(final ASTEvent event) {
+  public void endVisit(final ASTWFEvent event) {
     if (isBoundaryCompensationEvent(event)) { // compensation boundary events are not translated
       return;
     }
@@ -140,7 +141,7 @@ public class WorkflowNetConverter extends WorkflowLocalVisitor {
   }
 
   private void makeSourceAndSink() {
-    source = addPlace("p_source_" + ((ASTProcess) localRoot).getName());
+    source = addPlace("p_source_" + ((ASTWFProcess) localRoot).getName());
     startPlaces.forEach(
         start -> {
           ASTTransition t = addTransition("t_source_" + random());
@@ -148,7 +149,7 @@ public class WorkflowNetConverter extends WorkflowLocalVisitor {
           connect(t, start);
         });
 
-    sink = addPlace("p_sink_" + ((ASTProcess) localRoot).getName());
+    sink = addPlace("p_sink_" + ((ASTWFProcess) localRoot).getName());
     endPlaces.forEach(
         end -> {
           ASTTransition t = addTransition("t_sink_" + random());
@@ -198,7 +199,7 @@ public class WorkflowNetConverter extends WorkflowLocalVisitor {
   private void handleSequenceFlow() {
     // group sequence flows by target node
     Map<ASTFlowElement, List<SequenceFlow>> targets =
-        WorkflowCollectors.toSequenceFlowLocal(((ASTProcess) localRoot)).stream()
+        WorkflowCollectors.toSequenceFlowLocal(((ASTWFProcess) localRoot)).stream()
             .collect(
                 Collectors.toMap(SequenceFlow::getTarget, Lists::newArrayList, this::mergeLists));
 
@@ -221,16 +222,16 @@ public class WorkflowNetConverter extends WorkflowLocalVisitor {
   }
 
   private boolean isUncontrolledFlow(final Map.Entry<ASTFlowElement, List<SequenceFlow>> entry) {
-    return entry != null && !(entry.getKey() instanceof ASTGateway) && entry.getValue().size() > 1;
+    return entry != null && !(entry.getKey() instanceof ASTWFGateway) && entry.getValue().size() > 1;
   }
 
-  private void handleActivity(final ASTActivity task) {
-    if(task instanceof ASTTask){
-      handleActivity(task, ((ASTTask) task).getBoundaryEventList());
+  private void handleActivity(final ASTWFActivity task) {
+    if(task instanceof ASTWFTask){
+      handleActivity(task, ((ASTWFTask) task).getBoundaryEventList());
     }
 
-    if(task instanceof ASTCallActivity){
-      handleActivity(task, ((ASTCallActivity) task).getBoundaryEventList());
+    if(task instanceof ASTWFCallActivity){
+      handleActivity(task, ((ASTWFCallActivity) task).getBoundaryEventList());
     }
 
   }
@@ -240,12 +241,12 @@ public class WorkflowNetConverter extends WorkflowLocalVisitor {
    *
    * @param subProcess
    */
-  private void handleSubProcess(final ASTSubProcess subProcess) {
+  private void handleSubProcess(final ASTWFSubProcess subProcess) {
     handleActivity(subProcess, WorkflowCollectors.toEventsLocalSubProcess(subProcess));
   }
 
   private void handleActivity(
-      final ASTActivity activity, final List<? extends ASTEvent> boundaryEvents) {
+      final ASTWFActivity activity, final List<? extends ASTWFEvent> boundaryEvents) {
     List<EventModule> boundaryModules =
         boundaryEvents.stream()
             .filter(event -> !isBoundaryCompensationEvent(event))
@@ -260,7 +261,7 @@ public class WorkflowNetConverter extends WorkflowLocalVisitor {
     addModule(module);
   }
 
-  private void handleGateway(final ASTGateway gateway) {
+  private void handleGateway(final ASTWFGateway gateway) {
     GatewayModule module;
 
     ASTGatewayType type = gateway.getType();
@@ -278,7 +279,7 @@ public class WorkflowNetConverter extends WorkflowLocalVisitor {
     addModule(module);
   }
 
-  private void handleEvent(final ASTEvent event) {
+  private void handleEvent(final ASTWFEvent event) {
     if (!isSupportedTrigger.test(event)) {
       warnings.add(new Warning(Warning.Type.UNSOUND_TRANSLATION, event));
     }
@@ -299,7 +300,7 @@ public class WorkflowNetConverter extends WorkflowLocalVisitor {
     addModule(module);
   }
 
-  private boolean isBoundaryCompensationEvent(final ASTEvent event) {
+  private boolean isBoundaryCompensationEvent(final ASTWFEvent event) {
     return event.getSymbol().isBoundary()
         && event.isPresentTrigger()
         && WorkflowFilters.isCompensateTrigger(event.getTrigger());

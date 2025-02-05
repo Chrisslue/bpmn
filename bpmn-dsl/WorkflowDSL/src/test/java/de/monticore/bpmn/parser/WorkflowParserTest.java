@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import de.monticore.bpmn.AbstractTest;
 import de.monticore.bpmn.workflow.WorkflowMill;
-import de.monticore.bpmn.workflow._ast.ASTTask;
+import de.monticore.bpmn.workflow._ast.ASTWFTask;
 import de.monticore.bpmn.workflow._parser.WorkflowParser;
 import java.io.IOException;
 import java.io.StringReader;
@@ -54,8 +54,8 @@ public class WorkflowParserTest extends AbstractTest {
   public void testSimpleTask() throws RecognitionException, IOException {
     WorkflowParser parser = WorkflowMill.parser();
 
-    Optional<ASTTask> task =
-        parser.parseTask(
+    Optional<ASTWFTask> task =
+        parser.parseWFTask(
             new StringReader(
                   "user task FillHolidayCardEntry {\n" + "    io: {} -> { holidayCard };\n" + "  }"));
 
@@ -78,6 +78,12 @@ public class WorkflowParserTest extends AbstractTest {
   @Test
   public void testBachelorThesis() {
     String modelName = "de.monticore.bpmn.conformance.BachelorThesis";
+    parseModel(modelName);
+  }
+
+  @Test
+  public void testExampleModel() {
+    String modelName = "de.monticore.bpmn.examples.PatientCheckUp";
     parseModel(modelName);
   }
 }

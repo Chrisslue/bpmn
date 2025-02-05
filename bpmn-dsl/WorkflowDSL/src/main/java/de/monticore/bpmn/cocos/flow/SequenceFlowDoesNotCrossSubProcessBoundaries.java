@@ -2,19 +2,19 @@ package de.monticore.bpmn.cocos.flow;
 
 import de.monticore.bpmn.Messages;
 import de.monticore.bpmn.collectors.WorkflowCollectors;
-import de.monticore.bpmn.workflow._ast.ASTEvent;
+import de.monticore.bpmn.workflow._ast.ASTWFEvent;
 import de.monticore.bpmn.workflow._ast.ASTFlowElement;
-import de.monticore.bpmn.workflow._ast.ASTProcess;
+import de.monticore.bpmn.workflow._ast.ASTWFProcess;
 import de.monticore.bpmn.workflow._ast.SequenceFlow;
-import de.monticore.bpmn.workflow._cocos.WorkflowASTProcessCoCo;
+import de.monticore.bpmn.workflow._cocos.WorkflowASTWFProcessCoCo;
 import de.monticore.bpmn.workflow._symboltable.IWorkflowScope;
 import de.se_rwth.commons.logging.Log;
 
-public class SequenceFlowDoesNotCrossSubProcessBoundaries implements WorkflowASTProcessCoCo {
+public class SequenceFlowDoesNotCrossSubProcessBoundaries implements WorkflowASTWFProcessCoCo {
 
   /* method toSequenceFlow does not work as we do not have FlowElementContainers anymore */
   @Override
-  public void check(final ASTProcess process) {
+  public void check(final ASTWFProcess process) {
     //WorkflowCollectors.toSequenceFlow(process).forEach(this::check);
   }
 
@@ -36,6 +36,6 @@ public class SequenceFlowDoesNotCrossSubProcessBoundaries implements WorkflowAST
   }
 
   private boolean isBoundaryEvent(final ASTFlowElement flowNode) {
-    return flowNode instanceof ASTEvent && ((ASTEvent) flowNode).getSymbol().isBoundary();
+    return flowNode instanceof ASTWFEvent && ((ASTWFEvent) flowNode).getSymbol().isBoundary();
   }
 }

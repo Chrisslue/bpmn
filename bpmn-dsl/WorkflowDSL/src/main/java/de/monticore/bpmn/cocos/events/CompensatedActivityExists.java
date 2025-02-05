@@ -3,15 +3,16 @@ package de.monticore.bpmn.cocos.events;
 import static com.google.common.base.Preconditions.checkArgument;
 
 import de.monticore.bpmn.Messages;
-import de.monticore.bpmn.workflow._ast.ASTEventTriggerCompensate;
-import de.monticore.bpmn.workflow._cocos.WorkflowASTEventTriggerCompensateCoCo;
+import de.monticore.bpmn.workflow._ast.ASTWFEventTriggerCompensate;
+import de.monticore.bpmn.workflow._cocos.WorkflowASTWFEventTriggerCompensateCoCo;
 import de.monticore.bpmn.workflow._symboltable.WorkflowScope;
 import de.se_rwth.commons.logging.Log;
 
-public class CompensatedActivityExists implements WorkflowASTEventTriggerCompensateCoCo {
+public class CompensatedActivityExists implements WorkflowASTWFEventTriggerCompensateCoCo {
 
   @Override
-  public void check(ASTEventTriggerCompensate node) {
+  public void check(ASTWFEventTriggerCompensate node) {
+    /*
     checkArgument(node.getEnclosingScope() != null);
 
     if (node.isPresentActivity()) {
@@ -24,5 +25,7 @@ public class CompensatedActivityExists implements WorkflowASTEventTriggerCompens
             node.get_SourcePositionEnd());
       }
     }
+    */
   }
+  
 }

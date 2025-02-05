@@ -2,9 +2,9 @@ package de.monticore.bpmn.cocos.activities;
 
 import de.monticore.bpmn.Messages;
 import de.monticore.bpmn.collectors.WorkflowCollectors;
-import de.monticore.bpmn.workflow._ast.ASTEvent;
-import de.monticore.bpmn.workflow._ast.ASTSubProcess;
-import de.monticore.bpmn.workflow._cocos.WorkflowASTSubProcessCoCo;
+import de.monticore.bpmn.workflow._ast.ASTWFEvent;
+import de.monticore.bpmn.workflow._ast.ASTWFSubProcess;
+import de.monticore.bpmn.workflow._cocos.WorkflowASTWFSubProcessCoCo;
 import de.se_rwth.commons.logging.Log;
 import java.util.Collection;
 
@@ -12,12 +12,13 @@ import java.util.Collection;
  * Source: https://www.omg.org/spec/BPMN/2.0/PDF Page: 174 Description: An Event Sub-Process MUST
  * have one and only one Start Event
  */
-public class EventSubProcessHasOnlyOneStartEvent implements WorkflowASTSubProcessCoCo {
+public class EventSubProcessHasOnlyOneStartEvent implements WorkflowASTWFSubProcessCoCo {
 
   @Override
-  public void check(final ASTSubProcess subProcess) {
+  public void check(final ASTWFSubProcess subProcess) {
+    /*
     if (subProcess.getSymbol().isTriggeredByEvent()) {
-      Collection<ASTEvent> startEvents = WorkflowCollectors.toStartEventsLocalSubProcess(subProcess);
+      Collection<ASTWFEvent> startEvents = WorkflowCollectors.toStartEventsLocalSubProcess(subProcess);
       if (startEvents.size() > 1) {
         startEvents.forEach(
             event ->
@@ -27,5 +28,6 @@ public class EventSubProcessHasOnlyOneStartEvent implements WorkflowASTSubProces
                     event.get_SourcePositionEnd()));
       }
     }
+    */
   }
 }

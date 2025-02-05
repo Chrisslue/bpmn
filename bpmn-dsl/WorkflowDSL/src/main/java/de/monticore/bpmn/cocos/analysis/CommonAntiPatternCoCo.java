@@ -5,9 +5,9 @@ import com.google.common.graph.EndpointPair;
 import com.google.common.graph.ImmutableGraph;
 import de.monticore.bpmn.analysis.graph.WorkflowGraphConverter;
 import de.monticore.bpmn.utils.WorkflowFilters;
-import de.monticore.bpmn.workflow._ast.ASTProcess;
+import de.monticore.bpmn.workflow._ast.ASTWFProcess;
 import de.monticore.bpmn.workflow._ast.ASTFlowElement;
-import de.monticore.bpmn.workflow._ast.ASTGateway;
+import de.monticore.bpmn.workflow._ast.ASTWFGateway;
 import de.monticore.bpmn.workflow._ast.ASTGatewayType;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,7 +23,7 @@ abstract class CommonAntiPatternCoCo extends ProcessGraphCoCo {
   NaiveLCAFinder<ASTFlowElement, EndpointPair<ASTFlowElement>> lcaFinder;
 
   @Override
-  public void check(final ASTProcess process) {
+  public void check(final ASTWFProcess process) {
     ImmutableGraph<ASTFlowElement> graph = new WorkflowGraphConverter(process).convert().getGraph();
 
     this.processGraph = new ImmutableGraphAdapter<>(graph);
@@ -97,10 +97,10 @@ abstract class CommonAntiPatternCoCo extends ProcessGraphCoCo {
         .collect(Collectors.toList());
   }
 
-  private Stream<ASTGateway> isNonParallelGateway(final ASTFlowElement flowNode) {
+  private Stream<ASTWFGateway> isNonParallelGateway(final ASTFlowElement flowNode) {
     return Stream.of(flowNode)
         .flatMap(WorkflowFilters::isGateway)
-        .filter(ASTGateway::isDiverging)
+        .filter(ASTWFGateway::isDiverging)
         .filter(
             split -> {
               ASTGatewayType type = split.getType();

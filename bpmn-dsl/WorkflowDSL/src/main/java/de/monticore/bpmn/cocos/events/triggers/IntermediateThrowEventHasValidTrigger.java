@@ -3,7 +3,7 @@ package de.monticore.bpmn.cocos.events.triggers;
 import de.monticore.bpmn.collectors.WorkflowCollectors;
 import de.monticore.bpmn.workflow.WorkflowMill;
 import de.monticore.bpmn.workflow._ast.*;
-import de.monticore.bpmn.workflow._cocos.WorkflowASTProcessCoCo;
+import de.monticore.bpmn.workflow._cocos.WorkflowASTWFProcessCoCo;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
 import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
 
@@ -13,7 +13,7 @@ import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
  * Conditional, Link, Signal, Multiple, and Parallel Multiple.
  */
 public class IntermediateThrowEventHasValidTrigger extends AbstractHasValidTriggerCoCo
-    implements WorkflowASTProcessCoCo {
+    implements WorkflowASTWFProcessCoCo {
 
   private static final String ERROR_CODE = "0xWFM2014";
 
@@ -22,28 +22,28 @@ public class IntermediateThrowEventHasValidTrigger extends AbstractHasValidTrigg
   }
 
   @Override
-  public void check(final ASTProcess container) {
+  public void check(final ASTWFProcess container) {
     WorkflowCollectors.toEventsLocal(container).stream()
-        .filter(ASTEvent::isIntermediate)
-        .filter(ASTEvent::isThrow)
+        .filter(ASTWFEvent::isIntermediate)
+        .filter(ASTWFEvent::isThrow)
         .forEach(this::check);
   }
 
-  private void check(final ASTEvent event) {
+  private void check(final ASTWFEvent event) {
     WorkflowVisitor2 visitor =
         new WorkflowVisitor2() {
           @Override
-          public void visit(final ASTEventTriggerTimer trigger) {
+          public void visit(final ASTWFEventTriggerTimer trigger) {
             logError(event);
           }
 
           @Override
-          public void visit(final ASTEventTriggerConditional trigger) {
+          public void visit(final ASTWFEventTriggerConditional trigger) {
             logError(event);
           }
 
           @Override
-          public void visit(final ASTEventTriggerNotification trigger) {
+          public void visit(final ASTWFEventTriggerNotification trigger) {
             if(trigger.getType() == ASTConstantsWorkflow.ERROR){
               logError(event);
             }
@@ -51,19 +51,19 @@ public class IntermediateThrowEventHasValidTrigger extends AbstractHasValidTrigg
           }
 
           @Override
-          public void visit(final ASTEventTriggerCancel trigger) {
+          public void visit(final ASTWFEventTriggerCancel trigger) {
             logError(event);
           }
 
           @Override
-          public void visit(final ASTEventTriggerMultiple trigger) {
+          public void visit(final ASTWFEventTriggerMultiple trigger) {
             if (!trigger.isParallelMultiple()) {
               logError(event);
             }
           }
 
           @Override
-          public void visit(final ASTEventTriggerTerminate trigger) {
+          public void visit(final ASTWFEventTriggerTerminate trigger) {
             logError(event);
           }
         };

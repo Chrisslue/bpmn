@@ -5,7 +5,7 @@ import de.monticore.symboltable.serialization.json.JsonObject;
 import de.monticore.types.check.SymTypeExpression;
 import de.monticore.types.check.SymTypeExpressionDeSer;
 
-public class NotificationSymbolDeSer extends NotificationSymbolDeSerTOP {
+public class WFNotificationSymbolDeSer extends WFNotificationSymbolDeSerTOP {
 
   @Override
   protected void serializeType(SymTypeExpression type, WorkflowSymbols2Json s2j) {
