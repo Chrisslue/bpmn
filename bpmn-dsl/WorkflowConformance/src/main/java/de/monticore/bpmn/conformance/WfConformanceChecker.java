@@ -109,7 +109,7 @@ public class WfConformanceChecker {
     }
 
     if (!unKnown.isEmpty()) {
-      Log.info("The status of the following nodes is unknown: " + nonConform + "\n", "");
+      Log.info("The status of the following nodes is unknown: " + unKnown + "\n", "");
     }
 
     if (unKnown.isEmpty() && nonConform.isEmpty()) {
@@ -156,6 +156,13 @@ public class WfConformanceChecker {
   public List<WfNode> getNonConformNodes() {
     return checkResult.stream()
         .filter(n -> n.getResult().equals(CheckResult.Result.NON_CONFORM))
+        .map(CheckResult::getNode)
+        .collect(Collectors.toList());
+  }
+
+  public List<WfNode> getUnknownNodes() {
+    return checkResult.stream()
+        .filter(n -> n.getResult().equals(CheckResult.Result.UNKNOWN))
         .map(CheckResult::getNode)
         .collect(Collectors.toList());
   }

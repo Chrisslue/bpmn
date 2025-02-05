@@ -4,20 +4,22 @@ process  TaskNotIncarnated {
   event start Start;
   event end Done;
 
-   task  Introduction;
-   task  Main;
-   task Conclusion;
-   task Draft;
-   task Research;
+  task  Introduction;
+  task  Main;
+  task Conclusion;
+  task Draft;
+  task Research;
+  task Review;
 
-   merge xor StartIteration;
-   split xor EndIteration;
-   split xor SplitWork;
-   merge and MergeWork;
+  merge xor StartIteration;
+  split xor EndIteration;
+  split xor SplitWork;
+  merge and MergeWork;
 
 
-  Start -> Research-> Draft -> StartIteration -> SplitWork -> Main         -> MergeWork -> EndIteration -> Done;
-                                                 SplitWork -> Conclusion   -> MergeWork -> EndIteration -> StartIteration;
+  Start -> Research-> Draft -> StartIteration -> SplitWork -> Main -> MergeWork -> Review -> EndIteration -> Done;
+                                                 SplitWork -> Conclusion -> MergeWork;
+               EndIteration -> StartIteration;
 
 
 }

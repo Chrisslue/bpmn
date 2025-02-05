@@ -1,0 +1,18 @@
+
+process Skip {
+
+  event start Start;
+  event end Done;
+
+  task  A;
+  task C;
+
+  merge xor Skipped;
+  split xor Skip;
+
+
+  Start -> Skip -> A -> Skipped -> Done;
+           Skip -> Skipped -> Done;
+
+
+}

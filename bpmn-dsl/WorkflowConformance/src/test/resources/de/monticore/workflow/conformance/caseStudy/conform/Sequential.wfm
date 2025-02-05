@@ -5,14 +5,15 @@ process  Sequential {
   event start Start;
   event end Done;
 
-   task  Introduction;
-   task  Research;
-   task  Main;
-   task Conclusion;
-   task Draft;
+  task  Introduction;
+  task  Research;
+  task  Main;
+  task Conclusion;
+  task Draft;
+  task Review;
 
 
-  Start -> Research ->  Draft  -> Introduction  -> Main -> Conclusion -> Done;
+  Start -> Research ->  Draft  -> Introduction  -> Main -> Conclusion -> Review -> Done;
 
 
 

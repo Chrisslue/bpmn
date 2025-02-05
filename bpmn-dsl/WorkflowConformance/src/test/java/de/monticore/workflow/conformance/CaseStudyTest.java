@@ -4,7 +4,6 @@ import de.monticore.bpmn.conformance.WfConformanceChecker;
 import de.monticore.bpmn.conformance.datastructures.interf.WfNode;
 import de.monticore.bpmn.workflow._ast.ASTWorkflowCompilationUnit;
 import de.se_rwth.commons.logging.Log;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -48,6 +47,25 @@ class CaseStudyTest extends AbstractConfTest {
     Assertions.assertTrue(currentResult);
   }
 
+  @Test
+  public void testSkipSelf() {
+    // given
+    String modelDir = "de.monticore.workflow.conformance.caseStudy.";
+    ASTWorkflowCompilationUnit reference = loadBPMN(modelDir + "Skip");
+    ASTWorkflowCompilationUnit concrete = loadBPMN(modelDir + "Skip");
+
+    // when
+    WfConformanceChecker checker = new WfConformanceChecker();
+    boolean currentResult = checker.checkConformance(concrete, reference, null);
+
+    // Then
+    Assertions.assertFalse(currentResult);
+
+    Set<String> unknownNodes =
+        checker.getUnknownNodes().stream().map(WfNode::getLabel).collect(Collectors.toSet());
+    Assertions.assertEquals(Set.of("Start"), unknownNodes);
+  }
+
   @ParameterizedTest
   @ValueSource(
       strings = {
@@ -72,9 +90,9 @@ class CaseStudyTest extends AbstractConfTest {
 
   public static Stream<Arguments> nonConform() {
     return Stream.of(
-        Arguments.of("AntiPattern", Set.of("Draft", "Introduction", "Conclusion", "Main")),
+        Arguments.of("AntiPattern", Set.of("Draft", "Review")),
         Arguments.of("WrongSequentialOrder", Set.of("Draft", "Research")),
-        Arguments.of("TaskNotIncarnated", Set.of("Draft", "Conclusion", "Introduction", "Main")));
+        Arguments.of("TaskNotIncarnated", Set.of("Draft", "Introduction", "Review")));
   }
 
   @ParameterizedTest
@@ -92,9 +110,9 @@ class CaseStudyTest extends AbstractConfTest {
 
     Assertions.assertFalse(currentResult);
 
-    List<String> nonConformedNode =
-        checker.getNonConformNodes().stream().map(WfNode::getLabel).collect(Collectors.toList());
-    tasks.forEach(task -> Assertions.assertTrue(nonConformedNode.contains(task)));
+    Set<String> nonConformedNode =
+        checker.getNonConformNodes().stream().map(WfNode::getLabel).collect(Collectors.toSet());
+    Assertions.assertEquals(tasks, nonConformedNode);
   }
 
   @Test
