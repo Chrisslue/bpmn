@@ -29,6 +29,7 @@ class CaseStudyTest extends AbstractConfTest {
         "conform.Sequential",
         "conform.SequentialWithLoop",
         "conform.AddingNewTasks",
+        "conform.Thesis",
         "nonconform.AntiPattern",
         "nonconform.WrongSequentialOrder",
         "PaperAuthoring"
@@ -69,6 +70,7 @@ class CaseStudyTest extends AbstractConfTest {
   @ParameterizedTest
   @ValueSource(
       strings = {
+        "conform.Thesis",
         "conform.Sequential",
         "conform.SequentialWithLoop",
         "conform.AddingNewTasks",
@@ -90,7 +92,7 @@ class CaseStudyTest extends AbstractConfTest {
 
   public static Stream<Arguments> nonConform() {
     return Stream.of(
-        Arguments.of("AntiPattern", Set.of("Draft", "Review")),
+        Arguments.of("AntiPattern", Set.of("Expose", "Review")),
         Arguments.of("WrongSequentialOrder", Set.of("Draft", "Research")),
         Arguments.of("TaskNotIncarnated", Set.of("Draft", "Introduction", "Review")));
   }

@@ -1,5 +1,4 @@
-
-process  AntiPattern {
+process Thesis {
 
   event start Start;
   event end Done;
@@ -15,7 +14,7 @@ process  AntiPattern {
 
   merge xor StartIteration;
   split xor EndIteration;
-  split xor SplitWork;
+  split and SplitWork;
   merge and MergeWork;
 
 
