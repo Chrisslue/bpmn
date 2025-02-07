@@ -11,7 +11,7 @@ import org.apache.commons.cli.*;
 public class BPMNConformanceTool extends WorkflowTool {
 
   public static void main(String[] args) {
-    WorkflowTool tool = new WorkflowTool();
+    WorkflowTool tool = new BPMNConformanceTool();
     tool.run(args);
   }
 

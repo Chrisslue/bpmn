@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id('com.github.johnrengelman.shadow') version "7.1.2"
 }
 
 group = 'com.monticore.workflowConformance'
@@ -25,4 +26,31 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+
+shadowJar { // all in one jar
+  manifest {
+    attributes "Main-Class": "de.monticore.bpmn.conformance.BPMNConformanceTool"
+  }
+  archiveClassifier = 'cli'
+  archiveFileName = "BPMNConformance.jar"
+  zip64 = true
+//        minimize()
+  duplicatesStrategy DuplicatesStrategy.INCLUDE
+}
+
+tasks.register("runDemo", JavaExec) {
+  classpath = files(tasks.shadowJar.archiveFile)
+  def modelDir = "src/test/resources/de/monticore/workflow/conformance/caseStudy/"
+  def ref = modelDir+ "PaperAuthoring.wfm"
+  def conc = modelDir+ "conform/AddingNewTasks.wfm"
+  args = ["-r", ref, "-c", conc]
+}
+
+tasks.register("runDemo_notconform", JavaExec) {
+  classpath = files(tasks.shadowJar.archiveFile)
+  def modelDir = "src/test/resources/de/monticore/workflow/conformance/caseStudy/"
+  def ref = modelDir+ "PaperAuthoring.wfm"
+  def conc = modelDir+ "nonconform/AntiPattern.wfm"
+  args = ["-r", ref, "-c", conc]
 }
