@@ -64,7 +64,7 @@ class CaseStudyTest extends AbstractConfTest {
 
     Set<String> unknownNodes =
         checker.getUnknownNodes().stream().map(WfNode::getLabel).collect(Collectors.toSet());
-    Assertions.assertEquals(Set.of("Start"), unknownNodes);
+    Assertions.assertEquals(Set.of("A"), unknownNodes);
   }
 
   @ParameterizedTest
@@ -92,7 +92,8 @@ class CaseStudyTest extends AbstractConfTest {
 
   public static Stream<Arguments> nonConform() {
     return Stream.of(
-        Arguments.of("AntiPattern", Set.of("Review")),
+        Arguments.of("AntiPatternMerge", Set.of("Review")),
+        Arguments.of("AntiPatternSplit", Set.of("Expose", "Review")),
         Arguments.of("WrongSequentialOrder", Set.of("Draft", "Research")),
         Arguments.of("TaskNotIncarnated", Set.of("Draft", "Introduction", "Review")));
   }

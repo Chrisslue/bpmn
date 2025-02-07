@@ -4,15 +4,16 @@ process Skip {
   event start Start;
   event end Done;
 
-  task  A;
+  task A;
+  task B;
   task C;
 
   merge xor Skipped;
   split xor Skip;
 
 
-  Start -> Skip -> A -> Skipped -> Done;
-           Skip -> Skipped -> Done;
+  Start -> A -> Skip -> B -> Skipped -> C -> Done;
+                Skip -> Skipped;
 
 
 }

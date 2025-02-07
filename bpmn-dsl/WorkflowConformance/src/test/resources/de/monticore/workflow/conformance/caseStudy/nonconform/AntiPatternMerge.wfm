@@ -1,5 +1,5 @@
 
-process  AntiPattern {
+process AntiPatternMerge {
 
   event start Start;
   event end Done;

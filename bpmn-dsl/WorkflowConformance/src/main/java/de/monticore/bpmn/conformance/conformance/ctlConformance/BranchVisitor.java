@@ -91,6 +91,7 @@ public class BranchVisitor {
       return false;
     }
 
+/*  Likely not needed; loops should be handled the same way, otherwise precision is sacrificed!
     if (!bpmnStartNodes.contains(this.branchOrigin)
         && !branchId.getNodeList().isEmpty()
         && bpmnStartNodes.contains(branchId.getNodeList().get(branchId.getNodeList().size() - 1))) {
@@ -112,6 +113,8 @@ public class BranchVisitor {
       return false;
     }
 
+ */
+
     return true;
   }
 
@@ -128,6 +131,8 @@ public class BranchVisitor {
       CheckResult checkRes;
       if (res) {
         checkRes = CheckResult.mkConform(this.branchOrigin);
+      } else if (lowerBoundOnly){
+        checkRes = CheckResult.mkNonConformBW(this.branchOrigin, branchId);
       } else {
         checkRes = CheckResult.mkNonConform(this.branchOrigin, branchId);
       }
