@@ -23,7 +23,7 @@ public class BPMNConformanceToolTest {
   @Test
   public void testPossibleCommand() {
     // given
-    String[] conformance = new String[] {"-r", reference, "-c", concrete};
+    String[] conformance = new String[] {"-r", reference, "-c", concrete, "-m", "ref"};
 
     // when
     BPMNConformanceTool oclTool = new BPMNConformanceTool();

@@ -65,7 +65,12 @@ public class BPMNConformanceTool extends WorkflowTool {
 
       // when
       WfConformanceChecker checker = new WfConformanceChecker();
-      checker.checkConformance(concrete, reference, "ref");
+
+      String mapping = "incarnates";
+      if (cmd.hasOption("m")){
+        mapping = cmd.getOptionValue("m");
+      }
+      checker.checkConformance(concrete, reference, mapping);
 
     } catch (ParseException e) {
       Log.error("0xA7101 Could not process CLI parameters: " + e.getMessage());
@@ -113,6 +118,16 @@ public class BPMNConformanceTool extends WorkflowTool {
             .numberOfArgs(1)
             .build();
     options.addOption(concrete);
+
+    // introduce the reference BPMN
+    Option map =
+            Option.builder("m")
+                    .optionalArg(true)
+                    .longOpt("map")
+                    .desc("Introduce the Incarnation Mapping")
+                    .numberOfArgs(1)
+                    .build();
+    options.addOption(map);
 
     return options;
   }

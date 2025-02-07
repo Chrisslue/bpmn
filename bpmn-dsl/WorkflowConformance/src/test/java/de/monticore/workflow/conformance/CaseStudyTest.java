@@ -30,7 +30,8 @@ class CaseStudyTest extends AbstractConfTest {
         "conform.SequentialWithLoop",
         "conform.AddingNewTasks",
         "conform.Thesis",
-        "nonconform.AntiPattern",
+        "nonconform.AntiPatternMerge",
+        "nonconform.AntiPatternSplit",
         "nonconform.WrongSequentialOrder",
         "PaperAuthoring"
       })
