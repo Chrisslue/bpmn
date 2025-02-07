@@ -12,20 +12,28 @@ process Thesis {
   task Conclusion;
   task Review;
 
+  merge xor MLoop;
+  split xor SLoop;
+
   merge xor StartIteration;
   split xor EndIteration;
   split and SplitWork;
   merge and MergeWork;
 
 
-  Start -> LiteratureReview-> Expose -> StartIteration
-                                           -> Implement
-                                                -> Evaluate
-                                                     -> SplitWork -> Introduction -> MergeWork;
-                                                        SplitWork -> Main -> MergeWork;
-                                                        SplitWork -> Conclusion -> MergeWork
-                                                                                     -> Review -> EndIteration -> Done;
-               EndIteration -> StartIteration;
+  Start -> LiteratureReview-> Expose -> MLoop
+                                          -> Implement
+                                               -> Evaluate
+                                                  -> SLoop
+                                                       -> StartIteration
+                                                            -> SplitWork -> Introduction -> MergeWork;
+                                                               SplitWork -> Main -> MergeWork;
+                                                               SplitWork -> Conclusion -> MergeWork
+                                                                                            -> Review
+                                                                                                 -> EndIteration
+                                                                                                      -> Done;
+                                          EndIteration -> StartIteration;
+                               SLoop -> MLoop;
 
 
 }

@@ -92,7 +92,7 @@ class CaseStudyTest extends AbstractConfTest {
 
   public static Stream<Arguments> nonConform() {
     return Stream.of(
-        Arguments.of("AntiPattern", Set.of("Expose", "Review")),
+        Arguments.of("AntiPattern", Set.of("Review")),
         Arguments.of("WrongSequentialOrder", Set.of("Draft", "Research")),
         Arguments.of("TaskNotIncarnated", Set.of("Draft", "Introduction", "Review")));
   }

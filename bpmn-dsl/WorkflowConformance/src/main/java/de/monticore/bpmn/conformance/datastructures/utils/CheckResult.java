@@ -10,11 +10,20 @@ public class CheckResult {
   private final WfNode node;
   private final Result result;
   private final Optional<BranchID> branchId;
+  private final boolean backwards;
 
   private CheckResult(WfNode node, BranchID branchId, Result result) {
     this.result = result;
     this.node = node;
     this.branchId = Optional.ofNullable(branchId);
+    this.backwards = false;
+  }
+
+  private CheckResult(WfNode node, BranchID branchId, Result result, boolean backwards) {
+    this.result = result;
+    this.node = node;
+    this.branchId = Optional.ofNullable(branchId);
+      this.backwards = backwards;
   }
 
   public String printWitness() {
@@ -27,6 +36,10 @@ public class CheckResult {
 
   public static CheckResult mkNonConform(WfNode node, @Nonnull BranchID branchId) {
     return new CheckResult(node, branchId, Result.NON_CONFORM);
+  }
+
+  public static CheckResult mkNonConformBW(WfNode node, @Nonnull BranchID branchId) {
+    return new CheckResult(node, branchId, Result.NON_CONFORM, true);
   }
 
   public static CheckResult mkUnknown(WfNode node, BranchID branchId) {
@@ -55,6 +68,10 @@ public class CheckResult {
 
   public boolean isUnknown() {
     return result == Result.UNKNOWN;
+  }
+
+  public boolean isBackwards() {
+    return backwards;
   }
 
   public enum Result {

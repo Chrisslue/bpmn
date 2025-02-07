@@ -128,11 +128,19 @@ public class WfConformanceChecker {
                 "Result: Node [%s:%s] does not conform to Node [%s:%s]",
                 con, result.getNode(), ref, refNode),
             "");
+        String run;
+        if (result.isBackwards()) {
+          run = "backtrack";
+        }
+        else {
+          run = "run";
+        }
         Log.info(
-            String.format(
-                "Counter example: The following run %s is possible in [%s] but not in [%s].\n",
-                result.printWitness(), con, ref),
-            "");
+                String.format(
+                        "Counter example: The following %s %s is possible in [%s] but not in [%s].\n",
+                        run, result.printWitness(), con, ref),
+                  "");
+
       }
 
       if (result.getResult().equals(CheckResult.Result.UNKNOWN)) {

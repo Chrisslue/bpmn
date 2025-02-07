@@ -35,6 +35,10 @@ public class BranchVisitor {
     this.lowerBoundOnly = lowerBoundOnly;
   }
 
+  boolean isLowerBoundOnly(){
+    return lowerBoundOnly;
+  }
+
   public static BranchVisitor mkForwardVisitor(
       WfNode conNode,
       Set<WfNode> startNodes,
@@ -96,6 +100,8 @@ public class BranchVisitor {
       CheckResult checkRes;
       if (res) {
         checkRes = CheckResult.mkConform(this.branchOrigin);
+      } else if (lowerBoundOnly){
+        checkRes = CheckResult.mkNonConformBW(this.branchOrigin, branchId);
       } else {
         checkRes = CheckResult.mkNonConform(this.branchOrigin, branchId);
       }
