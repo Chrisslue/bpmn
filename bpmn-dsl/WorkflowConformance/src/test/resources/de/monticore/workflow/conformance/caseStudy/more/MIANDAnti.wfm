@@ -1,0 +1,43 @@
+
+process MIANDAnti {
+
+  event start Start;
+  event end Done;
+
+  task Research;
+  task Draft;
+  task Introduction;
+  task Conclusion;
+  task Review;
+
+  <<ref="Main">> task Discussion;
+  <<ref="Main">> task EvaluatePerformance;
+  <<ref="Main">> task CaseStudy;
+  <<ref="Main">> task Concept;
+  <<ref="Main">> task Implementation;
+
+  merge xor StartIteration;
+  split xor EndIteration;
+  split and SplitWork;
+  merge and MergeWork;
+  split and SAlt;
+  merge ior MAlt;
+
+  Start ->
+     Research ->
+       Draft ->
+          StartIteration -> SplitWork -> Introduction   -> MergeWork;
+                            SplitWork -> Implementation -> MergeWork;
+                            SplitWork -> Concept -> MergeWork;
+                            SplitWork -> Conclusion -> MergeWork  -> SAlt -> EvaluatePerformance -> MAlt;
+                                                                     SAlt -> CaseStudy -> MAlt -> Discussion
+                                                                                                    -> Review
+                                                                                                      -> EndIteration
+                                                                                                           -> Done;
+  EndIteration -> StartIteration;
+
+
+
+
+
+}

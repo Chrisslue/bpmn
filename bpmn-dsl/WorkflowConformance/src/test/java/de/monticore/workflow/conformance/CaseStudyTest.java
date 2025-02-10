@@ -75,7 +75,9 @@ class CaseStudyTest extends AbstractConfTest {
         "conform.Sequential",
         "conform.SequentialWithLoop",
         "conform.AddingNewTasks",
-        "conform.MultipleIncarnation"
+        "conform.MultipleIncarnation",
+        "conform.MultipleIncarnation2",
+        "conform.MultipleIncarnation3"
       })
   public void checkConformance(String model) {
     // given
@@ -120,12 +122,12 @@ class CaseStudyTest extends AbstractConfTest {
   }
 
   @Test
-  public void CheckUniqueModel() {
+  public void CheckRemoveLoop() {
     // given
     String modelDir = "de.monticore.workflow.conformance.caseStudy.";
 
-    ASTWorkflowCompilationUnit reference = loadBPMN(modelDir + "PaperAuthoring");
-    ASTWorkflowCompilationUnit concrete = loadBPMN(modelDir + "conform.SequentialWithLoop");
+    ASTWorkflowCompilationUnit reference = loadBPMN(modelDir + "conform.SequentialWithLoop");
+    ASTWorkflowCompilationUnit concrete = loadBPMN(modelDir + "conform.Sequential");
 
     // when
     WfConformanceChecker checker = new WfConformanceChecker();
@@ -133,4 +135,131 @@ class CaseStudyTest extends AbstractConfTest {
 
     Assertions.assertTrue(currentResult);
   }
+
+  @ParameterizedTest
+  @ValueSource(
+          strings = {
+                  "conform.MultipleIncarnation2",
+                  "conform.MultipleIncarnation3"
+          })
+  public void removeAlternatives(String model) {
+    // given
+    String modelDir = "de.monticore.workflow.conformance.caseStudy.";
+
+    ASTWorkflowCompilationUnit reference = loadBPMN(modelDir + model);
+    ASTWorkflowCompilationUnit concrete = loadBPMN(modelDir + "conform.MultipleIncarnation");
+
+    // when
+    WfConformanceChecker checker = new WfConformanceChecker();
+    boolean currentResult = checker.checkConformance(concrete, reference, "incarnates");
+
+    Assertions.assertTrue(currentResult);
+  }
+
+  @ParameterizedTest
+  @ValueSource(
+          strings = {
+                  "conform.MultipleIncarnation3",
+                  "conform.MultipleIncarnation4"
+          })
+  public void CheckInclusiveToOther(String model) {
+    // given
+    String modelDir = "de.monticore.workflow.conformance.caseStudy.";
+
+    ASTWorkflowCompilationUnit reference = loadBPMN(modelDir + "conform.MultipleIncarnation2");
+    ASTWorkflowCompilationUnit concrete = loadBPMN(modelDir + model);
+
+    // when
+    WfConformanceChecker checker = new WfConformanceChecker();
+    boolean currentResult = checker.checkConformance(concrete, reference, "incarnates");
+
+    Assertions.assertTrue(currentResult);
+  }
+
+  @ParameterizedTest
+  @ValueSource(
+          strings = {
+                  "conform.MultipleIncarnation2",
+                  "conform.MultipleIncarnation4"
+          })
+  public void CheckExclusiveToOther(String model) {
+    // given
+    String modelDir = "de.monticore.workflow.conformance.caseStudy.";
+
+    ASTWorkflowCompilationUnit reference = loadBPMN(modelDir + "conform.MultipleIncarnation3");
+    ASTWorkflowCompilationUnit concrete = loadBPMN(modelDir + model);
+
+    // when
+    WfConformanceChecker checker = new WfConformanceChecker();
+    boolean currentResult = checker.checkConformance(concrete, reference, "incarnates");
+
+    Assertions.assertFalse(currentResult);
+  }
+
+  @ParameterizedTest
+  @ValueSource(
+          strings = {
+                  "conform.MultipleIncarnation2",
+                  "conform.MultipleIncarnation3"
+          })
+  public void CheckParallelToOther(String model) {
+    // given
+    String modelDir = "de.monticore.workflow.conformance.caseStudy.";
+
+    ASTWorkflowCompilationUnit reference = loadBPMN(modelDir + "conform.MultipleIncarnation4");
+    ASTWorkflowCompilationUnit concrete = loadBPMN(modelDir + model);
+
+    // when
+    WfConformanceChecker checker = new WfConformanceChecker();
+    boolean currentResult = checker.checkConformance(concrete, reference, "incarnates");
+
+    Assertions.assertFalse(currentResult);
+  }
+
+  @Test
+  public void CheckXORAntiPattern() {
+    // given
+    String modelDir = "de.monticore.workflow.conformance.caseStudy.";
+
+    ASTWorkflowCompilationUnit reference = loadBPMN(modelDir + "conform.MultipleIncarnation3");
+    ASTWorkflowCompilationUnit concrete = loadBPMN(modelDir + "more.MIXORAnti");
+
+    // when
+    WfConformanceChecker checker = new WfConformanceChecker();
+    boolean currentResult = checker.checkConformance(concrete, reference, "incarnates");
+
+    Assertions.assertFalse(currentResult);
+  }
+
+  @Test
+  public void CheckANDAntiPattern() {
+    // given
+    String modelDir = "de.monticore.workflow.conformance.caseStudy.";
+
+    ASTWorkflowCompilationUnit reference = loadBPMN(modelDir + "conform.MultipleIncarnation4");
+    ASTWorkflowCompilationUnit concrete = loadBPMN(modelDir + "more.MIANDAnti");
+
+    // when
+    WfConformanceChecker checker = new WfConformanceChecker();
+    boolean currentResult = checker.checkConformance(concrete, reference, "incarnates");
+
+    Assertions.assertFalse(currentResult);
+  }
+
+  @Test
+  public void CheckXOR2Sequence() {
+    // given
+    String modelDir = "de.monticore.workflow.conformance.caseStudy.";
+
+    ASTWorkflowCompilationUnit reference = loadBPMN(modelDir + "conform.MultipleIncarnation3");
+    ASTWorkflowCompilationUnit concrete = loadBPMN(modelDir + "more.MIXOR2Seq");
+
+    // when
+    WfConformanceChecker checker = new WfConformanceChecker();
+    boolean currentResult = checker.checkConformance(concrete, reference, "incarnates");
+
+    Assertions.assertFalse(currentResult);
+  }
+
+
 }
