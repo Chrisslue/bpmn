@@ -126,8 +126,7 @@ public class BFSConfWfTraverser {
         .flatMap(Set::stream)
         .forEach(
             branchID -> {
-              boolean notAbort = visitor.accept(branchID);
-              if (!notAbort) {
+              if (!visitor.accept(branchID)) {
                 abortedBranch.add(branchID);
               }
             });
@@ -215,8 +214,7 @@ public class BFSConfWfTraverser {
         .flatMap(Set::stream)
         .forEach(
             branchID -> {
-              boolean notAbort = visitor.accept(branchID);
-              if (!notAbort) {
+              if (!visitor.accept(branchID)) {
                 abortedBranch.add(branchID);
               }
             });

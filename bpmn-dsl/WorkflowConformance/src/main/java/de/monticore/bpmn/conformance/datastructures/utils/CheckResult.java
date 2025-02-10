@@ -2,6 +2,7 @@ package de.monticore.bpmn.conformance.datastructures.utils;
 
 import de.monticore.bpmn.conformance.datastructures.interf.WfNode;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.swing.*;
 
@@ -27,7 +28,7 @@ public class CheckResult {
   }
 
   public String printWitness() {
-    return branchId.get().getNodeList().toString();
+    return branchId.get().getNodeList().stream().filter(node -> !node.getNodeType().isGateway()).collect(Collectors.toList()).toString();
   }
 
   public static CheckResult mkConform(WfNode node) {
