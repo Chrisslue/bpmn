@@ -1,8 +1,8 @@
 
 process AntiPatternSplit {
 
-  event start Start;
-  event end Done;
+  start event Start;
+  end event Done;
 
   <<ref="Research">> task LiteratureReview;
   <<ref="Draft">> task Expose;

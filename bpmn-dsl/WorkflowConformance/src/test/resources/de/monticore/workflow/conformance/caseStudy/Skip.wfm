@@ -1,8 +1,8 @@
 
 process Skip {
 
-  event start Start;
-  event end Done;
+  start event Start;
+  end event Done;
 
   task A;
   task B;

@@ -1,8 +1,8 @@
 
 process LOOP {
 
-  event start START;
-  event end END;
+  start event START;
+  end event END;
 
   task  T ;
   split xor SPLIT ;

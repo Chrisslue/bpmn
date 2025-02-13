@@ -23,7 +23,7 @@ public class ASTWFEvent extends ASTWFEventTOP {
   }
 
   public boolean isCatch() {
-    if (isCatch()) {
+    if (super.r__catch) {
       return true;
     }
     else{
@@ -34,7 +34,7 @@ public class ASTWFEvent extends ASTWFEventTOP {
   }
 
   public boolean isThrow() {
-    if (isThrow()) {
+    if (r__throw) {
       return true;
     }
     else{

@@ -1,8 +1,8 @@
 
 process Example {
 
-  event start S;
-  event start P;
+  start event S;
+  start event P;
   task T1;
   task T2;
   task T3;

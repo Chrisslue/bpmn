@@ -1,7 +1,7 @@
 process NonConform2 {
 
-  event start S;
-  event start E;
+  start event S;
+  end event E;
   task T1;
   task T2;
   task T3;

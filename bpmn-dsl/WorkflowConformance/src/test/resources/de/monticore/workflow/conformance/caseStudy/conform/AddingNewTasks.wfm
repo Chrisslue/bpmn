@@ -1,8 +1,8 @@
 
 process AddingNewTasks {
 
-  event start Start;
-  event end Done;
+  start event Start;
+  end event Done;
 
   task  Introduction;
   task  ConceptOfNewFeatures;

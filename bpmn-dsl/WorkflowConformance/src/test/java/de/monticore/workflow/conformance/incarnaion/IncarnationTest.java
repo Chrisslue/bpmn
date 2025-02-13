@@ -31,8 +31,8 @@ public class IncarnationTest extends AbstractConfTest {
   @Test
   public void testNameIncarnationStrategy() {
     // given
-    concrete = parseBPMNString("process Concrete { event start S; task T1; S -> T1;}");
-    reference = parseBPMNString("process Reference { event start S; task T1; S -> T1;}");
+    concrete = parseBPMNString("process Concrete { start event S; task T1; S -> T1;}");
+    reference = parseBPMNString("process Reference { start event S; task T1; S -> T1;}");
 
     // when
     WfBuilder conBuilder = WfNodeFactory.workflowBuilder(concrete, "");
@@ -51,8 +51,8 @@ public class IncarnationTest extends AbstractConfTest {
   public void testStereotypeIncarnationStrategy() {
     // given
     concrete =
-        parseBPMNString("process Reference { event start S; <<ref=\"T1\">> task T2; S -> T2;}");
-    reference = parseBPMNString("process Concrete { event start S; task T1; S -> T1;}");
+        parseBPMNString("process Reference { start event S; <<ref=\"T1\">> task T2; S -> T2;}");
+    reference = parseBPMNString("process Concrete { start event S; task T1; S -> T1;}");
 
     // when
     WfBuilder conBuilder = WfNodeFactory.workflowBuilder(concrete, ConfUtils.CONCRETE_PREFIX);
@@ -76,8 +76,8 @@ public class IncarnationTest extends AbstractConfTest {
   public void testComposedIncarnationStrategy() {
     // given
     concrete =
-        parseBPMNString("process Reference { event start S; <<ref=\"T1\">> task T2; S -> T2;}");
-    reference = parseBPMNString("process Concrete { event start S; task T1; S -> T1;}");
+        parseBPMNString("process Reference { start event S; <<ref=\"T1\">> task T2; S -> T2;}");
+    reference = parseBPMNString("process Concrete { start event S; task T1; S -> T1;}");
 
     // when
     WfBuilder conBuilder = WfNodeFactory.workflowBuilder(concrete, "");
