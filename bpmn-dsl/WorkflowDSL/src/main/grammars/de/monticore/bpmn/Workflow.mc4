@@ -127,7 +127,7 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
       WFLoopCharacteristic ?
       (   "{"
             IORequirement*        
-            ("boundary" boundaryEvent:WFEvent)*
+            ("boundary" boundaryEvent:WFEvent ";")*
           "}" )?
     ;
 
@@ -148,7 +148,7 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
       (   "{"
              TaskTypeAttributes?
              IORequirement*
-             ("boundary" boundaryEvent:WFEvent)*
+             ("boundary" boundaryEvent:WFEvent ";")*
           "}" )?
     ;
   

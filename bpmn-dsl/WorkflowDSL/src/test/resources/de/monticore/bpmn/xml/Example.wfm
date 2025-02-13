@@ -3,9 +3,9 @@ package de.monticore.bpmn.xml;
 process Example {
 
   lane Secretariat {
-    task user Foo;
+    user task Foo;
 
-    event start -> Foo -> event end;
-  }
+    start event -> Foo -> end event;
+  };
 
 }

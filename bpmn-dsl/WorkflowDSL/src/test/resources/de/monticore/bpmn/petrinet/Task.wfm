@@ -5,9 +5,13 @@ import de.monticore.bpmn.cds.Domain.*;
 process Task {
   
   task T1;
+
+  
   task T2 {
     boundary event E1 timer:[after P12D];
-  }
+  };
+
+  
   task T3;
 
   
@@ -21,9 +25,11 @@ process Task {
   subprocess S1 {
 
     task T4;
+
     message msg:Contract;
 
     start event message:msg -> T4 -> end event ;
     
-  }
+  };
+  
 }

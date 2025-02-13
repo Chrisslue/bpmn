@@ -24,14 +24,14 @@ public class IDWfNodeBuilder implements WfBuilder {
   }
 
   @Override
-  public void mkNamedTask(ASTTask task) {
+  public void mkNamedTask(ASTWFTask task) {
     ASTStereotype stereotype =
         task.getModifier().isPresentStereotype() ? task.getModifier().getStereotype() : null;
     mkNode(task.getName(), NodeType.TASK, stereotype, false, false);
   }
 
   @Override
-  public void mkNamedEvent(ASTNamedEvent event) {
+  public void mkNamedEvent(ASTWFEvent event) {
     ASTStereotype stereotype =
         event.getModifier().isPresentStereotype() ? event.getModifier().getStereotype() : null;
 
@@ -39,9 +39,9 @@ public class IDWfNodeBuilder implements WfBuilder {
   }
 
   @Override
-  public void mkNamedGateway(ASTNamedGateway gateway) {
+  public void mkNamedGateway(ASTWFGateway gateway) {
     NodeType nodeType;
-    boolean isMerge = gateway.getDirection().name().equals("MERGE");
+    boolean isMerge = gateway.getDirection() == ASTConstantsWorkflow.MERGE;
 
     if (gateway.getType().isExclusive()) {
       nodeType = isMerge ? NodeType.XOR_MERGE : NodeType.XOR_SPLIT;
@@ -55,7 +55,7 @@ public class IDWfNodeBuilder implements WfBuilder {
   }
 
   @Override
-  public void mkStartEvent(ASTNamedEvent event) {
+  public void mkStartEvent(ASTWFEvent event) {
     ASTStereotype stereotype =
         event.getModifier().isPresentStereotype() ? event.getModifier().getStereotype() : null;
 
@@ -63,7 +63,7 @@ public class IDWfNodeBuilder implements WfBuilder {
   }
 
   @Override
-  public void mkEndEvent(ASTNamedEvent event) {
+  public void mkEndEvent(ASTWFEvent event) {
     ASTStereotype stereotype =
         event.getModifier().isPresentStereotype() ? event.getModifier().getStereotype() : null;
 
@@ -114,8 +114,8 @@ public class IDWfNodeBuilder implements WfBuilder {
     for (ASTSequenceFlow sequenceFlow : sequenceFlows) {
       for (int i = 0; i < sequenceFlow.getPathList().size() - 1; i++) {
 
-        IDWfNode src = getWfNode(sequenceFlow.getPathList().get(i).getNodeRef().getBaseName());
-        IDWfNode tgt = getWfNode(sequenceFlow.getPathList().get(i + 1).getNodeRef().getBaseName());
+        IDWfNode src = getWfNode(sequenceFlow.getPathList().get(i).getElement().getBaseName());
+        IDWfNode tgt = getWfNode(sequenceFlow.getPathList().get(i + 1).getElement().getBaseName());
 
         if (successors.containsKey(src)) {
           successors.get(src).add(tgt);

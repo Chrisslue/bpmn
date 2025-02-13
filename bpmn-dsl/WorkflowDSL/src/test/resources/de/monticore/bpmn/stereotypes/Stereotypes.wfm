@@ -7,6 +7,6 @@ process Concrete {
 
  <<ref="Part1">> subprocess S1 {
                    <<ref="Start">> start event S;
- }
+ };
 
 }

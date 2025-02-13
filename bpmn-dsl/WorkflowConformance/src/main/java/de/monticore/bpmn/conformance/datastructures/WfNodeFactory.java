@@ -35,7 +35,7 @@ public class WfNodeFactory implements WorkflowVisitor2 {
   }
 
   @Override
-  public void visit(ASTNamedEvent node) {
+  public void visit(ASTWFEvent node) {
     if (node.isStart()) {
       builder.mkStartEvent(node);
     } else if (node.isEnd()) {
@@ -46,7 +46,7 @@ public class WfNodeFactory implements WorkflowVisitor2 {
   }
 
   @Override
-  public void visit(ASTTask node) {
+  public void visit(ASTWFTask node) {
     builder.mkNamedTask(node);
   }
 
@@ -56,7 +56,7 @@ public class WfNodeFactory implements WorkflowVisitor2 {
   }
 
   @Override
-  public void visit(ASTNamedGateway node) {
+  public void visit(ASTWFGateway node) {
     builder.mkNamedGateway(node);
   }
 
