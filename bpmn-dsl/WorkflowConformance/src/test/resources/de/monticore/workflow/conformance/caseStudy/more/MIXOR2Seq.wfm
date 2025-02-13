@@ -1,5 +1,5 @@
 
-process MultipleIncarnation {
+process MIXOR2Seq {
 
   event start Start;
   event end Done;
@@ -13,6 +13,7 @@ process MultipleIncarnation {
   <<ref="Main">> task Discussion;
   <<ref="Main">> task CaseStudy;
   <<ref="Main">> task Concept;
+  <<ref="Main">> task EvaluatePerformance;
   <<ref="Main">> task Implementation;
 
 
@@ -27,7 +28,7 @@ process MultipleIncarnation {
           StartIteration -> SplitWork -> Introduction   -> MergeWork;
                             SplitWork -> Implementation -> MergeWork;
                             SplitWork -> Concept -> MergeWork;
-                            SplitWork -> Conclusion -> MergeWork -> CaseStudy
+                            SplitWork -> Conclusion -> MergeWork -> CaseStudy -> EvaluatePerformance
                                                                        -> Discussion
                                                                              -> Review
                                                                                   -> EndIteration

@@ -4,7 +4,6 @@ import de.monticore.bpmn.conformance.WfConformanceChecker;
 import de.monticore.bpmn.conformance.datastructures.interf.WfNode;
 import de.monticore.bpmn.workflow._ast.ASTWorkflowCompilationUnit;
 import de.se_rwth.commons.logging.Log;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -30,7 +29,9 @@ class CaseStudyTest extends AbstractConfTest {
         "conform.Sequential",
         "conform.SequentialWithLoop",
         "conform.AddingNewTasks",
-        "nonconform.AntiPattern",
+        "conform.Thesis",
+        "nonconform.AntiPatternMerge",
+        "nonconform.AntiPatternSplit",
         "nonconform.WrongSequentialOrder",
         "PaperAuthoring"
       })
@@ -48,13 +49,35 @@ class CaseStudyTest extends AbstractConfTest {
     Assertions.assertTrue(currentResult);
   }
 
+  @Test
+  public void testSkipSelf() {
+    // given
+    String modelDir = "de.monticore.workflow.conformance.caseStudy.";
+    ASTWorkflowCompilationUnit reference = loadBPMN(modelDir + "Skip");
+    ASTWorkflowCompilationUnit concrete = loadBPMN(modelDir + "Skip");
+
+    // when
+    WfConformanceChecker checker = new WfConformanceChecker();
+    boolean currentResult = checker.checkConformance(concrete, reference, null);
+
+    // Then
+    Assertions.assertFalse(currentResult);
+
+    Set<String> unknownNodes =
+        checker.getUnknownNodes().stream().map(WfNode::getLabel).collect(Collectors.toSet());
+    Assertions.assertEquals(Set.of("A"), unknownNodes);
+  }
+
   @ParameterizedTest
   @ValueSource(
       strings = {
+        "conform.Thesis",
         "conform.Sequential",
         "conform.SequentialWithLoop",
         "conform.AddingNewTasks",
-        "conform.MultipleIncarnation"
+        "conform.MultipleIncarnation",
+        "conform.MultipleIncarnation2",
+        "conform.MultipleIncarnation3"
       })
   public void checkConformance(String model) {
     // given
@@ -72,9 +95,10 @@ class CaseStudyTest extends AbstractConfTest {
 
   public static Stream<Arguments> nonConform() {
     return Stream.of(
-        Arguments.of("AntiPattern", Set.of("Draft", "Introduction", "Conclusion", "Main")),
+        Arguments.of("AntiPatternMerge", Set.of("Review")),
+        Arguments.of("AntiPatternSplit", Set.of("Expose", "Review")),
         Arguments.of("WrongSequentialOrder", Set.of("Draft", "Research")),
-        Arguments.of("TaskNotIncarnated", Set.of("Draft", "Conclusion", "Introduction", "Main")));
+        Arguments.of("TaskNotIncarnated", Set.of("Draft", "Introduction", "Review")));
   }
 
   @ParameterizedTest
@@ -92,18 +116,18 @@ class CaseStudyTest extends AbstractConfTest {
 
     Assertions.assertFalse(currentResult);
 
-    List<String> nonConformedNode =
-        checker.getNonConformNodes().stream().map(WfNode::getLabel).collect(Collectors.toList());
-    tasks.forEach(task -> Assertions.assertTrue(nonConformedNode.contains(task)));
+    Set<String> nonConformedNode =
+        checker.getNonConformNodes().stream().map(WfNode::getLabel).collect(Collectors.toSet());
+    Assertions.assertEquals(tasks, nonConformedNode);
   }
 
   @Test
-  public void CheckUniqueModel() {
+  public void CheckRemoveLoop() {
     // given
     String modelDir = "de.monticore.workflow.conformance.caseStudy.";
 
-    ASTWorkflowCompilationUnit reference = loadBPMN(modelDir + "PaperAuthoring");
-    ASTWorkflowCompilationUnit concrete = loadBPMN(modelDir + "conform.SequentialWithLoop");
+    ASTWorkflowCompilationUnit reference = loadBPMN(modelDir + "conform.SequentialWithLoop");
+    ASTWorkflowCompilationUnit concrete = loadBPMN(modelDir + "conform.Sequential");
 
     // when
     WfConformanceChecker checker = new WfConformanceChecker();
@@ -111,4 +135,131 @@ class CaseStudyTest extends AbstractConfTest {
 
     Assertions.assertTrue(currentResult);
   }
+
+  @ParameterizedTest
+  @ValueSource(
+          strings = {
+                  "conform.MultipleIncarnation2",
+                  "conform.MultipleIncarnation3"
+          })
+  public void removeAlternatives(String model) {
+    // given
+    String modelDir = "de.monticore.workflow.conformance.caseStudy.";
+
+    ASTWorkflowCompilationUnit reference = loadBPMN(modelDir + model);
+    ASTWorkflowCompilationUnit concrete = loadBPMN(modelDir + "conform.MultipleIncarnation");
+
+    // when
+    WfConformanceChecker checker = new WfConformanceChecker();
+    boolean currentResult = checker.checkConformance(concrete, reference, "incarnates");
+
+    Assertions.assertTrue(currentResult);
+  }
+
+  @ParameterizedTest
+  @ValueSource(
+          strings = {
+                  "conform.MultipleIncarnation3",
+                  "conform.MultipleIncarnation4"
+          })
+  public void CheckInclusiveToOther(String model) {
+    // given
+    String modelDir = "de.monticore.workflow.conformance.caseStudy.";
+
+    ASTWorkflowCompilationUnit reference = loadBPMN(modelDir + "conform.MultipleIncarnation2");
+    ASTWorkflowCompilationUnit concrete = loadBPMN(modelDir + model);
+
+    // when
+    WfConformanceChecker checker = new WfConformanceChecker();
+    boolean currentResult = checker.checkConformance(concrete, reference, "incarnates");
+
+    Assertions.assertTrue(currentResult);
+  }
+
+  @ParameterizedTest
+  @ValueSource(
+          strings = {
+                  "conform.MultipleIncarnation2",
+                  "conform.MultipleIncarnation4"
+          })
+  public void CheckExclusiveToOther(String model) {
+    // given
+    String modelDir = "de.monticore.workflow.conformance.caseStudy.";
+
+    ASTWorkflowCompilationUnit reference = loadBPMN(modelDir + "conform.MultipleIncarnation3");
+    ASTWorkflowCompilationUnit concrete = loadBPMN(modelDir + model);
+
+    // when
+    WfConformanceChecker checker = new WfConformanceChecker();
+    boolean currentResult = checker.checkConformance(concrete, reference, "incarnates");
+
+    Assertions.assertFalse(currentResult);
+  }
+
+  @ParameterizedTest
+  @ValueSource(
+          strings = {
+                  "conform.MultipleIncarnation2",
+                  "conform.MultipleIncarnation3"
+          })
+  public void CheckParallelToOther(String model) {
+    // given
+    String modelDir = "de.monticore.workflow.conformance.caseStudy.";
+
+    ASTWorkflowCompilationUnit reference = loadBPMN(modelDir + "conform.MultipleIncarnation4");
+    ASTWorkflowCompilationUnit concrete = loadBPMN(modelDir + model);
+
+    // when
+    WfConformanceChecker checker = new WfConformanceChecker();
+    boolean currentResult = checker.checkConformance(concrete, reference, "incarnates");
+
+    Assertions.assertFalse(currentResult);
+  }
+
+  @Test
+  public void CheckXORAntiPattern() {
+    // given
+    String modelDir = "de.monticore.workflow.conformance.caseStudy.";
+
+    ASTWorkflowCompilationUnit reference = loadBPMN(modelDir + "conform.MultipleIncarnation3");
+    ASTWorkflowCompilationUnit concrete = loadBPMN(modelDir + "more.MIXORAnti");
+
+    // when
+    WfConformanceChecker checker = new WfConformanceChecker();
+    boolean currentResult = checker.checkConformance(concrete, reference, "incarnates");
+
+    Assertions.assertFalse(currentResult);
+  }
+
+  @Test
+  public void CheckANDAntiPattern() {
+    // given
+    String modelDir = "de.monticore.workflow.conformance.caseStudy.";
+
+    ASTWorkflowCompilationUnit reference = loadBPMN(modelDir + "conform.MultipleIncarnation4");
+    ASTWorkflowCompilationUnit concrete = loadBPMN(modelDir + "more.MIANDAnti");
+
+    // when
+    WfConformanceChecker checker = new WfConformanceChecker();
+    boolean currentResult = checker.checkConformance(concrete, reference, "incarnates");
+
+    Assertions.assertFalse(currentResult);
+  }
+
+  @Test
+  public void CheckXOR2Sequence() {
+    // given
+    String modelDir = "de.monticore.workflow.conformance.caseStudy.";
+
+    ASTWorkflowCompilationUnit reference = loadBPMN(modelDir + "conform.MultipleIncarnation3");
+    ASTWorkflowCompilationUnit concrete = loadBPMN(modelDir + "more.MIXOR2Seq");
+
+    // when
+    WfConformanceChecker checker = new WfConformanceChecker();
+    boolean currentResult = checker.checkConformance(concrete, reference, "incarnates");
+
+    Assertions.assertFalse(currentResult);
+  }
+
+
 }

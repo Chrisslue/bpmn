@@ -109,7 +109,7 @@ public class WfConformanceChecker {
     }
 
     if (!unKnown.isEmpty()) {
-      Log.info("The status of the following nodes is unknown: " + nonConform + "\n", "");
+      Log.info("The status of the following nodes is unknown: " + unKnown + "\n", "");
     }
 
     if (unKnown.isEmpty() && nonConform.isEmpty()) {
@@ -128,11 +128,19 @@ public class WfConformanceChecker {
                 "Result: Node [%s:%s] does not conform to Node [%s:%s]",
                 con, result.getNode(), ref, refNode),
             "");
+        String run;
+        if (result.isBackwards()) {
+          run = "backtrack";
+        }
+        else {
+          run = "run";
+        }
         Log.info(
-            String.format(
-                "Counter example: The following run %s is possible in [%s] but not in [%s].\n",
-                result.printWitness(), con, ref),
-            "");
+                String.format(
+                        "Counter example: The following %s %s is possible in [%s] but not in [%s].\n",
+                        run, result.printWitness(), con, ref),
+                  "");
+
       }
 
       if (result.getResult().equals(CheckResult.Result.UNKNOWN)) {
@@ -156,6 +164,13 @@ public class WfConformanceChecker {
   public List<WfNode> getNonConformNodes() {
     return checkResult.stream()
         .filter(n -> n.getResult().equals(CheckResult.Result.NON_CONFORM))
+        .map(CheckResult::getNode)
+        .collect(Collectors.toList());
+  }
+
+  public List<WfNode> getUnknownNodes() {
+    return checkResult.stream()
+        .filter(n -> n.getResult().equals(CheckResult.Result.UNKNOWN))
         .map(CheckResult::getNode)
         .collect(Collectors.toList());
   }

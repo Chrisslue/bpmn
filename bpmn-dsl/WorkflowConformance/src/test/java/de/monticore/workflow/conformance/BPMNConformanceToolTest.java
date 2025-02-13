@@ -17,13 +17,13 @@ public class BPMNConformanceToolTest {
     String path = "src/test/resources/de/monticore/workflow/conformance/caseStudy/";
 
     concrete = path + "PaperAuthoring.wfm";
-    reference = path + "nonconform/AntiPattern.wfm";
+    reference = path + "nonconform/AntiPatternMerge.wfm";
   }
 
   @Test
   public void testPossibleCommand() {
     // given
-    String[] conformance = new String[] {"-r", reference, "-c", concrete};
+    String[] conformance = new String[] {"-r", reference, "-c", concrete, "-m", "ref"};
 
     // when
     BPMNConformanceTool oclTool = new BPMNConformanceTool();
