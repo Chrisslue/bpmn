@@ -1,36 +1,48 @@
 package de.monticore.bpmn;
 
-grammar Workflow extends de.monticore.expressions.LambdaExpressions,
-                         de.monticore.expressions.AssignmentExpressions,
-                         de.monticore.expressions.CommonExpressions, 
-                         de.monticore.timer.TimerConditions,
-                         de.monticore.symbols.OOSymbols,
-                         de.monticore.UMLModifier{
+grammar Workflow extends 
+    de.monticore.expressions.LambdaExpressions,
+    de.monticore.expressions.AssignmentExpressions,
+    de.monticore.expressions.CommonExpressions,
+    de.monticore.timer.TimerConditions,
+    de.monticore.symbols.OOSymbols,
+    de.monticore.UMLModifier{
 
   WorkflowCompilationUnit =
-      MCPackageDeclaration?
-      MCImportStatement*
-      WFProcess
-    ;
+    MCPackageDeclaration?
+    MCImportStatement*
+    WFProcess;
 
   /**
-    Workflow describes a textual representation of business process models
-    that is based on BPMN 2.0 standard. It focuses on the modelling of business 
-    processes, with the aim of providing a structured notation for the elements 
-    of a workflow and their interactions.
-    It covers (sub-)processes, lanes, events, gateways, various types of 
-    activities, etc.
+    The Workflow language provides a textual representation of business process
+    models based on the BPMN 2.0 standard. Business processes describe a set of 
+    interrelated activities that are carried out by individuals or systems to 
+    achieve a specific business goal or to produce a certain outcome. 
+
+    For this purpose, this Workflow language can be used to model processes, 
+    which are structured sequences of activities, events and decisions. It
+    includes various types of activities that represent the work performed
+    within a process. These activities are connected by gateways, which control
+    the flow of a process by splitting and merging paths based on specified
+    conditions, enabling decision-making or parallel execution. Moreover,
+    events can be used to model triggers or results that occur during a process. 
+    In addition to these core elements, the Workflow language provides many 
+    other elements to model complex business process models.
 
     The grammar builds on
-    * LambdaExpressions, AssignmentExpressions and CommonExpressions
-        to allow the definition of various kinds of conditions for the workflow execution
-    * TimerConditions
-        for the specification of different timing constraints regarding workflow events
-    * OOSymbols
-        to include types, variables, and methods
-    * UMLModifier
-        to add access modifiers to processes and stereotype elements for conformance checking 
+      LambdaExpressions, AssignmentExpressions and CommonExpressions
+        * to allow the definition of various kinds of conditions for the 
+          workflow execution
+      TimerConditions
+        * for the specification of different timing constraints regarding
+          workflow events
+      OOSymbols
+        * to include types, variables, and methods
+      UMLModifier
+        * to add access modifiers to processes and stereotype elements 
+          for conformance checking 
    */
+
 
   /*========================================================================*/
   /*=============================== PROCESS ================================*/
@@ -38,7 +50,7 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
 
   /**
    * FlowElement represents any element that can appear in a workflow process.
-   * It encompasses lanes, activities, gateways, events, sequence flows, notifications etc.
+   * It encompasses lanes, activities, gateways, events, sequence flows etc.
    */ 
   interface FlowElement; 
 
@@ -47,21 +59,20 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
    * A process has a modifier, a name and may contain I/O requirements.
    */
   symbol scope WFProcess =
-      Modifier "process" Name "{"
-        IORequirement*
-        ( FlowElement ";" )*
-      "}"
-    ;
+    Modifier "process" Name "{"
+      IORequirement*
+      FlowElement*
+    "}";
 
   /**
-   * WFLane represents a sub-partition within a process which contains flow elements.
-   * Every lane has a name and denotes, e.g., a business function or a role.
+   * WFLane represents a sub-partition within a process.
+   * It must contain at least one flow element.
+   * It has a name that denotes a business function or a role, for example.
    */
   WFLane implements FlowElement =
-              "lane" Name "{"
-                ( FlowElement ";" )*
-              "}"
-            ;
+    "lane" Name "{"
+      FlowElement+
+    "}";
 
 
   /*========================================================================*/
@@ -71,134 +82,152 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
   /** 
    * WFActivity denotes a unit of work performed within a business process.
    * An activity can be atomic or non-atomic.
-   * This interface is implemented by the nontermials WFSubProcess, WFTask and WFCallActivity.
+   * This interface is implemented by the nonterminals WFSubProcess, WFTask
+     and WFCallActivity.
    */
   interface symbol WFActivity extends FlowElement =
-      Modifier Name WFLoopCharacteristic ?
-    ;
+    Modifier Name WFLoopCharacteristic?;
 
   /**
-   * This rule adds a variable that indicates whether the corresponding activity compensates another
-     activity as well as a variable that refers to that activity.
+   * This rule adds a variable that indicates whether the corresponding 
+     activity compensates another activity as well as a variable that refers to
+     that activity. In this context, compensating means to undo the effects of 
+     an activity.
+   * Example: The activity "CANCEL HOTEL" compensates the activity "BOOK HOTEL"
+              by canceling the effects of the latter activity.
    */
   symbolrule WFActivity =
     compensating:boolean
-    compensates:WFActivitySymbol
-  ;
+    compensates:WFActivitySymbol?;
 
   /**
-   * WFSubprocess represents a sub-workflow that is modelled using tasks, gateways, events etc.  
+   * WFSubprocess represents a sub-workflow that is modelled using tasks,
+     gateways, events etc.  
    * "subprocess":  This describes an embedded subprocess.
-   * "transaction": This models complex business scenarios and ensures that all parts are completed
-                    successfully or are handled in case of failure. 
-   * "adhoc":       This represents a collection of activities with no required sequence
-                    relationships. This means that the subprocess is flexible in its task execution.   
+   * "transaction": This models complex business scenarios and ensures that all 
+                    parts are completed successfully or are handled 
+                    expriopriatly in case of failure. 
+   * "adhoc":       This represents a collection of activities with no required
+                    sequentialization. This means that the subprocess is
+                    flexible in its task execution.   
    */
   symbol scope WFSubProcess implements WFActivity =
-      Modifier type:["subprocess" | "transaction" | "adhoc" ] Name
-      AdHocCharacteristics?
-      WFLoopCharacteristic ?
-      "{"
-        ( FlowElement ";" )*
+    Modifier type:["subprocess" | "transaction" | "adhoc" ] Name
+    AdHocCharacteristics?
+    WFLoopCharacteristic?
+    ( "{"
+        FlowElement+
       "}"
-    ;
+    | ";" );
 
   /** 
    * AdHocCharacteristics are required for an ad-hoc subprocess.
    * The condition defines when the execution should be completed.
-   * It specifies whether activities should be executed in parallel or sequentially.
-   * The "noninterrupt" tag indicates if the remaining activities should be cancelled 
-     when the first one finishes.
+   * It specifies if activities should be executed in parallel or sequentially.
+   * The "noninterrupt" keyword indicates if the remaining activities should 
+     be cancelled when the first activity finishes.
    */
   AdHocCharacteristics =
-      ("until" ":" "[" completionCondition:Expression "]")
-      ( ["parallel"] (waitForRemainingInstances:["noninterrupt"])? | ["sequential"] )?
-    ;
+    "[" completionCondition:Expression "]"
+    ( ["parallel"] (["noninterrupt"])? | ["sequential"] )?;
 
   /**
-   * WFCallActivity calls another reusable process or global task. 
-   * In this grammar, global tasks are modelled as processes containing only one task.
-   * Example: A call activity "ShipOrder" calls a process named "ShippingProcess".
-   * The activity may contain I/O requirements.
-   * It can specify a boundary event to catch potential event triggers.
+   * WFCallActivity calls another reusable process or global task, which is 
+     referenced by its name. 
+   * It has its own name as it is considered to be an activity itself.
+   * In this grammar, global tasks are modelled as processes containing only 
+     one task.
+   * The activity may contain I/O requirements and can specify boundary events
+     to catch potential event triggers.
+   * Example: The call activity "ShipOrderOfCustomer" calls a process named
+     "ShippingProcess".
    */
   WFCallActivity implements WFActivity =
-      Modifier "call-activity" Name "calls" ":" calledElement:Name@WFProcess
-      WFLoopCharacteristic ?
-      (   "{"
-            IORequirement*        
-            ("boundary" boundaryEvent:WFEvent ";")*
-          "}" )?
-    ;
+    Modifier "call-activity" Name "calls" calledElement:Name@WFProcess
+    WFLoopCharacteristic ?
+    ( "{"       
+        ("boundary" boundaryEvent:WFEvent)*
+      "}" 
+    | ";" );
 
   /** 
    * WFTask represents an atomic activity within a workflow.
-   * "service": It is automated by software and can use external applications.
-   * "send":    It sends a message to an external system or participant.
-   * "receive": It waits for an incoming message from an external system or participant.
-   * "user":    It is performed by a person with the support of software.
-   * "manual":  It is performed physically without the aid of software.
-   * "rule":    It is used to interact with a business rule engine.
-   * "script":  It executes the script directly within the process model.
-   * A task can specify a boundary event to catch potential event triggers.
+   * "service": is automated by software and can use external applications.
+   * "send":    sends a message to an external system or participant.
+   * "receive": waits for an incoming message from an system or participant.
+   * "user":    is performed by a person with the support of software.
+   * "manual":  is performed physically without the aid of software.
+   * "rule":    is used to interact with a business rule engine.
+   * "script":  executes the script directly within the process model.
+   * A task can specify boundary events to catch potential event triggers.
    */
   WFTask implements WFActivity =
-      Modifier type:["service"|"send"|"receive"|"user"|"manual"|"rule"|"script"]? "task" Name
-      WFLoopCharacteristic ?
-      (   "{"
-             TaskTypeAttributes?
-             IORequirement*
-             ("boundary" boundaryEvent:WFEvent ";")*
-          "}" )?
-    ;
+    Modifier type:["service"|"send"|"receive"|"user"|"manual"|"rule"|"script"]?
+    "task" Name
+    WFLoopCharacteristic?
+    ( "{"
+        TaskTypeAttributes?
+        IORequirement*
+        ("boundary" boundaryEvent:WFEvent)*
+      "}" 
+    | ";" );
   
   /**
    * TaskTypeAttributes describes potential attributes for all types of tasks.
-   * "service": It contains the used webservice and optionally the operation triggered by the task.
-   * "send":    It contains the used webservice, a message and the operation triggered by the task.
-   * "receive": It contains the used webservice, a message and the operation triggered by the task.
-   * "user":    It only contains the used webservice.   
-   * "manual":  It only contain the needed resources.
-   * "rule":    It only contains the used webservice.
-   * "script":  It contains the used script and the format of the script.
+   * "service": contains the used webservice and optionally an operation. 
+   * "send":    contains the used webservice, a message and the operation.
+   * "receive": contains the used webservice, a message and the operation.
+   * "user":    only contains the used webservice.   
+   * "manual":  only contain the needed resources.
+   * "rule":    only contains the used webservice.
+   * "script":  contains the used script and the format of the script.
    */ 
   TaskTypeAttributes =
-      (
-          // The BPMN standard expects a valid URI of a webservice, ##unspecified or ##webservice.
-          ("webservice" "="
-            (webservice:String | noWebservice:["##unspecified" | "##webservice"]) ";"
-          )
-
-          // Service, send, and receive tasks (may) reference an operation.
-          ("operation" ":" operation:Name@WFOperation ";")?
-
-          // Messages are used in send and receive tasks for communication.
-          ("message" ":" message:Name@WFNotification ";")?
-        |
-          // Script tasks specify a script and its format that can be run when a task is performed.
-          "script" "(" scriptFormat:String ")" "=" "{" script:String "}" ";"
-        |
-          // Manual tasks specify human resources or other resources assigned to tasks.
-          "resources" ":" resources:(MCQualifiedName || ",")+ ";"
+    (
+      /**
+       * The BPMN standard expects a valid URI of a webservice, ##unspecified 
+         or ##webservice.
+       */ 
+      ("webservice" "="
+        (webservice:String|noWebservice:["##unspecified" | "##webservice"]) ";"
       )
-    ;
+
+      // Service, send, and receive tasks (may) reference an operation.
+      ("operation" "=" operation:Name@WFOperation ";")?
+
+      // Messages are used in send and receive tasks for communication.
+      ("message" "=" message:Name@WFNotification ";")?
+    |
+      /**
+       * Script tasks specify a script and its format that can be run when 
+         a task is performed.
+       */ 
+      "script" "(" scriptFormat:String ")" "=" "{" script:String "}" ";"
+    |
+      // Manual tasks specify various types of resources.
+      "resources" "=" resources:(MCQualifiedName || ",")+ ";" );
 
   /** 
-   * This nonterminal describes the invoked operation by a task.
+   * WFOperation describes a function that is called by a task.
    * There is exactly one ingoing message and at most one outgoing message.
    * It can specify error elements which may be returned.
    * An implementation of the operation can be referenced.
    */
-  symbol WFOperation implements Method =
-      Modifier "operation" Name "("
-      "in" ":" in:Name@WFNotification
-      (";" "out" ":" out:Name@WFNotification)? ")"
-      ("throws" ":" error:Name@WFNotification)?
-      ("{" "implementation" "=" impl:String ";" "}" | ";")
-    ;
+  symbol WFOperation =
+    Modifier "operation" Name 
+    "("
+      "in" in:Name@WFNotification
+      (";" "out" out:Name@WFNotification)?
+    ")"
+    ("throws" error:Name@WFNotification)?
+    ("{" "implementation" "=" impl:String ";" 
+    "}" | ";");
 
-  // WFLoopCharacteristic  describes an interface for standard and multi-instance loops. 
-  interface WFLoopCharacteristic ;
+  /**
+   * WFLoopCharacteristic describes an interface for loops. It is implemented
+     by the nonterminals WFStandardLoop and WFMILoop.
+   */ 
+  interface WFLoopCharacteristic;
 
   /**
    * WFStandardLoop specifies the looping behavior for normal loops.
@@ -206,40 +235,47 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
    * It is also possible to set the maximum number of iterations.
    */ 
   WFStandardLoop implements WFLoopCharacteristic  =
-      type:["while"|"until"] ":" "[" loopCondition:Expression "]" 
-      ("max" ":" loopMaximum:NatLiteral)?
-    ;
+    loopForm:["while"|"until"] "[" loopCondition:Expression "]" 
+    ("max" loopMaximum:NatLiteral)?;
 
   /** 
    * WFMILoop allows to create multiple instances of activities. 
    * The loops can be executed in parallel or sequentially.
-   * It will only loop to the completion condition if one is specified.
+   * If a completionCondition is specified, it will only loop until an instance
+     satisfies the condition. For this purpose, the condition is evaluated 
+     after each instance completes. Otherwise all instances must complete 
+     before the process continues to the next flow element.
    */
   WFMILoop implements WFLoopCharacteristic  =
-      "count" ":" WFLoopCardinality
-      (type:["parallel"|"sequential"])?
-      ("until" ":" "[" completionCondition:Expression "]")?
-      WFMIImplicitEventBehavior?  
-    ;
+    WFLoopCardinality
+    (parallelizationForm:["parallel"|"sequential"])?
+    ("until" "[" completionCondition:Expression "]")?
+    WFMIImplicitEventBehavior?;
 
   /**
-   * loopDataInput describes a list of items that is used for multi-instance-activities.
+   * loopDataInput defines a list of items used for multi-instance-activities.
    * Example: loopDataInput = ["Person1", "Person2", "Person3"]
    */
   astrule WFMILoop =
-      loopDataInput: Name+
-      loopDataOutput: Name+
-    ;
+    loopDataInput: Name+
+    loopDataOutput: Name+;
 
   /** 
-   * WFMIImplicitEventBehavior describes if an event shall be thrown after an instance completes.
-   * The implimplicitEventDef defines the event trigger to be thrown.
-   * The trigger can be thrown at a specific point in time or depending on a condition.
+   * WFMIImplicitEventBehavior allows to throw an event trigger after an 
+     instance completes.
+   * The event trigger can be thrown at specific points in time. 
+   * "none":  The trigger is thrown for each instance after it completes.
+   * "first": The trigger will only be thrown after the first instance 
+              completes. This means that the trigger will not be thrown for
+              the completion of remaining instances.
+   * "all":   The trigger is thrown after all instances complete.
+   * Alternatively, it is possible to specify a condition describing when
+     the event trigger should be thrown.
    */
   WFMIImplicitEventBehavior =
-      "event" ":" implicitEventDef:WFEventTrigger
-      ("implicit" ":" ( when:["none"|"first"|"every"] | "[" complexCondition:Expression "]"))?
-    ;
+    implicitEventDef:WFEventTrigger
+    (  when:["none"|"first"|"all"] 
+    |  "[" complexCondition:Expression "]" )?;
 
   /**
    * WFLoopCardinality controls the number of activities created by a WFMILoop.
@@ -247,10 +283,9 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
      or a collection-valued data object.
    */  
   WFLoopCardinality =
-      count:NatLiteral
-    | ("[" expression:Expression "]")
-    | collection:Name 
-    ;
+    "count" (count:NatLiteral
+            | ("[" expression:Expression "]")
+            | collection:Name );
 
 
   /*========================================================================*/
@@ -263,31 +298,37 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
    * There are several types of gateways.
    */ 
   symbol WFGateway implements FlowElement =
-      Modifier direction:["split"|"merge"] type:GatewayType Name?
-    ;
+    Modifier direction:["split"|"merge"] type:GatewayType Name ";";
+
+  /**
+   * WFInlineGateway is a flow control element that can only be defined 
+     in sequence flows.
+   * It has almost the same options as WFGateway except it has no name and no 
+     modifier.
+   */ 
+  symbol WFInlineGateway =
+    direction:["split"|"merge"] type:GatewayType;
   
   /** 
    * It represents the number of activations at a complex gateway. 
    * The guard of an "complex" gateway refers to an activationCount.
    */
   astrule WFGateway = 
-      activationCount:NatLiteral?
-    ;
+    activationCount:NatLiteral?;
     
   /** 
    * There are different types of gateways.
    * "receive first": The first event determines the path to follow. 
-   * "receive all":   It waits for each event before following each outgoing path.
+   * "receive all":   It waits for every event before following each path.
    * "complex":       The gateway is connected to a guard.
    */
   GatewayType =
-      [exclusive:"xor"]
-    | [inclusive:"ior"]
-    | [parallel: "and"]
-    | ("receive" ":" [exclusiveEventBased:"first"])  
-    | ("receive" ":" [ parallelEventBased:  "all"]) 
-    | ["complex"] ("[" guard:Expression "]")       
-    ;
+    (  [exclusive:"xor"]
+    |  [inclusive:"ior"]
+    |  [parallel: "and"]
+    |  ("receive" ":" [exclusiveEventBased:"first"])  
+    |  ("receive" ":" [ parallelEventBased:  "all"]) 
+    |  ["complex"] ("[" guard:Expression "]") );
 
 
   /*========================================================================*/
@@ -298,43 +339,82 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
    * WFEvent defines an occurrence that happens during the course of workflow.  
    * It is either catching or throwing. Throw events emit the trigger,
      whereas catch events listen for the trigger to occur.
-   * Interrupting boundary events cancel the activity to which they are attached. 
+   * Interrupting boundary events cancel the activity to that they are attached. 
    * An operation must be specified for message tasks in an executable process.
    */  
   symbol WFEvent implements FlowElement =
-      Modifier type:["start"|"end"]? "event" Name?
-      (throw:["send"] | catch:["receive"] (["noninterrupt"])?)?
-      trigger:WFEventTrigger?
-      CompensationHandler?
-      ( "{" ("operation" ":" operation:Name@WFOperation ";")? WFIOSet? "}" )?
-    ;
+    Modifier (["start"]|["end"])? "event" Name
+    (throw:["send"] | catch:["receive"] (["noninterrupt"])?)?
+    trigger:WFEventTrigger?
+    CompensationHandler?
+    (  "{"
+         ("operation" ":" operation:Name@WFOperation ";")? 
+         WFIOSet? 
+       "}"
+    | ";" );
 
   // This rule adds a variable that indicates if an event is a boundary event.
   symbolrule WFEvent =
-      boundary:boolean
-    ;
+    boundary:boolean;
 
-  // This interface is implemented by all event triggers in this grammar.
+  /** 
+   * This interface is implemented by all event triggers in this grammar.
+   * Below all triggers of the BPMN except the link trigger are listed.
+   */
   interface WFEventTrigger;
+  
+  /** 
+   * WFEventTriggerCancel is only used within a transaction subprocess to 
+     terminate a transaction.
+   */
+  WFEventTriggerCancel implements WFEventTrigger = 
+    "cancel";
 
-  // Below all triggers of the BPMN except the link trigger are listed.
-  WFEventTriggerCancel       implements WFEventTrigger = "cancel";
-  WFEventTriggerCompensate   implements WFEventTrigger = "compensate" (":" activity:Name)? ["async"]?;
-  WFEventTriggerConditional  implements WFEventTrigger = "when"        ":" "[" Expression "]";
-  WFEventTriggerTerminate    implements WFEventTrigger = "terminate";
-  WFEventTriggerTimer        implements WFEventTrigger = "timer" ":" "[" condition:TimerCondition "]";
-  WFEventTriggerMultiple     implements WFEventTrigger = ("one" | parallelMultiple:["all"]) 
-                                                     "{" trigger:(WFEventTrigger || ",")+ "}";
-  WFEventTriggerNotification implements WFEventTrigger = type:["error"|"escalate"|"message"|"signal"]
-                                                     ":" Name@WFNotification ;
+  // WFEventTriggerCompensate removes the effects of the referenced activity.
+  WFEventTriggerCompensate implements WFEventTrigger = 
+    "compensate" ( activity:Name)? ["async"]?;
+
+  /**
+   * WFEventTriggerConditional activites the event of the trigger after the
+     expresiion has been evaluated to true.
+   */ 
+  WFEventTriggerConditional implements WFEventTrigger =
+    "when" "[" Expression "]";
+
+  // WFEventTriggerTerminate ends the process by terminating all activites.
+  WFEventTriggerTerminate implements WFEventTrigger =
+    "terminate";
+
+  // WFEventTriggerTimer activates based on a specified TimerCondition.
+  WFEventTriggerTimer implements WFEventTrigger =
+    "timer" "[" condition:TimerCondition "]";
+
+  /**
+   * WFEventTriggerMultiple allows to assign multiple triggers to an event.
+   * "one": Only one of the specified triggers is required.
+   * "all": All of the specified triggers are required.
+   */  
+  WFEventTriggerMultiple implements WFEventTrigger =
+    ("one"| parallelMultiple:["all"]) "{" trigger:(WFEventTrigger || ",")+ "}";
+
+  /**
+   * WFEventTriggerNotification allows to reference a WFNotification.
+   * "message": This trigger can be used to send or receive messages.
+   * "signal" : Signals can be sent and received within and across a process.
+   * "error"  : It allows to catch and react to a named error.
+   * "escalte": It indicates a non-critical problem without interrupting the 
+                current process.
+   */
+  WFEventTriggerNotification implements WFEventTrigger =
+    type:["error"|"escalation"|"message"|"signal"] Name@WFNotification;
 
   /*
-   * CompensationHandler designates an compensating activity for a boundary event.
-   * Compensation is done to, e.g., undo the effects of an activity.
+   * CompensationHandler references a compensating activity for a boundary
+     event. For example, compensation is done to undo or reverse the effects
+     of an activity.
    */
   CompensationHandler =
-      "with" ":" activity:Name@WFActivity
-    ;
+    "with" activity:Name@WFActivity;
 
 
   /*========================================================================*/
@@ -343,28 +423,27 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
 
   // SequenceFlow defines a series of flow targets. 
   SequenceFlow implements FlowElement =
-      path:(FlowTarget || "->")+
-    ;
+    path:(FlowTarget || "->")+ ";";
 
   // FlowBlock allows to specify a set of parallel branches in a sequence flow. 
   FlowBlock =
-      "{" branch:(SequenceFlow || ",")+ "}"
-    ;
+    "{" branch:SequenceFlow+ "}";
 
   /**
-   * FlowTarget references a flow element or flow block or defines an inline gateway or event. 
+   * FlowTarget references either a flow element or flow block or defines an 
+     inline gateway. 
    * A flow restriction condition can also be set.
    */
   FlowTarget =
-      condition:FlowCondition?
-      (element:MCQualifiedName | gateway:WFGateway | event:WFEvent | block:FlowBlock)
-    ;
+    condition:FlowCondition?
+    (element:MCQualifiedName | gateway:WFInlineGateway | block:FlowBlock);
 
-  // Either a flow target is preceded by a flow condition or it is a default sequence flow. 
-  FlowCondition =
-      "[" Expression "]"
-    | default:["<<default>>"]
-    ;
+  /**
+   * FlowCondition specifies if a flow target is preceded by a condition or
+     it is a default sequence flow. 
+   */ 
+  FlowCondition = 
+    "[" Expression | ["default"] "]";
 
 
   /*========================================================================*/
@@ -376,8 +455,7 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
    * It has a name and a type.
    */
   WFDataObject implements FlowElement, Variable =
-      type:["data"|"store"] Name ":" MCType 
-    ;
+    type:["data"|"store"] Name ":" MCType ";";
 
 
   /*========================================================================*/
@@ -388,31 +466,31 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
   interface IORequirement;
 
   // WFIOSet specifies an input or an output WFDataSet. 
-  WFIOSet implements IORequirement = dir:["in"|"out"] ":" WFDataSet ";" ;
+  WFIOSet implements IORequirement = 
+    dir:["in"|"out"] WFDataSet ";";
 
   // IORule maps an input set to an output set. 
   IORule implements IORequirement =
-      "io" ":" inputSet:WFDataSet "->" outputSet:WFDataSet ";"
-    ;
+    "io" inputSet:WFDataSet "->" outputSet:WFDataSet ";";
 
   // WFDataSet consists of one or more input or output data.
-  WFDataSet  =  WFDataIO | "{" (WFDataIO || ",")* "}" ;
+  WFDataSet =
+    WFDataIO | "{" (WFDataIO || ",")* "}";
 
   /** 
    * WFDataIO specifies a data input or a data output.
-   * MCQualifiedNam defines the name of the consumed or produced data element
+   * MCQualifiedNam defines the name of the consumed or produced data element.
    * [i]: The tag indicates the use of a collection-valued data input.
    * "?": It marks the input or output data as optional.
-   * "!": It specifies that the data can be produced or evaluated while executing.
+   * "!": The data can be produced or evaluated while executing.
    */
   WFDataIO =
-      MCQualifiedName
-      (loop:["[i]"])?  
-      (":" MCType)?     
-      (optional:["?"])?         
-      (whileExecuting:["!"])? 
-      ("as" alias:Name)?        
-    ;
+    MCQualifiedName
+    (loop:["[i]"])?
+    (":" MCType)?
+    (optional:["?"])?
+    (whileExecuting:["!"])?
+    ("as" alias:Name)?;
 
 
   /*========================================================================*/
@@ -420,20 +498,28 @@ grammar Workflow extends de.monticore.expressions.LambdaExpressions,
   /*========================================================================*/
   
   /**
-   * Different kinds of notifications can be send by event triggers, tasks, and operations.
+   * Different kinds of notifications can be send by event triggers, tasks, 
+     and operations.
    * Every notification has a name and a type.
    * CoCos ensure the right kinds of Notification are used at the right place.
    */
   symbol WFNotification implements FlowElement, Variable =
-    kind:["error"|"escalation"|"message"|"signal"] Name ":" MCType ;
+    kind:["error"|"escalation"|"message"|"signal"] Name ":" MCType ";";
 
-  // This rule adds methods to easily distinguish between the types of a notification.
+  /**
+   * This rule allows to easily distinguish between the different types of  
+     notifications.
+   */ 
   symbolrule WFNotification =
     isError: boolean
     isEscalation: boolean
     isMessage: boolean
     isSignal: boolean;
 
-  nokeyword "timer";
+  nokeyword "process", "subprocess", "task", "event";
+  nokeyword "operation", "message", "service";
+  nokeyword "cancel", "compensate", "terminate", "timer", "error", "signal",
+            "escalation";
+  nokeyword "send", "receive", "start", "end", "data", "store", "default";
 
 }
