@@ -220,7 +220,7 @@ grammar Workflow extends
       (";" "out" out:Name@WFNotification)?
     ")"
     ("throws" error:Name@WFNotification)?
-    ("{" "implementation" "=" impl:String ";" 
+    ("{" implementation:String ";"
     "}" | ";");
 
   /**
@@ -273,7 +273,7 @@ grammar Workflow extends
      the event trigger should be thrown.
    */
   WFMIImplicitEventBehavior =
-    implicitEventDef:WFEventTrigger
+    "event" implicitEventDef:WFEventTrigger
     (  when:["none"|"first"|"all"] 
     |  "[" complexCondition:Expression "]" )?;
 
@@ -326,8 +326,8 @@ grammar Workflow extends
     (  [exclusive:"xor"]
     |  [inclusive:"ior"]
     |  [parallel: "and"]
-    |  ("receive" ":" [exclusiveEventBased:"first"])  
-    |  ("receive" ":" [ parallelEventBased:  "all"]) 
+    |  ("receive" [exclusiveEventBased:"first"])
+    |  ("receive" [ parallelEventBased:  "all"])
     |  ["complex"] ("[" guard:Expression "]") );
 
 
@@ -348,7 +348,7 @@ grammar Workflow extends
     trigger:WFEventTrigger?
     CompensationHandler?
     (  "{"
-         ("operation" ":" operation:Name@WFOperation ";")? 
+         ("operation" "=" operation:Name@WFOperation ";")?
          WFIOSet? 
        "}"
     | ";" );
@@ -516,10 +516,13 @@ grammar Workflow extends
     isMessage: boolean
     isSignal: boolean;
 
-  nokeyword "process", "subprocess", "task", "event";
-  nokeyword "operation", "message", "service";
+  nokeyword "process", "subprocess", "task", "transaction", "lane", "event";
+  nokeyword "operation", "message", "service", "user", "manual", "rule",
+            "script", "webservice";
   nokeyword "cancel", "compensate", "terminate", "timer", "error", "signal",
             "escalation";
   nokeyword "send", "receive", "start", "end", "data", "store", "default";
+  nokeyword "count", "max";
+  nokeyword "split", "merge";
 
 }
