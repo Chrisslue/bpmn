@@ -1,14 +1,14 @@
 process BachelorThesis{
-    <<ref="BeginWork">> start event StartThesis;
-    <<ref="EndWork">> end event EndThesis;
+    start event StartThesis;
+    end event EndThesis;
 
     task LiteratureResearch;
     task Development;
     task Evaluation;
-    <<ref="Draft">> task ThesisDraft;
-    <<ref="Introduction">> task Introduction;
-    <<ref="MainPart">> task Main;
-    <<ref="Conclusion">> task Conclusion;
+    task ThesisDraft;
+    task Introduction;
+    task Main;
+    task Conclusion;
     
     split and SplitAnd;
     merge and MergeAnd;
@@ -17,8 +17,8 @@ process BachelorThesis{
 
     StartThesis -> LiteratureResearch -> Development -> Evaluation -> MergeXor -> ThesisDraft -> SplitAnd ->
         {
-            Introduction,
-            Main
+            Introduction;
+            Main;
         }
     -> MergeAnd -> SplitXor;
     SplitXor -> EndThesis;

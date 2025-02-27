@@ -4,6 +4,6 @@ import de.monticore.bpmn.cds.Domain.*;
 
 process LoopCountExpressionReturnsIntegerNumber {
 
-  task T1 count:[true];
+  task T1 count [true];
 
 }

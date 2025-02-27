@@ -38,7 +38,7 @@ public class IntermediateCatchEventHasValidTrigger extends AbstractHasValidTrigg
         new WorkflowVisitor2() {
           @Override
           public void visit(final ASTWFEventTriggerNotification trigger) {
-            if(trigger.getType() == ASTConstantsWorkflow.ERROR || trigger.getType() == ASTConstantsWorkflow.ESCALATE){
+            if(trigger.getType() == ASTConstantsWorkflow.ERROR || trigger.getType() == ASTConstantsWorkflow.ESCALATION){
               logError(event);
             }
           }

@@ -1,31 +1,21 @@
 package de.monticore.bpmn.workflow._ast;
 
 import de.se_rwth.commons.logging.Log;
-import de.monticore.bpmn.workflow.WorkflowMill;
-import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
-import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
 import java.util.*;
 import java.util.stream.Stream;
-import java.util.function.Predicate;
-import com.google.common.collect.ListMultimap;
 
-public class ASTSequenceFlow extends ASTSequenceFlowTOP {
+public class ASTWFInlineGateway extends ASTWFInlineGatewayTOP implements ASTFlowElement {
+  
+  String name;
 
-  public ListMultimap<ASTFlowElement, List<ASTFlowCondition>> asTarget() {
-    return getPath(0).asTarget();
+  public String getName(){
+    return this.name;
   }
 
-  public Collection<ASTFlowElement> asSource() {
-    return getPath(sizePath() - 1).asSource();
+  public void setName(String pName){
+    this.name = pName;
   }
 
-  public boolean isDefault() {
-    return !isEmptyPath()
-        && getPathList().get(0).isPresentCondition()
-        && getPathList().get(0).getCondition().isDefaultFlow();
-  }
-    
-  // added additional attributes and methods
   protected  Optional<String> parentRef = Optional.empty();
   protected  Optional<String> laneRef = Optional.empty();
   protected  List<de.monticore.bpmn.workflow._ast.SequenceFlow> incomings = new java.util.ArrayList<>();
@@ -78,5 +68,6 @@ public class ASTSequenceFlow extends ASTSequenceFlowTOP {
   public  Stream<de.monticore.bpmn.workflow._ast.SequenceFlow> streamIncomings () {
     return this.getIncomingsList().stream();
   }
+
 
 }

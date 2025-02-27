@@ -14,9 +14,9 @@ process ReferenceModel{
     merge xor MergeXor;
 
     BeginWork -> MergeXor -> Draft -> SplitAnd -> 
-        {   Introduction,
-            MainPart,
-            Conclusion
+        {   Introduction;
+            MainPart;
+            Conclusion;
         } 
     -> MergeAnd -> SplitXor;
     SplitXor -> MergeXor;

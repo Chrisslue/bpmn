@@ -46,7 +46,7 @@ public class SequenceFlow {
   }
 
   public boolean isDefault() {
-    return !conditions.isEmpty() && conditions.stream().allMatch(ASTFlowCondition::isDefault);
+    return !conditions.isEmpty() && conditions.stream().allMatch(ASTFlowCondition::isDefaultFlow);
   }
 
   public String getName() {

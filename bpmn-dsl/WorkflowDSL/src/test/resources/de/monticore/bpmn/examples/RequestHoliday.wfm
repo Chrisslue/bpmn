@@ -11,12 +11,12 @@ process RequestHoliday {
     SubmitHolidayRequest;
     ChooseToComplain;
     ChooseToRetry;
-  };
+  }
 
   lane Superior {
     CheckHolidayRequest;
     AcknowledgeHolidayRequest;
-  };
+  }
   
   data holidayCard:HolidayCard;
 
@@ -27,18 +27,18 @@ process RequestHoliday {
   subprocess CoordinateInternally {
     manual task CoordinateWithColleagues;
     task FindSubstitute;
-  };
+  }
   
   CoordinateInternally -> FillHolidayCardEntry;
   
   user task FillHolidayCardEntry {
-    io: {} -> { holidayCard };
-  };
+    io {} -> { holidayCard };
+  }
   
   FillHolidayCardEntry -> SubmitHolidayRequest;
 
   task SubmitHolidayRequest;
-
+  
   subprocess CheckHolidayRequest {
      
     data contract:Contract;
@@ -53,21 +53,22 @@ process RequestHoliday {
     ValidateLeaveDaysAndCheckWaitingPeriod -> CheckWaitingPeriod;
 
     task ValidateLeaveDays {
-      io: {holidayCard} -> {};
-    };
+      io {holidayCard} -> {};
+    }
     
     ValidateLeaveDays -> IsRequestValid;
 
     split xor IsRequestValid;
-
-    IsRequestValid -> [true] ValidateLeaveDaysAndCheckWaitingPeriodJoin ;
-    IsRequestValid -> [false] Terminate1 ;
+    merge and ValidateLeaveDaysAndCheckWaitingPeriodJoin;
 
     event Terminate1 send terminate;
-
+    
+    IsRequestValid -> [true] ValidateLeaveDaysAndCheckWaitingPeriodJoin ;
+    IsRequestValid -> [false] Terminate1 ;
+    
     task CheckWaitingPeriod {
-      io: {contract} -> {};
-    };
+      io {contract} -> {};
+    }
 
     CheckWaitingPeriod -> IsRequesterEligibleForHoliday;
 
@@ -78,13 +79,12 @@ process RequestHoliday {
 
     event Terminate2 send terminate;
 
-    merge and ValidateLeaveDaysAndCheckWaitingPeriodJoin;
 
     ValidateLeaveDaysAndCheckWaitingPeriodJoin -> End;
 
     end event End;
     
-  };
+  }
   
   CheckHolidayRequest -> IsHolidayRequestAccepted;
 
@@ -94,11 +94,11 @@ process RequestHoliday {
   IsHolidayRequestAccepted -> [false] ChooseToRetry;
 
   task AcknowledgeHolidayRequest {
-    io: {holidayCard} -> {holidayCard};
-  };
-
+    io {holidayCard} -> {holidayCard};
+  }
+  
   AcknowledgeHolidayRequest -> End1;
-
+  
   end event End1;
 
   task ChooseToRetry;
@@ -111,7 +111,7 @@ process RequestHoliday {
   Retry -> [true] IsEscalationPossible;
 
   end event End2;
-
+  
   split xor IsEscalationPossible;
 
   IsEscalationPossible -> CoordinateInternally;
@@ -126,16 +126,16 @@ process RequestHoliday {
   Complain -> [false] CoordinateInternally;
   Complain -> [true] SendComplaint;
   
-  send task SendComplaint; //compensate:complaint;
+  send task SendComplaint;
   
   message complaint:Complaint;
-
+  
   SendComplaint -> ReceiveAnswer;
 
-  receive task ReceiveAnswer; // compensate:answerToComplaint;
+  receive task ReceiveAnswer;
 
   message answerToComplaint:ComplaintResponse;
-
+  
   ReceiveAnswer -> End3;
 
   end event End3;

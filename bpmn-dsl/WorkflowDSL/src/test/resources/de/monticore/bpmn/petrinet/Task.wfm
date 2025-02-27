@@ -5,19 +5,19 @@ import de.monticore.bpmn.cds.Domain.*;
 process Task {
   
   task T1;
-
+  
   
   task T2 {
-    boundary event E1 timer:[after P12D];
-  };
-
+    boundary event E1 timer [after P12D];
+  }
+  
   
   task T3;
 
   
   T1 -> split xor -> {
-    T2,
-    T3
+    T2;
+    T3;
   };
   
   T2.E1 -> T3;
@@ -26,10 +26,12 @@ process Task {
 
     task T4;
 
-    message msg:Contract;
+    start event E2;
+    end event E3;
 
-    start event message:msg -> T4 -> end event ;
+    E2 -> T4 -> E3;
     
-  };
+  }
+  
   
 }

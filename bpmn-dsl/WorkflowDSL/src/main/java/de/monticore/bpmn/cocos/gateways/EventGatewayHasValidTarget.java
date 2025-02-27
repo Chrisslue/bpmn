@@ -60,7 +60,7 @@ public class EventGatewayHasValidTarget implements WorkflowASTWFGatewayCoCo {
         new WorkflowCollector<ASTWFEventTrigger>(event) {
           @Override
           public void visit(final ASTWFEventTriggerNotification trigger) {
-            if(trigger.getType() == ASTConstantsWorkflow.ERROR || trigger.getType() == ASTConstantsWorkflow.ESCALATE){
+            if(trigger.getType() == ASTConstantsWorkflow.ERROR || trigger.getType() == ASTConstantsWorkflow.ESCALATION){
               select(trigger);
             }
           }

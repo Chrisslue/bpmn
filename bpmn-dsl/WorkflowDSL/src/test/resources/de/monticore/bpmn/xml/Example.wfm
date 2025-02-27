@@ -4,8 +4,9 @@ process Example {
 
   lane Secretariat {
     user task Foo;
-
-    start event -> Foo -> end event;
-  };
+    start event S;
+    end event E;
+    S -> Foo -> E;
+  }
 
 }

@@ -10,6 +10,8 @@ import java.util.function.Predicate;
 
 public class ASTWFEvent extends ASTWFEventTOP {
 
+  // functions are already in ASTWFEventTOP
+  /*
   public boolean isStart() {
     return getType() == ASTConstantsWorkflow.START;
   }
@@ -17,6 +19,7 @@ public class ASTWFEvent extends ASTWFEventTOP {
   public boolean isEnd() {
     return getType() == ASTConstantsWorkflow.END;
   }
+  */
 
   public boolean isIntermediate() {
     return !isStart() && !isEnd();
@@ -115,7 +118,7 @@ public class ASTWFEvent extends ASTWFEventTOP {
 
     @Override
     public void visit(final ASTWFEventTriggerNotification trigger) {
-      if(trigger.getType() == ASTConstantsWorkflow.ESCALATE){
+      if(trigger.getType() == ASTConstantsWorkflow.ESCALATION){
         isThrow = true;
       }
       

@@ -162,7 +162,7 @@ grammar Workflow extends
    * A task can specify boundary events to catch potential event triggers.
    */
   WFTask implements WFActivity =
-    Modifier type:["service"|"send"|"receive"|"user"|"manual"|"rule"|"script"]?
+    Modifier (type:["service"|"send"|"receive"|"user"|"manual"|"rule"|"script"])?
     "task" Name
     WFLoopCharacteristic?
     ( "{"
@@ -443,7 +443,7 @@ grammar Workflow extends
      it is a default sequence flow. 
    */ 
   FlowCondition = 
-    "[" Expression | ["default"] "]";
+    "[" (Expression | ["defaultFlow"]) "]";
 
 
   /*========================================================================*/

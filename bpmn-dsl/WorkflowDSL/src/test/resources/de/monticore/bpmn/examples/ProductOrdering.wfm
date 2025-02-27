@@ -12,7 +12,7 @@ process ProductOrdering {
 
         StartOrder -> ReceiveOrder -> CheckOrderDetails -> IsProductAvailable;
         IsProductAvailable -> PrepareProduct;
-    };
+    }
 
     
     lane Warehouse{
@@ -20,7 +20,7 @@ process ProductOrdering {
         task ShipOrder;
 
         PrepareProduct -> ShipOrder -> OrderProcessingCompleted;
-    };
+    }
 
     end event OrderProcessingCompleted;
 

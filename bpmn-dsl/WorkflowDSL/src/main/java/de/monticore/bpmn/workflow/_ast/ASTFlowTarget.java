@@ -19,8 +19,6 @@ public class ASTFlowTarget extends ASTFlowTargetTOP {
       sourceFlowNodes = Lists.newArrayList(resolveFlowNode());
     } else if (isPresentGateway()) {
       sourceFlowNodes = Lists.newArrayList(getGateway());
-    } else if (isPresentEvent()) {
-      sourceFlowNodes = Lists.newArrayList(getEvent());
     } else if (isPresentBlock()) {
       sourceFlowNodes = getBlock().asSource();
     }
@@ -41,13 +39,6 @@ public class ASTFlowTarget extends ASTFlowTargetTOP {
           ImmutableListMultimap.<ASTFlowElement, List<ASTFlowCondition>>builder()
               .put(
                   getGateway(),
-                  isPresentCondition() ? Lists.newArrayList(getCondition()) : Lists.newArrayList())
-              .build();
-    } else if (isPresentEvent()) {
-      targetFlowNodes =
-          ImmutableListMultimap.<ASTFlowElement, List<ASTFlowCondition>>builder()
-              .put(
-                  getEvent(),
                   isPresentCondition() ? Lists.newArrayList(getCondition()) : Lists.newArrayList())
               .build();
     } else if (isPresentBlock()) {
