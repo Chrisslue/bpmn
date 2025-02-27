@@ -440,10 +440,10 @@ grammar Workflow extends
 
   /**
    * FlowCondition specifies if a flow target is preceded by a condition or
-     it is a default sequence flow. 
+     it is a default sequence flow, designated as "[_]".
    */ 
   FlowCondition = 
-    "[" (Expression | ["defaultFlow"]) "]";
+    ("[" Expression "]" | default:["[_]"]);
 
 
   /*========================================================================*/
@@ -455,7 +455,17 @@ grammar Workflow extends
    * It has a name and a type.
    */
   WFDataObject implements FlowElement, Variable =
-    type:["data"|"store"] Name ":" MCType ";";
+    WFDataKind Name ":" MCType ";";
+
+
+  /** The DataKind is a separate NT to allow for extension later
+    */
+  interface WFDataKind;
+
+  /** The list of data kinds available as variants of WFDataKind:
+  */
+  WFDataKindObject implements WFDataKind = "data";
+  WFDataKindStore implements WFDataKind = "store";
 
 
   /*========================================================================*/
@@ -471,7 +481,7 @@ grammar Workflow extends
 
   // IORule maps an input set to an output set. 
   IORule implements IORequirement =
-    "io" inputSet:WFDataSet "->" outputSet:WFDataSet ";";
+    "in" inputSet:WFDataSet "->" "out" outputSet:WFDataSet ";";
 
   // WFDataSet consists of one or more input or output data.
   WFDataSet =
@@ -521,7 +531,7 @@ grammar Workflow extends
             "script", "webservice";
   nokeyword "cancel", "compensate", "terminate", "timer", "error", "signal",
             "escalation";
-  nokeyword "send", "receive", "start", "end", "data", "store", "default";
+  nokeyword "send", "receive", "start", "end", "data", "store";
   nokeyword "count", "max";
   nokeyword "split", "merge";
 

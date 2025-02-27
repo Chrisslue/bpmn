@@ -22,7 +22,7 @@ public class ASTSequenceFlow extends ASTSequenceFlowTOP {
   public boolean isDefault() {
     return !isEmptyPath()
         && getPathList().get(0).isPresentCondition()
-        && getPathList().get(0).getCondition().isDefaultFlow();
+        && getPathList().get(0).getCondition().isDefault();
   }
     
   // added additional attributes and methods
