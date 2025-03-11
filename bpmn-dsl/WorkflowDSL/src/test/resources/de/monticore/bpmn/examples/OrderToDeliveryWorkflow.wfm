@@ -1,0 +1,44 @@
+process OrderToDeliveryWorkflow {
+
+    data orderList:Order;
+    store inventory:Inventory;
+    store agreement:CustomerDeliveryAgreement;
+
+    lane Sales{
+        service task ProcessOrder{
+          boundary event PossibleCancellation 
+            receive with RollbackOrderProcessing;
+        }
+        service task CheckProductAvailability
+          count orderList parallel{
+            in orderList:Order;
+          }
+        send task CancellationMessage;
+        task RollbackOrderProcessing;
+
+        split xor OrderFulfillable;
+        merge xor FinishOrderProcessing;
+        
+        start event StartOrderHandling receive;
+        event CancelOrder send
+          compensate ProcessOrder;
+    }
+
+    lane Warehouse{
+
+        manual task PrepareProducts;
+        manual task ShipOrder;
+        manual task PickUpOrder;
+        send task OrderIsOnTheWay;
+
+        end event OrderCompleted;
+    }  
+    
+    StartOrderHandling -> ReceiveOrder -> ProcessOrder -> CheckProductAvailability -> OrderFulfillable ->
+      { [inventory.AllProductsAvailable] PrepareProducts -> { [agreement.PickUp] PickUpOrder;
+                                                              [_] ShipOrder;
+                                                            } -> OrderIsOnTheWay; 
+        [!inventory.AllProductsAvailable] CancellationMessage -> CancelOrder; 
+      } -> FinishOrderProcessing -> OrderCompleted;
+    
+}
