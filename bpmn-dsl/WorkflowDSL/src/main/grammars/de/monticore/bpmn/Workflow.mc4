@@ -60,7 +60,7 @@ grammar Workflow extends
    */
   symbol scope WFProcess =
     Modifier "process" Name "{"
-      IORequirement*
+      WFIORequirement*
       FlowElement*
     "}";
 
@@ -167,7 +167,7 @@ grammar Workflow extends
     WFLoopCharacteristic?
     ( "{"
         TaskTypeAttributes?
-        IORequirement*
+        WFIORequirement*
         ("boundary" boundaryEvent:WFEvent)*
       "}" 
     | ";" );
@@ -213,7 +213,7 @@ grammar Workflow extends
    * It can specify error elements which may be returned.
    * An implementation of the operation can be referenced.
    */
-  symbol WFOperation =
+  symbol WFOperation implements FlowElement=
     Modifier "operation" Name 
     "("
       "in" in:Name@WFNotification
@@ -250,7 +250,7 @@ grammar Workflow extends
     WFLoopCardinality
     (parallelizationForm:["parallel"|"sequential"])?
     ("until" "[" completionCondition:Expression "]")?
-    WFMIImplicitEventBehavior?;
+    ( "(" WFMIImplicitEventBehavior ")" )?;
 
   /**
    * loopDataInput defines a list of items used for multi-instance-activities.
@@ -273,7 +273,7 @@ grammar Workflow extends
      the event trigger should be thrown.
    */
   WFMIImplicitEventBehavior =
-    "event" implicitEventDef:WFEventTrigger
+    implicitEventDef:WFEventTrigger
     (  when:["none"|"first"|"all"] 
     |  "[" complexCondition:Expression "]" )?;
 
@@ -472,15 +472,15 @@ grammar Workflow extends
   /*========================== I/O REQUIREMENTS ============================*/
   /*========================================================================*/
 
-  // IORequirement is implemented by the nontermials WFIOSet and IORule.
-  interface IORequirement;
+  // WFIORequirement is implemented by the nontermials WFIOSet and IORule.
+  interface WFIORequirement;
 
   // WFIOSet specifies an input or an output WFDataSet. 
-  WFIOSet implements IORequirement = 
+  WFIOSet implements WFIORequirement = 
     dir:["in"|"out"] WFDataSet ";";
 
-  // IORule maps an input set to an output set. 
-  IORule implements IORequirement =
+  // WFIORule maps an input set to an output set. 
+  WFIORule implements WFIORequirement =
     "in" inputSet:WFDataSet "->" "out" outputSet:WFDataSet ";";
 
   // WFDataSet consists of one or more input or output data.
