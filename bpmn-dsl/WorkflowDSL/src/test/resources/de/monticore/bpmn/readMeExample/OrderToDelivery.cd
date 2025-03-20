@@ -12,6 +12,7 @@ classdiagram OrderToDelivery{
         int numberOfOrderedProducts;
         List<Product> orderList;
         InventoryAvailabilityChecker checker;
+        double totalCost;
     }
 
     class Product{
@@ -31,5 +32,15 @@ classdiagram OrderToDelivery{
         String houseNumber;
         String postalCode;
         String city;
+    }
+
+    class PaymentValidityChecker{
+        boolean paymentValid;
+        boolean cardNumberValid;
+        boolean cardVerificationValueValid;
+        String paymentMethod;
+        String cardNumber;
+        String cardVerificationValue;
+        String cardExpirationDate;
     }
 }

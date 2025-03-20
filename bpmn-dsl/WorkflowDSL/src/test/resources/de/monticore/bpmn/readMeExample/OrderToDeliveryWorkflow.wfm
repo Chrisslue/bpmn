@@ -33,6 +33,9 @@ process OrderToDeliveryWorkflow {
 
         subprocess ShipOrder{
           manual task AttachLabelToPacket;
+          manual task SecurePackageWithTape{
+            resources = TapeDispenser;
+          }
           service task SelectShippingCarrier;
           service task PrintShippingLabel{
             webservice = ##unspecified;
@@ -49,7 +52,8 @@ process OrderToDeliveryWorkflow {
           start event PrepareForShipment;
           end event ShipmentDispatched;
 
-          PrepareForShipment -> SelectShippingCarrier -> PrintShippingLabel 
+          PrepareForShipment -> SecurePackageWithTape 
+            -> SelectShippingCarrier -> PrintShippingLabel 
             -> AttachLabelToPacket -> ShipmentDispatched;
         }
 

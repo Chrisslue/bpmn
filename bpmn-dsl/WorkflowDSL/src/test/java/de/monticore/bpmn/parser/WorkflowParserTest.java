@@ -85,8 +85,20 @@ public class WorkflowParserTest extends AbstractTest {
   }
 
   @Test
-  public void testExampleModel() {
+  public void testExample1Model() {
     String modelName = "de.monticore.bpmn.readMeExample.OrderToDeliveryWorkflow";
+    parseModel(modelName);
+  }
+
+  @Test
+  public void testExample2Model() {
+    String modelName = "de.monticore.bpmn.readMeExample.CustomerOrder";
+    parseModel(modelName);
+  }
+
+  @Test
+  public void testExample3Model() {
+    String modelName = "de.monticore.bpmn.readMeExample.Payment";
     parseModel(modelName);
   }
 }
