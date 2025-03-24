@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn;
 
 grammar Workflow extends 
@@ -14,22 +15,22 @@ grammar Workflow extends
     WFProcess;
 
   /**
-    The Workflow language provides a textual representation of business process
-    models based on the BPMN 2.0 standard. Business processes describe a set of 
-    interrelated activities that are carried out by individuals, organizations
-    or systems to achieve a specific business goal or to produce a certain
-    outcome.
+    The Workflow language provides a textual representation of business
+    process models based on the BPMN 2.0 standard. Business processes
+    describe a set of interrelated activities that are carried out by
+    individuals, organizations or systems to achieve a specific business
+    goal or to produce a certain outcome.
 
     For this purpose, the Workflow language can be used to model processes
     as structured sequences of activities, events, and decisions. These
-    sequences are connected by gateways, which control the flow of a process by
-    splitting and merging paths based on specified conditions, enabling
-    decision-making or parallel execution. The language includes various types
-    of activities that represent the work performed within a process.
-    Moreover, events can be used to model triggers or results that occur during
-    a process. In addition to these core elements, the Workflow language
-    provides further elements derived from the BPMN 2.0 standard to model
-    complex business processes.
+    sequences are connected by gateways, which control the flow of a process
+    by splitting and merging paths based on specified conditions, enabling
+    decision-making or parallel execution. The language includes various
+    types of activities that represent the work performed within a process.
+    Moreover, events can be used to model triggers or results that occur
+    during a process. In addition to these core elements, the Workflow
+    language provides further elements derived from the BPMN 2.0 standard
+    to model complex business processes.
 
     The grammar builds on
       LambdaExpressions, AssignmentExpressions and CommonExpressions
@@ -51,13 +52,15 @@ grammar Workflow extends
   /*========================================================================*/
 
   /**
-   * A FlowElement represents any element that can appear in a workflow process.
+   * A FlowElement represents any element that can appear in a workflow
+     process.
    * It encompasses lanes, activities, gateways, events, sequence flows etc.
    */ 
   interface FlowElement; 
 
   /** 
-   * WFProcess describes a workflow which contains flow elements in any order.
+   * A WFProcess describes a workflow which contains flow elements in any
+     order.
    * A process has a modifier, a name and may contain I/O requirements.
    */
   symbol scope WFProcess =
@@ -77,12 +80,13 @@ grammar Workflow extends
     "}";
 
 
-  /*========================================================================*/
-  /*============================== ACTIVITIES ==============================*/
-  /*========================================================================*/
+  /*======================================================================*/
+  /*============================= ACTIVITIES =============================*/
+  /*======================================================================*/
 
   /** 
-   * A WFActivity denotes a unit of work performed within a business process.
+   * A WFActivity denotes a unit of work performed within a business
+     process.
    * An activity can be atomic or non-atomic.
    * This interface is implemented by the nonterminals WFSubProcess, WFTask
      and WFCallActivity.
@@ -92,11 +96,11 @@ grammar Workflow extends
 
   /**
    * This rule adds a variable that indicates whether the corresponding 
-     activity compensates another activity as well as a variable that refers to
-     that activity. In this context, compensating means to undo the effects of 
-     an activity.
-   * Example: The activity "CANCEL HOTEL" compensates the activity "BOOK HOTEL"
-              by canceling the effects of the latter activity.
+     activity compensates another activity as well as a variable that
+     refers to that activity. In this context, compensating means to undo
+     the effects of an activity.
+   * Example: The activity "CANCEL HOTEL" compensates the activity
+              "BOOK HOTEL" by canceling the effects of the latter activity.
    */
   symbolrule WFActivity =
     compensating:boolean
@@ -125,21 +129,22 @@ grammar Workflow extends
   /** 
    * AdHocCharacteristics are required for an ad-hoc subprocess.
    * The condition defines when the execution should be completed.
-   * It specifies if activities should be executed in parallel or sequentially.
-   * The "noninterrupt" keyword indicates if the remaining activities should 
-     be cancelled when the first activity finishes.
+   * It specifies if activities should be executed in parallel or
+     sequentially.
+   * The "noninterrupt" keyword indicates if the remaining activities
+     should be cancelled when the first activity finishes.
    */
   AdHocCharacteristics =
     "[" completionCondition:Expression "]"
     ( ["parallel"] (["noninterrupt"])? | ["sequential"] )?;
 
   /**
-   * WFCallActivity is a named activity that calls another reusable process or
-     global task, which is referenced by name.
+   * WFCallActivity is a named activity that calls another reusable process
+     or global task, which is referenced by name.
    * In this grammar, global tasks are modelled as processes containing only 
      one task.
-   * The activity may contain I/O requirements and can specify boundary events
-     to catch potential event triggers.
+   * The activity may contain I/O requirements and can specify boundary
+     event to catch potential event triggers.
    * Example: The call activity "ShipOrderOfCustomer" calls a process named
      "ShippingProcess".
    */
@@ -163,7 +168,8 @@ grammar Workflow extends
    * A task can specify boundary events to catch potential event triggers.
    */
   WFTask implements WFActivity =
-    Modifier (type:["service"|"send"|"receive"|"user"|"manual"|"rule"|"script"])?
+    Modifier
+    (type:["service"|"send"|"receive"|"user"|"manual"|"rule"|"script"])?
     "task" Name
     WFLoopCharacteristic?
     ( "{"
@@ -174,7 +180,8 @@ grammar Workflow extends
     | ";" );
   
   /**
-   * TaskTypeAttributes describes potential attributes for all types of tasks.
+   * TaskTypeAttributes describes potential attributes for all types of
+     tasks.
    * "service": contains the used webservice and optionally an operation. 
    * "send":    contains the used webservice, a message and the operation.
    * "receive": contains the used webservice, a message and the operation.
@@ -190,7 +197,9 @@ grammar Workflow extends
          or ##webservice.
        */ 
       ("webservice" "="
-        (webservice:String|noWebservice:["##unspecified" | "##webservice"]) ";"
+        (
+          webservice:String|noWebservice:["##unspecified" | "##webservice"]
+        ) ";"
       )
 
       // Service, send, and receive tasks (may) reference an operation.
@@ -224,8 +233,8 @@ grammar Workflow extends
     ("{" implementation:String "}" | ";");
 
   /**
-   * WFLoopCharacteristic describes an interface for loops. It is implemented
-     by the nonterminals WFStandardLoop and WFMILoop.
+   * WFLoopCharacteristic describes an interface for loops.
+     It is implemented by the nonterminals WFStandardLoop and WFMILoop.
    */ 
   interface WFLoopCharacteristic;
 
@@ -241,10 +250,10 @@ grammar Workflow extends
   /** 
    * WFMILoop allows for the creation of multiple instances of an activity.
    * The instances can be executed in parallel or sequentially.
-   * If a completionCondition is specified, it will only loop until an instance
-     satisfies the condition. For this purpose, the condition is evaluated 
-     after each instance completes. Otherwise all instances must complete 
-     before the process continues to the next flow element.
+   * If a completionCondition is specified, it will only loop until an
+     instance satisfies the condition. For this purpose, the condition is
+     evaluated after each instance completes. Otherwise all instances must
+     complete before the process continues to the next flow element.
    */
   WFMILoop implements WFLoopCharacteristic  =
     WFLoopCardinality
@@ -253,7 +262,8 @@ grammar Workflow extends
     ( "(" WFMIImplicitEventBehavior ")" )?;
 
   /**
-   * loopDataInput defines a list of items used for multi-instance-activities.
+   * loopDataInput defines a list of items used for
+     multi-instance-activities.
    * Example: loopDataInput = ["Person1", "Person2", "Person3"]
    */
   astrule WFMILoop =
@@ -278,7 +288,8 @@ grammar Workflow extends
     |  "[" complexCondition:Expression "]" )?;
 
   /**
-   * WFLoopCardinality controls the number of activities created by a WFMILoop.
+   * WFLoopCardinality controls the number of activities created by a
+     WFMILoop.
    * It can be an integer value, an expression that resolves to an integer,
      or a collection-valued data object.
    */  
@@ -288,9 +299,9 @@ grammar Workflow extends
             | collection:Name );
 
 
-  /*========================================================================*/
-  /*=============================== GATEWAYS ===============================*/
-  /*========================================================================*/
+  /*======================================================================*/
+  /*============================== GATEWAYS ==============================*/
+  /*======================================================================*/
 
   /**
    * A WFGateway describes a flow control element.
@@ -303,15 +314,15 @@ grammar Workflow extends
   /**
    * A WFInlineGateway is a flow control element that can only be defined
      in sequence flows.
-   * It has almost the same options as WFGateway, except it has no name and no
-     modifier.
+   * It has almost the same options as WFGateway, except it has no name
+     and no modifier.
    */ 
   symbol WFInlineGateway =
     direction:["split"|"merge"] type:GatewayType;
   
   /** 
-   * The ruke defines a variable that represents the number of activations at a
-     complex gateway.
+   * The ruke defines a variable that represents the number of activations
+     at a complex gateway.
    * The guard of a "complex" gateway refers to an activationCount.
    */
   astrule WFGateway = 
@@ -332,16 +343,19 @@ grammar Workflow extends
     |  ["complex"] ("[" guard:Expression "]") );
 
 
-  /*========================================================================*/
-  /*================================ EVENTS ================================*/
-  /*========================================================================*/
+  /*======================================================================*/
+  /*=============================== EVENTS ===============================*/
+  /*======================================================================*/
 
   /** 
-   * A WFEvent defines an occurrence that happens during the course of workflow.
+   * A WFEvent defines an occurrence that happens during the course of
+     workflow.
    * It is either catching or throwing. Throw events emit the trigger,
      whereas catch events listen for the trigger to occur.
-   * Interrupting boundary events cancel the activity to that they are attached. 
-   * An operation must be specified for message tasks in an executable process.
+   * Interrupting boundary events cancel the activity to that they are
+     attached.
+   * An operation must be specified for message tasks in an executable
+     process.
    */  
   symbol WFEvent implements FlowElement =
     Modifier (["start"]|["end"])? "event" Name
@@ -354,7 +368,10 @@ grammar Workflow extends
        "}"
     | ";" );
 
-  // This rule adds a variable that indicates if an event is a boundary event.
+  /**
+   * This rule adds a variable that indicates if an event is a boundary
+     event.
+   */
   symbolrule WFEvent =
     boundary:boolean;
 
@@ -371,7 +388,10 @@ grammar Workflow extends
   WFEventTriggerCancel implements WFEventTrigger = 
     "cancel";
 
-  // WFEventTriggerCompensate removes the effects of the referenced activity.
+  /*
+   * WFEventTriggerCompensate removes the effects of the referenced
+     activity.
+   */
   WFEventTriggerCompensate implements WFEventTrigger = 
     "compensate" ( activity:Name)? ["async"]?;
 
@@ -396,15 +416,18 @@ grammar Workflow extends
    * "all": All of the specified triggers are required.
    */  
   WFEventTriggerMultiple implements WFEventTrigger =
-    ("one"| parallelMultiple:["all"]) "{" trigger:(WFEventTrigger || ",")+ "}";
+    ("one"| parallelMultiple:["all"]) "{"
+      trigger:(WFEventTrigger || ",")+
+    "}";
 
   /**
    * WFEventTriggerNotification allows to reference a WFNotification.
    * "message": This trigger can be used to send or receive messages.
-   * "signal" : Signals can be sent and received within and across a process.
+   * "signal" : Signals can be sent and received within and across a
+                process.
    * "error"  : It allows to catch and react to a named error.
-   * "escalte": It indicates a non-critical problem without interrupting the 
-                current process.
+   * "escalte": It indicates a non-critical problem without interrupting
+                the current process.
    */
   WFEventTriggerNotification implements WFEventTrigger =
     type:["error"|"escalation"|"message"|"signal"] Name@WFNotification;
@@ -418,21 +441,24 @@ grammar Workflow extends
     "with" activity:Name@WFActivity;
 
 
-  /*========================================================================*/
-  /*============================= CONTROL FLOW =============================*/
-  /*========================================================================*/
+  /*======================================================================*/
+  /*============================ CONTROL FLOW ============================*/
+  /*======================================================================*/
 
   // A SequenceFlow defines a series of flow targets.
   SequenceFlow implements FlowElement =
     path:(FlowTarget || "->")+ ";";
 
-  // A FlowBlock allows to specify a set of parallel branches in a sequence flow.
+  /*
+   * A FlowBlock allows to specify a set of parallel branches in a sequence
+     flow.
+   */
   FlowBlock =
     "{" branch:SequenceFlow+ "}";
 
   /**
-   * A FlowTarget references either a flow element or flow block or defines an
-     inline gateway. 
+   * A FlowTarget references either a flow element or flow block or defines
+     an inline gateway.
    * A flow restriction condition can also be set.
    */
   FlowTarget =
@@ -440,16 +466,16 @@ grammar Workflow extends
     (element:MCQualifiedName | gateway:WFInlineGateway | block:FlowBlock);
 
   /**
-   * A FlowCondition specifies if a flow target is preceded by a condition or
-     it is a default sequence flow, designated as "[_]".
+   * A FlowCondition specifies if a flow target is preceded by a condition
+     or it is a default sequence flow, designated as "[_]".
    */ 
   FlowCondition = 
     ("[" Expression "]" | default:["[_]"]);
 
 
-  /*========================================================================*/
-  /*================================ DATA ==================================*/
-  /*========================================================================*/
+  /*======================================================================*/
+  /*=============================== DATA =================================*/
+  /*======================================================================*/
 
   /** 
    * This nonterminal represents a data object or a data store.
@@ -469,9 +495,9 @@ grammar Workflow extends
   WFDataKindStore implements WFDataKind = "store";
 
 
-  /*========================================================================*/
-  /*========================== I/O REQUIREMENTS ============================*/
-  /*========================================================================*/
+  /*======================================================================*/
+  /*========================= I/O REQUIREMENTS ===========================*/
+  /*======================================================================*/
 
   // WFIORequirement is implemented by the nontermials WFIOSet and IORule.
   interface WFIORequirement;
@@ -490,7 +516,8 @@ grammar Workflow extends
 
   /** 
    * WFDataIO specifies a data input or a data output.
-   * MCQualifiedNam defines the name of the consumed or produced data element.
+   * MCQualifiedNam defines the name of the consumed or produced data
+     element.
    * [i]: The tag indicates the use of a collection-valued data input.
    * "?": It marks the input or output data as optional.
    * "!": The data can be produced or evaluated while executing.
@@ -504,15 +531,16 @@ grammar Workflow extends
     ("as" alias:Name)?;
 
 
-  /*========================================================================*/
-  /*================================ MISC ==================================*/
-  /*========================================================================*/
+  /*======================================================================*/
+  /*=============================== MISC =================================*/
+  /*======================================================================*/
   
   /**
    * Different kinds of notifications can be send by event triggers, tasks, 
      and operations.
    * Every notification has a name and a type.
-   * CoCos ensure the right kinds of Notification are used at the right place.
+   * CoCos ensure the right kinds of Notification are used at the right
+     place.
    */
   symbol WFNotification implements FlowElement, Variable =
     kind:["error"|"escalation"|"message"|"signal"] Name ":" MCType ";";
