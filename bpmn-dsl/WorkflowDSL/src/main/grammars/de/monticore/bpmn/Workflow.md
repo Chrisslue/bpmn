@@ -8,53 +8,100 @@ This BPMN language component contains
 * pretty printers, and 
 * a command-line tool.
 
-## An Example Model
+## An Example Model For Processing Customer Orders
 
 ```
-package de.monticore.bpmn.examples.vacation;
+package de.monticore.bpmn.readMeExample;
 
-import de.monticore.bpmn.cds.Vacation.*;
+import de.monticore.bpmn.readMeExample.OrderToDelivery.*;
 
-process RequestVacation {
+process OrderToDeliveryWorkflow {
+    
+    data order:Order;
+    data checker:InventoryAvailabilityChecker;
+    store agreement:CustomerDeliveryAgreement;
+    
+    lane Sales{
+        service task ProcessOrder{
+          boundary event PossibleCancellation 
+            receive with RollbackOrderProcessing;
+        }
+        service task CheckProductAvailability
+          count [order.numberOfOrderedProducts] parallel  
+          {
+            in order:Order;
+          }
+        send task CancellationMessage;
+        service task RollbackOrderProcessing;
 
-  lane Admin {
-    store contract:Contract;
-    data report:Report;
-    data notice:VacationCardEntry;
-
-    task service DoWork {
-      out: report;
+        split xor OrderFulfillable;
+        merge xor FinishOrderProcessing;
+        
+        start event ReceiveOrder receive;
+        event CancelOrder send
+          compensate ProcessOrder;
     }
-    task user Task1 {
-      io: {contract, report} -> {report};
-    }
-    task user Task2 {
-      io: {report} -> {notice};
-    }
-    task Foo; // template:External;
-    task service Bar;
+    
+    lane Warehouse{
+        
+        manual task PrepareAndPackProducts;
+        manual task PickUpOrder;
+        event OrderDelivered;
 
-    event start -> DoWork -> Task1 -> split xor -> {
-      [true] Foo,
-      [false] Bar
-    } -> merge xor -> event receive timer:[after PT20S] -> Task2 -> event end;
-  }
+        subprocess ShipOrder{
+          manual task AttachLabelToPacket;
+          manual task SecurePackageWithTape{
+            resources = TapeDispenser;
+          }
+          service task SelectShippingCarrier;
+          service task PrintShippingLabel{
+            webservice = ##unspecified;
+            operation = GetAddress;
+          }
+          
+          operation GetAddress( 
+            in customerID;
+            out address
+            );
+          message customerID:String;
+          message address:DestinationAddress;
+
+          start event PrepareForShipment;
+          end event ShipmentDispatched;
+
+          PrepareForShipment -> SecurePackageWithTape 
+            -> SelectShippingCarrier -> PrintShippingLabel 
+            -> AttachLabelToPacket -> ShipmentDispatched;
+        }
+
+        end event OrderCompleted;
+    }  
+    
+    ReceiveOrder -> ProcessOrder -> CheckProductAvailability -> OrderFulfillable ->
+      { [checker.allProductsAvailable] PrepareAndPackProducts -> { [agreement.isOrderPickedUp] PickUpOrder;
+                                                                   [_] ShipOrder;
+                                                                 } -> OrderDelivered;
+        [!checker.allProductsAvailable] CancellationMessage -> CancelOrder; 
+      } -> FinishOrderProcessing -> OrderCompleted;
 
 }
 ```
-
-The following example represents a simplified vacation request process:
-* This example defines a Process named `RequestVacation`.
-* There is a single lane called `admin`.
-* Three data objects are used in this process: `Contract`,`Report` and `VacationCardEntry`.
-* Five tasks are specified in this example: `DoWork`, `Task1`, `Task2`, `Foo` and `Bar`.
-
-
-
-
-
-
-Further examples can be found here.
+* The upper example model specifies a process named `OrderToDeliveryWorkflow`.
+* The process distinguishes between two separate lanes. The `Sales` lane covers intake, processing and a possible cancellation of the order, while the `Warehouse` lane represents the packing and shipment.
+  * `Sales` lane:
+    * The process begins with the `ReceiveOrder` start event.
+    * The `ProcessOrder` service task handles the main processing of the order. 
+      A boundary event named `PossibleCancellation` is attached to the service task, enabling the process to react to a cancellation request by triggering the `RollbackOrderProcessing` service task.
+    * The `CheckProductAvailability` service task uses a multi-instance loop to check the availability of each ordered product in parallel.
+    * The exclusive gateway `OrderFulfillable` evaluates whether all ordered products are available. 
+      * If all products are available, the process continues in the `Warehouse` lane.
+      * If at least one product is unavailable, the send task `CancellationMessage` is executed. Subsequently, the intermediate event `CancelOrder` triggers compensation for the `ProcessOrder` task.
+  * `Warehouse` lane:
+    * The `PrepareAndPackProducts` manual task is responsible for preparing and packing the available products.
+    * Depending on the delivery agreement, the process either continues with the `PickUpOrder` manual task or proceeds to the `ShipOrder` subprocess. The subprocess covers all shipping-related activities.
+    * The process marks the order as delivered with the `OrderDelivered` intermediate event.
+    * The workflow concludes with the `OrderCompleted` end event, indicating that the order has been successfully processed or appropriately canceled.
+* Furthermore, the process contains data objects such as `order:Order` and `checker:InventoryAvailabilityChecker`, as well as a data store `agreement:CustomerDeliveryAgreement`, to manage and persist relevant information throughout the process.
 
 
 ## Context Conditions (CoCos)

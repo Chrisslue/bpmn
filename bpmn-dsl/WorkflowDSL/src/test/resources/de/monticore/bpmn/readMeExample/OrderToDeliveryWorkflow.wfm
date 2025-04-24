@@ -1,3 +1,7 @@
+package de.monticore.bpmn.readMeExample;
+
+import de.monticore.bpmn.readMeExample.OrderToDelivery.*;
+
 process OrderToDeliveryWorkflow {
     
     data order:Order;
@@ -29,7 +33,7 @@ process OrderToDeliveryWorkflow {
         
         manual task PrepareAndPackProducts;
         manual task PickUpOrder;
-        send task OrderIsOnTheWay;
+        event OrderDelivered;
 
         subprocess ShipOrder{
           manual task AttachLabelToPacket;
@@ -61,9 +65,9 @@ process OrderToDeliveryWorkflow {
     }  
     
     ReceiveOrder -> ProcessOrder -> CheckProductAvailability -> OrderFulfillable ->
-      { [checker.allProductsAvailable] PrepareAndPackProducts -> { [agreement.IsOrderPickedUp] PickUpOrder;
+      { [checker.allProductsAvailable] PrepareAndPackProducts -> { [agreement.isOrderPickedUp] PickUpOrder;
                                                                    [_] ShipOrder;
-                                                                 } -> OrderIsOnTheWay; 
+                                                                 } -> OrderDelivered;
         [!checker.allProductsAvailable] CancellationMessage -> CancelOrder; 
       } -> FinishOrderProcessing -> OrderCompleted;
 
