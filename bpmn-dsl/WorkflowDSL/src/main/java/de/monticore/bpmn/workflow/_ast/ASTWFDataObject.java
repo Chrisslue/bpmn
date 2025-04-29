@@ -1,3 +1,4 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.workflow._ast;
 
 import de.se_rwth.commons.logging.Log;

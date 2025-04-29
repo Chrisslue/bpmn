@@ -1,0 +1,32 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
+process NoKeyword1{
+  lane subprocess{
+    rule task task;
+    subprocess subprocess;
+    event event;
+    transaction transaction;
+  }
+  lane lane{
+    manual task manual
+      while [ true ] max 3 ;
+    service task count
+      count 3 sequential until [ true ] ( cancel [ true ] )
+      {
+        webservice = ##webservice;
+        operation = operation;
+        message = message;
+      }
+
+    signal signal : String;
+    message message : String;
+    operation operation (
+     in signal
+    );
+
+    split xor split;
+    merge receive first receive;
+  }
+
+  task -> split -> subprocess -> receive -> count -> event;
+  count -> transaction -> count;
+}

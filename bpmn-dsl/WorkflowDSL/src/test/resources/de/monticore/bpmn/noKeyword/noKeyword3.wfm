@@ -1,0 +1,29 @@
+process noKeyword3{
+  data lane:String;
+  store task:String;
+
+  start event send send;
+  end event timer timer [ at 12:54 ];
+
+  service task subprocess
+    while [ false ] max 10;
+
+  user task count{
+    resources = service;
+  }
+
+  rule task lane{
+    webservice = ##unspecified;
+    operation = event;
+    }
+
+  operation event(
+  in max;
+  out max
+  );
+
+  escalation  max:String;
+  split receive all receive;
+
+  send -> receive -> timer -> count;
+}

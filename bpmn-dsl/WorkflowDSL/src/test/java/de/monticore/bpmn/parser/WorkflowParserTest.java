@@ -1,3 +1,4 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 /*
  * Copyright (c) 2017, MontiCore. All rights reserved.
  *
@@ -87,21 +88,8 @@ public class WorkflowParserTest extends AbstractTest {
   }
 
   @Test
-  public void testReferenceModel() {
-    String modelName = "de.monticore.bpmn.conformance.ReferenceModel";
-    parseModel(modelName);
-  }
-
-  @Test
-  public void testBachelorThesis() {
-    String modelName = "de.monticore.bpmn.conformance.BachelorThesis";
-    parseModel(modelName);
-  }
-
-  @Test
   public void testExample1Model() {
-    String modelName = "de.monticore.bpmn.readMeExample.OrderToDeliveryWorkflow";
-    String modelName1 = "de.monticore.bpmn.readMeExample.Test1";
+    String modelName = "de.monticore.bpmn.examples.orderToDelivery.OrderToDeliveryWorkflow";
     WorkflowTool tool = new WorkflowTool();
     ASTWorkflowCompilationUnit ast = parseModel(modelName);
 
@@ -117,13 +105,33 @@ public class WorkflowParserTest extends AbstractTest {
 
   @Test
   public void testExample2Model() {
-    String modelName = "de.monticore.bpmn.readMeExample.CustomerOrder";
+    String modelName = "de.monticore.bpmn.examples.orderToDelivery.CustomerOrder";
     parseModel(modelName);
   }
 
   @Test
   public void testExample3Model() {
-    String modelName = "de.monticore.bpmn.readMeExample.Payment";
+    String modelName = "de.monticore.bpmn.examples.orderToDelivery.Payment";
     parseModel(modelName);
   }
+
+  @Test
+  public void testNoKeywordModel1() {
+    String modelName = "de.monticore.bpmn.noKeyword.NoKeyword1";
+    parseModel(modelName);
+  }
+
+  @Test
+  public void testNoKeywordModel2() {
+    String modelName = "de.monticore.bpmn.noKeyword.NoKeyword2";
+    parseModel(modelName);
+  }
+
+  @Test
+  public void testNoKeywordModel3() {
+    String modelName = "de.monticore.bpmn.noKeyword.NoKeyword3";
+    parseModel(modelName);
+  }
+
+
 }

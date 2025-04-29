@@ -1,6 +1,7 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.readMeExample;
 
-import de.monticore.bpmn.readMeExample.OrderToDelivery.*;
+import de.monticore.bpmn.examples.orderToDelivery.OrderToDelivery.*;
 
 process OrderToDeliveryWorkflow {
     

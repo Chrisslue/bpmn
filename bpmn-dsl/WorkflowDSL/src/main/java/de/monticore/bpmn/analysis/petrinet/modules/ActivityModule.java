@@ -1,3 +1,4 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.analysis.petrinet.modules;
 
 import static com.google.common.base.Preconditions.checkArgument;

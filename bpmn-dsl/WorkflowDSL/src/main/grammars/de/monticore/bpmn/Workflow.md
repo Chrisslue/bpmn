@@ -1,4 +1,3 @@
-
 # Business Process Model and Notation (BPMN)
 The main purpose of this language is to provide a textual alternative to graphical **BPMN** modeling.
 
@@ -13,7 +12,7 @@ This BPMN language component contains
 ```
 package de.monticore.bpmn.readMeExample;
 
-import de.monticore.bpmn.readMeExample.OrderToDelivery.*;
+import de.monticore.bpmn.examples.orderToDelivery.OrderToDelivery.*;
 
 process OrderToDeliveryWorkflow {
     
@@ -69,20 +68,32 @@ process OrderToDeliveryWorkflow {
           start event PrepareForShipment;
           end event ShipmentDispatched;
 
-          PrepareForShipment -> SecurePackageWithTape 
-            -> SelectShippingCarrier -> PrintShippingLabel 
-            -> AttachLabelToPacket -> ShipmentDispatched;
+          PrepareForShipment 
+            -> SecurePackageWithTape 
+              -> SelectShippingCarrier 
+                -> PrintShippingLabel 
+                  -> AttachLabelToPacket 
+                    -> ShipmentDispatched;
         }
 
         end event OrderCompleted;
     }  
     
-    ReceiveOrder -> ProcessOrder -> CheckProductAvailability -> OrderFulfillable ->
-      { [checker.allProductsAvailable] PrepareAndPackProducts -> { [agreement.isOrderPickedUp] PickUpOrder;
-                                                                   [_] ShipOrder;
-                                                                 } -> OrderDelivered;
-        [!checker.allProductsAvailable] CancellationMessage -> CancelOrder; 
-      } -> FinishOrderProcessing -> OrderCompleted;
+    ReceiveOrder 
+      -> ProcessOrder 
+        -> CheckProductAvailability 
+          -> OrderFulfillable 
+            -> { 
+                 [checker.allProductsAvailable] PrepareAndPackProducts 
+                   -> { [agreement.isOrderPickedUp] PickUpOrder;
+                        [_] ShipOrder;
+                      } 
+                   -> OrderDelivered;
+                 [!checker.allProductsAvailable] CancellationMessage 
+                   -> CancelOrder; 
+               } 
+            -> FinishOrderProcessing 
+              -> OrderCompleted;
 
 }
 ```
@@ -95,10 +106,12 @@ process OrderToDeliveryWorkflow {
     * The `CheckProductAvailability` service task uses a multi-instance loop to check the availability of each ordered product in parallel.
     * The exclusive gateway `OrderFulfillable` evaluates whether all ordered products are available. 
       * If all products are available, the process continues in the `Warehouse` lane.
-      * If at least one product is unavailable, the send task `CancellationMessage` is executed. Subsequently, the intermediate event `CancelOrder` triggers compensation for the `ProcessOrder` task.
+      * If at least one product is unavailable, the send task `CancellationMessage` is executed. Subsequently, the intermediate event `CancelOrder` triggers compensation for the `ProcessOrder` task, thus leading to the task `RollbackOrderProcessing`.
   * `Warehouse` lane:
     * The `PrepareAndPackProducts` manual task is responsible for preparing and packing the available products.
     * Depending on the delivery agreement, the process either continues with the `PickUpOrder` manual task or proceeds to the `ShipOrder` subprocess. The subprocess covers all shipping-related activities.
+      * To complete the manual task `SecurePackageWithTape`, the resource `TapeDispenser` is used.
+      * The service task `PrintShippingLabel` utilizes an unspecified web service and invokes the operation `GetAddress`, which retrieves the destination `address` for corresponding customer. The operation takes the `customerID` as input and returns the appropriate `address` as output, with both parameters defined as messages.
     * The process marks the order as delivered with the `OrderDelivered` intermediate event.
     * The workflow concludes with the `OrderCompleted` end event, indicating that the order has been successfully processed or appropriately canceled.
 * Furthermore, the process contains data objects such as `order:Order` and `checker:InventoryAvailabilityChecker`, as well as a data store `agreement:CustomerDeliveryAgreement`, to manage and persist relevant information throughout the process.

@@ -1,3 +1,4 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.analysis.petrinet.modules;
 
 import de.monticore.bpmn.workflow._ast.ASTWFGateway;

@@ -1,3 +1,4 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.parser;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;

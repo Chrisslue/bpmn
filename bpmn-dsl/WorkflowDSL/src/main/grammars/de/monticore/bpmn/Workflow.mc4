@@ -321,7 +321,7 @@ grammar Workflow extends
     direction:["split"|"merge"] type:GatewayType;
   
   /** 
-   * The ruke defines a variable that represents the number of activations
+   * The rule defines a variable that represents the number of activations
      at a complex gateway.
    * The guard of a "complex" gateway refers to an activationCount.
    */
