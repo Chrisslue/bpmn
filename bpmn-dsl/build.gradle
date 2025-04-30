@@ -4,15 +4,16 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 
 plugins {
-    // Eclipse compiler as it's much faster than javac
-    // Since the root project does not contain java code, it is only applied to the subprojects
-    id "io.github.themrmilchmann.ecj" version "0.1.0" apply false
+    id "maven-publish"
+    id "io.github.themrmilchmann.ecj" version "0.2.0" apply false
     id "com.github.sherter.google-java-format" version "0.9"    // Task "verifyGoogleJavaFormat" and "googleJavaFormat"
 }
 
+description = "BPMN-DSL"
+
 allprojects {
-    ext.grammarDir = 'src/main/grammars'
-    buildDir = file("$projectDir/target")
+    group 'de.monticore'
+    buildDir = "$projectDir/target"
 
     repositories {
         if (("true").equals(getProperty('useLocalRepo'))) {
@@ -30,6 +31,7 @@ allprojects {
 subprojects {
     apply plugin: 'java-library'
     apply plugin: 'io.github.themrmilchmann.ecj'
+    apply plugin: 'maven-publish'
 
     tasks.withType(Test) {
         useJUnit()
@@ -75,6 +77,15 @@ subprojects {
     }
 }
 
+googleJavaFormat {
+    exclude '**/target/**'
+}
+
+verifyGoogleJavaFormat {
+    ignoreFailures true
+    exclude "**"
+}  // do not check format in "build"
+
 /**
  * Builds the whole BPMN project
  * Executes JUnit tests and assembles the jars
@@ -84,7 +95,7 @@ task buildBPMN {
     description("Builds the whole BPMN project, i.e. BpmnXML, TimerConditions, WorkflowCLI and WorkflowDSL")
     dependsOn(
             ":BpmnXML:build",
-            ":TimerConditions:build",
+//            ":TimerConditions:build",
 //            ":WorkflowCLI:build",
             ":WorkflowDSL:build",
             gradle.includedBuilds*.task(":build")
@@ -99,7 +110,7 @@ task testBPMN {
     description("Tests the JUnit Tests in the BPMN project")
     dependsOn(
             ":BpmnXML:test",
-            ":TimerConditions:test",
+//            ":TimerConditions:test",
 //            ":WorkflowCLI:test",
             ":WorkflowDSL:test",
             gradle.includedBuilds*.task(":test")
@@ -116,7 +127,7 @@ task publishBPMN {
 
     dependsOn(
             ":BpmnXML:publish",
-            ":TimerConditions:publish",
+//            ":TimerConditions:publish",
 //            ":WorkflowCLI:publish",
             ":WorkflowDSL:publish",
             gradle.includedBuilds*.task(":publish")
@@ -134,7 +145,7 @@ task publishBPMNToMavenLocal {
             'to the local maven repository.')
     dependsOn(
             ":BpmnXML:publishToMavenLocal",
-            ":TimerConditions:publishToMavenLocal",
+//            ":TimerConditions:publishToMavenLocal",
 //            ":WorkflowCLI:publishToMavenLocal",
             ":WorkflowDSL:publishToMavenLocal",
             gradle.includedBuilds*.task(':publishToMavenLocal')
@@ -149,7 +160,7 @@ task cleanBPMN {
     group("build")
     dependsOn(
             ":BpmnXML:clean",
-            ":TimerConditions:clean",
+//            ":TimerConditions:clean",
 //            ":WorkflowCLI:clean",
             ":WorkflowDSL:clean"
 
@@ -158,7 +169,7 @@ task cleanBPMN {
 
 configure([
         project(':BpmnXML'),
-           project(':TimerConditions'),
+         //  project(':TimerConditions'),
          //  project(':WorkflowCLI'),
            project(':WorkflowDSL')
 ]){

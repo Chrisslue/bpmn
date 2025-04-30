@@ -14,7 +14,7 @@ import de.monticore.bpmn.cocos.flow.*;
 import de.monticore.bpmn.cocos.gateways.*;
 import de.monticore.bpmn.workflow._cocos.WorkflowASTWFSubProcessCoCo;
 import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
-import de.monticore.timer.timerconditions.cocos.TemporalExpressionsCoCos;
+import de.monticore.bpmn.timerconditions.cocos.TemporalExpressionsCoCos;
 
 /** Factory for CoCo checkers. */
 public class WorkflowCoCos {

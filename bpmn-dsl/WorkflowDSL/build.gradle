@@ -1,47 +1,19 @@
 plugins {
     id "java-library"
     id "com.github.johnrengelman.shadow" version "6.0.0"
-    id "monticore" version "$version"
+    id "de.monticore.generator" version "$version"
     id "jacoco"
 }
 
 group = "de.monticore.lang"
 sourceCompatibility = '11'
 
-def grammarOutDir = "$buildDir/generated-sources/monticore/sourcecode"
-
-
-sourceSets {
-    main.java.srcDirs += [grammarOutDir]
-
-    grammars {
-        java.srcDirs = []
-        resources {
-            srcDirs([grammarDir, grammarOutDir])
-            include "**/*.mc4"
-        }
-    }
-}
-
-configurations {grammar}
-
-java {
-    registerFeature('grammars') {
-        usingSourceSet(sourceSets.grammars)
-    }
-}
-
 test {
     useJUnitPlatform()
 }
 
 dependencies {
-    implementation project(':TimerConditions')
-    grammar (project(':TimerConditions')){
-      capabilities {
-        requireCapability("de.monticore.timer:TimerConditions-grammars")
-      }
-    }
+
 
     implementation "de.monticore.lang:petrinets:$petrinets_version"
 
@@ -60,29 +32,19 @@ dependencies {
     implementation "com.sun.xml.bind:jaxb-impl:$jaxb_impl_version"
     implementation "com.sun.xml.bind:jaxb-xjc:$jaxb_impl_version"
 
+    /*----------------------Timer-Conditions-------------------------*/
+    implementation "joda-time:joda-time:$joda_time_version"
+    implementation "com.cronutils:cron-utils:$cron_utils_version"
+
 
     /*-----------------------MONTICORE-------------------------------*/
     implementation "de.monticore.lang:cd4analysis:$mc_version"
-    implementation "org.antlr:antlr4-runtime:$antlr_version"
-    implementation "de.monticore:monticore-runtime:$mc_version"
-    implementation "de.monticore:monticore-grammar:$mc_version"
-    grammar "de.monticore:monticore-grammar:$mc_version:$grammars_classifier"
+    grammar "de.monticore:monticore-grammar:$mc_version"
 
     /*------------------------TESTING-----------------------------------*/
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_jupiter_version"
     testImplementation "org.junit.jupiter:junit-jupiter-engine:$junit_jupiter_version"
-    testImplementation "de.monticore:monticore-runtime:$mc_version"
 }
-
-task generateWorkflow (type: MCTask) {
-    grammar = file "$projectDir/$grammarDir/de/monticore/bpmn/Workflow.mc4"
-    outputDir = file "$buildDir/generated-sources/monticore/sourcecode"
-    handcodedPath "$projectDir/src/main/java"
-    def uptoDate = incCheck("de/monticore/bpmn/Workflow.mc4")
-    outputs.upToDateWhen { uptoDate }
-}
-
-compileJava.dependsOn(generateWorkflow)
 
 // build sources jar in addition
 task sourcesJar(type: Jar) {
