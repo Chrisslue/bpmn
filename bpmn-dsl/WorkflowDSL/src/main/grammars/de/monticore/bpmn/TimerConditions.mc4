@@ -5,10 +5,10 @@ component grammar TimerConditions extends de.monticore.literals.MCCommonLiterals
 {
 
   /**
-     This grammar defines a DSL for the specification of timer based
-     conditions primarily used by EventTriggerTimer in the Workflow DSL to
-     trigger WFEvents. It extends MCCommonLiterals to make use of existing
-     numeric literals.
+     This component grammar defines productions for the specification of
+     timer based conditions primarily used by EventTriggerTimer in the
+     Workflow DSL to trigger WFEvents. It extends MCCommonLiterals to make
+     use of existing numeric literals.
      TODO: Use custom DateTime DSL for Date and Time concepts.
    */
 

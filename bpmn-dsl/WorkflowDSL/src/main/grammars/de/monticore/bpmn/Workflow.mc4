@@ -52,16 +52,16 @@ grammar Workflow extends
   /*========================================================================*/
 
   /**
-   * A FlowElement represents any element that can appear in a workflow
-     process.
+   * The FlowElement interface is used for declarations of various elements
+     within a process.
    * It encompasses lanes, activities, gateways, events, sequence flows etc.
    */ 
   interface FlowElement; 
 
   /** 
-   * A WFProcess describes a workflow which contains flow elements in any
-     order.
-   * A process has a modifier, a name and may contain I/O requirements.
+   * A WFProcess describes a workflow containing FlowElements.
+   * The order of these FlowElements is not relevant.
+   * A WFProcess has a modifier, a name and may contain I/O requirements.
    */
   symbol scope WFProcess =
     Modifier "process" Name "{"
@@ -71,7 +71,7 @@ grammar Workflow extends
 
   /**
    * A WFLane represents a sub-partition within a process.
-   * It must contain at least one flow element.
+   * It must contain at least one FlowElement.
    * It has a name that denotes, e.g., a business function or a role.
    */
   WFLane implements FlowElement =
@@ -112,7 +112,7 @@ grammar Workflow extends
    * "subprocess":  describes an embedded subprocess.
    * "transaction": models complex business scenarios and ensures that all
                     parts are completed successfully or are handled 
-                    expriopriatly in case of failure. 
+                    appropriately in case of failure.
    * "adhoc":       represents a collection of activities with no required
                     sequentialization. This means that the subprocess is
                     flexible in its task execution.   
@@ -160,7 +160,7 @@ grammar Workflow extends
    * WFTask represents an atomic activity within a workflow.
    * "service": is automated by software and can use external applications.
    * "send":    sends a message to an external system or participant.
-   * "receive": waits for an incoming message from an system or participant.
+   * "receive": waits for an incoming message from a system or participant.
    * "user":    is performed by a person with the support of software.
    * "manual":  is performed physically without the aid of software.
    * "rule":    is used to interact with a business rule engine.
@@ -219,7 +219,7 @@ grammar Workflow extends
 
   /** 
    * A WFOperation describes a function that is called by a task.
-   * There is exactly one ingoing message and at most one outgoing message.
+   * There is exactly one incoming message and at most one outgoing message.
    * It can specify error elements which may be returned.
    * An implementation of the operation can be referenced.
    */
@@ -321,7 +321,7 @@ grammar Workflow extends
     direction:["split"|"merge"] type:GatewayType;
   
   /** 
-   * The rule defines a variable that represents the number of activations
+   * This rule defines a variable that represents the number of activations
      at a complex gateway.
    * The guard of a "complex" gateway refers to an activationCount.
    */
@@ -330,9 +330,13 @@ grammar Workflow extends
     
   /** 
    * There are different types of gateways.
-   * "receive first": The first event determines the path to follow. 
-   * "receive all":   It waits for every event before following each path.
-   * "complex":       The gateway is connected to a guard.
+   * "xor":           executes exactly one path.
+   * "ior":           executes at least one path (in parallel).
+   * "and":           executes all paths.
+   * "receive first": executes the path of the first event received.
+   * "receive all":   waits for each event before executing the
+                      corresponding path.
+   * "complex":       executes paths determined by a guard expression.
    */
   GatewayType =
     (  [exclusive:"xor"]
@@ -349,10 +353,10 @@ grammar Workflow extends
 
   /** 
    * A WFEvent defines an occurrence that happens during the course of
-     workflow.
-   * It is either catching or throwing. Throw events emit the trigger,
-     whereas catch events listen for the trigger to occur.
-   * Interrupting boundary events cancel the activity to that they are
+     a workflow.
+   * It is either catching or throwing. Throwing events emit the trigger,
+     whereas catching events listen / wait for the trigger to occur.
+   * Interrupting boundary events cancel the activity to which they are
      attached.
    * An operation must be specified for message tasks in an executable
      process.
@@ -370,7 +374,7 @@ grammar Workflow extends
 
   /**
    * This rule adds a variable that indicates if an event is a boundary
-     event.
+     event or not.
    */
   symbolrule WFEvent =
     boundary:boolean;
@@ -389,20 +393,20 @@ grammar Workflow extends
     "cancel";
 
   /*
-   * WFEventTriggerCompensate removes the effects of the referenced
-     activity.
+   * WFEventTriggerCompensate undoes the effects of the referenced
+     activity by executing a compensating activity.
    */
   WFEventTriggerCompensate implements WFEventTrigger = 
     "compensate" ( activity:Name)? ["async"]?;
 
   /**
-   * WFEventTriggerConditional activites the event of the trigger after the
-     expresiion has been evaluated to true.
+   * WFEventTriggerConditional triggers the event after the expression has
+     been evaluated to true.
    */ 
   WFEventTriggerConditional implements WFEventTrigger =
     "when" "[" Expression "]";
 
-  // WFEventTriggerTerminate ends the process by terminating all activites.
+  // WFEventTriggerTerminate ends the process by terminating all activities.
   WFEventTriggerTerminate implements WFEventTrigger =
     "terminate";
 
@@ -421,12 +425,12 @@ grammar Workflow extends
     "}";
 
   /**
-   * WFEventTriggerNotification allows to reference a WFNotification.
-   * "message": This trigger can be used to send or receive messages.
-   * "signal" : Signals can be sent and received within and across a
+   * WFEventTriggerNotification sends or receives a WFNotification.
+   * "message": is used to send or receive messages.
+   * "signal" : is used to send or receive signals within and across a
                 process.
-   * "error"  : It allows to catch and react to a named error.
-   * "escalte": It indicates a non-critical problem without interrupting
+   * "error"  : catches and reacts to a named error.
+   * "escalte": indicates a non-critical problem without interrupting
                 the current process.
    */
   WFEventTriggerNotification implements WFEventTrigger =
@@ -434,8 +438,8 @@ grammar Workflow extends
 
   /*
    * CompensationHandler references a compensating activity for a boundary
-     event. For example, compensation is done to undo or reverse the effects
-     of an activity.
+     event. E.g., compensation is done to undo or reverse the effects of an
+     activity.
    */
   CompensationHandler =
     "with" activity:Name@WFActivity;
@@ -445,29 +449,29 @@ grammar Workflow extends
   /*============================ CONTROL FLOW ============================*/
   /*======================================================================*/
 
-  // A SequenceFlow defines a series of flow targets.
+  /*
+   * A SequenceFlow defines a sequence of flow targets to be executed in
+     order.
+   */
   SequenceFlow implements FlowElement =
     path:(FlowTarget || "->")+ ";";
 
-  /*
-   * A FlowBlock allows to specify a set of parallel branches in a sequence
-     flow.
-   */
+  // A FlowBlock is a set of branching sequence flows.
   FlowBlock =
     "{" branch:SequenceFlow+ "}";
 
   /**
-   * A FlowTarget references either a flow element or flow block or defines
+   * A FlowTarget either references a FlowElement or defines a FlowBlock or
      an inline gateway.
-   * A flow restriction condition can also be set.
+   * A flow-restricting condition can also be set.
    */
   FlowTarget =
     condition:FlowCondition?
     (element:MCQualifiedName | gateway:WFInlineGateway | block:FlowBlock);
 
   /**
-   * A FlowCondition specifies if a flow target is preceded by a condition
-     or it is a default sequence flow, designated as "[_]".
+   * A FlowCondition specifies a guard expression for a FlowTarget or
+     designates it as a default sequence flow via "[_]".
    */ 
   FlowCondition = 
     ("[" Expression "]" | default:["[_]"]);
@@ -478,19 +482,17 @@ grammar Workflow extends
   /*======================================================================*/
 
   /** 
-   * This nonterminal represents a data object or a data store.
+   * WFDataObject specifies a data object or a data storage.
    * It has a name and a type.
    */
   WFDataObject implements FlowElement, Variable =
     WFDataKind Name ":" MCType ";";
 
 
-  /** The WFDataKind is a separate NT to allow for extension later
-    */
+  // WFDataKind is a separate nonterminal to allow for later extension.
   interface WFDataKind;
 
-  /** The list of data kinds available as variants of WFDataKind:
-  */
+  // The list of data kinds available as variants of WFDataKind:
   WFDataKindObject implements WFDataKind = "data";
   WFDataKindStore implements WFDataKind = "store";
 
@@ -518,9 +520,9 @@ grammar Workflow extends
    * WFDataIO specifies a data input or a data output.
    * MCQualifiedNam defines the name of the consumed or produced data
      element.
-   * [i]: The tag indicates the use of a collection-valued data input.
-   * "?": It marks the input or output data as optional.
-   * "!": The data can be produced or evaluated while executing.
+   * [i]: indicates the iteration over a collection-type data input.
+   * "?": marks the input or output data as optional.
+   * "!": indicates that data can be produced or evaluated during execution.
    */
   WFDataIO =
     MCQualifiedName
@@ -539,7 +541,7 @@ grammar Workflow extends
    * Different kinds of notifications can be send by event triggers, tasks, 
      and operations.
    * Every notification has a name and a type.
-   * CoCos ensure the right kinds of Notification are used at the right
+   * CoCos ensure the right kinds of Notification are used in the right
      place.
    */
   symbol WFNotification implements FlowElement, Variable =
@@ -557,8 +559,8 @@ grammar Workflow extends
 
 
   /**
-   * Keywords of the Workflow language that can be reused for names of,
-     e.g., methods.
+   * Keywords of the Workflow language that can be reused for names of
+     elements, e.g., methods.
    */
   nokeyword "process", "subprocess", "task", "transaction", "lane", "event";
   nokeyword "operation", "message", "service", "user", "manual", "rule",

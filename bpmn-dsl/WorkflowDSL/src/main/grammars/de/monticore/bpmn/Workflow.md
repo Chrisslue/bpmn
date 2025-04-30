@@ -1,8 +1,9 @@
 # Business Process Model and Notation (BPMN)
-The main purpose of this language is to provide a textual alternative to graphical **BPMN** modeling.
+The purpose of this language is to provide a textual alternative to graphical **BPMN** modeling.
 
-This BPMN language component contains 
-* one grammar,
+The BPMN language consists of 
+* the grammar`Workflow`
+* the component grammar `TimerConditions`
 * context conditions,
 * pretty printers, and 
 * a command-line tool.
@@ -97,24 +98,48 @@ process OrderToDeliveryWorkflow {
 
 }
 ```
-* The upper example model specifies a process named `OrderToDeliveryWorkflow`.
-* The process distinguishes between two separate lanes. The `Sales` lane covers intake, processing and a possible cancellation of the order, while the `Warehouse` lane represents the packing and shipment.
+* The example model above specifies a process named `OrderToDeliveryWorkflow`.
+* The process distinguishes between two separate lanes. 
+  The `Sales` lane covers intake, processing and a possible cancellation of
+  the order, while the `Warehouse` lane represents the packing and shipment.
   * `Sales` lane:
     * The process begins with the `ReceiveOrder` start event.
     * The `ProcessOrder` service task handles the main processing of the order. 
-      A boundary event named `PossibleCancellation` is attached to the service task, enabling the process to react to a cancellation request by triggering the `RollbackOrderProcessing` service task.
-    * The `CheckProductAvailability` service task uses a multi-instance loop to check the availability of each ordered product in parallel.
-    * The exclusive gateway `OrderFulfillable` evaluates whether all ordered products are available. 
-      * If all products are available, the process continues in the `Warehouse` lane.
-      * If at least one product is unavailable, the send task `CancellationMessage` is executed. Subsequently, the intermediate event `CancelOrder` triggers compensation for the `ProcessOrder` task, thus leading to the task `RollbackOrderProcessing`.
+      A boundary event named `PossibleCancellation` is attached to the 
+      service task, enabling the process to react to a cancellation request
+      by triggering the `RollbackOrderProcessing` service task.
+    * The `CheckProductAvailability` service task uses a multi-instance loop
+      to check the availability of each ordered product in parallel.
+    * The exclusive gateway `OrderFulfillable` evaluates whether all ordered
+      products are available. 
+      * If all products are available, the process continues in the 
+        `Warehouse` lane.
+      * If at least one product is unavailable, the send task 
+        `CancellationMessage` is executed. Subsequently, the intermediate 
+        event `CancelOrder` triggers compensation for the `ProcessOrder` 
+        task, thus leading to the task `RollbackOrderProcessing`.
   * `Warehouse` lane:
-    * The `PrepareAndPackProducts` manual task is responsible for preparing and packing the available products.
-    * Depending on the delivery agreement, the process either continues with the `PickUpOrder` manual task or proceeds to the `ShipOrder` subprocess. The subprocess covers all shipping-related activities.
-      * To complete the manual task `SecurePackageWithTape`, the resource `TapeDispenser` is used.
-      * The service task `PrintShippingLabel` utilizes an unspecified web service and invokes the operation `GetAddress`, which retrieves the destination `address` for corresponding customer. The operation takes the `customerID` as input and returns the appropriate `address` as output, with both parameters defined as messages.
-    * The process marks the order as delivered with the `OrderDelivered` intermediate event.
-    * The workflow concludes with the `OrderCompleted` end event, indicating that the order has been successfully processed or appropriately canceled.
-* Furthermore, the process contains data objects such as `order:Order` and `checker:InventoryAvailabilityChecker`, as well as a data store `agreement:CustomerDeliveryAgreement`, to manage and persist relevant information throughout the process.
+    * The `PrepareAndPackProducts` manual task is responsible for preparing
+      and packing the available products.
+    * Depending on the delivery agreement, the process either continues with
+      the `PickUpOrder` manual task or proceeds to the `ShipOrder` subprocess. 
+      The subprocess covers all shipping-related activities.
+      * To complete the manual task `SecurePackageWithTape`, the resource 
+        `TapeDispenser` is used.
+      * The service task `PrintShippingLabel` utilizes an unspecified web 
+        service and invokes the operation `GetAddress`, which retrieves the
+        destination `address` for corresponding customer. 
+        The operation takes the `customerID` as input and returns the 
+        appropriate `address` as output, with both parameters defined as
+        messages.
+    * The process marks the order as delivered with the `OrderDelivered`
+      intermediate event.
+    * The workflow concludes with the `OrderCompleted` end event, indicating
+      that the order has been successfully processed or appropriately canceled.
+* Furthermore, the process contains data objects such as `order:Order` and
+  `checker:InventoryAvailabilityChecker`, as well as a data store 
+  `agreement:CustomerDeliveryAgreement`, to manage and persist relevant 
+  information throughout the process.
 
 
 ## Context Conditions (CoCos)
