@@ -1,5 +1,5 @@
  /* (c) https://github.com/MontiCore/monticore */ 
-package de.monticore.bpmn.examples;
+package de.monticore.bpmn.examples.vacation;
 
 import de.monticore.bpmn.cds.Domain.*;
 
@@ -33,7 +33,7 @@ process RequestHoliday {
   CoordinateInternally -> FillHolidayCardEntry;
   
   user task FillHolidayCardEntry {
-    io {} -> { holidayCard };
+    in {} -> out { holidayCard };
   }
   
   FillHolidayCardEntry -> SubmitHolidayRequest;
@@ -48,13 +48,13 @@ process RequestHoliday {
 
     Start -> ValidateLeaveDaysAndCheckWaitingPeriod;
 
-    split and ValidateLeaveDaysAndCheckWaitingPeriod; // naming parallel gateways is awkward
+    split and ValidateLeaveDaysAndCheckWaitingPeriod;
     
     ValidateLeaveDaysAndCheckWaitingPeriod -> ValidateLeaveDays;
     ValidateLeaveDaysAndCheckWaitingPeriod -> CheckWaitingPeriod;
 
     task ValidateLeaveDays {
-      io {holidayCard} -> {};
+      in {holidayCard} -> out {};
     }
     
     ValidateLeaveDays -> IsRequestValid;
@@ -68,7 +68,7 @@ process RequestHoliday {
     IsRequestValid -> [false] Terminate1 ;
     
     task CheckWaitingPeriod {
-      io {contract} -> {};
+      in {contract} -> out {};
     }
 
     CheckWaitingPeriod -> IsRequesterEligibleForHoliday;
@@ -95,7 +95,7 @@ process RequestHoliday {
   IsHolidayRequestAccepted -> [false] ChooseToRetry;
 
   task AcknowledgeHolidayRequest {
-    io {holidayCard} -> {holidayCard};
+    in {holidayCard} -> out {holidayCard};
   }
   
   AcknowledgeHolidayRequest -> End1;

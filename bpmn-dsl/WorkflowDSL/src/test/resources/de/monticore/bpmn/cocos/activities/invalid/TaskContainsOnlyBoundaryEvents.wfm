@@ -8,7 +8,7 @@ process TaskContainsOnlyBoundaryEvents {
   message msg:LeaveCard;
 
   task T1 {
-    event E1 message:msg;
+    boundary event E1 message msg;
   }
 
 }

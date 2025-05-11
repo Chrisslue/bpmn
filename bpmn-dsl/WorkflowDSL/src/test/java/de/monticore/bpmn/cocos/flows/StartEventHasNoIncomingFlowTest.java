@@ -24,7 +24,7 @@ class StartEventHasNoIncomingFlowTest extends AbstractCoCoTest {
     Collection<Finding> expectedErrors =
         Lists.newArrayList(
             Finding.error(Messages.get("0xWFM2003", "E1")),
-            Finding.error(Messages.get("0xWFM2003", "_Event_1")));
+            Finding.error(Messages.get("0xWFM2003", "E3")));
 
     testModelForErrors(modelName, expectedErrors);
   }

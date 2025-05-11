@@ -7,9 +7,9 @@ process NonInterruptingEventIsSubProcessStartOrBoundary {
 
   message msg:Contract;
 
-  event start E1 receive noninterrupt message:msg;
-  event E2 receive noninterrupt message:msg;
-  event end E3;
+  start event E1 receive noninterrupt message msg;
+  event E2 receive noninterrupt message msg;
+  end event E3;
 
   E1 -> E2 -> E3;
 

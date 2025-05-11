@@ -8,11 +8,17 @@ process EventGatewayIsSplit {
   message msg:Contract;
 
   task T1;
-  task receive T2 message:msg;
-  task receive T3 message:msg;
+  receive task T2{
+    webservice = ##unspecified;
+    message = msg;
+  }
+  receive task T3{
+    webservice = ##unspecified;
+    message = msg;
+  }
 
-  split receive:first G1;
+  split receive first G1;
 
-  T1 -> G1 -> {T2, T3};
+  T1 -> G1 -> {T2; T3;};
 
 }

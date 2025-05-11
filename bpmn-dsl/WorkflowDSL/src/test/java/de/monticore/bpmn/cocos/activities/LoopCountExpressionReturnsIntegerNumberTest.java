@@ -8,6 +8,8 @@ import de.monticore.bpmn.cocos.WorkflowCoCos;
 import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
 import de.se_rwth.commons.logging.Finding;
 import java.util.Collection;
+
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class LoopCountExpressionReturnsIntegerNumberTest extends AbstractCoCoTest {
@@ -16,6 +18,7 @@ class LoopCountExpressionReturnsIntegerNumberTest extends AbstractCoCoTest {
   protected WorkflowCoCoChecker getChecker() {
     return WorkflowCoCos.getActivityChecker();
   }
+
 
   @Test
   void isNonInteger() {

@@ -5,12 +5,15 @@ process NoOptionToComplete {
 
     task Task1;
     task Task2;
-    event Wait timer:[after PT5M];
+    event Wait timer [after PT5M];
 
     split and SplitGateway;
     merge xor LoopGateway;
 
-    event start -> Task1 -> SplitGateway -> {event end, LoopGateway};
+    start event E1;
+    end event E2;
+
+    E1 -> Task1 -> SplitGateway -> {E2; LoopGateway;};
 
     LoopGateway -> Task2 -> Wait -> LoopGateway;
 

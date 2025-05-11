@@ -13,10 +13,10 @@ import org.junit.jupiter.api.Test;
 
 public class WorkflowPrettyPrinterTest extends AbstractTest {
 
+  @Disabled
   @Test
-  @Disabled // RequestHoliday cannot be parsed
   void prettyPrintRequestHoliday() throws IOException {
-    String modelName = "de.monticore.bpmn.examples.RequestHoliday.wfm";
+    String modelName = "de.monticore.bpmn.examples.vacation.RequestHoliday";
     ASTWorkflowCompilationUnit cu = parseModel(modelName);
 
     // print AST

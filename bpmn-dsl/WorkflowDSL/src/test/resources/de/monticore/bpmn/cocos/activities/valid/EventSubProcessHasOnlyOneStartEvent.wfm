@@ -6,10 +6,8 @@ import de.monticore.bpmn.cds.Domain.*;
 process EventSubProcessHasOnlyOneStartEvent {
 
   subprocess S1 {
-    signal sig:Contract;
-
-    event start E1 signal:sig;
-    event end E3;
+    start event E1;
+    end event E3;
 
     E1 -> E3;
   }

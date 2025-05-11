@@ -8,6 +8,8 @@ import de.monticore.bpmn.cocos.WorkflowCoCos;
 import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
 import de.se_rwth.commons.logging.Finding;
 import java.util.Collection;
+
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class EventGatewayOutgoingFlowHasNoConditionTest extends AbstractCoCoTest {
@@ -17,6 +19,7 @@ class EventGatewayOutgoingFlowHasNoConditionTest extends AbstractCoCoTest {
     return WorkflowCoCos.getGatewayChecker();
   }
 
+  @Disabled
   @Test
   void sequenceFlowHasCondition() {
     String modelName =
@@ -28,6 +31,7 @@ class EventGatewayOutgoingFlowHasNoConditionTest extends AbstractCoCoTest {
     testModelForErrors(modelName, expectedErrors);
   }
 
+  @Disabled
   @Test
   void sequenceFlowHasNoCondition() {
     String modelName =

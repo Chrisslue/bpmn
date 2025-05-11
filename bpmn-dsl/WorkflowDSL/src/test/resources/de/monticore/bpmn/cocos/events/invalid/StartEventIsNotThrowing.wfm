@@ -3,8 +3,8 @@ package de.monticore.bpmn.cocos.events.invalid;
 
 process StartEventIsNotThrowing {
 
-  event start E1 send;
-  event end E2;
+  start event E1 send;
+  end event E2;
 
   E1 -> E2;
 

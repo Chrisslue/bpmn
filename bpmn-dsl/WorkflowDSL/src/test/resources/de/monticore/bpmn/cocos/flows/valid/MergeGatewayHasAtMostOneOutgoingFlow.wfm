@@ -9,9 +9,9 @@ process MergeGatewayHasAtMostOneOutgoingFlow {
   merge xor G1;
   merge xor G2;
 
-  {T1, T2} -> G1;
+  {T1; T2;} -> G1;
   G1 -> T3;
 
-  {T1, T2} -> G2;
+  {T1; T2;} -> G2;
 
 }

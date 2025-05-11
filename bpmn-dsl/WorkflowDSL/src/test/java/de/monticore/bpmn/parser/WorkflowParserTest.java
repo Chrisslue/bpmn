@@ -27,24 +27,31 @@ import java.util.Optional;
 
 import de.monticore.bpmn.workflow._symboltable.WorkflowSTCompleter;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
-import de.se_rwth.commons.Names;
+
 import org.antlr.v4.runtime.RecognitionException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Disabled;
 
 public class WorkflowParserTest extends AbstractTest {
 
-  @Disabled("Model must to be adapted to current grammar")
+
   @Test
   public void testRequestVacation() throws IOException {
-    String modelName = "de.monticore.bpmn.examples.RequestHoliday";
+    String modelName = "de.monticore.bpmn.examples.vacation.RequestVacation";
     parseModel(modelName);
   }
 
-  @Disabled("Model must to be adapted to current grammar")
+  @Test
+  public void testRequestHoliday() throws IOException {
+    String modelName = "de.monticore.bpmn.examples.vacation.RequestHoliday";
+    parseModel(modelName);
+  }
+
+
+  @Disabled
   @Test
   public void testOnlineStore() throws IOException {
-    String modelName = "de.monticore.bpmn.examples.OnlineStore";
+    String modelName = "de.monticore.bpmn.examples.onlineStore.OnlineStore";
     parseModel(modelName);
   }
 
@@ -66,7 +73,6 @@ public class WorkflowParserTest extends AbstractTest {
     parseModel(modelName);
   }
 
-  @Disabled("Model must to be adapted to current grammar")
   @Test
   public void testSimpleTask() throws RecognitionException, IOException {
     WorkflowParser parser = WorkflowMill.parser();
@@ -74,13 +80,13 @@ public class WorkflowParserTest extends AbstractTest {
     Optional<ASTWFTask> task =
         parser.parseWFTask(
             new StringReader(
-                  "user task FillHolidayCardEntry {\n" + "    io {} -> { holidayCard };\n" + "  }"));
+                  "user task FillHolidayCardEntry {\n" + "    in {} -> out { holidayCard };\n" + "  }"));
 
     assertFalse(parser.hasErrors());
     assertTrue(task.isPresent());
   }
 
-  @Disabled("Model must to be adapted to current grammar")
+  @Disabled("Stereotypes are currently not working for task, transaction and subprocess.")
   @Test
   public void testStereotypes() {
     String modelName = "de.monticore.bpmn.stereotypes.Stereotypes";
@@ -130,6 +136,12 @@ public class WorkflowParserTest extends AbstractTest {
   @Test
   public void testNoKeywordModel3() {
     String modelName = "de.monticore.bpmn.noKeyword.NoKeyword3";
+    parseModel(modelName);
+  }
+
+  @Test
+  public void testNoKeywordModel4() {
+    String modelName = "de.monticore.bpmn.noKeyword.NoKeyword4";
     parseModel(modelName);
   }
 

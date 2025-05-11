@@ -7,6 +7,6 @@ process BoundaryEventIsContainedByActivity {
 
   message msg:LeaveCard;
 
-  <<boundary>> event E1 message:msg;
+  boundary event E1 message msg;
 
 }

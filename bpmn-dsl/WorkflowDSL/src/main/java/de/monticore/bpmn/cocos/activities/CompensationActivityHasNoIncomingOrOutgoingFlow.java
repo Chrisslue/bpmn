@@ -15,7 +15,7 @@ public class CompensationActivityHasNoIncomingOrOutgoingFlow implements Workflow
 
   @Override
   public void check(final ASTWFActivity activity) {
-    if (activity.isForCompensation()) {
+    if (activity.getSymbol().isCompensating()) {
       activity
           .streamIncomings()
           .map(SequenceFlow::getSource)

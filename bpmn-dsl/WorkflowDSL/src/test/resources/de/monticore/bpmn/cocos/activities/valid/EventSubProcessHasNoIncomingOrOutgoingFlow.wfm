@@ -7,16 +7,15 @@ import de.monticore.bpmn.cds.Domain.*;
 process EventSubProcessHasNoIncomingOrOutgoingFlow {
 
   task T1;
-  subprocess S1 {}
+  subprocess S1;
   task T2;
 
   T1 -> S1 -> T2;
 
   subprocess S2 {
-    signal sig:LeaveCard;
 
-    event start E1 signal:sig;
-    event end E2;
+    start event E1;
+    end event E2;
 
     E1 -> E2;
   }

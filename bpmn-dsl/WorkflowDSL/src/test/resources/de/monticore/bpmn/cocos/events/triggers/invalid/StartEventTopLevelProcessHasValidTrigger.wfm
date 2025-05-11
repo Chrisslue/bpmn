@@ -8,10 +8,10 @@ process StartEventTopLevelProcessHasValidTrigger {
   escalation esc:Contract;
   error err:Contract;
 
-  event start E1 escalate:esc;
-  event start E2 error:err;
-  event start E3 cancel;
-  event start E4 compensate;
-  event start E5 terminate;
+  start event E1 escalation esc;
+  start event E2 error err;
+  start event E3 cancel;
+  start event E4 compensate;
+  start event E5 terminate;
 
 }

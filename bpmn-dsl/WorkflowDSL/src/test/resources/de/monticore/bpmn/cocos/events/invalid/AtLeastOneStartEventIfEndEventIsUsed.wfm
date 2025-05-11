@@ -4,13 +4,13 @@ package de.monticore.bpmn.cocos.events.invalid;
 process AtLeastOneStartEventIfEndEventIsUsed {
 
   task T1;
-  event end E1;
+  end event E1;
 
   T1 -> E1;
 
   subprocess S1 {
     task T2;
-    event end E2;
+    end event E2;
 
     T2 -> E2;
   }

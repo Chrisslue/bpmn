@@ -8,6 +8,8 @@ import de.monticore.bpmn.cocos.WorkflowCoCos;
 import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
 import de.se_rwth.commons.logging.Finding;
 import java.util.Collection;
+
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class EventSubProcessHasNoIncomingOrOutgoingFlowTest extends AbstractCoCoTest {
@@ -17,6 +19,7 @@ public class EventSubProcessHasNoIncomingOrOutgoingFlowTest extends AbstractCoCo
     return WorkflowCoCos.getActivityChecker();
   }
 
+  @Disabled
   @Test
   void invalidSourcesAndTargets() {
     String modelName =

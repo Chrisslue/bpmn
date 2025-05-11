@@ -11,9 +11,9 @@ process Unsafe {
 
   split and SplitGateway;
 
-  event start Start;
-  event end End1;
-  event end End2;
+  start event Start;
+  end event End1;
+  end event End2;
 
   Start -> LoopEntry -> Task1 -> LoopExit -> End1;
   LoopExit -> SplitGateway -> LoopEntry;

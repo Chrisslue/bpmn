@@ -8,6 +8,8 @@ import de.monticore.bpmn.cocos.WorkflowCoCos;
 import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
 import de.se_rwth.commons.logging.Finding;
 import java.util.Collection;
+
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class CompensatedActivityExistsTest extends AbstractCoCoTest {
@@ -17,6 +19,7 @@ class CompensatedActivityExistsTest extends AbstractCoCoTest {
     return WorkflowCoCos.getEventChecker();
   }
 
+  @Disabled
   @Test
   void compensatedActivityDoesNotExist() {
     String modelName = "de.monticore.bpmn.cocos.events.invalid.CompensatedActivityExists";

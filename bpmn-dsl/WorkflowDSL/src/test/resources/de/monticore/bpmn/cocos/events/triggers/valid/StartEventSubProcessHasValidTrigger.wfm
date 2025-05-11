@@ -12,17 +12,17 @@ process StartEventSubProcessHasValidTrigger {
     message msg:Contract;
     signal sig:Contract;
     
-    start event  E1 message:msg;
-    start event  E2 timer:[on 19-11-2019 at 23:55];
-    start event  E3 escalate:esc;
-    start event  E4 when:[true];
-    start event  E5 error:err;
+    start event  E1 message msg;
+    start event  E2 timer [on 19-11-2019 at 23:55];
+    start event  E3 escalation esc;
+    start event  E4 when [true];
+    start event  E5 error err;
     start event  E6 compensate;
-    start event  E7 signal:sig;
-    start event  E8 one { message:msg, signal:sig };
-    start event  E9 all { message:msg, signal:sig };
+    start event  E7 signal sig;
+    start event  E8 one { message msg, signal sig };
+    start event  E9 all { message msg, signal sig };
      
-  };
+  }
   
 
 }

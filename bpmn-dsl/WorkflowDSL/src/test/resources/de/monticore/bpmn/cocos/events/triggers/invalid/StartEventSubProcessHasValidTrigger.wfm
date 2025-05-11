@@ -7,8 +7,8 @@ process StartEventSubProcessHasValidTrigger {
 
   subprocess S1 {
 
-    event start E1 cancel;
-    event start E2 terminate;
+    start event E1 cancel;
+    start event E2 terminate;
 
   }
 

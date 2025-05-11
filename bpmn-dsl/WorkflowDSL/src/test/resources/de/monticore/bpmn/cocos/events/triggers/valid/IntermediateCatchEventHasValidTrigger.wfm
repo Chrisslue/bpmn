@@ -8,11 +8,11 @@ process IntermediateCatchEventHasValidTrigger {
   message msg:Contract;
   signal sig:Contract;
 
-  event E1 receive message:msg;
-  event E2 receive timer:[on 19-11-2018 at 23:55];
-  event E3 receive when:[true];
-  event E4 receive signal:sig;
-  event E5 receive one { message:msg, signal:sig };
-  event E6 receive all { message:msg, signal:sig };
+  //event E1 receive message:msg;
+  event E2 receive timer [on 19-11-2018 at 23:55];
+  event E3 receive when [true];
+  //event E4 receive signal:sig;
+  //event E5 receive one { message:msg, signal:sig };
+  //event E6 receive all { message:msg, signal:sig };
 
 }

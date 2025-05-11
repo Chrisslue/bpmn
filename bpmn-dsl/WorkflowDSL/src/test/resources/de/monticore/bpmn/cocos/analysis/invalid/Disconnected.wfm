@@ -6,8 +6,13 @@ process Disconnected {
     task Task1;
     task Task2;
 
-    event start -> Task1 -> event end;
+    start event E1;
+    end event E2;
+    start event  E3;
+    end event E4;
 
-    event start -> Task2 -> event end;
+    E1 -> Task1 -> E2;
+
+    E3 -> Task2 -> E4;
 
 }

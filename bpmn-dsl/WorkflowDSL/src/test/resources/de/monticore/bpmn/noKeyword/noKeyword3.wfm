@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 process noKeyword3{
   data lane:String;
   store task:String;

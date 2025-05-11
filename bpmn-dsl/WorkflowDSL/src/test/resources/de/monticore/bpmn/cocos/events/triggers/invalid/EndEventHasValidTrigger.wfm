@@ -5,11 +5,11 @@ import de.monticore.bpmn.cds.Domain.*;
 
 process EndEventHasValidTrigger {
 
-  message msg:Contract;
-  signal sig:Contract;
+  //message msg:Contract;
+  //signal sig:Contract;
 
-  end event E1 timer:[on 19-11-2018 at 23:55];
-  end event E2 when:[true];
-  end event E3 one { message:msg, signal:sig };
+  end event E1 timer [on 19-11-2018 at 23:55];
+  end event E2 when [true];
+  end event E3 one { terminate, compensate };
 
 }

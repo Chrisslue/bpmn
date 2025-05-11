@@ -12,17 +12,17 @@ process OnlineStore {
     store customer:Customer;
 
     /*
-    global task service CheckArticleAvailability {
-      in: article:Article;
+    service task CheckArticleAvailability {
+      in article:Article;
     }
     */
 
     task CheckArticleAvailability /*template:CheckArticleAvailability*/ {
-      in: article;
+      in article;
     }
 
     start event OrderReceived receive message:orderMsg {
-      out: order;
+      out order;
     //order <- orderMsg.order;
     }
 
@@ -31,26 +31,27 @@ process OnlineStore {
     subprocess OrderFulfillment {
       //message lateShippingNotice:LateShippingNotice;
 
-      subprocess ReserveArticle /* multi parallel */ {
-        in: order.articles[i] as article;
+      subprocess ReserveArticle {
+        in order.articles[i] as article;
 
-        //task service CheckArticleAvailability;
+        service task CheckArticleAvailability;
 
         task ProcureArticle /* template:ProcureArticle */ ;
 
-        /* TODO
-        //TODO: add rollback concept to grammar?
-        task service ReserveArticle rollback:RemoveReservation;
-        rollback task service RemoveReservation;
-
-        start event -> CheckArticleAvailability -> split xor {
+        service task ReserveArticle;
+        service task RemoveReservation;
+        start event E11;
+        end event ArticleReserved;
+        E11 -> CheckArticleAvailability -> split xor {
           [article.isAvailable]: continue;
           else: ProcureArticle;
-        } merge xor -> end event ArticleReserved;
-
+        } merge xor -> ArticleReserved;
 
         subprocess  {
-          start event  receive rollback -> event CancelReservation send rollback:ReserveArticle async -> end event;
+          start event receive Rollback;
+          event CancelReservation send;
+          end event E13
+          Rollback -> CancelReservation-> E13;
         }
 
         boundary event LateShipping receive nocancel escalation:lateShipping;

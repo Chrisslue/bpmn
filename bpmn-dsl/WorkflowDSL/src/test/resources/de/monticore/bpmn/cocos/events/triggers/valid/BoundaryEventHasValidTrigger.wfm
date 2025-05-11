@@ -11,16 +11,16 @@ process BoundaryEventHasValidTrigger {
   signal sig:Contract;
 
   task T1 {
-    <<boundary>> event E1 message:msg;
-    <<boundary>> event E2 timer:[on 19-11-2018 at 23:55];
-    <<boundary>> event E3 escalate:esc;
-    <<boundary>> event E4 when:[true];
-    <<boundary>> event E5 error:err;
-    //<<boundary>> event E6 cancel; may only be used in transaction sub-process
-    <<boundary>> event E7 compensate;
-    <<boundary>> event E8 signal:sig;
-    <<boundary>> event E9 one { message:msg, signal:sig };
-    <<boundary>> event E10 all { message:msg, signal:sig };
+    boundary event E1 message msg;
+    boundary event E2 timer [on 19-11-2018 at 23:55];
+    boundary event E3 escalation esc;
+    boundary event E4 when [true];
+    boundary event E5 error err;
+    boundary event E6 cancel;
+    boundary event E7 compensate;
+    boundary event E8 signal sig;
+    boundary event E9 one { message msg, signal sig };
+    boundary event E10 all { message msg, signal sig };
   }
 
 }

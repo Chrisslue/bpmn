@@ -6,13 +6,16 @@ import de.monticore.bpmn.cds.Domain.*;
 process CompensationActivityHasNoIncomingOrOutgoingFlow {
 
   task T1;
+  task T3;
 
-  task T2 compensate:T1;
+  task T2 {
+    boundary event E1 with T1;
+    }
 
-  task T3 template:TaskContainsOnlyBoundaryEvents compensate:T1;
+  task T4 {
+      boundary event E1 with T3;
+   }
 
-  subprocess S1 compensate:T1 {}
-
-  T2 -> T3 -> S1;
+  T1 -> T3 -> T2;
 
 }

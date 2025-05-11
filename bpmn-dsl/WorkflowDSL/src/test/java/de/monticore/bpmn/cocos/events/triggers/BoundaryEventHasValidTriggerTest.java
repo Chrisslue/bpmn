@@ -8,6 +8,8 @@ import de.monticore.bpmn.cocos.WorkflowCoCos;
 import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
 import de.se_rwth.commons.logging.Finding;
 import java.util.Collection;
+
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class BoundaryEventHasValidTriggerTest extends AbstractCoCoTest {
@@ -16,6 +18,7 @@ class BoundaryEventHasValidTriggerTest extends AbstractCoCoTest {
   protected WorkflowCoCoChecker getChecker() {
     return WorkflowCoCos.getEventTriggerChecker();
   }
+
 
   @Test
   void invalidTriggers() {
@@ -29,6 +32,7 @@ class BoundaryEventHasValidTriggerTest extends AbstractCoCoTest {
 
     testModelForErrors(modelName, expectedErrors);
   }
+
 
   @Test
   void validTriggers() {

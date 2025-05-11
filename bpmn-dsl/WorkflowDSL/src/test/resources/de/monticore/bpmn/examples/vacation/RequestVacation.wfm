@@ -10,22 +10,29 @@ process RequestVacation {
     data report:Report;
     data notice:VacationCardEntry;
 
-    task service DoWork {
-      out: report;
+    service task DoWork {
+      out report;
     }
-    task user Task1 {
-      io: {contract, report} -> {report};
+    user task Task1 {
+      in {contract, report} -> out {report};
     }
-    task user Task2 {
-      io: {report} -> {notice};
+    user task Task2 {
+      in {report} -> out {notice};
     }
-    task Foo; // template:External;
-    task service Bar;
 
-    event start -> DoWork -> Task1 -> split xor -> {
-      [true] Foo,
-      [false] Bar
-    } -> merge xor -> event receive timer:[after PT20S] -> Task2 -> event end;
+    task Foo; // template:External;
+    service task Bar;
+
+    start event E1;
+    event E2 receive timer [after PT20S];
+    end event E3;
+
+    E1 -> DoWork -> Task1 -> split xor -> {
+      [true] Foo;
+      [false] Bar;
+    } -> merge xor -> E2 -> Task2 -> E3;
+
+
   }
 
 }

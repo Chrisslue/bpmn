@@ -10,22 +10,15 @@ process BoundaryEventHasNoIncomingFlow {
   task T0;
 
   task T1 {
-    <<boundary>> event E1 message:msg;
+    boundary event E1 message msg;
   }
 
   subprocess S1 {
-    task T;
-    T -> E2;
-
-    <<boundary>> event E2 message:msg;
+    task T{
+      boundary event E2 message msg;
+    }
   }
 
   task T2;
-
-  T0 -> T1.E1;
-  T0 -> S1.E2;
-
-  T1.E1 -> T2;
-  S1.E2 -> T2;
 
 }

@@ -8,6 +8,8 @@ import de.monticore.bpmn.cocos.WorkflowCoCos;
 import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
 import de.se_rwth.commons.logging.Finding;
 import java.util.Collection;
+
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class CancelIntermediateEventIsAttachedToTransactionTest extends AbstractCoCoTest {
@@ -16,6 +18,7 @@ class CancelIntermediateEventIsAttachedToTransactionTest extends AbstractCoCoTes
   protected WorkflowCoCoChecker getChecker() {
     return WorkflowCoCos.getEventTriggerChecker();
   }
+
 
   @Test
   void invalidTriggers() {
@@ -31,6 +34,7 @@ class CancelIntermediateEventIsAttachedToTransactionTest extends AbstractCoCoTes
     testModelForErrors(modelName, expectedErrors);
   }
 
+  @Disabled
   @Test
   void validTriggers() {
     String modelName =

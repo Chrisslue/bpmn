@@ -8,11 +8,17 @@ process EventGatewayOutgoingFlowsHaveNoCondition {
 
   message msg:Contract;
 
-  task receive T1 {message:msg;}
-  task receive T2 {message:msg;}
+  receive task T1 {
+    webservice = ##unspecified;
+    message = msg;
+  }
+  receive task T2 {
+    webservice = ##unspecified;
+    message = msg;
+  }
 
-  split receive:first G1;
+  split receive first G1;
 
-  G1 -> {[let x = 7 in x == 7] T1, T2};
+  G1 -> {[let x = 7 in x == 7] T1; T2;};
 
 }

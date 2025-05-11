@@ -8,12 +8,12 @@ process StartEventTopLevelProcessHasValidTrigger {
   message msg:Contract;
   signal sig:Contract;
 
-  event start E1;
-  event start E2 message:msg;
-  event start E3 timer:[on 19-11-2019 at 23:55];
-  event start E4 when:[true];
-  event start E5 signal:sig;
-  event start E6 one { message:msg, signal:sig };
-  event start E7 all { message:msg, signal:sig };
+  start event E1;
+  start event E2 message msg;
+  start event E3 timer [on 19-11-2019 at 23:55];
+  start event E4 when [true];
+  start event E5 signal sig;
+  start event E6 one { message msg, signal sig };
+  start event E7 all { message msg, signal sig };
 
 }

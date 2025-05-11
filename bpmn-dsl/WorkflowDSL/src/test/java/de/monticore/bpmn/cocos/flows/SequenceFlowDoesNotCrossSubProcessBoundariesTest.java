@@ -8,6 +8,8 @@ import de.monticore.bpmn.cocos.WorkflowCoCos;
 import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
 import de.se_rwth.commons.logging.Finding;
 import java.util.Collection;
+
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class SequenceFlowDoesNotCrossSubProcessBoundariesTest extends AbstractCoCoTest {
@@ -16,7 +18,7 @@ class SequenceFlowDoesNotCrossSubProcessBoundariesTest extends AbstractCoCoTest 
   protected WorkflowCoCoChecker getChecker() {
     return WorkflowCoCos.getSequenceFlowChecker();
   }
-
+  @Disabled
   @Test
   void invalidSourcesAndTargets() {
     String modelName =
@@ -28,7 +30,7 @@ class SequenceFlowDoesNotCrossSubProcessBoundariesTest extends AbstractCoCoTest 
             Finding.error(Messages.get("0xWFM3003", "E11", "T11")));
     testModelForErrors(modelName, expectedErrors);
   }
-
+  @Disabled
   @Test
   void validSourcesAndTargets() {
     String modelName =

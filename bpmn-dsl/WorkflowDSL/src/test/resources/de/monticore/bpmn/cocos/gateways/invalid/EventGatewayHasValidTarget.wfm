@@ -11,25 +11,26 @@ process EventGatewayHasValidTarget {
   task T1;
 
   event E1 receive cancel;
-  event E2 receive error:err;
-  event E3 receive escalate:esc;
+  event E2 receive error err;
+  event E3 receive escalation esc;
   event E4 receive compensate;
-  event E5 receive one {message:msg, error:err};
-  event E6 receive all {message:msg, error:err};
+  event E5 receive one {message msg, error err};
+  event E6 receive all {message msg, error err};
 
   task T2;
-  task service T3;
-  task send T4 message:msg;
-  task manual T5;
-  task rule T6;
-  task script T7;
+  service task T3;
+  send task T4{
+    webservice = ##unspecified;
+    message = msg;
+  }
+  manual task T5;
+  rule task T6;
+  script task T7;
 
   split xor G2;
 
-  subprocess S1 {}
+  split receive first G1;
 
-  split receive:first G1;
-
-  T1 -> G1 -> {E1, E2, E3, E4, E5, E6, T2, T3, T4, T5, T6, T7, G2, S1};
+  T1 -> G1 -> {E1; E2; E3; E4; E5; E6; T2; T3; T4; T5; T6; T7; G2;};
 
 }

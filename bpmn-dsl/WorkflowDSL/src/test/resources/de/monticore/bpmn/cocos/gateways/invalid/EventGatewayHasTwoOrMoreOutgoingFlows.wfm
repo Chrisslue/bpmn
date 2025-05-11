@@ -7,11 +7,20 @@ process EventGatewayHasTwoOrMoreOutgoingFlows {
 
   message msg:Contract;
 
-  task receive T1 message:msg;
-  task receive T2 message:msg;
-  task receive T3 message:msg;
+  receive task T1{
+    webservice = ##unspecified;
+    message = msg;
+  }
+  receive task T2{
+    webservice = ##unspecified;
+    message = msg;
+  }
+  receive task T3{
+    webservice = ##unspecified;
+    message = msg;
+  }
 
-  split receive:first G1;
+  split receive first G1;
 
-  {T1, T2} -> G1 -> T3;
+  {T1; T2;} -> G1 -> T3;
 }

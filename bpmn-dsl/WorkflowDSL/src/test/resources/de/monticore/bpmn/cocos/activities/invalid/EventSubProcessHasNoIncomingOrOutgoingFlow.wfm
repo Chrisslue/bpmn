@@ -9,10 +9,9 @@ process EventSubProcessHasNoIncomingOrOutgoingFlow {
   task T2;
 
   subprocess S1 {
-    signal sig:LeaveCard;
 
-    event start E1 signal:sig;
-    event end E2;
+    start event E1;
+    end event E2;
 
     E1 -> E2;
   }

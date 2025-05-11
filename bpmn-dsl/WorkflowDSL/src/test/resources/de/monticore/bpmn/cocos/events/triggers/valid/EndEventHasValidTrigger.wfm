@@ -5,13 +5,12 @@ import de.monticore.bpmn.cds.Domain.*;
 
 process EndEventHasValidTrigger {
 
-  end event E3 error:err;
-  end event E1 message:msg;
-  end event E2 escalate:esc;
-  //end event E4 cancel; may only be used in transaction sub-process
+  //end event E3 error:err;
+  //end event E1 message:msg;
+  //end event E2 escalate:esc;
   end event E5 compensate;
-  end event E6 signal:sig;
-  end event E7 all { message:msg, signal:sig };
+  //end event E6 signal:sig;
+  //end event E7 all { message:msg, signal:sig };
   end event E8 terminate;
 
   /*

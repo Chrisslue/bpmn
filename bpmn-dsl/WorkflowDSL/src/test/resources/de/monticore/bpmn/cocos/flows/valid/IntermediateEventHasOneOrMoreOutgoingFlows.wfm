@@ -3,9 +3,9 @@ package de.monticore.bpmn.cocos.flows.valid;
 
 process IntermediateEventHasOneOrMoreOutgoingFlows {
 
-  event start E1;
+  start event E1;
   event E2;
-  event end E3;
+  end event E3;
 
   E1 -> E2 -> E3;
 

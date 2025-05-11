@@ -10,10 +10,10 @@ process IntermediateThrowEventHasValidTrigger {
   signal sig:Contract;
 
   event E1;
-  event E2 send message:msg;
-  event E3 send escalate:esc;
+  event E2 send message msg;
+  event E3 send escalation esc;
   event E4 send compensate;
-  event E5 send signal:sig;
-  event E6 send all { message:msg, signal:sig };
+  event E5 send signal sig;
+  event E6 send all { message msg, signal sig };
 
 }
