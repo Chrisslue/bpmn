@@ -75,7 +75,7 @@ grammar Workflow extends
    * It has a name that denotes, e.g., a business function or a role.
    */
   WFLane implements FlowElement =
-    "lane" Name "{"
+    Modifier "lane" Name "{"
       FlowElement+
     "}";
 
@@ -123,6 +123,7 @@ grammar Workflow extends
     WFLoopCharacteristic?
     ( "{"
         FlowElement+
+        ("boundary" boundaryEvent:WFEvent)*
       "}"
     | ";" );
 
@@ -562,7 +563,7 @@ grammar Workflow extends
    * Keywords of the Workflow language that can be reused for names of
      elements, e.g., methods.
    */
-  nokeyword "process", "subprocess", "task", "transaction", "lane", "event";
+  nokeyword "process", "lane", "event";
   nokeyword "operation", "message", "service", "user", "manual", "rule",
             "script", "webservice";
   nokeyword "cancel", "compensate", "terminate", "timer", "error", "signal",
