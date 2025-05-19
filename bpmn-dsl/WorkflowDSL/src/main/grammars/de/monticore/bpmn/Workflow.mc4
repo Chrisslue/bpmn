@@ -318,7 +318,7 @@ grammar Workflow extends
    * It has almost the same options as WFGateway, except it has no name
      and no modifier.
    */ 
-  symbol WFInlineGateway =
+  WFInlineGateway =
     direction:["split"|"merge"] type:GatewayType;
   
   /** 

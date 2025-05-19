@@ -1,5 +1,5 @@
  /* (c) https://github.com/MontiCore/monticore */
-<<ref="lane">> process noKeyword4{
+<<ref="lane">> process NoKeyword4{
 
   message msg:ABC;
   rule task a;

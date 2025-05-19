@@ -1,12 +1,12 @@
  /* (c) https://github.com/MontiCore/monticore */ 
 process NoKeyword1{
-  lane subprocess{
-    rule task task;
-    subprocess subprocess;
-    event event;
-    transaction transaction;
-  }
   lane lane{
+    rule task lane;
+    subprocess process;
+    event event;
+    transaction store;
+  }
+  lane data{
     manual task manual
       while [ true ] max 3 ;
     service task count
@@ -27,6 +27,6 @@ process NoKeyword1{
     merge receive first receive;
   }
 
-  task -> split -> subprocess -> receive -> count -> event;
-  count -> transaction -> count;
+  lane -> split -> process -> receive -> count -> event;
+  count -> store -> count;
 }

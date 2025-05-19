@@ -58,9 +58,10 @@ component grammar TimerConditions extends de.monticore.literals.MCCommonLiterals
    * This nonterminal specifies a point in time that includes hours and
      minutes, with seconds as an additional option.
    */ 
-  Time = {noSpace(2,3,4)}?
-      hours:NatLiteral ":" minutes:NatLiteral
-      ({noSpace(4,5)}? ":" seconds:NatLiteral)?
+  Time =
+      hours:NatLiteral ":" {noSpace()}?
+      minutes:NatLiteral {noSpace()}?
+      (":" {noSpace()}? seconds:NatLiteral {noSpace()}?)?
     ;
 
   /*

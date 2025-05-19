@@ -1,12 +1,12 @@
 /* (c) https://github.com/MontiCore/monticore */
-process noKeyword3{
+process NoKeyword3{
   data lane:String;
-  store task:String;
+  store data:String;
 
   start event send send;
   end event timer timer [ at 12:54 ];
 
-  service task subprocess
+  service task store
     while [ false ] max 10;
 
   user task count{
