@@ -58,20 +58,17 @@ component grammar TimerConditions extends de.monticore.literals.MCCommonLiterals
    * This nonterminal specifies a point in time that includes hours and
      minutes, with seconds as an additional option.
    */ 
-  Time =
-      hours:NatLiteral ":" {noSpace()}? 
-      minutes:NatLiteral {noSpace()}? 
-      (":" {noSpace()}? seconds:NatLiteral {noSpace()}?)?
+  Time = {noSpace(2,3,4)}?
+      hours:NatLiteral ":" minutes:NatLiteral
+      ({noSpace(4,5)}? ":" seconds:NatLiteral)?
     ;
 
   /*
    * This nonterminal defines a specific date that includes the year,
      the month, and the day.
    */
-  Date =
-      year:NatLiteral "-" {noSpace()}? 
-      month:NatLiteral {noSpace()}? "-" {noSpace()}? 
-      day:NatLiteral {noSpace()}?
+  Date = {noSpace(2,3,4,5)}?
+      year:NatLiteral "-" month:NatLiteral "-" day:NatLiteral
     ;
 
   /* This nonterminal allows for the specification of ISO8701 time periods,
