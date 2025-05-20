@@ -1,4 +1,6 @@
  /* (c) https://github.com/MontiCore/monticore */
+package de.monticore.bpmn.noKeyword;
+
 <<ref="lane">> process NoKeyword4{
 
   message msg:ABC;

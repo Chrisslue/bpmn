@@ -1,7 +1,7 @@
  /* (c) https://github.com/MontiCore/monticore */ 
-package de.monticore.bpmn.examples;
+package de.monticore.bpmn.examples.vacation;
 
-import de.monticore.bpmn.cds.Trip;
+import de.monticore.bpmn.cds.Trip.*;
 
 
 process ReceiveAdvancePayment {

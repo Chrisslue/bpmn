@@ -1,4 +1,6 @@
  /* (c) https://github.com/MontiCore/monticore */ 
+package de.monticore.bpmn.noKeyword;
+
 process NoKeyword2{
   data script : String;
   store event: String;

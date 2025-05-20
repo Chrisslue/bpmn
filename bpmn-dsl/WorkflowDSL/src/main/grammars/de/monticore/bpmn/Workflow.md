@@ -11,7 +11,7 @@ The BPMN language consists of
 ## An Example Model For Processing Customer Orders
 
 ```
-package de.monticore.bpmn.readMeExample;
+package de.monticore.bpmn.examples.orderToDelivery;
 
 import de.monticore.bpmn.examples.orderToDelivery.OrderToDelivery.*;
 
