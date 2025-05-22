@@ -47,7 +47,7 @@ component grammar TimerConditions extends de.monticore.literals.MCCommonLiterals
       (times:NatLiteral "times")? "every" period:Period
     ;
 
-  /* This is used to allow the specification of a ISO8701 cron expression.
+  /* This is used to allow the specification of a ISO8601 cron expression.
    * The format is enforced via the TOP-mechanism.
    */
   CronCondition implements TimerCondition =

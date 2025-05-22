@@ -5,7 +5,9 @@ grammar Workflow extends
     de.monticore.expressions.LambdaExpressions,
     de.monticore.expressions.AssignmentExpressions,
     de.monticore.expressions.CommonExpressions,
+    de.monticore.literals.CommonLiterals,
     de.monticore.bpmn.TimerConditions,
+    de.monticore.types.MCCollectionTypes,
     de.monticore.symbols.OOSymbols,
     de.monticore.UMLModifier{
 
@@ -36,9 +38,13 @@ grammar Workflow extends
       LambdaExpressions, AssignmentExpressions and CommonExpressions
         * to allow the definition of various kinds of conditions for the 
           workflow execution
+      MCCommonLiterals
+        * allows usage of numbers
       TimerConditions
         * for the specification of different timing constraints regarding
           workflow events
+      MCCollectionTypes
+        * for processing data collections
       OOSymbols
         * to include types, variables, and methods
       UMLModifier
@@ -241,7 +247,7 @@ grammar Workflow extends
 
   /**
    * WFStandardLoop specifies the looping behavior for normal loops.
-   * Along with a loop condition, a while or do-while loop can be specified.
+   * Along with a loop condition, a while or until loop can be specified.
    * It is also possible to set the maximum number of iterations.
    */ 
   WFStandardLoop implements WFLoopCharacteristic  =
@@ -291,8 +297,8 @@ grammar Workflow extends
   /**
    * WFLoopCardinality controls the number of activities created by a
      WFMILoop.
-   * It can be an integer value, an expression that resolves to an integer,
-     or a collection-valued data object.
+   * It can be an integer value, an expression that resolves to a natural
+     number or a collection-valued data object.
    */  
   WFLoopCardinality =
     "count" (count:NatLiteral
@@ -309,7 +315,7 @@ grammar Workflow extends
    * It allows for converging and diverging sequence flows.
    * There are several types of gateways.
    */ 
-  symbol WFGateway implements FlowElement =
+  symbol scope WFGateway implements FlowElement =
     Modifier direction:["split"|"merge"] type:GatewayType Name ";";
 
   /**
@@ -318,7 +324,7 @@ grammar Workflow extends
    * It has almost the same options as WFGateway, except it has no name
      and no modifier.
    */ 
-  WFInlineGateway =
+  scope WFInlineGateway =
     direction:["split"|"merge"] type:GatewayType;
   
   /** 
@@ -346,7 +352,6 @@ grammar Workflow extends
     |  ("receive" [exclusiveEventBased:"first"])
     |  ("receive" [ parallelEventBased:  "all"])
     |  ["complex"] ("[" guard:Expression "]") );
-
 
   /*======================================================================*/
   /*=============================== EVENTS ===============================*/
