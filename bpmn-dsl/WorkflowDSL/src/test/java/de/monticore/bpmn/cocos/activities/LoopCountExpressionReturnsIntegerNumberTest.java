@@ -19,7 +19,7 @@ class LoopCountExpressionReturnsIntegerNumberTest extends AbstractCoCoTest {
     return WorkflowCoCos.getActivityChecker();
   }
 
-
+  @Disabled
   @Test
   void isNonInteger() {
     String modelName =

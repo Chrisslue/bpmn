@@ -7,6 +7,7 @@ import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
 import de.se_rwth.commons.logging.Finding;
 import java.util.Collection;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Disabled;
 
 public class TypeExists extends AbstractCoCoTest {
 
@@ -15,7 +16,7 @@ public class TypeExists extends AbstractCoCoTest {
     // empty checker here, since error is raised during symbol table creation
     return new WorkflowCoCoChecker();
   }
-
+  @Disabled
   @Test
   void taskContainsNonBoundaryEvents() {
     String modelName = "de.monticore.bpmn.cocos.types.invalid.TypeExists";

@@ -24,9 +24,7 @@ class BoundaryEventHasNoIncomingFlowTest extends AbstractCoCoTest {
     Collection<Finding> expectedErrors =
         Lists.newArrayList(
             Finding.error(Messages.get("0xWFM2005", "E1")),
-            Finding.error(Messages.get("0xWFM2005", "E2")),
-            Finding.error(Messages.get("0xWFM3003", "T0", "E1")),
-            Finding.error(Messages.get("0xWFM3003", "T0", "E2")));
+            Finding.error(Messages.get("0xWFM2005", "E2")));
 
     testModelForErrors(modelName, expectedErrors);
   }

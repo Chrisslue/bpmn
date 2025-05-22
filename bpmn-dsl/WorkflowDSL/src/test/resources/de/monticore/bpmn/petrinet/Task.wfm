@@ -21,8 +21,6 @@ process Task {
     T3;
   };
   
-  T2.E1 -> T3;
-  
   subprocess S1 {
 
     task T4;

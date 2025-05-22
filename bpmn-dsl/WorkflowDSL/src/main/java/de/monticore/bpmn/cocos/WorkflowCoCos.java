@@ -114,7 +114,6 @@ public class WorkflowCoCos {
 
   public static WorkflowCoCoChecker getActivityChecker() {
     WorkflowCoCoChecker checker = new WorkflowCoCoChecker();
-    checker.addCoCo(new TaskContainsOnlyBoundaryEvents());
     checker.addCoCo(new CompensationActivityHasNoIncomingOrOutgoingFlow());
     checker.addCoCo(new EventSubProcessHasNoIncomingOrOutgoingFlow());
     checker.addCoCo(new EventSubProcessHasOnlyOneStartEvent());

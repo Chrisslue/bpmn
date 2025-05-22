@@ -15,7 +15,7 @@ public class IntermediateEventHasOneOrMoreOutgoingFlows implements WorkflowASTWF
 
   @Override
   public void check(final ASTWFEvent event) {
-    if (event.isIntermediate() && event.isEmptyOutgoings()) {
+    if (event.isIntermediate() && event.isEmptyOutgoings() && !event.getSymbol().isBoundary()) {
       Log.error(
           Messages.get("0xWFM2021", event.getName()),
           event.get_SourcePositionStart(),

@@ -7,6 +7,6 @@ process MergeGatewayHasMultipleIncomingFlows {
   task T2;
   merge xor G1;
 
-  {T1, T2} -> G1;
+  {T1; T2;} -> G1;
 
 }

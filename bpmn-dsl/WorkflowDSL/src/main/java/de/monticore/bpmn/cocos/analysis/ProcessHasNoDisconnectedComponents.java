@@ -30,10 +30,11 @@ public class ProcessHasNoDisconnectedComponents extends ProcessGraphCoCo {
     List<Set<ASTFlowElement>> components =
         inspector.connectedSets().stream()
             .filter(
-                component -> !isEventSubProcess(component) && !isCompensationActivity(component))
+                component -> !isCompensationActivity(component))
             .collect(Collectors.toList());
+
     if (components.size() > 1) {
-      final String formattedComponents =
+      String formattedComponents =
           components.stream()
               .map(
                   set ->

@@ -9,8 +9,8 @@ process IntermediateCatchEventHasValidTrigger {
   error err:Contract;
 
   event E1 receive;
-  //event E2 receive escalate:esc;
-  //event E3 receive error:err;
+  event E2 receive escalation esc;
+  event E3 receive error err;
   event E4 receive cancel;
   event E5 receive compensate;
   event E6 receive terminate;
