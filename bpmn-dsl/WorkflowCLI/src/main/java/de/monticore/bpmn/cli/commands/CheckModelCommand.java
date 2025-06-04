@@ -89,7 +89,7 @@ class CheckModelCommand implements Runnable {
     traverser.add4Workflow(stCompleter);
     ast.accept(traverser);
     checker.checkAll(ast);
-
+    /*
     if (printAux) {
       Path outPath = auxDir.resolve(Names.getPackageFromPath(parent.qualifiedModel));
       try {
@@ -99,5 +99,7 @@ class CheckModelCommand implements Runnable {
         Log.error("Failed to write auxiliary models.", e);
       }
     }
+
+     */
   }
 }
