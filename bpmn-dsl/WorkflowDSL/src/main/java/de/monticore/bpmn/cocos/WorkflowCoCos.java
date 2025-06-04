@@ -96,7 +96,6 @@ public class WorkflowCoCos {
     checker.addCoCo(new SplitGatewayHasMultipleOutgoingFlow());
     checker.addCoCo(new MergeGatewayHasAtMostOneOutgoingFlow());
     checker.addCoCo(new MergeGatewayHasMultipleIncomingFlow());
-    checker.addCoCo(new SequenceFlowMinTwo());
     checker.addCoCo(new FlowBlockMinTwo());
     return checker;
   }
