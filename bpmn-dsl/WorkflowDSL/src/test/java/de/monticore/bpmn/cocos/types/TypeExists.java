@@ -16,7 +16,7 @@ public class TypeExists extends AbstractCoCoTest {
     // empty checker here, since error is raised during symbol table creation
     return new WorkflowCoCoChecker();
   }
-  @Disabled
+
   @Test
   void taskContainsNonBoundaryEvents() {
     String modelName = "de.monticore.bpmn.cocos.types.invalid.TypeExists";

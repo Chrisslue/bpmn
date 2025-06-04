@@ -68,4 +68,9 @@ public class ASTWFTask extends ASTWFTaskTOP {
   public  Stream<de.monticore.bpmn.workflow._ast.SequenceFlow> streamIncomings () {
     return this.getIncomingsList().stream();
   }
+
+  public boolean hasSpecifiedAttributeWebservice() {
+    return this.getTaskTypeAttributes().isPresentWebservice()
+            || this.getTaskTypeAttributes().getNoWebservice() != 0;
+  }
 }

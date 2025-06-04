@@ -35,7 +35,7 @@ public class ProcessHasNoDisconnectedComponents extends ProcessGraphCoCo {
 
     if (components.size() > 1) {
       String formattedComponents =
-          components.stream()
+          components.stream().filter(set -> set.size() > 1)
               .map(
                   set ->
                       "{"

@@ -1,0 +1,14 @@
+ /* (c) https://github.com/MontiCore/monticore */
+package de.monticore.bpmn.cocos.activities.invalid;
+
+process AdHocSubProcessHasAdHocCharacteristics{
+
+  adhoc S1{
+    task T1;
+  }
+
+  adhoc S2{
+      task T2;
+    }
+
+}

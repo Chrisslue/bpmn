@@ -1,0 +1,14 @@
+/* (c) https://github.com/MontiCore/monticore */
+package de.monticore.bpmn.cocos.flows.invalid;
+
+process FlowBlockMinTwo {
+
+  task T1;
+  task T2;
+  task T3;
+  task T4;
+
+  T1 -> {T2 -> T3;};
+  T2 -> {T3 -> T4;};
+
+}

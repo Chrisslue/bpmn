@@ -19,7 +19,7 @@ class StartEventSubProcessHasValidTriggerTest extends AbstractCoCoTest {
     return WorkflowCoCos.getEventTriggerChecker();
   }
 
-  @Disabled
+
   @Test
   void invalidTriggers() {
     String modelName =

@@ -48,7 +48,7 @@ public class WorkflowParserTest extends AbstractTest {
   }
 
 
-  @Disabled
+  // Model needs to be semantically refined
   @Test
   public void testOnlineStore() throws IOException {
     String modelName = "de.monticore.bpmn.examples.onlineStore.OnlineStore";
@@ -57,7 +57,7 @@ public class WorkflowParserTest extends AbstractTest {
 
   @Test
   public void testTask() throws IOException {
-    String modelName = "de.monticore.bpmn.petrinet.Task";
+    String modelName = "de.monticore.bpmn.petrinet.TaskProcess";
     parseModel(modelName);
   }
 
@@ -86,7 +86,7 @@ public class WorkflowParserTest extends AbstractTest {
     assertTrue(task.isPresent());
   }
 
-  @Disabled("Stereotypes are currently not working for task, transaction and subprocess.")
+
   @Test
   public void testStereotypes() {
     String modelName = "de.monticore.bpmn.stereotypes.Stereotypes";
@@ -102,11 +102,11 @@ public class WorkflowParserTest extends AbstractTest {
     WorkflowMill.scopesGenitorDelegator().createFromAST(ast);
     WorkflowCoCoChecker checker = new WorkflowCoCoChecker();
     checker.addCoCo(new SequenceFlowNodeReferencesExist());
-    //checker.checkAll(ast);
+    checker.checkAll(ast);
     WorkflowSTCompleter stCompleter = new WorkflowSTCompleter();
     WorkflowTraverser traverser = WorkflowMill.traverser();
     traverser.add4Workflow(stCompleter);
-    //ast.accept(traverser);
+    ast.accept(traverser);
   }
 
   @Test

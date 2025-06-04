@@ -18,6 +18,7 @@ class SequenceFlowDoesNotCrossSubProcessBoundariesTest extends AbstractCoCoTest 
   protected WorkflowCoCoChecker getChecker() {
     return WorkflowCoCos.getSequenceFlowChecker();
   }
+
   @Disabled
   @Test
   void invalidSourcesAndTargets() {
@@ -26,11 +27,11 @@ class SequenceFlowDoesNotCrossSubProcessBoundariesTest extends AbstractCoCoTest 
 
     Collection<Finding> expectedErrors =
         Lists.newArrayList(
-            Finding.error(Messages.get("0xWFM3003", "T01", "T02")),
+            Finding.error(Messages.get("0xWFM1004",  "T02")),
             Finding.error(Messages.get("0xWFM3003", "E11", "T11")));
     testModelForErrors(modelName, expectedErrors);
   }
-  @Disabled
+
   @Test
   void validSourcesAndTargets() {
     String modelName =

@@ -34,7 +34,7 @@ class CancelIntermediateEventIsAttachedToTransactionTest extends AbstractCoCoTes
     testModelForErrors(modelName, expectedErrors);
   }
 
-  @Disabled
+
   @Test
   void validTriggers() {
     String modelName =

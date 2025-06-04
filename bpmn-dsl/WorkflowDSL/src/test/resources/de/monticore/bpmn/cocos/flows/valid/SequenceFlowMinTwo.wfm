@@ -1,0 +1,15 @@
+/* (c) https://github.com/MontiCore/monticore */
+package de.monticore.bpmn.cocos.flows.valid;
+
+process SequenceFlowMinTwo {
+
+  start event E1;
+  end event E2;
+
+  task T1;
+  task T2;
+
+  E1 -> T1 -> T2 -> E2;
+
+
+}

@@ -27,7 +27,7 @@ class ProcessHasNoDisconnectedComponentsTest extends AbstractCoCoTest {
         Lists.newArrayList(
             Finding.warning(
                 Messages.get(
-                    "0xWFM7010", "{Task1, E1, E2}, {Task2, E3, E4}")));
+                    "0xWFM7010", "{E1, E2, Task1}, {E3, E4, Task2}")));
 
     testModelForErrors(modelName, Lists.newArrayList(), expectedWarnings);
   }

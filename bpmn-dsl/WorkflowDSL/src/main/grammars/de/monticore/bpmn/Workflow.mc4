@@ -5,7 +5,7 @@ grammar Workflow extends
     de.monticore.expressions.LambdaExpressions,
     de.monticore.expressions.AssignmentExpressions,
     de.monticore.expressions.CommonExpressions,
-    de.monticore.literals.CommonLiterals,
+    de.monticore.literals.MCCommonLiterals,
     de.monticore.bpmn.TimerConditions,
     de.monticore.types.MCCollectionTypes,
     de.monticore.symbols.OOSymbols,

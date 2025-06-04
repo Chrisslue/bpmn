@@ -19,13 +19,13 @@ class CompensatedActivityExistsTest extends AbstractCoCoTest {
     return WorkflowCoCos.getEventChecker();
   }
 
-  @Disabled
+
   @Test
   void compensatedActivityDoesNotExist() {
     String modelName = "de.monticore.bpmn.cocos.events.invalid.CompensatedActivityExists";
 
     Collection<Finding> expectedErrors =
-        Lists.newArrayList(Finding.error(Messages.get("0xWFM1005", "T1")));
+        Lists.newArrayList(Finding.error(Messages.get("0xWFM1005", "t1")));
 
     testModelForErrors(modelName, expectedErrors);
   }

@@ -2,8 +2,8 @@
 package de.monticore.bpmn.cocos.events.invalid;
 
 process CompensatedActivityExists {
-
-  event E1 send compensate T1;
-  task T1;
+  task t2{
+    boundary event E1 receive compensate t1;
+  }
 
 }

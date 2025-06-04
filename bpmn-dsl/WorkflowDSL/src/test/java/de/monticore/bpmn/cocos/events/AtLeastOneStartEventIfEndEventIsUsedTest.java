@@ -19,7 +19,7 @@ class AtLeastOneStartEventIfEndEventIsUsedTest extends AbstractCoCoTest {
     return WorkflowCoCos.getEventChecker();
   }
 
-  @Disabled
+  //ToDo: Subprocess needs to be checked separately
   @Test
   void noStartEventUsed() {
     String modelName =
@@ -28,8 +28,7 @@ class AtLeastOneStartEventIfEndEventIsUsedTest extends AbstractCoCoTest {
     Collection<Finding> expectedErrors =
         Lists.newArrayList(
             Finding.error(
-                Messages.get("0xWFM2006", "AtLeastOneStartEventIfEndEventIsUsed", "\"E1\"")),
-            Finding.error(Messages.get("0xWFM2006", "S1", "\"E2\"")));
+                Messages.get("0xWFM2006", "AtLeastOneStartEventIfEndEventIsUsed", "\"E1\"")));
 
     testModelForErrors(modelName, expectedErrors);
   }

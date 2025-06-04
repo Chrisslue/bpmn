@@ -19,7 +19,7 @@ class StartEventOutgoingFlowHasNoConditionTest extends AbstractCoCoTest {
     return WorkflowCoCos.getEventChecker();
   }
 
-  @Disabled
+
   @Test
   void outgoingFlowHasCondition() {
     String modelName =

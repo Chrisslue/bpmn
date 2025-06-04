@@ -27,35 +27,31 @@ public class StartEventSubProcessHasValidTrigger extends AbstractHasValidTrigger
   
   @Override
   public void check(final ASTWFSubProcess subProcess) {
-    /*
-    if (subProcess.getSymbol().isTriggeredByEvent()) {
       WorkflowCollectors.toEventsLocalSubProcess(subProcess).stream()
           .filter(ASTWFEvent::isStart)
           .forEach(this::check);
-    }
-    */
   }
 
   private void check(final ASTWFEvent event) {
-    if (!event.isPresentTrigger()) {
-      logError(event);
+    if (event.isPresentTrigger()) {
+
+        WorkflowVisitor2 visitor =
+                new WorkflowVisitor2() {
+                    @Override
+                    public void visit(final ASTWFEventTriggerCancel trigger) {
+                        logError(event);
+                    }
+
+                    @Override
+                    public void visit(final ASTWFEventTriggerTerminate trigger) {
+                        logError(event);
+                    }
+                };
+
+        WorkflowTraverser traverser = WorkflowMill.traverser();
+        traverser.add4Workflow(visitor);
+        event.accept(traverser);
     }
-    WorkflowVisitor2 visitor =
-        new WorkflowVisitor2() {
-          @Override
-          public void visit(final ASTWFEventTriggerCancel trigger) {
-            logError(event);
-          }
-
-          @Override
-          public void visit(final ASTWFEventTriggerTerminate trigger) {
-            logError(event);
-          }
-        };
-
-    WorkflowTraverser traverser = WorkflowMill.traverser();
-    traverser.add4Workflow(visitor);
-    event.accept(traverser);
   }
   
 }

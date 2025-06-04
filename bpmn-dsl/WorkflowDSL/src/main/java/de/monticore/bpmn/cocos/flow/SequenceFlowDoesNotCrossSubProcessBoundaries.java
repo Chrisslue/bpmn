@@ -16,7 +16,7 @@ public class SequenceFlowDoesNotCrossSubProcessBoundaries implements WorkflowAST
   /* method toSequenceFlow does not work as we do not have FlowElementContainers anymore */
   @Override
   public void check(final ASTWFProcess process) {
-    //WorkflowCollectors.toSequenceFlow(process).forEach(this::check);
+    WorkflowCollectors.toSequenceFlow(process).forEach(this::check);
   }
 
   public void check(final SequenceFlow sequenceFlow) {

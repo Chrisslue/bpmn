@@ -19,7 +19,7 @@ class EventGatewayOutgoingFlowHasNoConditionTest extends AbstractCoCoTest {
     return WorkflowCoCos.getGatewayChecker();
   }
 
-  @Disabled
+
   @Test
   void sequenceFlowHasCondition() {
     String modelName =
@@ -31,7 +31,7 @@ class EventGatewayOutgoingFlowHasNoConditionTest extends AbstractCoCoTest {
     testModelForErrors(modelName, expectedErrors);
   }
 
-  @Disabled
+
   @Test
   void sequenceFlowHasNoCondition() {
     String modelName =

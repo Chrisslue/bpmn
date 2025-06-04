@@ -1,0 +1,13 @@
+/* (c) https://github.com/MontiCore/monticore */
+package de.monticore.bpmn.cocos.flows.invalid;
+
+process SequenceFlowMinTwo {
+
+  task T1;
+  task T3;
+  T1;
+  split xor;
+  {T1 -> T3;
+   T3 -> T1;};
+
+}

@@ -37,12 +37,14 @@ public class ASTWFEvent extends ASTWFEventTOP {
     }
   }
 
+
   public boolean isThrow() {
     if (r__throw) {
       return true;
     }
     else{
-      return isEnd() || (isIntermediate() && new IsIntermediateThrowTrigger().test(this));
+
+      return isEnd() || (isIntermediate() && new IsIntermediateThrowTrigger().test(this) && !getSymbol().isBoundary());
     }
   }
 

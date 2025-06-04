@@ -15,7 +15,7 @@ process OrderToDeliveryWorkflow {
             receive with RollbackOrderProcessing;
         }
         service task CheckProductAvailability
-          count [order.numberOfOrderedProducts] parallel  
+          count [order.numberOfOrderedProducts] parallel
           {
             in order:Order;
           }

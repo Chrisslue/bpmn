@@ -21,18 +21,16 @@ process OnlineStore {
       in article;
     }
 
-    start event OrderReceived receive message:orderMsg {
+    start event OrderReceived receive message orderMsg {
       out order;
-    //order <- orderMsg.order;
     }
 
     OrderReceived -> OrderFulfillment;
     
     subprocess OrderFulfillment {
-      //message lateShippingNotice:LateShippingNotice;
 
       subprocess ReserveArticle {
-        in order.articles[i] as article;
+        //in order.articles[i] as article;
 
         service task CheckArticleAvailability;
 
@@ -42,36 +40,37 @@ process OnlineStore {
         service task RemoveReservation;
         start event E11;
         end event ArticleReserved;
-        E11 -> CheckArticleAvailability -> split xor {
-          [article.isAvailable]: continue;
-          else: ProcureArticle;
-        } merge xor -> ArticleReserved;
+        E11 -> CheckArticleAvailability -> split xor -> {
+          [article.isAvailable] continue;
+          [!article.isAvailable] ProcureArticle;
+        } -> merge xor -> ArticleReserved;
 
-        subprocess  {
-          start event receive Rollback;
+        subprocess subprocess1 {
+          start event Rollback receive;
           event CancelReservation send;
-          end event E13
+          end event E13;
           Rollback -> CancelReservation-> E13;
         }
 
-        boundary event LateShipping receive nocancel escalation:lateShipping;
-        */
+        boundary event LateShipping receive escalation lateShipping;
+
       }
 
       // ReserveArticle.LateShipping -> task send InformCustomer message:lateShippingNotice -> end event;
 
-      task rule ComputeFinalDiscount {
-        in: customer;
+      rule task ComputeFinalDiscount {
+        in customer;
       }
 
       subprocess CheckCreditCardRating {
-        store payments:Collection<PaymentRecord>;
+        //store payments:Collection<PaymentRecord>;
 
-        task rule InternalRiskAssessment {
-          in: payments;
+        rule task InternalRiskAssessment {
+          in payments;
         }
-        task service GetCreditRatingCompanyA;
-        task service GetCreditRatingCompanyB;
+
+        service task GetCreditRatingCompanyA;
+        service task GetCreditRatingCompanyB;
 
         /* TODO
         start event  -> split and {
@@ -83,7 +82,7 @@ process OnlineStore {
       }
 
       transaction ProcessPayment {
-        in: order;
+        //in order;
 
         error creditCardFailed:CreditCardFailureError;
         /* TODO
@@ -91,10 +90,11 @@ process OnlineStore {
         rollback task service RestoreStoreCredit;
         */
 
-        task ChargeCreditCard template:CollectPayment {
-          boundary event CreditCardFailed receive error:creditCardFailed;
+        call-activity ChargeCreditCard calls CollectPayment {
+          boundary event CreditCardFailed receive error creditCardFailed;
         }
-        ChargeCreditCard.CreditCardFailed -> end event  send cancel;
+        end event E100 send cancel;
+        ChargeCreditCard.CreditCardFailed -> E100;
         /* TODO
         start event 
 
@@ -102,24 +102,24 @@ process OnlineStore {
         */
     
       }
-
-      ProcessPayment.PaymentFailed -> event send cancel;
+      end event E101 send cancel;
+      ProcessPayment.PaymentFailed -> E101;
 
       subprocess PreparePackage {
         data shippingNote:ShippingNote;
 
-        task rule DetermineCarrier {
-          in: order;
+        rule task DetermineCarrier {
+          in order;
         }
-        task user PrintShippingLabel;
-        task user TakeOutShippingInsurance;
-        task manual FinalizePackage;
-        task user PrintShippingNote {
-          in: order;
-          out: shippingNote;
+        user task PrintShippingLabel;
+        user task TakeOutShippingInsurance;
+        manual task FinalizePackage;
+        user task PrintShippingNote {
+          in order;
+          out shippingNote;
         }
-        task manual PackageArticles {
-          in: shippingNote;
+        manual task PackageArticles {
+          in shippingNote;
         }
 
         /* TODO
@@ -131,7 +131,7 @@ process OnlineStore {
           PrintShippingNote -> PackageArticles;
         } merge and -> FinalizePackage -> end event ArticlesPackaged;
         */
-        boundary event ShippingAddressUpdated receive signal:shippingAddressUpdated;
+        boundary event ShippingAddressUpdated receive signal shippingAddressUpdated;
       }
 
       PreparePackage.ShippingAddressUpdated -> PreparePackage; // re-start sub-process
@@ -148,7 +148,8 @@ process OnlineStore {
         } merge xor -> event receive when:[forall a in order.articles: a.isAvailable] -> ProcessPayment;
       } merge and -> PreparePackage -> end event PackagePrepared;
       */
-                 
+
+      /*
       // event sub-processes
       subprocess Bla {
         // TODO start event NotShippable receive error:notShippable -> event send rollback -> end event OrderCancelled;
@@ -162,43 +163,45 @@ process OnlineStore {
       message addressUpdate:ShippingAddressUpdateRequest;
       signal shippingAddressUpdated:ShippingAddressUpdatedSignal;
       subprocess Bla3 {
-        /* TODO
+        // TODO
         start event ShippingAddressUpdateRequested receive nocancel message:addressUpdate
           -> task service UpdateDeliveryAddress -> end event send signal:shippingAddressUpdated;
-        */
+
       }
-      
+
       message paymentMethodUpdate:PaymentMethodUpdateRequest;
       signal paymemntMethodUpdated:PaymentMethodUpdatedSignal;
       subprocess Bla4 {
-        /* TODO
+        // TODO
         start event PaymentMethodUpdateRequested receive nocancel message:paymentMethodUpdate
           -> task service UpdatePaymentMethod -> end event send signal:paymemntMethodUpdated;
-        */
-      }
-    
+
+
+      */
 
     }
 
     message shippingNotification:ShippingNotification;
     message deliveryNotification:DeliveryNotification;
+    event E102 send message shippingNotification;
+    event E103 receive message deliveryNotification;
 
-    OrderFulfillment -> TransferPackageToCarrier -> event send message:shippingNotification -> event receive message:deliveryNotification;
+    OrderFulfillment -> TransferPackageToCarrier -> E102 -> E103;
     OrderFulfillment -> [order.payment.isByInstallments] ProcessRecurringPayment;
 
-    task manual TransferPackageToCarrier;
+    manual task TransferPackageToCarrier;
 
-    subprocess ProcessRecurringPayment until:[order.isPaid] {
+    subprocess ProcessRecurringPayment until [order.isPaid] {
       escalation recurringPaymentFailed:RecurringPaymentFailure;
 
-      task CollectInstallment template:CollectPayment;
+      call-activity CollectInstallment calls CollectPayment;
 
       // TODO start event IthMonthAfterPurchase receive timeout:[after "3d"] -> task CollectInstallment;
 
-      boundary event CreditCardFailed receive error:creditCardFailed;
+      boundary event CreditCardFailed receive error creditCardFailed;
     }
-
-    ProcessRecurringPayment.CreditCardFailed -> event send escalate:recurringPaymentFailed;
+    event E104 send escalation recurringPaymentFailed;
+    ProcessRecurringPayment.CreditCardFailed -> E104;
   }
       
 
@@ -206,7 +209,7 @@ process OnlineStore {
     message complaint:Complaint;
     data complaintNotice:ComplaintNotice;
 
-    task send AskForProductReview;
+    send task AskForProductReview;
 
     subprocess HandleComplaint {
       message moreInfoRequest:AdditionalInformationRequest;
@@ -214,13 +217,19 @@ process OnlineStore {
       message complaintResolved:ComplaintResolvedNotification;
       message complaintRejected:ComplaintRejectedNotification;
 
-      task user CheckComplaint {
-        in: {complaintNotice, order};
+      user task CheckComplaint {
+        in {complaintNotice, order};
       }
-      task rule DetermineCredit;
-      task service UpdateStoreCredit;
-      task send RequestMoreInformation message:moreInfoRequest;
-      task receive ReceiveMoreInformation message:moreInfoResponse;
+      rule task DetermineCredit;
+      service task UpdateStoreCredit;
+      send task RequestMoreInformation{
+       webservice = ##unspecified;
+       message = moreInfoRequest;
+      }
+      receive task ReceiveMoreInformation{
+       webservice = ##unspecified;
+       message = moreInfoResponse;
+      }
 
       /* TODO
       start event -> CheckComplaint -> split xor {
@@ -238,8 +247,8 @@ process OnlineStore {
       // TODO event RecheckComplaint receive link -> CheckComplaint;
     }
 
-    event ComplaintReceived receive message:complaint {
-      out: complaintNotice;
+    event ComplaintReceived receive message complaint {
+      out complaintNotice;
     }
 
     /* TODO
@@ -254,13 +263,13 @@ process OnlineStore {
   }
   
   lane Sales {
-    data salesFigures:Collection<SalesFigures>;
+    //data salesFigures:Collection<SalesFigures>;
     data report:SalesReport;
     message reportDueReminder:SalesReportDueReminder;
     message publication:SalesReport;
 
-    task script CollectSalesData {
-      out: salesFigures;
+    script task CollectSalesData {
+      out salesFigures;
     }
 
     /* TODO
@@ -277,35 +286,37 @@ process OnlineStore {
     */
 
     signal newReviewAvailable:ReviewAvailableSignal;
-    event ReviewCreated receive signal:newReviewAvailable;
+    event ReviewCreated receive signal newReviewAvailable;
 
-    // TODO: Rename implicit:every to implicit:all
-    task ReviewReport count:3 sequential until:[exists r in reviews: !r.accepted] implicit:every event:signal:newReviewAvailable {
-      io: report -> reviews[i];
+    task ReviewReport
+      count 3
+      sequential
+      (signal newReviewAvailable all){
+      in report -> out reviews[i];
     }
 
     task UpdateReport {
-      io: report -> report;
+      in report -> out report;
     }
 
     signal publication:SalesReport;
-    end event PublishReport send message:publication {
-      in: report;
+    end event PublishReport send message publication {
+      in report;
     }
 
     /* TODO
-    start event FirstDayOfMonth receive timeout:[every "month"] -> CollectSalesData -> PrepareSalesReport -> ReviewReport -> split xor {
-      [report.accepted ]: PublishReport;
-      [!report.accepted]: UpdateReport -> ReviewReport;
+    start event FirstDayOfMonth receive timeout [every "month"] -> CollectSalesData -> PrepareSalesReport -> ReviewReport -> split xor -> {
+      [report.accepted ] PublishReport;
+      [!report.accepted] UpdateReport -> ReviewReport;
     };
-
-    PrepareSalesReport.EveryTwentyFourHours -> task send SendEmailReminder message:reportDueReminder -> end event;
+    end event E105;
+    PrepareSalesReport.EveryTwentyFourHours -> send task send SendEmailReminder message reportDueReminder -> E105;
     */
   }
 
   lane Inventory {
-    task ReorderArticle template:ProcureArticle {
-      boundary event NotShippable receive error:notShippable;
+    call-activity ReorderArticle calls ProcureArticle {
+      boundary event NotShippable receive error notShippable;
     }
     /* TODO
     ReorderArticle.NotShippable -> task service RemoveArticle;

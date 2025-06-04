@@ -55,7 +55,7 @@ public class WorkflowTypeCheck3 extends MapBasedTypeCheck3 {
 
     BitExpressionsTypeVisitor visBitExpressions = new BitExpressionsTypeVisitor();
     visBitExpressions.setType4Ast(type4Ast);
-    traverser.add4BitExpressions(visBitExpressions);
+    //traverser.add4BitExpressions(visBitExpressions);
 
     CommonExpressionsCTTIVisitor visCommonExpressions = new CommonExpressionsCTTIVisitor();
     visCommonExpressions.setType4Ast(type4Ast);

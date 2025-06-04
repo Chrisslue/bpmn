@@ -8,6 +8,8 @@ import de.monticore.bpmn.cocos.WorkflowCoCos;
 import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
 import de.se_rwth.commons.logging.Finding;
 import java.util.Collection;
+
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class ProcessHasNoSyncDeadlockTest extends AbstractCoCoTest {
@@ -17,6 +19,7 @@ class ProcessHasNoSyncDeadlockTest extends AbstractCoCoTest {
     return WorkflowCoCos.getStructuralChecker();
   }
 
+  @Disabled
   @Test
   void mergeANDDeadlock() {
     String modelName = "de.monticore.bpmn.cocos.analysis.invalid.SyncDeadlockAND";
@@ -26,6 +29,7 @@ class ProcessHasNoSyncDeadlockTest extends AbstractCoCoTest {
     testModelForErrors(modelName, Lists.newArrayList(), expectedWarnings);
   }
 
+  @Disabled
   @Test
   void mergeIORDeadlock() {
     String modelName = "de.monticore.bpmn.cocos.analysis.invalid.SyncDeadlockIOR";

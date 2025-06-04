@@ -7,7 +7,7 @@ import de.monticore.bpmn.workflow._cocos.WorkflowASTWFLoopCardinalityCoCo;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.types.check.SymTypeExpression;
 import de.monticore.types.check.TypeRelations;
-import de.monticore.types3.TypeCheck3;
+import de.monticore.bpmn.types3.WorkflowTypeCheck3;
 import de.se_rwth.commons.logging.Log;
 
 /**
@@ -19,9 +19,10 @@ public class LoopCountExpressionReturnsIntegerNumber implements WorkflowASTWFLoo
 
   @Override
   public void check(final ASTWFLoopCardinality loopCardinality) {
+    WorkflowTypeCheck3.init();
     if (loopCardinality.isPresentExpression()) {
       ASTExpression loopExpression = loopCardinality.getExpression();
-      SymTypeExpression type = TypeCheck3.typeOf(loopExpression);
+      SymTypeExpression type = WorkflowTypeCheck3.typeOf(loopExpression);
 
       if (type == null) {
         Log.warn(Messages.get("0xWFM1009"));

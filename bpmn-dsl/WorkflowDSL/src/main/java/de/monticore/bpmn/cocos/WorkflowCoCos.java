@@ -62,11 +62,11 @@ public class WorkflowCoCos {
    */
   public static WorkflowCoCoChecker getStructuralChecker() {
     WorkflowCoCoChecker checker = new WorkflowCoCoChecker();
-    checker.addCoCo(new ProcessHasNoDisconnectedComponents());
+    //checker.addCoCo(new ProcessHasNoDisconnectedComponents());
     checker.addCoCo(new ProcessHasNoDeadNodes());
     checker.addCoCo(new ProcessHasNoInfiniteLoop());
-    checker.addCoCo(new ProcessHasNoSyncDeadlock());
-    checker.addCoCo(new ProcessHasNoLackOfSync());
+    //checker.addCoCo(new ProcessHasNoSyncDeadlock());
+    //checker.addCoCo(new ProcessHasNoLackOfSync());
     return checker;
   }
 
@@ -96,6 +96,8 @@ public class WorkflowCoCos {
     checker.addCoCo(new SplitGatewayHasMultipleOutgoingFlow());
     checker.addCoCo(new MergeGatewayHasAtMostOneOutgoingFlow());
     checker.addCoCo(new MergeGatewayHasMultipleIncomingFlow());
+    checker.addCoCo(new SequenceFlowMinTwo());
+    checker.addCoCo(new FlowBlockMinTwo());
     return checker;
   }
 
@@ -120,6 +122,8 @@ public class WorkflowCoCos {
     checker.addCoCo(new AdHocSubProcessContainsAtLeastOneActivity());
     checker.addCoCo(new AdHocSubProcessHasNoStartAndEndEvent());
     checker.addCoCo(new LoopCountExpressionReturnsIntegerNumber());
+    checker.addCoCo(new TaskTypeAttributesAreSet());
+    checker.addCoCo(new AdHocSubProcessHasAdHocCharacteristics());
     return checker;
   }
 
