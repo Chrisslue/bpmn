@@ -17,6 +17,5 @@ deployToNexus:
   script:
     - "gradle --version"
     - "(cd ./bpmn-dsl && gradle WorkflowDSL:publish -P mavenPassword=$pass -P mavenUser=$user $GRADLE_OPTS $ARGS1)"
-    - "(cd ./bpmn-dsl && gradle TimeExpressions:publish -P mavenPassword=$pass -P mavenUser=$user $GRADLE_OPTS $ARGS1)"
   only:
     - dev  
