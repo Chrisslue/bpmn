@@ -1,0 +1,24 @@
+ /* (c) https://github.com/MontiCore/monticore */
+package de.monticore.bpmn.cocos.activities.invalid;
+
+process TaskTypeAttributesAreSet{
+
+
+  service task T1;
+
+  send task T2;
+
+  receive task T3;
+
+  user task T4;
+
+  manual task T5{
+    script ("python") = {"print(x)"};
+  }
+
+  rule task T6;
+
+  script task T7{
+    resources = Machine1,Item4,Item6;
+  }
+}

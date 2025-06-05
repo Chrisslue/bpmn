@@ -1,3 +1,4 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.cocos.flows.valid;
 
 import de.monticore.bpmn.cds.Domain.*;
@@ -7,16 +8,16 @@ process BoundaryEventHasNoIncomingFlow {
   message msg:LeaveCard;
 
   task T1 {
-    <<boundary>> event E1 message:msg;
+    boundary event E1 message msg;
   }
 
   subprocess S1 {
-    <<boundary>> event E2 message:msg;
+    task T2{
+      boundary event E2 message msg;
+    }
+
   }
 
   task T2;
-
-  T1.E1 -> T2;
-  S1.E2 -> T2;
 
 }

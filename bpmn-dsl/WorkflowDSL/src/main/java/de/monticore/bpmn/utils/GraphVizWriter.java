@@ -1,3 +1,4 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.utils;
 
 import de.se_rwth.commons.Joiners;

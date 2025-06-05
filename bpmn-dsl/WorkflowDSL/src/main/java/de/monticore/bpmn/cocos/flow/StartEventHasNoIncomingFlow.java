@@ -1,8 +1,9 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.cocos.flow;
 
 import de.monticore.bpmn.Messages;
-import de.monticore.bpmn.workflow._ast.ASTEvent;
-import de.monticore.bpmn.workflow._cocos.WorkflowASTEventCoCo;
+import de.monticore.bpmn.workflow._ast.ASTWFEvent;
+import de.monticore.bpmn.workflow._cocos.WorkflowASTWFEventCoCo;
 import de.se_rwth.commons.logging.Log;
 
 /**
@@ -10,10 +11,10 @@ import de.se_rwth.commons.logging.Log;
  * flow of the Process, and thus, will not have any incoming Sequence Flows — no Sequence Flow can
  * connect to a Start Event.
  */
-public class StartEventHasNoIncomingFlow implements WorkflowASTEventCoCo {
+public class StartEventHasNoIncomingFlow implements WorkflowASTWFEventCoCo {
 
   @Override
-  public void check(final ASTEvent event) {
+  public void check(final ASTWFEvent event) {
     if (event.isStart() && !event.isEmptyIncomings()) {
       Log.error(
           Messages.get("0xWFM2003", event.getName()),

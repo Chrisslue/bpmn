@@ -1,18 +1,20 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.cocos.events;
 
 import de.monticore.bpmn.Messages;
 import de.monticore.bpmn.collectors.WorkflowCollectors;
-import de.monticore.bpmn.workflow._ast.ASTEvent;
-import de.monticore.bpmn.workflow._ast.ASTProcess;
-import de.monticore.bpmn.workflow._cocos.WorkflowASTProcessCoCo;
+import de.monticore.bpmn.workflow._ast.ASTWFEvent;
+import de.monticore.bpmn.workflow._ast.ASTWFProcess;
+import de.monticore.bpmn.workflow._cocos.WorkflowASTWFProcessCoCo;
 import de.se_rwth.commons.logging.Log;
 
-public class BoundaryEventIsContainedByActivity implements WorkflowASTProcessCoCo {
+public class BoundaryEventIsContainedByActivity implements WorkflowASTWFProcessCoCo {
 
   @Override
-  public void check(final ASTProcess process) {
+  public void check(final ASTWFProcess process) {
     WorkflowCollectors.toEventsLocal(process).stream()
-        .filter(ASTEvent::isBoundary)
+        .filter(event -> event instanceof ASTWFEvent)
+        .filter(event -> event.getSymbol().isBoundary())
         .forEach(
             event ->
                 Log.error(

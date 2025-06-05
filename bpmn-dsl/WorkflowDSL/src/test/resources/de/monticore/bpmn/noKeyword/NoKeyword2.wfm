@@ -1,0 +1,27 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
+package de.monticore.bpmn.noKeyword;
+
+process NoKeyword2{
+  data script : String;
+  store event: String;
+  lane data{
+    script task script{
+      script ( "script" ) = { "script" };
+    }
+    start event receive receive with data;
+    end event event send compensate script;
+    start event send send terminate{
+      operation = event;
+    }
+    error error : String;
+    escalation escalation : String;
+    operation event(
+      in error;
+      out escalation
+    );
+    user task data;
+
+    receive -> split receive all -> data -> receive -> script -> send;
+
+  }
+}

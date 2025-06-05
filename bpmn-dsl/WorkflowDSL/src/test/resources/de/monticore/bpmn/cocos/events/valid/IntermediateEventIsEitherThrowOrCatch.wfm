@@ -1,3 +1,4 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.cocos.events.valid;
 
 import de.monticore.bpmn.cds.Domain.*;
@@ -6,11 +7,11 @@ process IntermediateEventIsEitherThrowOrCatch {
 
   message msg:LeaveCard;
 
-  event start E0;
-  event E11 receive message:msg;
-  event E12 send message:msg;
-  event end E2;
+  start event E0;
+  event E11 receive message msg;
+  event E12 send message msg;
+  end event E2;
 
-  E0 -> {E11, E12} -> E2;
+  E0 -> {E11; E12;} -> E2;
 
 }

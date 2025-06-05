@@ -12,7 +12,7 @@ test {
 
 dependencies {
     implementation project(":WorkflowDSL")
-    implementation project(":TimeExpressions")
+//    implementation project(":TimerConditions")
     implementation "info.picocli:picocli:$picoli_version"
     implementation "de.monticore:monticore-runtime:$mc_version"
     implementation "de.monticore:monticore-grammar:$mc_version"

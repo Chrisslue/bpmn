@@ -1,3 +1,4 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.cocos.events.triggers.invalid;
 
 import de.monticore.bpmn.cds.Domain.*;
@@ -8,11 +9,11 @@ process IntermediateThrowEventHasValidTrigger {
   message msg:Contract;
   signal sig:Contract;
 
-  event E1 send timer:[on 19-11-2018 at 23:55];
-  event E2 send when:[true];
-  event E3 send error:err;
+  event E1 send timer [on 19-11-2018 at 23:55];
+  event E2 send when [true];
+  event E3 send error err;
   event E4 send cancel;
-  event E5 send one { message:msg, signal:sig };
+  event E5 send one { message msg, signal sig };
   event E6 send terminate;
 
 }

@@ -1,0 +1,38 @@
+ /* (c) https://github.com/MontiCore/monticore */
+package de.monticore.bpmn.examples.orderToDelivery;
+
+import de.monticore.bpmn.examples.orderToDelivery.OrderToDelivery.*;
+
+process CustomerOrder{
+    message confirmation:String;
+    data order:Order;
+
+    start event StartOrdering;
+    event CancelOrderSession send terminate;
+
+    user task AddProductA;
+    user task AddProductB;
+    user task AddProductC;
+    script task CalculateTotalCost {
+      script ( "javascript" ) = { "/* add Code here ... */ " } ;
+      in order -> out order;
+    }
+    user task ConfirmOrder;
+    send task SendConfirmation{
+        webservice = ##unspecified;
+        message = confirmation;
+    }
+    
+    call-activity PaymentSelection calls Payment;
+    call-activity ProcessOrder calls OrderToDeliveryWorkflow;
+
+    
+    StartOrdering -> split ior -> { AddProductA;
+                                    AddProductB;
+                                    AddProductC; 
+                                  } 
+                  -> merge ior -> CalculateTotalCost -> PaymentSelection 
+                  -> ConfirmOrder -> SendConfirmation -> ProcessOrder;
+                                    
+                          
+}

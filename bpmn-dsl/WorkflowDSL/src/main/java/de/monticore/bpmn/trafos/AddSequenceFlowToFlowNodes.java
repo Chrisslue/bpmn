@@ -1,3 +1,4 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.trafos;
 
 import de.monticore.bpmn.workflow.WorkflowMill;
@@ -22,11 +23,6 @@ public class AddSequenceFlowToFlowNodes extends WorkflowTransformation implement
     handlePath(flow.getPathList());
   }
 
-  @Override
-  public void visit(final ASTFlowBranch branch) {
-    handlePath(branch.getPathList());
-  }
-
   private void handlePath(final List<ASTFlowTarget> path) {
     StreamEx.of(path)
         .forPairs(
@@ -40,7 +36,7 @@ public class AddSequenceFlowToFlowNodes extends WorkflowTransformation implement
                               .entries()
                               .forEach(
                                   entry -> {
-                                    ASTFlowNode target = entry.getKey();
+                                    ASTFlowElement target = entry.getKey();
                                     List<ASTFlowCondition> conditions = entry.getValue();
 
                                     final SequenceFlow flow =

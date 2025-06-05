@@ -1,3 +1,4 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.cocos.flows.invalid;
 
 process SequenceFlowDoesNotCrossSubProcessBoundaries {
@@ -6,14 +7,14 @@ process SequenceFlowDoesNotCrossSubProcessBoundaries {
   subprocess S01 {
     task T02;
   }
-  T01 -> S01.T02;
+  T01 -> T02;
 
   task T11;
   subprocess S11 {
     task T12 {
-      <<boundary>> event E11;
+      boundary event E11;
     }
   }
-  S11.T12.E11 -> T11;
+  E11 -> T11;
 
 }

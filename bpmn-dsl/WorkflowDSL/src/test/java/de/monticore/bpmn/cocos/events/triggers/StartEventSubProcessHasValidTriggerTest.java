@@ -1,3 +1,4 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.cocos.events.triggers;
 
 import com.google.common.collect.Lists;
@@ -7,6 +8,8 @@ import de.monticore.bpmn.cocos.WorkflowCoCos;
 import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
 import de.se_rwth.commons.logging.Finding;
 import java.util.Collection;
+
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class StartEventSubProcessHasValidTriggerTest extends AbstractCoCoTest {
@@ -15,6 +18,7 @@ class StartEventSubProcessHasValidTriggerTest extends AbstractCoCoTest {
   protected WorkflowCoCoChecker getChecker() {
     return WorkflowCoCos.getEventTriggerChecker();
   }
+
 
   @Test
   void invalidTriggers() {
@@ -28,6 +32,7 @@ class StartEventSubProcessHasValidTriggerTest extends AbstractCoCoTest {
 
     testModelForErrors(modelName, expectedErrors);
   }
+
 
   @Test
   void validTriggers() {

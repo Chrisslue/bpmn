@@ -1,3 +1,4 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.analysis.petrinet;
 
 import com.google.common.collect.Iterables;
@@ -38,12 +39,12 @@ public class WorkflowNetConverter extends WorkflowLocalVisitor {
 
   private static final List<Class> UNSUPPORTED_TRIGGERS =
       Lists.newArrayList(
-          ASTEventTriggerCompensate.class,
-          ASTEventTriggerTerminate.class,
-          ASTEventTriggerError.class, // TODO only unsupported if intermediate xor end
-          ASTEventTriggerCancel.class);
+          ASTWFEventTriggerCompensate.class,
+          ASTWFEventTriggerTerminate.class,
+          ASTWFEventTriggerNotification.class, // TODO only unsupported if intermediate xor end
+          ASTWFEventTriggerCancel.class);
 
-  private static final Predicate<ASTEvent> isSupportedTrigger =
+  private static final Predicate<ASTWFEvent> isSupportedTrigger =
       event -> {
         if (event.isPresentTrigger()) {
           return UNSUPPORTED_TRIGGERS.stream()
@@ -62,16 +63,16 @@ public class WorkflowNetConverter extends WorkflowLocalVisitor {
   private List<ASTPlace> endPlaces = Lists.newArrayList();
 
   private Map<SequenceFlow, ASTPlace> flow2Place;
-  private Map<ASTFlowNode, PetriNetModule<? extends ASTFlowNode>> modules;
+  private Map<ASTFlowElement, PetriNetModule<? extends ASTFlowElement>> modules;
 
   private List<Warning> warnings;
 
-  public WorkflowNetConverter(final ASTFlowElementContainer localRoot) {
+  public WorkflowNetConverter(final ASTWFProcess localRoot) {
     super(localRoot);
   }
 
   public WorkflowNet convert() {
-    petrinet = PetriNetFactory.createEmptyPetriNet(localRoot.getName());
+    petrinet = PetriNetFactory.createEmptyPetriNet(((ASTWFProcess) localRoot).getName());
     flow2Place = Maps.newHashMap();
     modules = Maps.newHashMap();
 
@@ -88,7 +89,7 @@ public class WorkflowNetConverter extends WorkflowLocalVisitor {
   }
 
   @Override
-  public void visit(final ASTFlowElementContainer container) {
+  public void visit(final ASTWFProcess container) {
     // sequence flow has to be handled before all other nodes
     if (localRoot == container) {
       handleSequenceFlow();
@@ -96,40 +97,43 @@ public class WorkflowNetConverter extends WorkflowLocalVisitor {
   }
 
   @Override
-  public void endVisit(final ASTFlowElementContainer container) {
+  public void endVisit(final ASTWFProcess container) {
     if (localRoot == container) {
       makeSourceAndSink();
     }
   }
 
   @Override
-  public void endVisit(final ASTSubProcess subProcess) {
+  public void endVisit(final ASTWFSubProcess subProcess) {
     if (localRoot == subProcess) { // do not handle local root
       return;
     }
-    if (subProcess.isTriggeredByEvent()) { // event sub-process is not not part of normal flow
+    /*
+    if (subProcess.getSymbol().isTriggeredByEvent()) { // event sub-process is not not part of normal flow
       return;
     }
-
+    */
     handleSubProcess(subProcess);
   }
 
   @Override
-  public void endVisit(final ASTAtomicActivity activity) {
-    if (activity.isForCompensation()) { // compensation activity is not part of normal flow
-      return;
+  public void endVisit(final ASTWFActivity activity) {
+    if (activity instanceof ASTWFCallActivity || activity instanceof ASTWFTask) { // compensation activity is not part of normal flow
+      if(activity.getSymbol().isCompensating()){
+        return;
+      }
     }
 
     handleActivity(activity);
   }
 
   @Override
-  public void endVisit(final ASTGateway gateway) {
+  public void endVisit(final ASTWFGateway gateway) {
     handleGateway(gateway);
   }
 
   @Override
-  public void endVisit(final ASTEvent event) {
+  public void endVisit(final ASTWFEvent event) {
     if (isBoundaryCompensationEvent(event)) { // compensation boundary events are not translated
       return;
     }
@@ -138,7 +142,7 @@ public class WorkflowNetConverter extends WorkflowLocalVisitor {
   }
 
   private void makeSourceAndSink() {
-    source = addPlace("p_source_" + localRoot.getName());
+    source = addPlace("p_source_" + ((ASTWFProcess) localRoot).getName());
     startPlaces.forEach(
         start -> {
           ASTTransition t = addTransition("t_source_" + random());
@@ -146,7 +150,7 @@ public class WorkflowNetConverter extends WorkflowLocalVisitor {
           connect(t, start);
         });
 
-    sink = addPlace("p_sink_" + localRoot.getName());
+    sink = addPlace("p_sink_" + ((ASTWFProcess) localRoot).getName());
     endPlaces.forEach(
         end -> {
           ASTTransition t = addTransition("t_sink_" + random());
@@ -162,21 +166,21 @@ public class WorkflowNetConverter extends WorkflowLocalVisitor {
     }
   }
 
-  private ASTPlace makeStartPlace(final ASTFlowNode flowNode) {
+  private ASTPlace makeStartPlace(final ASTFlowElement flowNode) {
     ASTPlace start = addPlace("p_start_" + flowNode.getName());
     startPlaces.add(start);
 
     return start;
   }
 
-  private ASTPlace makeEndPlace(final ASTFlowNode flowNode) {
+  private ASTPlace makeEndPlace(final ASTFlowElement flowNode) {
     ASTPlace end = addPlace("p_end_" + flowNode.getName());
     endPlaces.add(end);
 
     return end;
   }
 
-  private Map<ASTPetriNode, Set<ASTFlowNode>> getMapping() {
+  private Map<ASTPetriNode, Set<ASTFlowElement>> getMapping() {
     return Stream.concat(
             modules.entrySet().stream()
                 .flatMap(
@@ -195,8 +199,8 @@ public class WorkflowNetConverter extends WorkflowLocalVisitor {
 
   private void handleSequenceFlow() {
     // group sequence flows by target node
-    Map<ASTFlowNode, List<SequenceFlow>> targets =
-        WorkflowCollectors.toSequenceFlowLocal(localRoot).stream()
+    Map<ASTFlowElement, List<SequenceFlow>> targets =
+        WorkflowCollectors.toSequenceFlowLocal(((ASTWFProcess) localRoot)).stream()
             .collect(
                 Collectors.toMap(SequenceFlow::getTarget, Lists::newArrayList, this::mergeLists));
 
@@ -218,12 +222,19 @@ public class WorkflowNetConverter extends WorkflowLocalVisitor {
             });
   }
 
-  private boolean isUncontrolledFlow(final Map.Entry<ASTFlowNode, List<SequenceFlow>> entry) {
-    return entry != null && !(entry.getKey() instanceof ASTGateway) && entry.getValue().size() > 1;
+  private boolean isUncontrolledFlow(final Map.Entry<ASTFlowElement, List<SequenceFlow>> entry) {
+    return entry != null && !(entry.getKey() instanceof ASTWFGateway) && entry.getValue().size() > 1;
   }
 
-  private void handleActivity(final ASTAtomicActivity task) {
-    handleActivity(task, task.getBoundaryEventList());
+  private void handleActivity(final ASTWFActivity task) {
+    if(task instanceof ASTWFTask){
+      handleActivity(task, ((ASTWFTask) task).getBoundaryEventList());
+    }
+
+    if(task instanceof ASTWFCallActivity){
+      handleActivity(task, ((ASTWFCallActivity) task).getBoundaryEventList());
+    }
+
   }
 
   /**
@@ -231,12 +242,12 @@ public class WorkflowNetConverter extends WorkflowLocalVisitor {
    *
    * @param subProcess
    */
-  private void handleSubProcess(final ASTSubProcess subProcess) {
-    handleActivity(subProcess, WorkflowCollectors.toEventsLocal(subProcess));
+  private void handleSubProcess(final ASTWFSubProcess subProcess) {
+    handleActivity(subProcess, WorkflowCollectors.toEventsLocalSubProcess(subProcess));
   }
 
   private void handleActivity(
-      final ASTActivity activity, final List<? extends ASTEvent> boundaryEvents) {
+      final ASTWFActivity activity, final List<? extends ASTWFEvent> boundaryEvents) {
     List<EventModule> boundaryModules =
         boundaryEvents.stream()
             .filter(event -> !isBoundaryCompensationEvent(event))
@@ -251,7 +262,7 @@ public class WorkflowNetConverter extends WorkflowLocalVisitor {
     addModule(module);
   }
 
-  private void handleGateway(final ASTGateway gateway) {
+  private void handleGateway(final ASTWFGateway gateway) {
     GatewayModule module;
 
     ASTGatewayType type = gateway.getType();
@@ -269,7 +280,7 @@ public class WorkflowNetConverter extends WorkflowLocalVisitor {
     addModule(module);
   }
 
-  private void handleEvent(final ASTEvent event) {
+  private void handleEvent(final ASTWFEvent event) {
     if (!isSupportedTrigger.test(event)) {
       warnings.add(new Warning(Warning.Type.UNSOUND_TRANSLATION, event));
     }
@@ -281,7 +292,7 @@ public class WorkflowNetConverter extends WorkflowLocalVisitor {
     } else if (event.isEnd()) {
       ASTPlace p = makeEndPlace(event);
       module = new EventModule(event, getInputPlaces(event), Lists.newArrayList(p));
-    } else if (event.isBoundary()) {
+    } else if (event.getSymbol().isBoundary()) {
       module = new EventModule(event, Lists.newArrayList(), getOutputPlaces(event));
     } else {
       module = new EventModule(event, getInputPlaces(event), getOutputPlaces(event));
@@ -290,8 +301,8 @@ public class WorkflowNetConverter extends WorkflowLocalVisitor {
     addModule(module);
   }
 
-  private boolean isBoundaryCompensationEvent(final ASTEvent event) {
-    return event.isBoundary()
+  private boolean isBoundaryCompensationEvent(final ASTWFEvent event) {
+    return event.getSymbol().isBoundary()
         && event.isPresentTrigger()
         && WorkflowFilters.isCompensateTrigger(event.getTrigger());
   }
@@ -310,7 +321,7 @@ public class WorkflowNetConverter extends WorkflowLocalVisitor {
     return transition;
   }
 
-  private void addModule(final PetriNetModule<? extends ASTFlowNode> module) {
+  private void addModule(final PetriNetModule<? extends ASTFlowElement> module) {
     modules.put(module.getFlowNode(), module);
 
     petrinet.addAllPlaces(module.getPlaces());
@@ -332,7 +343,7 @@ public class WorkflowNetConverter extends WorkflowLocalVisitor {
    * @param flowNode
    * @return
    */
-  private List<ASTPlace> getInputPlaces(final ASTFlowNode flowNode) {
+  private List<ASTPlace> getInputPlaces(final ASTFlowElement flowNode) {
     List<ASTPlace> inputPlaces =
         flowNode.streamIncomings().map(flow2Place::get).distinct().collect(Collectors.toList());
     return inputPlaces.isEmpty() ? Lists.newArrayList(makeStartPlace(flowNode)) : inputPlaces;
@@ -345,7 +356,7 @@ public class WorkflowNetConverter extends WorkflowLocalVisitor {
    * @param flowNode
    * @return
    */
-  private List<ASTPlace> getOutputPlaces(final ASTFlowNode flowNode) {
+  private List<ASTPlace> getOutputPlaces(final ASTFlowElement flowNode) {
     List<ASTPlace> outputPlaces =
         flowNode.streamOutgoings().map(flow2Place::get).distinct().collect(Collectors.toList());
     return outputPlaces.isEmpty() ? Lists.newArrayList(makeEndPlace(flowNode)) : outputPlaces;
@@ -366,9 +377,9 @@ public class WorkflowNetConverter extends WorkflowLocalVisitor {
   public static class Warning {
     private final Type type;
 
-    private final ASTFlowNode node;
+    private final ASTFlowElement node;
 
-    Warning(final Type type, final ASTFlowNode node) {
+    Warning(final Type type, final ASTFlowElement node) {
       this.type = type;
       this.node = node;
     }
@@ -377,7 +388,7 @@ public class WorkflowNetConverter extends WorkflowLocalVisitor {
       return type;
     }
 
-    public ASTFlowNode getNode() {
+    public ASTFlowElement getNode() {
       return node;
     }
 

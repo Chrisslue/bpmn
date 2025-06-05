@@ -11,7 +11,7 @@ repositories {
 
 dependencies {
     implementation project(':WorkflowDSL')
-    implementation project(':TimeExpressions')
+//    implementation project(':TimerConditions')
 
     implementation 'org.jgrapht:jgrapht-core:1.5.2'
     implementation 'org.tinyjee.jgraphx:jgraphx:3.4.1.3'

@@ -1,9 +1,10 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.cocos.events.triggers;
 
 import de.monticore.bpmn.collectors.WorkflowCollectors;
 import de.monticore.bpmn.workflow.WorkflowMill;
 import de.monticore.bpmn.workflow._ast.*;
-import de.monticore.bpmn.workflow._cocos.WorkflowASTFlowElementContainerCoCo;
+import de.monticore.bpmn.workflow._cocos.WorkflowASTWFProcessCoCo;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
 import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
 
@@ -13,7 +14,7 @@ import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
  * Multiple.
  */
 public class EndEventHasValidTrigger extends AbstractHasValidTriggerCoCo
-    implements WorkflowASTFlowElementContainerCoCo {
+    implements WorkflowASTWFProcessCoCo {
 
   private static final String ERROR_CODE = "0xWFM2012";
 
@@ -22,27 +23,27 @@ public class EndEventHasValidTrigger extends AbstractHasValidTriggerCoCo
   }
 
   @Override
-  public void check(final ASTFlowElementContainer container) {
+  public void check(final ASTWFProcess container) {
     WorkflowCollectors.toEventsLocal(container).stream()
-        .filter(ASTEvent::isEnd)
+        .filter(ASTWFEvent::isEnd)
         .forEach(this::check);
   }
 
-  private void check(final ASTEvent event) {
+  private void check(final ASTWFEvent event) {
     WorkflowVisitor2 visitor =
         new WorkflowVisitor2() {
           @Override
-          public void visit(final ASTEventTriggerTimer trigger) {
+          public void visit(final ASTWFEventTriggerTimer trigger) {
             logError(event);
           }
 
           @Override
-          public void visit(final ASTEventTriggerConditional trigger) {
+          public void visit(final ASTWFEventTriggerConditional trigger) {
             logError(event);
           }
 
           @Override
-          public void visit(final ASTEventTriggerMultiple trigger) {
+          public void visit(final ASTWFEventTriggerMultiple trigger) {
             if (!trigger.isParallelMultiple()) {
               logError(event);
             }

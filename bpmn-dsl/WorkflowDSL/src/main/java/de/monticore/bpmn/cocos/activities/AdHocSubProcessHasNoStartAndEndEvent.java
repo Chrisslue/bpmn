@@ -1,9 +1,10 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.cocos.activities;
 
 import de.monticore.bpmn.Messages;
 import de.monticore.bpmn.collectors.WorkflowCollectors;
-import de.monticore.bpmn.workflow._ast.ASTSubProcess;
-import de.monticore.bpmn.workflow._cocos.WorkflowASTSubProcessCoCo;
+import de.monticore.bpmn.workflow._ast.ASTWFSubProcess;
+import de.monticore.bpmn.workflow._cocos.WorkflowASTWFSubProcessCoCo;
 import de.se_rwth.commons.logging.Log;
 
 /**
@@ -11,12 +12,12 @@ import de.se_rwth.commons.logging.Log;
  * that MUST NOT be used in an Ad-Hoc Sub-Process: Start Event, End Event, Conversations
  * (graphically), Conversation Links (graphically), and Choreography Activities.
  */
-public class AdHocSubProcessHasNoStartAndEndEvent implements WorkflowASTSubProcessCoCo {
+public class AdHocSubProcessHasNoStartAndEndEvent implements WorkflowASTWFSubProcessCoCo {
 
   @Override
-  public void check(final ASTSubProcess subProcess) {
+  public void check(final ASTWFSubProcess subProcess) {
     if (subProcess.isAdHoc()) {
-      WorkflowCollectors.toEventsLocal(subProcess).stream()
+      WorkflowCollectors.toEventsLocalSubProcess(subProcess).stream()
           .filter(event -> event.isStart() || event.isEnd())
           .forEach(
               event ->

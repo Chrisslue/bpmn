@@ -1,7 +1,7 @@
 
 process XOR {
 
-  event start S;
+  start event S;
   task T1;
   task T2;
   task T3;

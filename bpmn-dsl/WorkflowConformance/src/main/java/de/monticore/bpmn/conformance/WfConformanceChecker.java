@@ -38,7 +38,7 @@ public class WfConformanceChecker {
     Log.info(
         String.format(
             "Checking Conformance of [Concrete:%s] to [Reference:%s]\n",
-            concrete.getProcess().getName(), reference.getProcess().getName()),
+            concrete.getWFProcess().getName(), reference.getWFProcess().getName()),
         "");
 
     // reference model &&  concrete model
@@ -118,8 +118,8 @@ public class WfConformanceChecker {
 
     Log.info("-------- Explanations --------: \n", "");
     for (CheckResult result : checkResult) {
-      String con = concrete.getProcess().getName();
-      String ref = reference.getProcess().getName();
+      String con = concrete.getWFProcess().getName();
+      String ref = reference.getWFProcess().getName();
 
       if (result.getResult().equals(CheckResult.Result.NON_CONFORM)) {
         var refNode = this.incarnationStrategy.getReferenceElements(result.getNode()).get(0);

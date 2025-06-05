@@ -1,9 +1,10 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.cocos.events.triggers;
 
 import de.monticore.bpmn.collectors.WorkflowCollectors;
 import de.monticore.bpmn.workflow.WorkflowMill;
 import de.monticore.bpmn.workflow._ast.*;
-import de.monticore.bpmn.workflow._cocos.WorkflowASTProcessCoCo;
+import de.monticore.bpmn.workflow._cocos.WorkflowASTWFProcessCoCo;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
 import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
 
@@ -13,7 +14,7 @@ import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
  * Conditional, Signal, Multiple, and Parallel.
  */
 public class StartEventTopLevelProcessHasValidTrigger extends AbstractHasValidTriggerCoCo
-    implements WorkflowASTProcessCoCo {
+    implements WorkflowASTWFProcessCoCo {
 
   private static final String ERROR_CODE = "0xWFM2010";
 
@@ -22,37 +23,34 @@ public class StartEventTopLevelProcessHasValidTrigger extends AbstractHasValidTr
   }
 
   @Override
-  public void check(final ASTProcess process) {
+  public void check(final ASTWFProcess process) {
     WorkflowCollectors.toEventsLocal(process).stream()
-        .filter(ASTEvent::isStart)
+        .filter(ASTWFEvent::isStart)
         .forEach(this::check);
   }
 
-  private void check(final ASTEvent event) {
+  private void check(final ASTWFEvent event) {
     WorkflowVisitor2 visitor =
         new WorkflowVisitor2() {
           @Override
-          public void visit(final ASTEventTriggerEscalate trigger) {
+          public void visit(final ASTWFEventTriggerNotification trigger) {
+            if(trigger.getType() == ASTConstantsWorkflow.ESCALATION || trigger.getType() == ASTConstantsWorkflow.ERROR){
+              logError(event);
+            }
+          }
+
+          @Override
+          public void visit(final ASTWFEventTriggerCancel trigger) {
             logError(event);
           }
 
           @Override
-          public void visit(final ASTEventTriggerError trigger) {
+          public void visit(final ASTWFEventTriggerCompensate trigger) {
             logError(event);
           }
 
           @Override
-          public void visit(final ASTEventTriggerCancel trigger) {
-            logError(event);
-          }
-
-          @Override
-          public void visit(final ASTEventTriggerCompensate trigger) {
-            logError(event);
-          }
-
-          @Override
-          public void visit(final ASTEventTriggerTerminate trigger) {
+          public void visit(final ASTWFEventTriggerTerminate trigger) {
             logError(event);
           }
         };

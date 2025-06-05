@@ -1,3 +1,4 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.collectors;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -5,6 +6,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import com.google.common.collect.Lists;
 import de.monticore.bpmn.workflow.WorkflowMill;
 import de.monticore.bpmn.workflow._ast.ASTWorkflowNode;
+import de.monticore.bpmn.workflow._ast.ASTWFProcess;
+import de.monticore.bpmn.workflow._ast.ASTFlowElement;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
 import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
 import java.util.List;
@@ -18,8 +21,9 @@ import java.util.List;
  * @see WorkflowLocalCollector
  * @param <E> the type of node
  */
-public abstract class WorkflowCollector<E extends ASTWorkflowNode> implements WorkflowVisitor2 {
+public abstract class WorkflowCollector<E> implements WorkflowVisitor2 {
 
+  
   private final ASTWorkflowNode localRoot;
 
   private List<E> result;
@@ -59,4 +63,6 @@ public abstract class WorkflowCollector<E extends ASTWorkflowNode> implements Wo
       result.add(node);
     }
   }
+  
+  
 }

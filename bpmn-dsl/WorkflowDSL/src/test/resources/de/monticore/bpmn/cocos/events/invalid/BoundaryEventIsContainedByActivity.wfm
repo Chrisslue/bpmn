@@ -1,3 +1,4 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.cocos.events.invalid;
 
 import de.monticore.bpmn.cds.Domain.*;
@@ -6,6 +7,6 @@ process BoundaryEventIsContainedByActivity {
 
   message msg:LeaveCard;
 
-  <<boundary>> event E1 message:msg;
+  boundary event E1 message msg;
 
 }

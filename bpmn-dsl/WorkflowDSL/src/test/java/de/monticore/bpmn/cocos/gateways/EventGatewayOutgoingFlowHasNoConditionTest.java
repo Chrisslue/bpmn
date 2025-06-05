@@ -1,3 +1,4 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.cocos.gateways;
 
 import com.google.common.collect.Lists;
@@ -7,6 +8,8 @@ import de.monticore.bpmn.cocos.WorkflowCoCos;
 import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
 import de.se_rwth.commons.logging.Finding;
 import java.util.Collection;
+
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class EventGatewayOutgoingFlowHasNoConditionTest extends AbstractCoCoTest {
@@ -15,6 +18,7 @@ class EventGatewayOutgoingFlowHasNoConditionTest extends AbstractCoCoTest {
   protected WorkflowCoCoChecker getChecker() {
     return WorkflowCoCos.getGatewayChecker();
   }
+
 
   @Test
   void sequenceFlowHasCondition() {
@@ -26,6 +30,7 @@ class EventGatewayOutgoingFlowHasNoConditionTest extends AbstractCoCoTest {
 
     testModelForErrors(modelName, expectedErrors);
   }
+
 
   @Test
   void sequenceFlowHasNoCondition() {

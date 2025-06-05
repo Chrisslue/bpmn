@@ -1,12 +1,13 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.cocos.activities;
 
 import de.monticore.bpmn.Messages;
-import de.monticore.bpmn.workflow._ast.ASTLoopCardinality;
-import de.monticore.bpmn.workflow._cocos.WorkflowASTLoopCardinalityCoCo;
+import de.monticore.bpmn.workflow._ast.ASTWFLoopCardinality;
+import de.monticore.bpmn.workflow._cocos.WorkflowASTWFLoopCardinalityCoCo;
 import de.monticore.expressions.expressionsbasis._ast.ASTExpression;
 import de.monticore.types.check.SymTypeExpression;
 import de.monticore.types.check.TypeRelations;
-import de.monticore.types3.TypeCheck3;
+import de.monticore.bpmn.types3.WorkflowTypeCheck3;
 import de.se_rwth.commons.logging.Log;
 
 /**
@@ -14,13 +15,14 @@ import de.se_rwth.commons.logging.Log;
  * controls the number of Activity instances that will be created. This Expression MUST evaluate to
  * an integer.
  */
-public class LoopCountExpressionReturnsIntegerNumber implements WorkflowASTLoopCardinalityCoCo {
+public class LoopCountExpressionReturnsIntegerNumber implements WorkflowASTWFLoopCardinalityCoCo {
 
   @Override
-  public void check(final ASTLoopCardinality loopCardinality) {
+  public void check(final ASTWFLoopCardinality loopCardinality) {
+    WorkflowTypeCheck3.init();
     if (loopCardinality.isPresentExpression()) {
       ASTExpression loopExpression = loopCardinality.getExpression();
-      SymTypeExpression type = TypeCheck3.typeOf(loopExpression);
+      SymTypeExpression type = WorkflowTypeCheck3.typeOf(loopExpression);
 
       if (type == null) {
         Log.warn(Messages.get("0xWFM1009"));

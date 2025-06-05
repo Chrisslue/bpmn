@@ -1,3 +1,4 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.cocos.gateways.invalid;
 
 import de.monticore.bpmn.cds.Domain.*;
@@ -8,13 +9,18 @@ process EventGatewayTargetReceiveTaskHasNoBoundaryEvents {
 
   task T1;
 
-  task receive T2 message:msg;
-  task receive T3 message:msg {
-    <<boundary>> event E1 cancel;
+  receive task T2 {
+    webservice = ##unspecified;
+    message = msg;
+  }
+  receive task T3 {
+    webservice = ##unspecified;
+    message = msg;
+    boundary event E1 cancel;
   }
 
-  split receive:first G1;
+  split receive first G1;
 
-  T1 -> G1 -> {T2, T3};
+  T1 -> G1 -> {T2; T3;};
 
 }

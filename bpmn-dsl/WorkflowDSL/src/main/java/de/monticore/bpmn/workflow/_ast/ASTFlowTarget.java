@@ -1,3 +1,4 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.workflow._ast;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -13,32 +14,32 @@ import java.util.Optional;
 
 public class ASTFlowTarget extends ASTFlowTargetTOP {
 
-  public List<ASTFlowNode> asSource() {
-    List<ASTFlowNode> sourceFlowNodes = null;
-    if (isPresentNodeRef()) {
+  public List<ASTFlowElement> asSource() {
+    List<ASTFlowElement> sourceFlowNodes = null;
+    if (isPresentElement()) {
       sourceFlowNodes = Lists.newArrayList(resolveFlowNode());
-    } else if (isPresentNode()) {
-      sourceFlowNodes = Lists.newArrayList(getNode());
+    } else if (isPresentGateway()) {
+      sourceFlowNodes = Lists.newArrayList(getGateway());
     } else if (isPresentBlock()) {
       sourceFlowNodes = getBlock().asSource();
     }
     return checkNotNull(sourceFlowNodes);
   }
 
-  public ListMultimap<ASTFlowNode, List<ASTFlowCondition>> asTarget() {
-    ListMultimap<ASTFlowNode, List<ASTFlowCondition>> targetFlowNodes = null;
-    if (isPresentNodeRef()) {
+  public ListMultimap<ASTFlowElement, List<ASTFlowCondition>> asTarget() {
+    ListMultimap<ASTFlowElement, List<ASTFlowCondition>> targetFlowNodes = null;
+    if (isPresentElement()) {
       targetFlowNodes =
-          ImmutableListMultimap.<ASTFlowNode, List<ASTFlowCondition>>builder()
+          ImmutableListMultimap.<ASTFlowElement, List<ASTFlowCondition>>builder()
               .put(
                   resolveFlowNode(),
                   isPresentCondition() ? Lists.newArrayList(getCondition()) : Lists.newArrayList())
               .build();
-    } else if (isPresentNode()) {
+    } else if (isPresentGateway()) {
       targetFlowNodes =
-          ImmutableListMultimap.<ASTFlowNode, List<ASTFlowCondition>>builder()
+          ImmutableListMultimap.<ASTFlowElement, List<ASTFlowCondition>>builder()
               .put(
-                  getNode(),
+                  getGateway(),
                   isPresentCondition() ? Lists.newArrayList(getCondition()) : Lists.newArrayList())
               .build();
     } else if (isPresentBlock()) {
@@ -50,11 +51,11 @@ public class ASTFlowTarget extends ASTFlowTargetTOP {
     return checkNotNull(targetFlowNodes);
   }
 
-  private ASTFlowNode resolveFlowNode() {
-    String name = getNodeRef().getQName();
+  private ASTFlowElement resolveFlowNode() {
+    String name = getElement().getQName();
     WorkflowScope scope = (WorkflowScope) getEnclosingScope();
 
-    Optional<ASTFlowNode> flowNode = scope.resolveFlowNodeDown(name);
+    Optional<ASTFlowElement> flowNode = scope.resolveFlowNodeDown(name);
     if (!flowNode.isPresent()) {
       Log.error(Messages.get("0xWFM1004", name), get_SourcePositionStart());
     }

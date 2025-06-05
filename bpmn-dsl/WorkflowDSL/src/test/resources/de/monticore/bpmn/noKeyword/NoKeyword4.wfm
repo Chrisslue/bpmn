@@ -1,0 +1,22 @@
+ /* (c) https://github.com/MontiCore/monticore */
+package de.monticore.bpmn.noKeyword;
+
+<<ref="lane">> process NoKeyword4{
+
+  message msg:ABC;
+  rule task a;
+  subprocess b;
+  transaction c;
+  <<ref="event">> adhoc d;
+  <<ref="event">> call-activity e calls f;
+  <<ref="abc">> split xor g;
+
+  <<ref="abc">> operation h(
+    in iop;
+    out eop
+    );
+
+  <<ref="abc">> event i;
+
+  start event E2 send message msg;
+}

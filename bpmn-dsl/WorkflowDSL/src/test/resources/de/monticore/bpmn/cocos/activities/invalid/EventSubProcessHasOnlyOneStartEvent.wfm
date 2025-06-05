@@ -1,3 +1,4 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.cocos.activities.invalid;
 
 import de.monticore.bpmn.cds.Domain.*;
@@ -7,11 +8,11 @@ process EventSubProcessHasOnlyOneStartEvent {
   subprocess S1 {
     signal sig:Contract;
 
-    event start E1 signal:sig;
-    event start E2 signal:sig;
-    event end E3;
+    start event E1 signal sig;
+    start event E2 signal sig;
+    end event E3;
 
-    {E1, E2} -> E3;
+    {E1; E2;} -> E3;
   }
 
 }

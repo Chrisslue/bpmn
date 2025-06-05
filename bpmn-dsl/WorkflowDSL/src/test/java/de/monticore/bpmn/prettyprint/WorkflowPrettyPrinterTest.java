@@ -1,3 +1,4 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.prettyprint;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -12,10 +13,10 @@ import org.junit.jupiter.api.Test;
 
 public class WorkflowPrettyPrinterTest extends AbstractTest {
 
+  @Disabled
   @Test
-  @Disabled // RequestHoliday cannot be parsed
   void prettyPrintRequestHoliday() throws IOException {
-    String modelName = "de.monticore.bpmn.examples.RequestHoliday.wfm";
+    String modelName = "de.monticore.bpmn.examples.vacation.RequestHoliday";
     ASTWorkflowCompilationUnit cu = parseModel(modelName);
 
     // print AST

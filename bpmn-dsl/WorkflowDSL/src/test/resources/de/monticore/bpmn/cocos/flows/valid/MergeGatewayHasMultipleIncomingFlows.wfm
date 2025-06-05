@@ -1,3 +1,4 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.cocos.flows.valid;
 
 process MergeGatewayHasMultipleIncomingFlows {
@@ -6,6 +7,6 @@ process MergeGatewayHasMultipleIncomingFlows {
   task T2;
   merge xor G1;
 
-  {T1, T2} -> G1;
+  {T1; T2;} -> G1;
 
 }

@@ -1,3 +1,4 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.cocos.flows.invalid;
 
 process SplitGatewayHasAtMostOneIncomingFlow {
@@ -8,7 +9,7 @@ process SplitGatewayHasAtMostOneIncomingFlow {
   task T4;
   split xor G1;
 
-  {T1, T2} -> G1;
-  G1 -> {T3, T4};
+  {T1; T2;} -> G1;
+  G1 -> {T3; T4;};
 
 }

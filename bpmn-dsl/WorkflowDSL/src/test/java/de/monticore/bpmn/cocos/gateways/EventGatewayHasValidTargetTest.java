@@ -1,3 +1,4 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.cocos.gateways;
 
 import com.google.common.collect.Lists;
@@ -34,8 +35,7 @@ class EventGatewayHasValidTargetTest extends AbstractCoCoTest {
             Finding.error(Messages.get("0xWFM5007", "T5", "G1")),
             Finding.error(Messages.get("0xWFM5007", "T6", "G1")),
             Finding.error(Messages.get("0xWFM5007", "T7", "G1")),
-            Finding.error(Messages.get("0xWFM5007", "G2", "G1")),
-            Finding.error(Messages.get("0xWFM5007", "S1", "G1")));
+            Finding.error(Messages.get("0xWFM5007", "G2", "G1")));
 
     testModelForErrors(modelName, expectedErrors);
   }

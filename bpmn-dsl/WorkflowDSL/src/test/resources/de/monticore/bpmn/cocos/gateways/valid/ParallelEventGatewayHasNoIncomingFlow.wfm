@@ -1,3 +1,4 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.cocos.gateways.valid;
 
 import de.monticore.bpmn.cds.Domain.*;
@@ -6,11 +7,13 @@ process ParallelEventGatewayHasNoIncomingFlow {
 
   message msg:Contract;
 
-  task receive T1 message:msg;
-  task receive T2 message:msg;
+  receive task T1;
+  receive task T2;
 
-  split receive:all G1;
+  split receive all G1;
 
-  G1 -> {T1, T2};
-
+  G1 -> {
+          T1;
+          T2;
+        };
 }

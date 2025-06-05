@@ -1,3 +1,4 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.cocos.flows;
 
 import com.google.common.collect.Lists;
@@ -23,7 +24,7 @@ class EndEventHasNoOutgoingFlowTest extends AbstractCoCoTest {
     Collection<Finding> expectedErrors =
         Lists.newArrayList(
             Finding.error(Messages.get("0xWFM2004", "E2")),
-            Finding.error(Messages.get("0xWFM2004", "_Event_2")));
+            Finding.error(Messages.get("0xWFM2004", "E12")));
 
     testModelForErrors(modelName, expectedErrors);
   }

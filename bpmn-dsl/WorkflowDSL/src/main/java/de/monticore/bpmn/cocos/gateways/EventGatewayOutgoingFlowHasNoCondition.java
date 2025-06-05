@@ -1,9 +1,10 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.cocos.gateways;
 
 import de.monticore.bpmn.Messages;
-import de.monticore.bpmn.workflow._ast.ASTGateway;
+import de.monticore.bpmn.workflow._ast.ASTWFGateway;
 import de.monticore.bpmn.workflow._ast.SequenceFlow;
-import de.monticore.bpmn.workflow._cocos.WorkflowASTGatewayCoCo;
+import de.monticore.bpmn.workflow._cocos.WorkflowASTWFGatewayCoCo;
 import de.se_rwth.commons.logging.Log;
 import java.util.Collection;
 
@@ -11,10 +12,10 @@ import java.util.Collection;
  * Source: https://www.omg.org/spec/BPMN/2.0/PDF Page: 296 Description: The outgoing Sequence Flows
  * of the Event Gateway MUST NOT have a conditionExpression
  */
-public class EventGatewayOutgoingFlowHasNoCondition implements WorkflowASTGatewayCoCo {
+public class EventGatewayOutgoingFlowHasNoCondition implements WorkflowASTWFGatewayCoCo {
 
   @Override
-  public void check(final ASTGateway gateway) {
+  public void check(final ASTWFGateway gateway) {
     if (gateway.getType().isEventBased()) {
       gateway
           .streamOutgoings()

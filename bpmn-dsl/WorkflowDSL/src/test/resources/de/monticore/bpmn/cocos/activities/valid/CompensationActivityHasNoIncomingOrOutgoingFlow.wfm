@@ -1,3 +1,4 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.cocos.activities.valid;
 
 import de.monticore.bpmn.cds.Domain.*;
@@ -6,10 +7,8 @@ process CompensationActivityHasNoIncomingOrOutgoingFlow {
 
   task T1;
 
-  task T2 compensate:T1;
-
-  task T3 template:TaskContainsOnlyBoundaryEvents compensate:T1;
-
-  subprocess S1 compensate:T1 {}
+  call-activity T3 calls TaskContainsOnlyBoundaryEvents{
+    boundary event E2 with T1;
+    }
 
 }

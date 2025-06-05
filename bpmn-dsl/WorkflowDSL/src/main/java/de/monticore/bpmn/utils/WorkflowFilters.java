@@ -1,3 +1,4 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.utils;
 
 import de.monticore.bpmn.collectors.WorkflowFilter;
@@ -12,11 +13,11 @@ import java.util.stream.Stream;
  */
 public class WorkflowFilters {
 
-  public static Stream<ASTTask> isTask(final ASTWorkflowNode node) {
-    WorkflowFilter<ASTTask> filter =
-        new WorkflowFilter<ASTTask>(node) {
+  public static Stream<ASTWFTask> isTask(final ASTWorkflowNode node) {
+    WorkflowFilter<ASTWFTask> filter =
+        new WorkflowFilter<ASTWFTask>(node) {
           @Override
-          public void visit(ASTTask node) {
+          public void visit(ASTWFTask node) {
             select(node);
           }
         };
@@ -24,11 +25,11 @@ public class WorkflowFilters {
     return Stream.of(filter.getFiltered()).filter(Optional::isPresent).map(Optional::get);
   }
 
-  public static Stream<ASTEvent> isEvent(final ASTWorkflowNode node) {
-    WorkflowFilter<ASTEvent> filter =
-        new WorkflowFilter<ASTEvent>(node) {
+  public static Stream<ASTWFEvent> isEvent(final ASTWorkflowNode node) {
+    WorkflowFilter<ASTWFEvent> filter =
+        new WorkflowFilter<ASTWFEvent>(node) {
           @Override
-          public void visit(ASTEvent node) {
+          public void visit(ASTWFEvent node) {
             select(node);
           }
         };
@@ -36,11 +37,11 @@ public class WorkflowFilters {
     return Stream.of(filter.getFiltered()).filter(Optional::isPresent).map(Optional::get);
   }
 
-  public static Stream<ASTGateway> isGateway(final ASTWorkflowNode node) {
-    WorkflowFilter<ASTGateway> filter =
-        new WorkflowFilter<ASTGateway>(node) {
+  public static Stream<ASTWFGateway> isGateway(final ASTWorkflowNode node) {
+    WorkflowFilter<ASTWFGateway> filter =
+        new WorkflowFilter<ASTWFGateway>(node) {
           @Override
-          public void visit(ASTGateway node) {
+          public void visit(ASTWFGateway node) {
             select(node);
           }
         };
@@ -48,24 +49,28 @@ public class WorkflowFilters {
     return Stream.of(filter.getFiltered()).filter(Optional::isPresent).map(Optional::get);
   }
 
-  public static Stream<ASTEventTriggerMessage> isMessageTrigger(final ASTWorkflowNode node) {
-    WorkflowFilter<ASTEventTriggerMessage> filter =
-        new WorkflowFilter<ASTEventTriggerMessage>(node) {
+  public static Stream<ASTWFEventTriggerNotification> isMessageTrigger(final ASTWorkflowNode node) {
+    WorkflowFilter<ASTWFEventTriggerNotification> filter =
+        new WorkflowFilter<ASTWFEventTriggerNotification>(node) {
           @Override
-          public void visit(ASTEventTriggerMessage node) {
-            select(node);
+          public void visit(ASTWFEventTriggerNotification node) {
+            if(node.getType() == ASTConstantsWorkflow.MESSAGE){
+              select(node);
+            }
           }
         };
     filter.filter(filter);
     return Stream.of(filter.getFiltered()).filter(Optional::isPresent).map(Optional::get);
   }
 
-  public static Optional<ASTEventTriggerMessage> getMessageTrigger(final ASTWorkflowNode node) {
-    WorkflowFilter<ASTEventTriggerMessage> filter =
-        new WorkflowFilter<ASTEventTriggerMessage>(node) {
+  public static Optional<ASTWFEventTriggerNotification> getMessageTrigger(final ASTWorkflowNode node) {
+    WorkflowFilter<ASTWFEventTriggerNotification> filter =
+        new WorkflowFilter<ASTWFEventTriggerNotification>(node) {
           @Override
-          public void visit(ASTEventTriggerMessage node) {
-            select(node);
+          public void visit(ASTWFEventTriggerNotification node) {
+            if(node.getType() == ASTConstantsWorkflow.MESSAGE){
+              select(node);
+            }
           }
         };
     filter.filter(filter);
@@ -73,10 +78,10 @@ public class WorkflowFilters {
   }
 
   public static boolean isCompensateTrigger(final ASTWorkflowNode node) {
-    WorkflowFilter<ASTEventTriggerCompensate> filter =
-        new WorkflowFilter<ASTEventTriggerCompensate>(node) {
+    WorkflowFilter<ASTWFEventTriggerCompensate> filter =
+        new WorkflowFilter<ASTWFEventTriggerCompensate>(node) {
           @Override
-          public void visit(ASTEventTriggerCompensate node) {
+          public void visit(ASTWFEventTriggerCompensate node) {
             select(node);
           }
         };

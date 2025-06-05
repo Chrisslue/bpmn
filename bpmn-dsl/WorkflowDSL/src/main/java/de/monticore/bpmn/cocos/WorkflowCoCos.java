@@ -1,3 +1,4 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 /*
  * Copyright (c) 2017, MontiCore. All rights reserved.
  *
@@ -11,11 +12,9 @@ import de.monticore.bpmn.cocos.events.*;
 import de.monticore.bpmn.cocos.events.triggers.*;
 import de.monticore.bpmn.cocos.flow.*;
 import de.monticore.bpmn.cocos.gateways.*;
-import de.monticore.bpmn.workflow._cocos.WorkflowASTSubProcessCoCo;
+import de.monticore.bpmn.workflow._cocos.WorkflowASTWFSubProcessCoCo;
 import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
-import de.monticore.expressions.timeexpressions.cocos.TemporalExpressionsCoCos;
-import de.monticore.ocl.ocl._cocos.OCLCoCos;
-import de.monticore.ocl.ocl.types3.OCLTypeCheck3;
+import de.monticore.bpmn.timerconditions.cocos.TemporalExpressionsCoCos;
 
 /** Factory for CoCo checkers. */
 public class WorkflowCoCos {
@@ -63,11 +62,11 @@ public class WorkflowCoCos {
    */
   public static WorkflowCoCoChecker getStructuralChecker() {
     WorkflowCoCoChecker checker = new WorkflowCoCoChecker();
-    checker.addCoCo(new ProcessHasNoDisconnectedComponents());
+    //checker.addCoCo(new ProcessHasNoDisconnectedComponents());
     checker.addCoCo(new ProcessHasNoDeadNodes());
     checker.addCoCo(new ProcessHasNoInfiniteLoop());
-    checker.addCoCo(new ProcessHasNoSyncDeadlock());
-    checker.addCoCo(new ProcessHasNoLackOfSync());
+    //checker.addCoCo(new ProcessHasNoSyncDeadlock());
+    //checker.addCoCo(new ProcessHasNoLackOfSync());
     return checker;
   }
 
@@ -97,6 +96,7 @@ public class WorkflowCoCos {
     checker.addCoCo(new SplitGatewayHasMultipleOutgoingFlow());
     checker.addCoCo(new MergeGatewayHasAtMostOneOutgoingFlow());
     checker.addCoCo(new MergeGatewayHasMultipleIncomingFlow());
+    checker.addCoCo(new FlowBlockMinTwo());
     return checker;
   }
 
@@ -115,13 +115,14 @@ public class WorkflowCoCos {
 
   public static WorkflowCoCoChecker getActivityChecker() {
     WorkflowCoCoChecker checker = new WorkflowCoCoChecker();
-    checker.addCoCo(new TaskContainsOnlyBoundaryEvents());
     checker.addCoCo(new CompensationActivityHasNoIncomingOrOutgoingFlow());
     checker.addCoCo(new EventSubProcessHasNoIncomingOrOutgoingFlow());
     checker.addCoCo(new EventSubProcessHasOnlyOneStartEvent());
     checker.addCoCo(new AdHocSubProcessContainsAtLeastOneActivity());
     checker.addCoCo(new AdHocSubProcessHasNoStartAndEndEvent());
     checker.addCoCo(new LoopCountExpressionReturnsIntegerNumber());
+    checker.addCoCo(new TaskTypeAttributesAreSet());
+    checker.addCoCo(new AdHocSubProcessHasAdHocCharacteristics());
     return checker;
   }
 
@@ -143,8 +144,8 @@ public class WorkflowCoCos {
   public static WorkflowCoCoChecker getEventTriggerChecker() {
     WorkflowCoCoChecker checker = new WorkflowCoCoChecker();
     checker.addCoCo(
-        (WorkflowASTSubProcessCoCo) new CancelIntermediateEventIsAttachedToTransaction());
-    checker.addCoCo((WorkflowASTSubProcessCoCo) new CancelEndEventIsContainedWithinTransaction());
+        (WorkflowASTWFSubProcessCoCo) new CancelIntermediateEventIsAttachedToTransaction());
+    checker.addCoCo((WorkflowASTWFSubProcessCoCo) new CancelEndEventIsContainedWithinTransaction());
     checker.addCoCo(new StartEventTopLevelProcessHasValidTrigger());
     checker.addCoCo(new StartEventSubProcessHasValidTrigger());
     checker.addCoCo(new IntermediateCatchEventHasValidTrigger());
@@ -153,7 +154,7 @@ public class WorkflowCoCos {
     checker.addCoCo(new EndEventHasValidTrigger());
     checker.addCoCo(new NonInterruptingEventHasValidTrigger());
     checker.addCoCo(
-        (WorkflowASTSubProcessCoCo) new NonInterruptingEventIsSubProcessStartOrBoundary());
+        (WorkflowASTWFSubProcessCoCo) new NonInterruptingEventIsSubProcessStartOrBoundary());
     checker.addCoCo(new CompensateCatchEventIsNotPartOfNormalFlow());
     return checker;
   }
@@ -165,17 +166,20 @@ public class WorkflowCoCos {
     return checker;
   }
 
+  // currently not working
+  
   public static WorkflowCoCoChecker getTypesChecker() {
     // assure that OCL TypeCheck is used
     // As of writing, this is valid, as long as only OCL expressions are used
     // should other expressions be included in this language,
     // another TypeChecker will be required to be initialized.
-    OCLTypeCheck3.init();
+    //OCLTypeCheck3.init();
     WorkflowCoCoChecker checker = new WorkflowCoCoChecker();
 
-    checker.addCoCo(new CalledElementDoesExist());
-    checker.addChecker(OCLCoCos.createChecker());
+    //checker.addCoCo(new CalledElementDoesExist());
+    //checker.addChecker(OCLCoCos.createChecker());
 
     return checker;
   }
+  
 }

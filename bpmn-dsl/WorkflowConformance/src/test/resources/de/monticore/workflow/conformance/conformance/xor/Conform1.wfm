@@ -1,6 +1,6 @@
 
 process Conform1 {
-  event start S;
+  start event S;
   task T1;
 
   S -> T1;

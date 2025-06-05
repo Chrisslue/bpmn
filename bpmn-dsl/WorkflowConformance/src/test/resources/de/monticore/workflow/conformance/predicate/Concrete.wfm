@@ -1,9 +1,9 @@
 
 process Concrete {
 
-  event start Start;
+  start event Start;
   task Task1;
-  event end End;
+  end event End;
 
   Start -> Task1 -> End;
 

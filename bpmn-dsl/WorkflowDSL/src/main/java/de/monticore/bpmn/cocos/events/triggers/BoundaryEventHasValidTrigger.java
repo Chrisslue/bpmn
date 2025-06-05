@@ -1,9 +1,10 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.cocos.events.triggers;
 
 import de.monticore.bpmn.workflow.WorkflowMill;
-import de.monticore.bpmn.workflow._ast.ASTEvent;
-import de.monticore.bpmn.workflow._ast.ASTEventTriggerTerminate;
-import de.monticore.bpmn.workflow._cocos.WorkflowASTEventCoCo;
+import de.monticore.bpmn.workflow._ast.ASTWFEvent;
+import de.monticore.bpmn.workflow._ast.ASTWFEventTriggerTerminate;
+import de.monticore.bpmn.workflow._cocos.WorkflowASTWFEventCoCo;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
 import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
 
@@ -13,7 +14,7 @@ import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
  * Conditional, Link, Signal, Multiple, and Parallel Multiple.
  */
 public class BoundaryEventHasValidTrigger extends AbstractHasValidTriggerCoCo
-    implements WorkflowASTEventCoCo {
+    implements WorkflowASTWFEventCoCo {
 
   private static final String ERROR_CODE = "0xWFM2016";
 
@@ -22,8 +23,8 @@ public class BoundaryEventHasValidTrigger extends AbstractHasValidTriggerCoCo
   }
 
   @Override
-  public void check(final ASTEvent event) {
-    if (!event.isBoundary()) {
+  public void check(final ASTWFEvent event) {
+    if (!event.getSymbol().isBoundary()) {
       return;
     }
 
@@ -34,7 +35,7 @@ public class BoundaryEventHasValidTrigger extends AbstractHasValidTriggerCoCo
     WorkflowVisitor2 visitor =
         new WorkflowVisitor2() {
           @Override
-          public void visit(final ASTEventTriggerTerminate trigger) {
+          public void visit(final ASTWFEventTriggerTerminate trigger) {
             logError(event);
           }
         };

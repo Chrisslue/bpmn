@@ -1,9 +1,0 @@
-package de.monticore.bpmn.cocos.activities.invalid;
-
-import de.monticore.bpmn.cds.Domain.*;
-
-process AdHocSubProcessContainsAtLeastOneActivity {
-
-  adhoc S1 {}
-
-}

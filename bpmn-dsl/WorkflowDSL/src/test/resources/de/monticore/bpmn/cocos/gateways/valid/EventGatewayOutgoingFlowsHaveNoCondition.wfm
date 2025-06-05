@@ -1,3 +1,4 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.cocos.gateways.valid;
 
 import de.monticore.bpmn.cds.Domain.*;
@@ -7,11 +8,18 @@ process EventGatewayOutgoingFlowsHaveNoCondition {
 
   message msg:Contract;
 
-  task receive T1 message:msg;
-  task receive T2 message:msg;
+  receive task T1{
+    webservice = ##unspecified;
+    message = msg;
+  }
 
-  split receive:first G1;
+  receive task T2{
+    webservice = ##unspecified;
+    message = msg;
+  }
 
-  G1 -> {T1, T2};
+  split receive first G1;
+
+  G1 -> {T1; T2;};
 
 }

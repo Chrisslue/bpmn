@@ -1,8 +1,9 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.cocos.flow;
 
 import de.monticore.bpmn.Messages;
-import de.monticore.bpmn.workflow._ast.ASTGateway;
-import de.monticore.bpmn.workflow._cocos.WorkflowASTGatewayCoCo;
+import de.monticore.bpmn.workflow._ast.ASTWFGateway;
+import de.monticore.bpmn.workflow._cocos.WorkflowASTWFGatewayCoCo;
 import de.se_rwth.commons.logging.Log;
 
 /**
@@ -10,10 +11,10 @@ import de.se_rwth.commons.logging.Log;
  * gatewayDirection of converging MUST have multiple incoming Sequence Flows, but MUST NOT have
  * multiple outgoing Sequence Flows
  */
-public class MergeGatewayHasAtMostOneOutgoingFlow implements WorkflowASTGatewayCoCo {
+public class MergeGatewayHasAtMostOneOutgoingFlow implements WorkflowASTWFGatewayCoCo {
 
   @Override
-  public void check(final ASTGateway gateway) {
+  public void check(final ASTWFGateway gateway) {
     if (gateway.isConverging() && gateway.sizeOutgoings() > 1) {
       Log.error(
           Messages.get("0xWFM5004", gateway.getName()),

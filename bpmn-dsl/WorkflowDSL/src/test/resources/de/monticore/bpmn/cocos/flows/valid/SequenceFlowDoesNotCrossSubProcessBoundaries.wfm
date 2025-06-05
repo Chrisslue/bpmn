@@ -1,3 +1,4 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.cocos.flows.valid;
 
 process SequenceFlowDoesNotCrossSubProcessBoundaries {
@@ -8,8 +9,7 @@ process SequenceFlowDoesNotCrossSubProcessBoundaries {
 
   task T11;
   task T12 {
-    <<boundary>> event E11;
+    boundary event E11 compensate T11;
   }
-  T12.E11 -> T11;
 
 }

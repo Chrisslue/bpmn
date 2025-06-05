@@ -1,12 +1,11 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.cocos.activities.valid;
 
 import de.monticore.bpmn.cds.Domain.*;
 
 process LoopCountExpressionReturnsIntegerNumber {
 
-  data contract:Contract;
-
-  task T1 count:[7];
-  task T2 count:[contract.version];
+  task T1 count 7;
+  //task T2 count contract.version;
 
 }

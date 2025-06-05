@@ -1,3 +1,4 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.cocos.analysis;
 
 import com.google.common.collect.Sets;
@@ -5,8 +6,8 @@ import com.google.common.graph.EndpointPair;
 import de.monticore.bpmn.Messages;
 import de.monticore.bpmn.analysis.graph.ReachabilityInspector;
 import de.monticore.bpmn.collectors.WorkflowCollectors;
-import de.monticore.bpmn.workflow._ast.ASTFlowElementContainer;
-import de.monticore.bpmn.workflow._ast.ASTFlowNode;
+import de.monticore.bpmn.workflow._ast.ASTWFProcess;
+import de.monticore.bpmn.workflow._ast.ASTFlowElement;
 import de.se_rwth.commons.logging.Log;
 import java.util.Set;
 import org.jgrapht.Graph;
@@ -15,9 +16,9 @@ public class ProcessHasNoDeadNodes extends ProcessGraphCoCo {
 
   @Override
   protected void check(
-      final Graph<ASTFlowNode, EndpointPair<ASTFlowNode>> processGraph,
-      final ASTFlowElementContainer process) {
-    final Set<ASTFlowNode> startNodes =
+      final Graph<ASTFlowElement, EndpointPair<ASTFlowElement>> processGraph,
+      final ASTWFProcess process) {
+    final Set<ASTFlowElement> startNodes =
         Sets.newHashSet(WorkflowCollectors.toStartNodesLocal(process));
 
     Sets.difference(

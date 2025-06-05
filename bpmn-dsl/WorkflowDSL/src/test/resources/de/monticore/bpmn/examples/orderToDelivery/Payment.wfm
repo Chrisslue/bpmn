@@ -1,0 +1,30 @@
+ /* (c) https://github.com/MontiCore/monticore */
+package de.monticore.bpmn.examples.orderToDelivery;
+
+import de.monticore.bpmn.examples.orderToDelivery.OrderToDelivery.*;
+
+process Payment{
+    data paymentChecker:PaymentValidityChecker;
+
+    start event StartPayment;
+    end event PaymentApproved;
+
+    user task SelectPaymentMethod;
+
+    split xor ValidPaymentMethod;
+    merge xor PaymentOptions;
+    
+    adhoc EnterPaymentDetails [ true ] sequential{
+      user task EnterCardNumber
+        while [!paymentChecker.cardNumberValid] max 10;
+      user task EnterExpirationDate;
+      user task EnterCardVerificationValue
+        while [!paymentChecker.cardVerificationValueValid] max 10;
+    }
+
+    StartPayment -> PaymentOptions-> SelectPaymentMethod -> EnterPaymentDetails -> ValidPaymentMethod;
+    ValidPaymentMethod -> [paymentChecker.paymentValid] PaymentApproved;
+    ValidPaymentMethod -> [!paymentChecker.paymentValid] PaymentOptions;
+
+   
+}

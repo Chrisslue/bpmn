@@ -1,0 +1,34 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
+package de.monticore.bpmn.noKeyword;
+
+process NoKeyword1{
+  lane lane{
+    rule task lane;
+    subprocess process;
+    event event;
+    transaction store;
+  }
+  lane data{
+    manual task manual
+      while [ true ] max 3 ;
+    service task count
+      count 3 sequential until [ true ] ( cancel [ true ] )
+      {
+        webservice = ##webservice;
+        operation = operation;
+        message = message;
+      }
+
+    signal signal : String;
+    message message : String;
+    operation operation (
+     in signal
+    );
+
+    split xor split;
+    merge receive first receive;
+  }
+
+  lane -> split -> process -> receive -> count -> event;
+  count -> store -> count;
+}

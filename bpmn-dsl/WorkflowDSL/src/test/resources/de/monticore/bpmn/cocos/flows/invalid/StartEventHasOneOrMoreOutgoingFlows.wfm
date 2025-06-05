@@ -1,10 +1,11 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.cocos.flows.invalid;
 
 process StartEventHasOneOrMoreOutgoingFlows {
 
-  event start E1;
+  start event E1;
   task T1;
-  event end E2;
+  end event E2;
 
   T1 -> E2;
 

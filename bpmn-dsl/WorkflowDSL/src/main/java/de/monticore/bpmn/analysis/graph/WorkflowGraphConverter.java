@@ -1,3 +1,4 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.analysis.graph;
 
 import com.google.common.graph.GraphBuilder;
@@ -17,9 +18,9 @@ public class WorkflowGraphConverter extends WorkflowLocalVisitor {
 
   // prefer: https://github.com/google/guava/wiki/GraphsExplained#basic-graph-example
   // requires more recent guava version (conflicts with MC version)
-  private MutableGraph<ASTFlowNode> graph;
+  private MutableGraph<ASTFlowElement> graph;
 
-  public WorkflowGraphConverter(ASTFlowElementContainer localRoot) {
+  public WorkflowGraphConverter(ASTWFProcess localRoot) {
     super(localRoot);
   }
 
@@ -28,7 +29,7 @@ public class WorkflowGraphConverter extends WorkflowLocalVisitor {
    *
    * @return the control flow graph of the process xor sub-process
    */
-  public ImmutableGraph<ASTFlowNode> getGraph() {
+  public ImmutableGraph<ASTFlowElement> getGraph() {
     return ImmutableGraph.copyOf(graph);
   }
 
@@ -47,12 +48,12 @@ public class WorkflowGraphConverter extends WorkflowLocalVisitor {
   }
 
   @Override
-  public void visit(final ASTActivity activity) {
+  public void visit(final ASTWFActivity activity) {
     activity.getBoundaryEvents().forEach(boundaryEvent -> graph.putEdge(activity, boundaryEvent));
   }
 
   @Override
-  public void visit(final ASTFlowNode flowNode) {
+  public void visit(final ASTFlowElement flowNode) {
     if (flowNode.equals(localRoot)) { // sub-process is handled in parent execution
       return;
     }

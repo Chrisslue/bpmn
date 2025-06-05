@@ -1,3 +1,4 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.cocos.analysis.invalid;
 
 process LackOfSyncAND {
@@ -5,9 +6,12 @@ process LackOfSyncAND {
     task Task1;
     task Task2;
 
-    event start -> split and -> {
-      [true] Task1,
-      [true] Task2
-    } -> merge xor -> event end;
+    start event E1;
+    end event E2;
+
+    E1 -> split and -> {
+      [true] Task1;
+      [true] Task2;
+    } -> merge xor -> E2;
 
 }

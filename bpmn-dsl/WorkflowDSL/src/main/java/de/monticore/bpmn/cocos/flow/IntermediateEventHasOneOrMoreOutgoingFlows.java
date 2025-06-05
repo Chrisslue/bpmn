@@ -1,8 +1,9 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.cocos.flow;
 
 import de.monticore.bpmn.Messages;
-import de.monticore.bpmn.workflow._ast.ASTEvent;
-import de.monticore.bpmn.workflow._cocos.WorkflowASTEventCoCo;
+import de.monticore.bpmn.workflow._ast.ASTWFEvent;
+import de.monticore.bpmn.workflow._cocos.WorkflowASTWFEventCoCo;
 import de.se_rwth.commons.logging.Log;
 
 /**
@@ -10,11 +11,11 @@ import de.se_rwth.commons.logging.Log;
  * be a source for a Sequence Flow. Multiple Sequence Flows MAY originate from an Intermediate
  * Event.
  */
-public class IntermediateEventHasOneOrMoreOutgoingFlows implements WorkflowASTEventCoCo {
+public class IntermediateEventHasOneOrMoreOutgoingFlows implements WorkflowASTWFEventCoCo {
 
   @Override
-  public void check(final ASTEvent event) {
-    if (event.isIntermediate() && event.isEmptyOutgoings()) {
+  public void check(final ASTWFEvent event) {
+    if (event.isIntermediate() && event.isEmptyOutgoings() && !event.getSymbol().isBoundary()) {
       Log.error(
           Messages.get("0xWFM2021", event.getName()),
           event.get_SourcePositionStart(),

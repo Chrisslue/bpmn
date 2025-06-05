@@ -1,17 +1,18 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.cocos.events.invalid;
 
 process StartEventOutgoingFlowHasNoCondition {
 
-  event start E1;
+  start event E1;
   task T1;
   task T2;
   task T3;
-  event end E2;
+  end event E2;
 
   E1 -> {
-    [false] T1,
-    [let x = 7 in x == 7] T2,
-    T3
+    [false] T1;
+    [true] T2;
+    T3;
   } -> E2;
 
 }

@@ -1,7 +1,7 @@
 
 process Workflow {
 
-  event start Start;
+  start event Start;
 
   Start -> Task1 -> XorSplit;
 
@@ -20,6 +20,6 @@ process Workflow {
 
   XorMerge -> End;
 
-  event end End;
+  end event End;
 
 }

@@ -1,4 +1,5 @@
-package de.monticore.bpmn.ocl;
+ /* (c) https://github.com/MontiCore/monticore */ 
+package de.monticore.bpmn.prettyprint;
 
 import de.monticore.bpmn.cds.Vacation.VacationCard;
 

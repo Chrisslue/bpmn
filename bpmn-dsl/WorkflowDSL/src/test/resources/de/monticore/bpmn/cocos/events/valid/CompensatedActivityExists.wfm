@@ -1,10 +1,11 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.cocos.events.valid;
 
 process CompensatedActivityExists {
 
   task T1;
 
-  event E1 send compensate:T1;
+  event E1 send compensate T1;
 
   event E2 send compensate;
 

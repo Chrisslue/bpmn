@@ -1,8 +1,9 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.cocos.flow;
 
 import de.monticore.bpmn.Messages;
-import de.monticore.bpmn.workflow._ast.ASTEvent;
-import de.monticore.bpmn.workflow._cocos.WorkflowASTEventCoCo;
+import de.monticore.bpmn.workflow._ast.ASTWFEvent;
+import de.monticore.bpmn.workflow._cocos.WorkflowASTWFEventCoCo;
 import de.se_rwth.commons.logging.Log;
 
 /**
@@ -10,11 +11,11 @@ import de.se_rwth.commons.logging.Log;
  * attached to the boundary of an Activity: The Intermediate Event MUST NOT be a target for a
  * Sequence Flow; it cannot have an incoming Sequence Flows
  */
-public class BoundaryEventHasNoIncomingFlow implements WorkflowASTEventCoCo {
+public class BoundaryEventHasNoIncomingFlow implements WorkflowASTWFEventCoCo {
 
   @Override
-  public void check(final ASTEvent event) {
-    if (event.isBoundary() && !event.isEmptyIncomings()) {
+  public void check(final ASTWFEvent event) {
+    if (event.getSymbol().isBoundary() && !event.isEmptyIncomings()) {
       Log.error(
           Messages.get("0xWFM2005", event.getName()),
           event.get_SourcePositionStart(),

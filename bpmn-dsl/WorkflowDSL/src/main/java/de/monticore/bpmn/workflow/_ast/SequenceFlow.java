@@ -1,28 +1,32 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.workflow._ast;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
 import java.util.List;
+import java.util.stream.Stream;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class SequenceFlow {
 
-  private final ASTFlowNode source;
-  private final ASTFlowNode target;
+  private final ASTFlowElement source;
+  private final ASTFlowElement target;
   private final List<ASTFlowCondition> conditions;
 
   SequenceFlow(
-      final ASTFlowNode source, final ASTFlowNode target, final List<ASTFlowCondition> conditions) {
+      final ASTFlowElement source, final ASTFlowElement target, final List<ASTFlowCondition> conditions) {
     this.source = checkNotNull(source);
     this.target = checkNotNull(target);
     this.conditions = conditions;
   }
 
-  public ASTFlowNode getSource() {
+  public ASTFlowElement getSource() {
     return source;
   }
 
-  public ASTFlowNode getTarget() {
+  public ASTFlowElement getTarget() {
     return target;
   }
 
@@ -88,4 +92,6 @@ public class SequenceFlow {
   }
 
   public void accept(WorkflowTraverser traverser) {}
+
+  
 }

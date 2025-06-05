@@ -1,26 +1,28 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.cocos.events.triggers.valid;
 
 import de.monticore.bpmn.cds.Domain.*;
 
 process StartEventSubProcessHasValidTrigger {
-
+  
   subprocess S1 {
-
-    escalation esc:Contract;
+    
+    escalation esc : Contract;
     error err:Contract;
     message msg:Contract;
     signal sig:Contract;
-
-    event start E1 message:msg;
-    event start E2 timer:[on 19-11-2019 at 23:55];
-    event start E3 escalate:esc;
-    event start E4 when:[true];
-    event start E5 error:err;
-    event start E6 compensate;
-    event start E7 signal:sig;
-    event start E8 one { message:msg, signal:sig };
-    event start E9 all { message:msg, signal:sig };
-
+    
+    start event  E1 message msg;
+    start event  E2 timer [on 19-11-2019 at 23:55];
+    start event  E3 escalation esc;
+    start event  E4 when [true];
+    start event  E5 error err;
+    start event  E6 compensate;
+    start event  E7 signal sig;
+    start event  E8 one { message msg, signal sig };
+    start event  E9 all { message msg, signal sig };
+     
   }
+  
 
 }

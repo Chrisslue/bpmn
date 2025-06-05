@@ -1,0 +1,32 @@
+/* (c) https://github.com/MontiCore/monticore */
+package de.monticore.bpmn.noKeyword;
+
+process NoKeyword3{
+  data lane:String;
+  store data:String;
+
+  start event send send;
+  end event timer timer [ at 12:54 ];
+
+  service task store
+    while [ false ] max 10;
+
+  user task count{
+    resources = service;
+  }
+
+  rule task lane{
+    webservice = ##unspecified;
+    operation = event;
+    }
+
+  operation event(
+  in max;
+  out max
+  );
+
+  escalation  max:String;
+  split receive all receive;
+
+  send -> receive -> timer -> count;
+}

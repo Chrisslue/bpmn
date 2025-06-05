@@ -1,16 +1,17 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.analysis.petrinet.modules;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-import de.monticore.bpmn.workflow._ast.ASTActivity;
+import de.monticore.bpmn.workflow._ast.ASTWFActivity;
 import java.util.List;
 import petrinet._ast.ASTPlace;
 import petrinet._ast.ASTTransition;
 
-public class ActivityModule extends PetriNetModule<ASTActivity> {
+public class ActivityModule extends PetriNetModule<ASTWFActivity> {
 
   public ActivityModule(
-      ASTActivity activity,
+      ASTWFActivity activity,
       List<EventModule> boundaryEvents,
       List<ASTPlace> inputPlaces,
       List<ASTPlace> outputPlaces) {
@@ -46,7 +47,7 @@ public class ActivityModule extends PetriNetModule<ASTActivity> {
             ASTTransition tEvent = module.getTransitions().get(0);
 
             connect(pActive, tEvent);
-            if (module.getFlowNode().isNonInterrupt()) {
+            if (module.getFlowNode().isNoninterrupt()) {
               connect(tEvent, pActive);
             }
           });

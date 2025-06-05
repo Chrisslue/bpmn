@@ -1,3 +1,4 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.cocos.gateways.valid;
 
 import de.monticore.bpmn.cds.Domain.*;
@@ -10,31 +11,41 @@ process EventGatewayDoesNotMixMessageEventsAndReceiveTasks {
 
   task T1;
 
-  event E1 receive message:msg;
-  event E2 receive message:msg;
+  event E1 receive message msg;
+  event E2 receive message msg;
 
-  split receive:first G1;
+  split receive first G1;
 
-  T1 -> G1 -> {E1, E2};
+  T1 -> G1 -> {E1; E2;};
 
 
   task T2;
 
-  task receive T3 message:msg;
-  task receive T4 message:msg;
+  receive task T3{
+    webservice = ##unspecified;
+    message = msg;
+  }
+  receive task T4{
+    webservice = ##unspecified;
+    message = msg;
+  }
 
-  split receive:first G2;
+  split receive first G2;
 
-  T2 -> G2 -> {T3, T4};
+  T2 -> G2 -> {T3; T4;};
 
 
   task T5;
 
-  task receive T6 message:msg;
-  event E3 receive signal:sig;
+  receive task T6{
+    webservice = ##unspecified;
+    message = msg;
+  }
 
-  split receive:first G3;
+  event E3 receive signal sig;
 
-  T5 -> G3 -> {T6, E3};
+  split receive first G3;
+
+  T5 -> G3 -> {T6; E3;};
 
 }

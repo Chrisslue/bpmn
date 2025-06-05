@@ -1,3 +1,4 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.workflow._ast;
 
 import com.google.common.collect.ListMultimap;
@@ -8,6 +9,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ASTFlowBlock extends ASTFlowBlockTOP {
 
@@ -19,9 +21,9 @@ public class ASTFlowBlock extends ASTFlowBlockTOP {
    *     <p>output: [TaskA:[cond1, cond2], TaskB:[cond1, cond3], TaskC:[cond1, default],
    *     TaskA:[cond4]]
    */
-  ListMultimap<ASTFlowNode, List<ASTFlowCondition>> asTarget() {
+  ListMultimap<ASTFlowElement, List<ASTFlowCondition>> asTarget() {
     return getBranchList().stream()
-        .map(ASTFlowBranch::asTarget)
+        .map(ASTSequenceFlow::asTarget)
         .map(Multimap::entries)
         .flatMap(Collection::stream)
         .collect(
@@ -31,9 +33,9 @@ public class ASTFlowBlock extends ASTFlowBlockTOP {
                 MultimapBuilder.hashKeys().arrayListValues()::build));
   }
 
-  List<ASTFlowNode> asSource() {
+  List<ASTFlowElement> asSource() {
     return getBranchList().stream()
-        .map(ASTFlowBranch::asSource)
+        .map(ASTSequenceFlow::asSource)
         .flatMap(Collection::stream)
         .collect(Collectors.toList());
   }

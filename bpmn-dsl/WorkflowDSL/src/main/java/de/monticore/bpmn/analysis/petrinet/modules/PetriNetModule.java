@@ -1,15 +1,16 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.analysis.petrinet.modules;
 
 import com.google.common.collect.Lists;
 import de.monticore.bpmn.analysis.petrinet.PetriNetFactory;
 import de.monticore.bpmn.analysis.petrinet.PetriNetUtils;
-import de.monticore.bpmn.workflow._ast.ASTFlowNode;
+import de.monticore.bpmn.workflow._ast.ASTFlowElement;
 import java.util.List;
 import java.util.Random;
 import petrinet._ast.ASTPlace;
 import petrinet._ast.ASTTransition;
 
-public abstract class PetriNetModule<E extends ASTFlowNode> {
+public abstract class PetriNetModule<E extends ASTFlowElement> {
 
   private final Random random = new Random();
 

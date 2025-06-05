@@ -1,8 +1,9 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.cocos.flow;
 
 import de.monticore.bpmn.Messages;
-import de.monticore.bpmn.workflow._ast.ASTGateway;
-import de.monticore.bpmn.workflow._cocos.WorkflowASTGatewayCoCo;
+import de.monticore.bpmn.workflow._ast.ASTWFGateway;
+import de.monticore.bpmn.workflow._cocos.WorkflowASTWFGatewayCoCo;
 import de.se_rwth.commons.logging.Log;
 
 /**
@@ -10,10 +11,10 @@ import de.se_rwth.commons.logging.Log;
  * gatewayDirection of diverging MUST have multiple outgoing Sequence Flows, but MUST NOT have
  * multiple incoming Sequence Flows
  */
-public class SplitGatewayHasAtMostOneIncomingFlow implements WorkflowASTGatewayCoCo {
+public class SplitGatewayHasAtMostOneIncomingFlow implements WorkflowASTWFGatewayCoCo {
 
   @Override
-  public void check(final ASTGateway gateway) {
+  public void check(final ASTWFGateway gateway) {
     if (gateway.isDiverging() && gateway.sizeIncomings() > 1) {
       Log.error(
           Messages.get("0xWFM5003", gateway.getName()),

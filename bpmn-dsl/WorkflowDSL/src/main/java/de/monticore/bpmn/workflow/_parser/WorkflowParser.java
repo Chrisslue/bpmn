@@ -1,3 +1,4 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.workflow._parser;
 
 import com.google.common.io.Files;
@@ -33,7 +34,7 @@ public class WorkflowParser extends WorkflowParserTOP {
       String pathName = Paths.get(filename).toString();
 
       String simpleFileName = Files.getNameWithoutExtension(pathName);
-      String modelName = ast.getProcess().getName();
+      String modelName = ast.getWFProcess().getName();
 
       String packageName = Names.getPackageFromPath(Names.getPathFromFilename(pathName));
 

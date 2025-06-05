@@ -1,0 +1,75 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
+package de.monticore.bpmn.examples.orderToDelivery;
+
+import de.monticore.bpmn.examples.orderToDelivery.OrderToDelivery.*;
+
+process OrderToDeliveryWorkflow {
+    
+    data order:Order;
+    data checker:InventoryAvailabilityChecker;
+    store agreement:CustomerDeliveryAgreement;
+    
+    lane Sales{
+        service task ProcessOrder{
+          boundary event PossibleCancellation 
+            receive with RollbackOrderProcessing;
+        }
+        service task CheckProductAvailability
+          count [order.numberOfOrderedProducts] parallel
+          {
+            in order:Order;
+          }
+        send task CancellationMessage;
+        service task RollbackOrderProcessing;
+
+        split xor OrderFulfillable;
+        merge xor FinishOrderProcessing;
+        
+        start event ReceiveOrder receive;
+        event CancelOrder send
+          compensate ProcessOrder;
+    }
+    
+    lane Warehouse{
+        
+        manual task PrepareAndPackProducts;
+        manual task PickUpOrder;
+        event OrderDelivered;
+
+        subprocess ShipOrder{
+          manual task AttachLabelToPacket;
+          manual task SecurePackageWithTape{
+            resources = TapeDispenser;
+          }
+          service task SelectShippingCarrier;
+          service task PrintShippingLabel{
+            webservice = ##unspecified;
+            operation = GetAddress;
+          }
+          
+          operation GetAddress( 
+            in customerID;
+            out address
+            );
+          message customerID:String;
+          message address:DestinationAddress;
+
+          start event PrepareForShipment;
+          end event ShipmentDispatched;
+
+          PrepareForShipment -> SecurePackageWithTape 
+            -> SelectShippingCarrier -> PrintShippingLabel 
+            -> AttachLabelToPacket -> ShipmentDispatched;
+        }
+
+        end event OrderCompleted;
+    }  
+    
+    ReceiveOrder -> ProcessOrder -> CheckProductAvailability -> OrderFulfillable ->
+      { [checker.allProductsAvailable] PrepareAndPackProducts -> { [agreement.isOrderPickedUp] PickUpOrder;
+                                                                   [_] ShipOrder;
+                                                                 } -> OrderDelivered;
+        [!checker.allProductsAvailable] CancellationMessage -> CancelOrder; 
+      } -> FinishOrderProcessing -> OrderCompleted;
+
+}

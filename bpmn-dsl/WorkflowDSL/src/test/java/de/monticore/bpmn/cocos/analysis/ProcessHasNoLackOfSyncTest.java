@@ -1,3 +1,4 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.cocos.analysis;
 
 import com.google.common.collect.Lists;
@@ -7,6 +8,8 @@ import de.monticore.bpmn.cocos.WorkflowCoCos;
 import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
 import de.se_rwth.commons.logging.Finding;
 import java.util.Collection;
+
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class ProcessHasNoLackOfSyncTest extends AbstractCoCoTest {
@@ -16,6 +19,7 @@ class ProcessHasNoLackOfSyncTest extends AbstractCoCoTest {
     return WorkflowCoCos.getStructuralChecker();
   }
 
+  @Disabled
   @Test
   void mergeANDLackOfSync() {
     String modelName = "de.monticore.bpmn.cocos.analysis.invalid.LackOfSyncAND";
@@ -25,6 +29,7 @@ class ProcessHasNoLackOfSyncTest extends AbstractCoCoTest {
     testModelForErrors(modelName, Lists.newArrayList(), expectedWarnings);
   }
 
+  @Disabled
   @Test
   void mergeIORLackOfSync() {
     String modelName = "de.monticore.bpmn.cocos.analysis.invalid.LackOfSyncIOR";

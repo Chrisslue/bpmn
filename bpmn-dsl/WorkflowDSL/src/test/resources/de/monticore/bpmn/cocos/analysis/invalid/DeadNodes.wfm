@@ -1,3 +1,4 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.cocos.analysis.invalid;
 
 process DeadNodes {
@@ -17,10 +18,13 @@ process DeadNodes {
     split xor SplitGateway;
     merge xor MergeGateway;
 
-    event start -> SplitGateway -> {
-      [true] Task1 -> IntermediateSplit1 -> Task3,
-      [true] Task2 -> TaskX -> IntermediateSplit2 -> Task5
-    } -> MergeGateway -> event end;
+    start event E1;
+    end event E2;
+
+    E1 -> SplitGateway -> {
+      [true] Task1 -> IntermediateSplit1 -> Task3;
+      [true] Task2 -> TaskX -> IntermediateSplit2 -> Task5;
+    } -> MergeGateway -> E2;
 
     IntermediateSplit1 -> IntermediateJoin;
     IntermediateSplit2 -> IntermediateJoin;

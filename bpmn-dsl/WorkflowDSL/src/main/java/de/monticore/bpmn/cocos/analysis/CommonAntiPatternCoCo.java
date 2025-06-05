@@ -1,3 +1,4 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.cocos.analysis;
 
 import com.google.common.collect.Sets;
@@ -5,9 +6,9 @@ import com.google.common.graph.EndpointPair;
 import com.google.common.graph.ImmutableGraph;
 import de.monticore.bpmn.analysis.graph.WorkflowGraphConverter;
 import de.monticore.bpmn.utils.WorkflowFilters;
-import de.monticore.bpmn.workflow._ast.ASTFlowElementContainer;
-import de.monticore.bpmn.workflow._ast.ASTFlowNode;
-import de.monticore.bpmn.workflow._ast.ASTGateway;
+import de.monticore.bpmn.workflow._ast.ASTWFProcess;
+import de.monticore.bpmn.workflow._ast.ASTFlowElement;
+import de.monticore.bpmn.workflow._ast.ASTWFGateway;
 import de.monticore.bpmn.workflow._ast.ASTGatewayType;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,12 +20,12 @@ import org.jgrapht.graph.guava.ImmutableGraphAdapter;
 
 abstract class CommonAntiPatternCoCo extends ProcessGraphCoCo {
 
-  AllDirectedPaths<ASTFlowNode, EndpointPair<ASTFlowNode>> pathFinder;
-  NaiveLCAFinder<ASTFlowNode, EndpointPair<ASTFlowNode>> lcaFinder;
+  AllDirectedPaths<ASTFlowElement, EndpointPair<ASTFlowElement>> pathFinder;
+  NaiveLCAFinder<ASTFlowElement, EndpointPair<ASTFlowElement>> lcaFinder;
 
   @Override
-  public void check(final ASTFlowElementContainer process) {
-    ImmutableGraph<ASTFlowNode> graph = new WorkflowGraphConverter(process).convert().getGraph();
+  public void check(final ASTWFProcess process) {
+    ImmutableGraph<ASTFlowElement> graph = new WorkflowGraphConverter(process).convert().getGraph();
 
     this.processGraph = new ImmutableGraphAdapter<>(graph);
     this.process = process;
@@ -42,8 +43,8 @@ abstract class CommonAntiPatternCoCo extends ProcessGraphCoCo {
    * @param path
    * @return
    */
-  List<ASTFlowNode> getPathEntries(final GraphPath<ASTFlowNode, EndpointPair<ASTFlowNode>> path) {
-    List<ASTFlowNode> innerNodes = getPathInnerNodes(path);
+  List<ASTFlowElement> getPathEntries(final GraphPath<ASTFlowElement, EndpointPair<ASTFlowElement>> path) {
+    List<ASTFlowElement> innerNodes = getPathInnerNodes(path);
 
     return innerNodes.stream()
         .filter(
@@ -69,8 +70,8 @@ abstract class CommonAntiPatternCoCo extends ProcessGraphCoCo {
    * @param path
    * @return
    */
-  List<ASTFlowNode> getPathExits(final GraphPath<ASTFlowNode, EndpointPair<ASTFlowNode>> path) {
-    List<ASTFlowNode> innerNodes = getPathInnerNodes(path);
+  List<ASTFlowElement> getPathExits(final GraphPath<ASTFlowElement, EndpointPair<ASTFlowElement>> path) {
+    List<ASTFlowElement> innerNodes = getPathInnerNodes(path);
 
     return innerNodes.stream()
         .flatMap(this::isNonParallelGateway)
@@ -90,17 +91,17 @@ abstract class CommonAntiPatternCoCo extends ProcessGraphCoCo {
         .collect(Collectors.toList());
   }
 
-  private List<ASTFlowNode> getPathInnerNodes(
-      final GraphPath<ASTFlowNode, EndpointPair<ASTFlowNode>> path) {
+  private List<ASTFlowElement> getPathInnerNodes(
+      final GraphPath<ASTFlowElement, EndpointPair<ASTFlowElement>> path) {
     return path.getVertexList().stream()
         .filter(node -> node != path.getStartVertex() && node != path.getEndVertex())
         .collect(Collectors.toList());
   }
 
-  private Stream<ASTGateway> isNonParallelGateway(final ASTFlowNode flowNode) {
+  private Stream<ASTWFGateway> isNonParallelGateway(final ASTFlowElement flowNode) {
     return Stream.of(flowNode)
         .flatMap(WorkflowFilters::isGateway)
-        .filter(ASTGateway::isDiverging)
+        .filter(ASTWFGateway::isDiverging)
         .filter(
             split -> {
               ASTGatewayType type = split.getType();

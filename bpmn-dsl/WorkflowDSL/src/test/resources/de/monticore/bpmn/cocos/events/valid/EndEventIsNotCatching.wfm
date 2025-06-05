@@ -1,11 +1,12 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.cocos.events.valid;
 
 process EndEventIsNotCatching {
 
-  event start E1;
-  event end E2 send;
-  event end E3;
+  start event E1;
+  end event E2 send;
+  end event E3;
 
-  E1 -> {E2, E3};
+  E1 -> {E2; E3;};
 
 }

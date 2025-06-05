@@ -1,10 +1,11 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
 package de.monticore.bpmn.cocos.gateways;
 
 import de.monticore.bpmn.Messages;
 import de.monticore.bpmn.collectors.WorkflowCollector;
 import de.monticore.bpmn.collectors.WorkflowFilter;
 import de.monticore.bpmn.workflow._ast.*;
-import de.monticore.bpmn.workflow._cocos.WorkflowASTGatewayCoCo;
+import de.monticore.bpmn.workflow._cocos.WorkflowASTWFGatewayCoCo;
 import de.se_rwth.commons.logging.Log;
 import java.util.Collection;
 
@@ -14,10 +15,10 @@ import java.util.Collection;
  * any combination. Only the following Intermediate Event triggers are valid: Message, Signal,
  * Timer, Conditional, and Multiple (which can only include the previous triggers).
  */
-public class EventGatewayHasValidTarget implements WorkflowASTGatewayCoCo {
+public class EventGatewayHasValidTarget implements WorkflowASTWFGatewayCoCo {
 
   @Override
-  public void check(final ASTGateway gateway) {
+  public void check(final ASTWFGateway gateway) {
     if (gateway.getType().isEventBased()) {
       gateway
           .streamOutgoings()
@@ -32,18 +33,18 @@ public class EventGatewayHasValidTarget implements WorkflowASTGatewayCoCo {
     }
   }
 
-  private boolean isInvalidTarget(final ASTFlowNode flowNode) {
-    WorkflowFilter<ASTFlowNode> filter =
-        new WorkflowFilter<ASTFlowNode>(flowNode) {
+  private boolean isInvalidTarget(final ASTFlowElement flowNode) {
+    WorkflowFilter<ASTFlowElement> filter =
+        new WorkflowFilter<ASTFlowElement>(flowNode) {
           @Override
-          public void visit(ASTTask node) {
-            if (node.isPresentType() && node.getType() == ASTTaskType.RECEIVE) {
+          public void visit(ASTWFTask node) {
+            if (node.getType() == ASTConstantsWorkflow.RECEIVE) {
               select(node);
             }
           }
 
           @Override
-          public void visit(ASTEvent node) {
+          public void visit(ASTWFEvent node) {
             if (node.isIntermediate() && hasValidTrigger(node)) {
               select(node);
             }
@@ -54,36 +55,33 @@ public class EventGatewayHasValidTarget implements WorkflowASTGatewayCoCo {
     return filter.getFiltered().isEmpty();
   }
 
-  private boolean hasValidTrigger(final ASTEvent event) {
+  private boolean hasValidTrigger(final ASTWFEvent event) {
     // collect invalid triggers (multiple events may have nested triggers)
-    WorkflowCollector<ASTEventTrigger> collector =
-        new WorkflowCollector<>(event) {
+    WorkflowCollector<ASTWFEventTrigger> collector =
+        new WorkflowCollector<ASTWFEventTrigger>(event) {
           @Override
-          public void visit(final ASTEventTriggerEscalate trigger) {
+          public void visit(final ASTWFEventTriggerNotification trigger) {
+            if(trigger.getType() == ASTConstantsWorkflow.ERROR || trigger.getType() == ASTConstantsWorkflow.ESCALATION){
+              select(trigger);
+            }
+          }
+
+          @Override
+          public void visit(final ASTWFEventTriggerCancel trigger) {
             select(trigger);
           }
 
           @Override
-          public void visit(final ASTEventTriggerError trigger) {
+          public void visit(final ASTWFEventTriggerCompensate trigger) {
             select(trigger);
           }
 
           @Override
-          public void visit(final ASTEventTriggerCancel trigger) {
-            select(trigger);
-          }
-
-          @Override
-          public void visit(final ASTEventTriggerCompensate trigger) {
-            select(trigger);
-          }
-
-          @Override
-          public void visit(final ASTEventTriggerTerminate trigger) {
+          public void visit(final ASTWFEventTriggerTerminate trigger) {
             select(trigger);
           }
         };
-    Collection<ASTEventTrigger> invalidTriggers = collector.collect(collector);
+    Collection<ASTWFEventTrigger> invalidTriggers = collector.collect(collector);
 
     return event.isPresentTrigger() && invalidTriggers.isEmpty();
   }
