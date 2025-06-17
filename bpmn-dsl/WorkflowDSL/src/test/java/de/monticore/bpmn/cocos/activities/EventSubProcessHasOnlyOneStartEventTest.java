@@ -19,7 +19,7 @@ public class EventSubProcessHasOnlyOneStartEventTest extends AbstractCoCoTest {
     return WorkflowCoCos.getActivityChecker();
   }
 
-  @Disabled
+
   @Test
   void invalidSourcesAndTargets() {
     String modelName =

@@ -1,0 +1,12 @@
+/* (c) https://github.com/MontiCore/monticore */
+package de.monticore.bpmn.cocos.conditions.valid;
+
+import de.monticore.bpmn.cds.Domain.*;
+
+process ExpressionOfEventTriggerConditionalIsBoolean {
+
+  manual task T1
+    count 3 until [true]
+      ( when [true] );
+
+}

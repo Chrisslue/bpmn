@@ -10,8 +10,10 @@ import de.monticore.bpmn.cocos.activities.*;
 import de.monticore.bpmn.cocos.analysis.*;
 import de.monticore.bpmn.cocos.events.*;
 import de.monticore.bpmn.cocos.events.triggers.*;
+import de.monticore.bpmn.cocos.expressions.*;
 import de.monticore.bpmn.cocos.flow.*;
 import de.monticore.bpmn.cocos.gateways.*;
+import de.monticore.bpmn.types3.WorkflowTypeCheck3;
 import de.monticore.bpmn.workflow._cocos.WorkflowASTWFSubProcessCoCo;
 import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
 import de.monticore.bpmn.timerconditions.cocos.TemporalExpressionsCoCos;
@@ -116,7 +118,6 @@ public class WorkflowCoCos {
   public static WorkflowCoCoChecker getActivityChecker() {
     WorkflowCoCoChecker checker = new WorkflowCoCoChecker();
     checker.addCoCo(new CompensationActivityHasNoIncomingOrOutgoingFlow());
-    checker.addCoCo(new EventSubProcessHasNoIncomingOrOutgoingFlow());
     checker.addCoCo(new EventSubProcessHasOnlyOneStartEvent());
     checker.addCoCo(new AdHocSubProcessContainsAtLeastOneActivity());
     checker.addCoCo(new AdHocSubProcessHasNoStartAndEndEvent());
@@ -173,8 +174,16 @@ public class WorkflowCoCos {
     // As of writing, this is valid, as long as only OCL expressions are used
     // should other expressions be included in this language,
     // another TypeChecker will be required to be initialized.
-    //OCLTypeCheck3.init();
+    WorkflowTypeCheck3.init();
     WorkflowCoCoChecker checker = new WorkflowCoCoChecker();
+    checker.addCoCo(new CompletionConditionIsBoolean());
+    checker.addCoCo(new StandardLoopConditionIsBoolean());
+    checker.addCoCo(new MILoopCompletionConditionIsBoolean());
+    checker.addCoCo(new ComplexConditionOfImplicitEventBehaviorIsBoolean());
+    checker.addCoCo(new LoopCardinalityExpressionIsBoolean());
+    checker.addCoCo(new GuardOfComplexGatewayIsBoolean());
+    checker.addCoCo(new ExpressionOfEventTriggerConditionalIsBoolean());
+    checker.addCoCo(new FlowConditionIsBoolean());
 
     //checker.addCoCo(new CalledElementDoesExist());
     //checker.addChecker(OCLCoCos.createChecker());

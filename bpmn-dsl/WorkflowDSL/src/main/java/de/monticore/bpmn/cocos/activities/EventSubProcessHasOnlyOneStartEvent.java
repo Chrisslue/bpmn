@@ -5,6 +5,7 @@ import de.monticore.bpmn.Messages;
 import de.monticore.bpmn.collectors.WorkflowCollectors;
 import de.monticore.bpmn.workflow._ast.ASTWFEvent;
 import de.monticore.bpmn.workflow._ast.ASTWFSubProcess;
+import de.monticore.bpmn.workflow._ast.SequenceFlow;
 import de.monticore.bpmn.workflow._cocos.WorkflowASTWFSubProcessCoCo;
 import de.se_rwth.commons.logging.Log;
 import java.util.Collection;
@@ -17,8 +18,8 @@ public class EventSubProcessHasOnlyOneStartEvent implements WorkflowASTWFSubProc
 
   @Override
   public void check(final ASTWFSubProcess subProcess) {
-    /*
-    if (subProcess.getSymbol().isTriggeredByEvent()) {
+
+    if (isEventSubProcess(subProcess)) {
       Collection<ASTWFEvent> startEvents = WorkflowCollectors.toStartEventsLocalSubProcess(subProcess);
       if (startEvents.size() > 1) {
         startEvents.forEach(
@@ -29,6 +30,10 @@ public class EventSubProcessHasOnlyOneStartEvent implements WorkflowASTWFSubProc
                     event.get_SourcePositionEnd()));
       }
     }
-    */
+
+  }
+
+  private boolean isEventSubProcess(ASTWFSubProcess subProcess) {
+    return !subProcess.streamIncomings().findAny().isPresent() && !subProcess.streamOutgoings().findAny().isPresent();
   }
 }

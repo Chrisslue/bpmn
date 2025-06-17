@@ -1,0 +1,10 @@
+/* (c) https://github.com/MontiCore/monticore */
+package de.monticore.bpmn.cocos.conditions.invalid;
+
+import de.monticore.bpmn.cds.Domain.*;
+
+process MILoopCompletionConditionIsBoolean {
+
+  manual task T1 count 3 until [6];
+
+}

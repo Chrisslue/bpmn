@@ -102,6 +102,7 @@ public class WorkflowParserTest extends AbstractTest {
     WorkflowMill.scopesGenitorDelegator().createFromAST(ast);
     WorkflowCoCoChecker checker = new WorkflowCoCoChecker();
     checker.addCoCo(new SequenceFlowNodeReferencesExist());
+
     checker.checkAll(ast);
     WorkflowSTCompleter stCompleter = new WorkflowSTCompleter();
     WorkflowTraverser traverser = WorkflowMill.traverser();
