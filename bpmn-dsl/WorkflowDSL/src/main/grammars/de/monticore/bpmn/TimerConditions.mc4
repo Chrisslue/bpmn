@@ -5,17 +5,28 @@ component grammar TimerConditions extends de.monticore.literals.MCCommonLiterals
 {
 
   /**
-     This component grammar defines productions for the specification of
-     timer based conditions primarily used by EventTriggerTimer in the
-     Workflow DSL to trigger WFEvents. It extends MCCommonLiterals to make
-     use of existing numeric literals.
-     TODO: Use custom DateTime DSL for Date and Time concepts.
+    The Workflow language provides a textual representation of business
+    process models based on the BPMN 2.0 standard. The standard defines
+    events that are triggered at specific times via an EventTriggerTimer.
+    This component grammar defines productions for the specification of
+    timer based conditions used by the EventTriggerTimer in the Workflow
+    language to trigger WFEvents.
+    It extends MCCommonLiterals to make use of existing numeric literals.
+
+    A TimerCondition can specify a trigger for a specific date and time,
+    time intervals, or the completion of a time period / duration.
+
+    TODO: Use custom DateTime DSL for Date and Time concepts.
    */
 
   // This interface is implemented by each specific timer condition.
   interface TimerCondition;
 
-  // This condition is used to specify a trigger at a specific time of day.
+  /* This condition is used to specify a trigger at a specific time of day.
+   * If used as part of a OnDateCondition, the event is triggered on the
+     specified date at the specified time of day. Otherwise, it is
+     triggered every day at the specified time of day.
+   */
   AtTimeCondition implements TimerCondition =
       "at" Time
     ;
@@ -23,6 +34,8 @@ component grammar TimerConditions extends de.monticore.literals.MCCommonLiterals
   /*
    * This condition specifies a trigger for a specific date, and optionally
      at a specific time.
+   * If no time of day is specified, the event may be triggered at any time
+     during that day, with the default being the earliest, i.e., 00:00.
    */
   OnDateCondition implements TimerCondition =
       "on" Date AtTimeCondition?
@@ -30,15 +43,15 @@ component grammar TimerConditions extends de.monticore.literals.MCCommonLiterals
 
   /*
    * This condition specifies a trigger that occurs after a specified period
-     of time.
+     (or duration) of time.
    */
   AfterPeriodCondition implements TimerCondition =
       "after" period:Period
     ;
 
   /**
-   * This condition is repeatedly triggered everytime a specified period of
-     time elapses.
+   * This condition is repeatedly triggered everytime the specified period
+     of time elapses.
    * Optionally a starting date and time can be specified. 
    * Additionally, the number of occurrences can be limited.
    */
@@ -48,7 +61,7 @@ component grammar TimerConditions extends de.monticore.literals.MCCommonLiterals
     ;
 
   /* This is used to allow the specification of a ISO8601 cron expression.
-   * The format is enforced via the TOP-mechanism.
+   * The format check is encoded in Java / added user class
    */
   CronCondition implements TimerCondition =
       "cron" value:String
@@ -57,6 +70,7 @@ component grammar TimerConditions extends de.monticore.literals.MCCommonLiterals
   /**
    * This nonterminal specifies a point in time that includes hours and
      minutes, with seconds as an additional option.
+   * If seconds are omitted, the earliest time is assumed.
    */ 
   Time =
       hours:NatLiteral ":" {noSpace()}?
@@ -72,9 +86,9 @@ component grammar TimerConditions extends de.monticore.literals.MCCommonLiterals
       year:NatLiteral "-" month:NatLiteral "-" day:NatLiteral
     ;
 
-  /* This nonterminal allows for the specification of ISO8701 time periods,
+  /* This nonterminal allows for the specification of ISO8601 time periods,
      e.g., "P2Y3M2W1DT2H13M20S".
-   * The format is enforced via the TOP-mechanism.
+   * The format check is encoded in Java / added user class
    */
   Period = value:Name;
 
