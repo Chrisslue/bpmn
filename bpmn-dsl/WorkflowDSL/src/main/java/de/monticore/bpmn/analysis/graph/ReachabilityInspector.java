@@ -1,4 +1,4 @@
- /* (c) https://github.com/MontiCore/monticore */ 
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.analysis.graph;
 
 import java.util.Objects;
@@ -15,23 +15,18 @@ import org.jgrapht.alg.shortestpath.FloydWarshallShortestPaths;
  * @param <V> the type of node
  */
 public class ReachabilityInspector<V> {
-
+  
   private final Graph<V, ?> graph;
-
+  
   public ReachabilityInspector(final Graph<V, ?> graph) {
     this.graph = graph;
   }
-
+  
   public Set<V> reachableFrom(final Set<V> sources) {
-    return sources.stream()
-        .map(source -> new FloydWarshallShortestPaths<>(graph).getPaths(source))
-        .map(
-            shortestPaths ->
-                graph.vertexSet().stream()
-                    .map(shortestPaths::getPath)
-                    .filter(Objects::nonNull)
-                    .map(GraphPath::getEndVertex))
-        .flatMap(Function.identity())
-        .collect(Collectors.toSet());
+    return sources.stream().map(source -> new FloydWarshallShortestPaths<>(graph).getPaths(source))
+        .map(shortestPaths -> graph.vertexSet().stream().map(shortestPaths::getPath).filter(
+            Objects::nonNull).map(GraphPath::getEndVertex)).flatMap(Function.identity()).collect(
+                Collectors.toSet());
   }
+  
 }

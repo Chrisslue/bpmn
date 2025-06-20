@@ -1,4 +1,4 @@
- /* (c) https://github.com/MontiCore/monticore */ 
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.cocos;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -26,14 +26,14 @@ import java.util.stream.Collectors;
  * warnings.
  */
 public abstract class AbstractCoCoTest extends AbstractTest {
-
+  
   /**
    * Returns the context condition checker to be executed by this test.
    *
    * @return the context condition checker.
    */
   protected abstract WorkflowCoCoChecker getChecker();
-
+  
   /**
    * Asserts that each of the expectedErrors is found (checking code and msg) in any of the actual
    * produced errors that occurred when the {@link WorkflowCoCoChecker} run on the given modelName.
@@ -43,60 +43,56 @@ public abstract class AbstractCoCoTest extends AbstractTest {
    * @param expectedErrors Collection of the expected errors
    * @return the compilation unit loaded from the model
    */
-  protected ASTWorkflowCompilationUnit testModelForErrors(
-      String qualifiedModelName, Collection<Finding> expectedErrors) {
+  protected ASTWorkflowCompilationUnit testModelForErrors(String qualifiedModelName,
+      Collection<Finding> expectedErrors) {
     ASTWorkflowCompilationUnit cu = loadModel(qualifiedModelName);
-
-    Collection<Finding> errors =
-        Log.getFindings().stream().filter(Finding::isError).collect(Collectors.toList());
+    
+    Collection<Finding> errors = Log.getFindings().stream().filter(Finding::isError).collect(
+        Collectors.toList());
     Assert.assertEqualErrorCounts(expectedErrors, errors);
     Assert.assertErrorMsg(expectedErrors, errors);
-
+    
     return cu;
   }
-
-  protected ASTWorkflowCompilationUnit testModelForErrorCode(
-      String qualifiedModelName, String expectedError) {
+  
+  protected ASTWorkflowCompilationUnit testModelForErrorCode(String qualifiedModelName,
+      String expectedError) {
     ASTWorkflowCompilationUnit cu = loadModel(qualifiedModelName);
-
+    
     Assert.assertHasErrorCode(expectedError);
-
+    
     return cu;
   }
-
-  protected ASTWorkflowCompilationUnit testModelForErrors(
-      String qualifiedModelName,
-      Collection<Finding> expectedErrors,
-      Collection<Finding> expectedWarnings) {
+  
+  protected ASTWorkflowCompilationUnit testModelForErrors(String qualifiedModelName,
+      Collection<Finding> expectedErrors, Collection<Finding> expectedWarnings) {
     ASTWorkflowCompilationUnit cu = loadModel(qualifiedModelName);
-
-    Collection<Finding> errors =
-        Log.getFindings().stream().filter(Finding::isError).collect(Collectors.toList());
+    
+    Collection<Finding> errors = Log.getFindings().stream().filter(Finding::isError).collect(
+        Collectors.toList());
     Assert.assertEqualErrorCounts(expectedErrors, errors);
     Assert.assertErrorMsg(expectedErrors, errors);
-
-    Collection<Finding> warnings =
-        Log.getFindings().stream().filter(Finding::isWarning).collect(Collectors.toList());
+    
+    Collection<Finding> warnings = Log.getFindings().stream().filter(Finding::isWarning).collect(
+        Collectors.toList());
     Assert.assertEqualErrorCounts(expectedWarnings, warnings);
     Assert.assertErrorMsg(expectedWarnings, warnings);
-
+    
     return cu;
   }
-
-  protected void testModelForErrors(
-      String qualifiedModelName, Collection<Finding> expectedErrors, Class exception) {
-    assertThrows(
-        exception,
-        () -> {
-          loadModel(qualifiedModelName);
-        });
-
-    Collection<Finding> errors =
-        Log.getFindings().stream().filter(Finding::isError).collect(Collectors.toList());
+  
+  protected void testModelForErrors(String qualifiedModelName, Collection<Finding> expectedErrors,
+      Class exception) {
+    assertThrows(exception, () -> {
+      loadModel(qualifiedModelName);
+    });
+    
+    Collection<Finding> errors = Log.getFindings().stream().filter(Finding::isError).collect(
+        Collectors.toList());
     Assert.assertEqualErrorCounts(expectedErrors, errors);
     Assert.assertErrorMsg(expectedErrors, errors);
   }
-
+  
   /**
    * Asserts that no error occurred when the {@link WorkflowCoCoChecker} run the given modelName.
    *
@@ -107,27 +103,24 @@ public abstract class AbstractCoCoTest extends AbstractTest {
     ASTWorkflowCompilationUnit cu = loadModel(qualifiedModelName);
     assertEquals(0, Log.getFindings().stream().filter(Finding::isError).count());
     assertEquals(0, Log.getFindings().stream().filter(Finding::isWarning).count());
-
+    
     return cu;
   }
-
-  protected ASTWorkflowCompilationUnit testModelNoErrors(
-      String qualifiedModelName, int noOfWarnings) {
+  
+  protected ASTWorkflowCompilationUnit testModelNoErrors(String qualifiedModelName,
+      int noOfWarnings) {
     ASTWorkflowCompilationUnit cu = loadModel(qualifiedModelName);
     assertEquals(0, Log.getFindings().stream().filter(Finding::isError).count());
     assertEquals(noOfWarnings, Log.getFindings().stream().filter(Finding::isWarning).count());
-
+    
     return cu;
   }
-
+  
   @Override
   protected ASTWorkflowCompilationUnit loadModel(String qualifiedModelName) {
     WorkflowTool tool = new WorkflowTool();
-    ASTWorkflowCompilationUnit ast =
-        tool.parse(
-            MODEL_DIR
-                + Names.getPathFromPackage(qualifiedModelName).replaceAll("\\\\", "/")
-                + ".wfm");
+    ASTWorkflowCompilationUnit ast = tool.parse(MODEL_DIR + Names.getPathFromPackage(
+        qualifiedModelName).replaceAll("\\\\", "/") + ".wfm");
     new AddMoreImports(Lists.newArrayList(OCL_TYPES)).transform(ast);
     WorkflowMill.scopesGenitorDelegator().createFromAST(ast);
     WorkflowCoCoChecker checker = new WorkflowCoCoChecker();
@@ -137,17 +130,18 @@ public abstract class AbstractCoCoTest extends AbstractTest {
     new AddSequenceFlowToFlowNodes().transform(ast);
     new AddReferenceToParentLane().transform(ast);
     new SetSubProcessTriggeredByEvent().transform(ast);
-
+    
     WorkflowSTCompleter stCompleter = new WorkflowSTCompleter();
     WorkflowTraverser traverser = WorkflowMill.traverser();
     traverser.add4Workflow(stCompleter);
     ast.accept(traverser);
-
+    
     if (shouldWriteAuxModels()) { // write models before running CoCos (and potentially failing)
       writeTestAuxModels(qualifiedModelName, ast);
     }
     getChecker().checkAll(ast);
-
+    
     return ast;
   }
+  
 }

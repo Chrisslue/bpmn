@@ -1,4 +1,4 @@
- /* (c) https://github.com/MontiCore/monticore */ 
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.workflow._ast;
 
 import de.monticore.ast.ASTNode;
@@ -12,15 +12,13 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public interface ASTFlowElement extends ASTFlowElementTOP {
-
-  default String getName(){
-    return "";
-  }
-
+  
+  default String getName() { return ""; }
+  
   default Set<ASTFlowElement> getSuccessors() {
     return getOutgoingsList().stream().map(SequenceFlow::getTarget).collect(Collectors.toSet());
   }
-
+  
   default Set<ASTFlowElement> getPredecessors() {
     return getIncomingsList().stream().map(SequenceFlow::getSource).collect(Collectors.toSet());
   }
@@ -48,7 +46,7 @@ public interface ASTFlowElement extends ASTFlowElementTOP {
     }
     return Optional.empty();
   }
-
+  
   // added additional attributes and methods
   /*
   protected  Optional<String> parentRef = Optional.empty();
@@ -56,27 +54,28 @@ public interface ASTFlowElement extends ASTFlowElementTOP {
   protected  List<de.monticore.bpmn.workflow._ast.SequenceFlow> incomings = new java.util.ArrayList<>();
   protected  List<de.monticore.bpmn.workflow._ast.SequenceFlow> outgoings = new java.util.ArrayList<>();
   */
-  abstract  boolean addIncomings (de.monticore.bpmn.workflow._ast.SequenceFlow element);
-
-  abstract  boolean addOutgoings (de.monticore.bpmn.workflow._ast.SequenceFlow element);
-
-  abstract  void setLaneRef (String laneRef);
-
-  abstract  void setParentRef (String parentRef);
-
-  abstract  List<de.monticore.bpmn.workflow._ast.SequenceFlow> getIncomingsList ();
-
-  abstract  List<de.monticore.bpmn.workflow._ast.SequenceFlow> getOutgoingsList ();
-
-  abstract  boolean isEmptyIncomings ();
-
-  abstract  boolean isEmptyOutgoings ();
-
-  abstract  int sizeIncomings ();
-
-  abstract  int sizeOutgoings ();
-
-  abstract  Stream<de.monticore.bpmn.workflow._ast.SequenceFlow> streamOutgoings ();
-
-  abstract  Stream<de.monticore.bpmn.workflow._ast.SequenceFlow> streamIncomings ();
+  abstract boolean addIncomings(de.monticore.bpmn.workflow._ast.SequenceFlow element);
+  
+  abstract boolean addOutgoings(de.monticore.bpmn.workflow._ast.SequenceFlow element);
+  
+  abstract void setLaneRef(String laneRef);
+  
+  abstract void setParentRef(String parentRef);
+  
+  abstract List<de.monticore.bpmn.workflow._ast.SequenceFlow> getIncomingsList();
+  
+  abstract List<de.monticore.bpmn.workflow._ast.SequenceFlow> getOutgoingsList();
+  
+  abstract boolean isEmptyIncomings();
+  
+  abstract boolean isEmptyOutgoings();
+  
+  abstract int sizeIncomings();
+  
+  abstract int sizeOutgoings();
+  
+  abstract Stream<de.monticore.bpmn.workflow._ast.SequenceFlow> streamOutgoings();
+  
+  abstract Stream<de.monticore.bpmn.workflow._ast.SequenceFlow> streamIncomings();
+  
 }

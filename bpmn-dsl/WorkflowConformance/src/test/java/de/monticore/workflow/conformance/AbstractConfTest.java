@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.workflow.conformance;
 
 import de.monticore.bpmn.conformance.BPMNConformanceUtils;
@@ -12,16 +13,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class AbstractConfTest {
-
+  
   protected static final String MODEL_DIR = "src/test/resources/";
-
+  
   public void init() {
     Log.init();
     WorkflowMill.init();
     WorkflowMill.globalScope().clear();
     BasicSymbolsMill.initializePrimitives();
   }
-
+  
   /**
    * Parses a model and ensures that the root node is present.
    *
@@ -29,13 +30,13 @@ public abstract class AbstractConfTest {
    * @return the root of the parsed model.
    */
   protected ASTWorkflowCompilationUnit loadBPMN(String qualifiedModelName) {
-
+    
     return BPMNConformanceUtils.loadBPMN(MODEL_DIR + qualifiedModelName);
   }
-
+  
   protected List<WfNode> resolveNodeFormBuilder(List<String> nodeNames, WfBuilder builder) {
     List<WfNode> res = new ArrayList<>();
-
+    
     for (String name : nodeNames) {
       builder.getWfNode(name);
       WfNode node = builder.getWfNode(name);
@@ -43,11 +44,12 @@ public abstract class AbstractConfTest {
     }
     return res;
   }
-
+  
   protected WfBuilder parseAndCreateBuilder(String model) {
-
+    
     ASTWorkflowCompilationUnit ast = loadBPMN(model);
-
+    
     return WfNodeFactory.workflowBuilder(ast, "");
   }
+  
 }

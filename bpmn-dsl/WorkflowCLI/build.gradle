@@ -2,6 +2,7 @@ plugins {
     id "java-library"
     id "com.github.johnrengelman.shadow" version "6.0.0"
     id "jacoco"
+    id "de.se_rwth.codestyle" version "$mc_version"
 }
 
 group = "de.monticore.lang"

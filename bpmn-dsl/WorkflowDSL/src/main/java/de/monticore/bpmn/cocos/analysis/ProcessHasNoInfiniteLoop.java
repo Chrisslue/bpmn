@@ -1,4 +1,4 @@
- /* (c) https://github.com/MontiCore/monticore */ 
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.cocos.analysis;
 
 import com.google.common.graph.EndpointPair;
@@ -11,33 +11,23 @@ import org.jgrapht.Graph;
 import org.jgrapht.alg.cycle.CycleDetector;
 
 public class ProcessHasNoInfiniteLoop extends ProcessGraphCoCo {
-
+  
   @Override
-  protected void check(
-      final Graph<ASTFlowElement, EndpointPair<ASTFlowElement>> processGraph,
+  protected void check(final Graph<ASTFlowElement, EndpointPair<ASTFlowElement>> processGraph,
       final ASTWFProcess process) {
-    new CycleDetector<>(processGraph)
-        .findCycles().stream()
-            .flatMap(WorkflowFilters::isGateway)
-            .filter(
-                gateway ->
-                    !gateway.getType().isExclusive() && !gateway.getType().isExclusiveEventBased())
-            .forEach(
-                gateway -> {
-                  if (gateway.isDiverging()) { // loop exit
-                    Log.warn(
-                        Messages.get("0xWFM7007", gateway.getName()),
-                        gateway.get_SourcePositionStart(),
-                        gateway.get_SourcePositionEnd());
-                  }
-                  if (gateway.isConverging()
-                      && (gateway.getType().isParallel()
-                          || gateway.getType().isParallelEventBased())) { // loop entry
-                    Log.warn(
-                        Messages.get("0xWFM7008", gateway.getName()),
-                        gateway.get_SourcePositionStart(),
-                        gateway.get_SourcePositionEnd());
-                  }
-                });
+    new CycleDetector<>(processGraph).findCycles().stream().flatMap(WorkflowFilters::isGateway)
+        .filter(gateway -> !gateway.getType().isExclusive() && !gateway.getType()
+            .isExclusiveEventBased()).forEach(gateway -> {
+              if (gateway.isDiverging()) { // loop exit
+                Log.warn(Messages.get("0xWFM7007", gateway.getName()), gateway
+                    .get_SourcePositionStart(), gateway.get_SourcePositionEnd());
+              }
+              if (gateway.isConverging() && (gateway.getType().isParallel() || gateway.getType()
+                  .isParallelEventBased())) { // loop entry
+                Log.warn(Messages.get("0xWFM7008", gateway.getName()), gateway
+                    .get_SourcePositionStart(), gateway.get_SourcePositionEnd());
+              }
+            });
   }
+  
 }

@@ -1,4 +1,4 @@
- /* (c) https://github.com/MontiCore/monticore */ 
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.cocos.analysis;
 
 import com.google.common.collect.Lists;
@@ -13,58 +13,51 @@ import org.junit.jupiter.api.Test;
 
 @Disabled
 class ProcessNetIsSoundTest extends AbstractCoCoTest {
-
+  
   @Override
-  protected WorkflowCoCoChecker getChecker() {
-    return WorkflowCoCos.getBehavioralChecker();
-  }
-
+  protected WorkflowCoCoChecker getChecker() { return WorkflowCoCos.getBehavioralChecker(); }
+  
   @Test
   void noOptionToComplete() {
     String modelName = "de.monticore.bpmn.cocos.analysis.invalid.NoOptionToComplete";
-    Collection<Finding> expectedWarnings =
-        Lists.newArrayList(Finding.warning(Messages.get("0xWFM8003", "NoOptionToComplete")));
-
+    Collection<Finding> expectedWarnings = Lists.newArrayList(Finding.warning(Messages.get(
+        "0xWFM8003", "NoOptionToComplete")));
+    
     testModelForErrors(modelName, Lists.newArrayList(), expectedWarnings);
   }
-
+  
   @Test
   void unsafe() {
     String modelName = "de.monticore.bpmn.cocos.analysis.invalid.Unsafe";
-    Collection<Finding> expectedWarnings =
-        Lists.newArrayList(
-            Finding.warning(Messages.get("0xWFM8005", "Task2")),
-            Finding.warning(Messages.get("0xWFM8005", "End2")));
-
+    Collection<Finding> expectedWarnings = Lists.newArrayList(Finding.warning(Messages.get(
+        "0xWFM8005", "Task2")), Finding.warning(Messages.get("0xWFM8005", "End2")));
+    
     testModelForErrors(modelName, Lists.newArrayList(), expectedWarnings);
   }
-
+  
   @Test
   void safe() {
     String modelName = "de.monticore.bpmn.cocos.analysis.valid.Safe";
-
+    
     testModelNoErrors(modelName);
   }
-
+  
   @Test
   void dead() {
     String modelName = "de.monticore.bpmn.cocos.analysis.invalid.DeadNodes";
-    Collection<Finding> expectedWarnings =
-        Lists.newArrayList(
-            Finding.warning(Messages.get("0xWFM8003", "DeadNodes")),
-            Finding.warning(Messages.get("0xWFM8004", "Task4")));
-
+    Collection<Finding> expectedWarnings = Lists.newArrayList(Finding.warning(Messages.get(
+        "0xWFM8003", "DeadNodes")), Finding.warning(Messages.get("0xWFM8004", "Task4")));
+    
     testModelForErrors(modelName, Lists.newArrayList(), expectedWarnings);
   }
-
+  
   @Test
   void deadlock() {
     String modelName = "de.monticore.bpmn.cocos.analysis.invalid.SyncDeadlockAND";
-    Collection<Finding> expectedWarnings =
-        Lists.newArrayList(
-            Finding.warning(Messages.get("0xWFM8003", "SyncDeadlockAND")),
-            Finding.warning(Messages.get("0xWFM8004", "_Event_4")));
-
+    Collection<Finding> expectedWarnings = Lists.newArrayList(Finding.warning(Messages.get(
+        "0xWFM8003", "SyncDeadlockAND")), Finding.warning(Messages.get("0xWFM8004", "_Event_4")));
+    
     testModelForErrors(modelName, Lists.newArrayList(), expectedWarnings);
   }
+  
 }

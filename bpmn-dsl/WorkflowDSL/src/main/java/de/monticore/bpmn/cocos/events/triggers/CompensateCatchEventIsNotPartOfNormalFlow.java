@@ -1,4 +1,4 @@
- /* (c) https://github.com/MontiCore/monticore */ 
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.cocos.events.triggers;
 
 import de.monticore.bpmn.Messages;
@@ -15,24 +15,24 @@ import de.se_rwth.commons.logging.Log;
  * used in normal flow.
  */
 public class CompensateCatchEventIsNotPartOfNormalFlow implements WorkflowASTWFEventCoCo {
-
+  
   @Override
   public void check(final ASTWFEvent event) {
-    WorkflowVisitor2 visitor =
-        new WorkflowVisitor2() {
-          @Override
-          public void visit(final ASTWFEventTriggerCompensate trigger) {
-            if (event.getSymbol().isBoundary() && !event.isEmptyOutgoings()) {
-              Log.error(
-                  Messages.get("0xWFM2024", event.getName()),
-                  event.get_SourcePositionStart(),
-                  event.get_SourcePositionEnd());
-            }
-          }
-        };
-
+    WorkflowVisitor2 visitor = new WorkflowVisitor2() {
+      
+      @Override
+      public void visit(final ASTWFEventTriggerCompensate trigger) {
+        if (event.getSymbol().isBoundary() && !event.isEmptyOutgoings()) {
+          Log.error(Messages.get("0xWFM2024", event.getName()), event.get_SourcePositionStart(),
+              event.get_SourcePositionEnd());
+        }
+      }
+      
+    };
+    
     WorkflowTraverser traverser = WorkflowMill.traverser();
     traverser.add4Workflow(visitor);
     event.accept(traverser);
   }
+  
 }

@@ -1,4 +1,4 @@
- /* (c) https://github.com/MontiCore/monticore */ 
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.cocos.events;
 
 import de.monticore.bpmn.Messages;
@@ -14,21 +14,15 @@ import java.util.Collection;
  * attribute for all outgoing Sequence Flows MUST be set to None
  */
 public class StartEventOutgoingFlowHasNoCondition implements WorkflowASTWFEventCoCo {
-
+  
   @Override
   public void check(final ASTWFEvent event) {
     if (event.isStart()) {
-      event
-          .streamOutgoings()
-          .map(SequenceFlow::getConditions)
-          .flatMap(Collection::stream)
-          .filter(ASTFlowCondition::isPresentExpression)
-          .forEach(
-              condition ->
-                  Log.error(
-                      Messages.get("0xWFM3002", event.getName()),
-                      condition.get_SourcePositionStart(),
-                      condition.get_SourcePositionEnd()));
+      event.streamOutgoings().map(SequenceFlow::getConditions).flatMap(Collection::stream).filter(
+          ASTFlowCondition::isPresentExpression).forEach(condition -> Log.error(Messages.get(
+              "0xWFM3002", event.getName()), condition.get_SourcePositionStart(), condition
+                  .get_SourcePositionEnd()));
     }
   }
+  
 }

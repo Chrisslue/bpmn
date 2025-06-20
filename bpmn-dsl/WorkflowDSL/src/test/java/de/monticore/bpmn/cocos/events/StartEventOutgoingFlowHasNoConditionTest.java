@@ -1,4 +1,4 @@
- /* (c) https://github.com/MontiCore/monticore */ 
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.cocos.events;
 
 import com.google.common.collect.Lists;
@@ -9,34 +9,29 @@ import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
 import de.se_rwth.commons.logging.Finding;
 import java.util.Collection;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class StartEventOutgoingFlowHasNoConditionTest extends AbstractCoCoTest {
-
+  
   @Override
-  protected WorkflowCoCoChecker getChecker() {
-    return WorkflowCoCos.getEventChecker();
-  }
-
-
+  protected WorkflowCoCoChecker getChecker() { return WorkflowCoCos.getEventChecker(); }
+  
   @Test
   void outgoingFlowHasCondition() {
     String modelName =
         "de.monticore.bpmn.cocos.events.invalid.StartEventOutgoingFlowHasNoCondition";
-
-    Collection<Finding> expectedErrors =
-        Lists.newArrayList(
-            Finding.error(Messages.get("0xWFM3002", "E1")),
-            Finding.error(Messages.get("0xWFM3002", "E1")));
-
+    
+    Collection<Finding> expectedErrors = Lists.newArrayList(Finding.error(Messages.get("0xWFM3002",
+        "E1")), Finding.error(Messages.get("0xWFM3002", "E1")));
+    
     testModelForErrors(modelName, expectedErrors);
   }
-
+  
   @Test
   void outgoingFlowHasNoCondition() {
     String modelName = "de.monticore.bpmn.cocos.events.valid.StartEventOutgoingFlowHasNoCondition";
-
+    
     testModelNoErrors(modelName);
   }
+  
 }

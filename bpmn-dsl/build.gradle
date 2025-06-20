@@ -6,7 +6,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 plugins {
     id "maven-publish"
     id "io.github.themrmilchmann.ecj" version "0.2.0" apply false
-    id "com.github.sherter.google-java-format" version "0.9"    // Task "verifyGoogleJavaFormat" and "googleJavaFormat"
+    id "de.se_rwth.codestyle" version "$mc_version"
 }
 
 description = "BPMN-DSL"
@@ -76,15 +76,6 @@ subprojects {
         outputs.cacheIf { false } // ECJ has problem with caching
     }
 }
-
-googleJavaFormat {
-    exclude '**/target/**'
-}
-
-verifyGoogleJavaFormat {
-    ignoreFailures true
-    exclude "**"
-}  // do not check format in "build"
 
 /**
  * Builds the whole BPMN project
@@ -190,21 +181,6 @@ configure([
             url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
         }
     }
-}
-
-googleJavaFormat {
-    exclude '**/target/**'
-}
-
-verifyGoogleJavaFormat{
-    ignoreFailures true
-    exclude "**"
-}  // do not check format in "build"
-
-task checkfmt(type: com.github.sherter.googlejavaformatgradleplugin.VerifyGoogleJavaFormat) {}
-
-task fmt {
-    dependsOn tasks.named("googleJavaFormat")
 }
 
 defaultTasks 'build'

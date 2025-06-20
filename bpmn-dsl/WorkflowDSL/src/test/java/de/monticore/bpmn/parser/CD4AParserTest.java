@@ -1,4 +1,4 @@
- /* (c) https://github.com/MontiCore/monticore */ 
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.parser;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -14,7 +14,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
 class CD4AParserTest {
-
+  
   @Test
   void testVacation() throws IOException {
     CD4CodeParser parser = CD4CodeMill.parser();
@@ -23,4 +23,5 @@ class CD4AParserTest {
     assertFalse(parser.hasErrors());
     assertTrue(root.isPresent());
   }
+  
 }

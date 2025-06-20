@@ -1,4 +1,4 @@
- /* (c) https://github.com/MontiCore/monticore */ 
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.cocos.flow;
 
 import de.monticore.bpmn.Messages;
@@ -12,14 +12,13 @@ import de.se_rwth.commons.logging.Log;
  * from an End Event.
  */
 public class EndEventHasNoOutgoingFlow implements WorkflowASTWFEventCoCo {
-
+  
   @Override
   public void check(final ASTWFEvent event) {
     if (event.isEnd() && !event.isEmptyOutgoings()) {
-      Log.error(
-          Messages.get("0xWFM2004", event.getName()),
-          event.get_SourcePositionStart(),
-          event.get_SourcePositionEnd());
+      Log.error(Messages.get("0xWFM2004", event.getName()), event.get_SourcePositionStart(), event
+          .get_SourcePositionEnd());
     }
   }
+  
 }

@@ -1,4 +1,4 @@
- /* (c) https://github.com/MontiCore/monticore */ 
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.cocos.flows;
 
 import com.google.common.collect.Lists;
@@ -11,26 +11,25 @@ import java.util.Collection;
 import org.junit.jupiter.api.Test;
 
 class StartEventHasOneOrMoreOutgoingFlowsTest extends AbstractCoCoTest {
-
+  
   @Override
-  protected WorkflowCoCoChecker getChecker() {
-    return WorkflowCoCos.getSequenceFlowChecker();
-  }
-
+  protected WorkflowCoCoChecker getChecker() { return WorkflowCoCos.getSequenceFlowChecker(); }
+  
   @Test
   void hasNoOutgoingFlow() {
     String modelName = "de.monticore.bpmn.cocos.flows.invalid.StartEventHasOneOrMoreOutgoingFlows";
-
-    Collection<Finding> expectedErrors =
-        Lists.newArrayList(Finding.error(Messages.get("0xWFM2008", "E1")));
-
+    
+    Collection<Finding> expectedErrors = Lists.newArrayList(Finding.error(Messages.get("0xWFM2008",
+        "E1")));
+    
     testModelForErrors(modelName, expectedErrors);
   }
-
+  
   @Test
   void hasOutgoingFlow() {
     String modelName = "de.monticore.bpmn.cocos.flows.valid.StartEventHasOneOrMoreOutgoingFlows";
-
+    
     testModelNoErrors(modelName);
   }
+  
 }

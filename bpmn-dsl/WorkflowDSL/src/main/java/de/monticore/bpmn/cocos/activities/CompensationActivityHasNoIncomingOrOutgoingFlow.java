@@ -1,4 +1,4 @@
- /* (c) https://github.com/MontiCore/monticore */ 
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.cocos.activities;
 
 import de.monticore.bpmn.Messages;
@@ -12,28 +12,17 @@ import de.se_rwth.commons.logging.Log;
  * occurs outside the normal flow.
  */
 public class CompensationActivityHasNoIncomingOrOutgoingFlow implements WorkflowASTWFActivityCoCo {
-
+  
   @Override
   public void check(final ASTWFActivity activity) {
     if (activity.getSymbol().isCompensating()) {
-      activity
-          .streamIncomings()
-          .map(SequenceFlow::getSource)
-          .forEach(
-              source ->
-                  Log.error(
-                      Messages.get("0xWFM6001", activity.getName()),
-                      source.get_SourcePositionStart(),
-                      source.get_SourcePositionEnd()));
-      activity
-          .streamOutgoings()
-          .map(SequenceFlow::getTarget)
-          .forEach(
-              target ->
-                  Log.error(
-                      Messages.get("0xWFM6001", activity.getName()),
-                      target.get_SourcePositionStart(),
-                      target.get_SourcePositionEnd()));
+      activity.streamIncomings().map(SequenceFlow::getSource).forEach(source -> Log.error(Messages
+          .get("0xWFM6001", activity.getName()), source.get_SourcePositionStart(), source
+              .get_SourcePositionEnd()));
+      activity.streamOutgoings().map(SequenceFlow::getTarget).forEach(target -> Log.error(Messages
+          .get("0xWFM6001", activity.getName()), target.get_SourcePositionStart(), target
+              .get_SourcePositionEnd()));
     }
   }
+  
 }

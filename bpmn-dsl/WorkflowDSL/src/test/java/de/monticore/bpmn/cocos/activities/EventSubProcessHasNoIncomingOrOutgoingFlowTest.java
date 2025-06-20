@@ -1,4 +1,4 @@
- /* (c) https://github.com/MontiCore/monticore */ 
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.cocos.activities;
 
 import com.google.common.collect.Lists;
@@ -13,31 +13,28 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class EventSubProcessHasNoIncomingOrOutgoingFlowTest extends AbstractCoCoTest {
-
+  
   @Override
-  protected WorkflowCoCoChecker getChecker() {
-    return WorkflowCoCos.getActivityChecker();
-  }
-
+  protected WorkflowCoCoChecker getChecker() { return WorkflowCoCos.getActivityChecker(); }
+  
   @Disabled
   @Test
   void invalidSourcesAndTargets() {
     String modelName =
         "de.monticore.bpmn.cocos.activities.invalid.EventSubProcessHasNoIncomingOrOutgoingFlow";
-
-    Collection<Finding> expectedErrors =
-        Lists.newArrayList(
-            Finding.error(Messages.get("0xWFM3001", "S1")),
-            Finding.error(Messages.get("0xWFM3001", "S1")));
-
+    
+    Collection<Finding> expectedErrors = Lists.newArrayList(Finding.error(Messages.get("0xWFM3001",
+        "S1")), Finding.error(Messages.get("0xWFM3001", "S1")));
+    
     testModelForErrors(modelName, expectedErrors);
   }
-
+  
   @Test
   void validSourcesAndTargets() {
     String modelName =
         "de.monticore.bpmn.cocos.activities.valid.EventSubProcessHasNoIncomingOrOutgoingFlow";
-
+    
     testModelNoErrors(modelName);
   }
+  
 }

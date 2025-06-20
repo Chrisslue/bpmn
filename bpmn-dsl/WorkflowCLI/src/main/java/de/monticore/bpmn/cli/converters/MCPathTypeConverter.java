@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.cli.converters;
 
 import de.monticore.io.paths.MCPath;
@@ -9,7 +10,7 @@ import picocli.CommandLine.ITypeConverter;
 
 /** Custom type converter for {@code ModelPath} parameter. */
 public class MCPathTypeConverter implements ITypeConverter<MCPath> {
-
+  
   @Override
   public MCPath convert(final String value) throws Exception {
     Path path = Paths.get(value);
@@ -18,4 +19,5 @@ public class MCPathTypeConverter implements ITypeConverter<MCPath> {
     }
     return new MCPath(path);
   }
+  
 }

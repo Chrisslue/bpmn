@@ -1,4 +1,4 @@
- /* (c) https://github.com/MontiCore/monticore */ 
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.cocos.analysis;
 
 import com.google.common.collect.Lists;
@@ -13,29 +13,28 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class ProcessHasNoLackOfSyncTest extends AbstractCoCoTest {
-
+  
   @Override
-  protected WorkflowCoCoChecker getChecker() {
-    return WorkflowCoCos.getStructuralChecker();
-  }
-
+  protected WorkflowCoCoChecker getChecker() { return WorkflowCoCos.getStructuralChecker(); }
+  
   @Disabled
   @Test
   void mergeANDLackOfSync() {
     String modelName = "de.monticore.bpmn.cocos.analysis.invalid.LackOfSyncAND";
-    Collection<Finding> expectedWarnings =
-        Lists.newArrayList(Finding.warning(Messages.get("0xWFM7002", "_Gateway_2", "_Gateway_3")));
-
+    Collection<Finding> expectedWarnings = Lists.newArrayList(Finding.warning(Messages.get(
+        "0xWFM7002", "_Gateway_2", "_Gateway_3")));
+    
     testModelForErrors(modelName, Lists.newArrayList(), expectedWarnings);
   }
-
+  
   @Disabled
   @Test
   void mergeIORLackOfSync() {
     String modelName = "de.monticore.bpmn.cocos.analysis.invalid.LackOfSyncIOR";
-    Collection<Finding> expectedWarnings =
-        Lists.newArrayList(Finding.warning(Messages.get("0xWFM7002", "_Gateway_2", "_Gateway_3")));
-
+    Collection<Finding> expectedWarnings = Lists.newArrayList(Finding.warning(Messages.get(
+        "0xWFM7002", "_Gateway_2", "_Gateway_3")));
+    
     testModelForErrors(modelName, Lists.newArrayList(), expectedWarnings);
   }
+  
 }

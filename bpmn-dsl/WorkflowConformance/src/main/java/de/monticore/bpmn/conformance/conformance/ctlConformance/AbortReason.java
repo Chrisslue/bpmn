@@ -1,8 +1,6 @@
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.conformance.conformance.ctlConformance;
 
 enum AbortReason {
-  SATISFIED_PREDICATE,
-  LOOP_DISCOVERED,
-  END_NODE_REACHED,
-  RETURN_TO_START
+  SATISFIED_PREDICATE, LOOP_DISCOVERED, END_NODE_REACHED, RETURN_TO_START
 }

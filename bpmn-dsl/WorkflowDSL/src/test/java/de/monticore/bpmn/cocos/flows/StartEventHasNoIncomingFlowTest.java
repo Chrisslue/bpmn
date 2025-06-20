@@ -1,4 +1,4 @@
- /* (c) https://github.com/MontiCore/monticore */ 
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.cocos.flows;
 
 import com.google.common.collect.Lists;
@@ -11,28 +11,25 @@ import java.util.Collection;
 import org.junit.jupiter.api.Test;
 
 class StartEventHasNoIncomingFlowTest extends AbstractCoCoTest {
-
+  
   @Override
-  protected WorkflowCoCoChecker getChecker() {
-    return WorkflowCoCos.getSequenceFlowChecker();
-  }
-
+  protected WorkflowCoCoChecker getChecker() { return WorkflowCoCos.getSequenceFlowChecker(); }
+  
   @Test
   void hasIncomingFlow() {
     String modelName = "de.monticore.bpmn.cocos.flows.invalid.StartEventHasNoIncomingFlow";
-
-    Collection<Finding> expectedErrors =
-        Lists.newArrayList(
-            Finding.error(Messages.get("0xWFM2003", "E1")),
-            Finding.error(Messages.get("0xWFM2003", "E3")));
-
+    
+    Collection<Finding> expectedErrors = Lists.newArrayList(Finding.error(Messages.get("0xWFM2003",
+        "E1")), Finding.error(Messages.get("0xWFM2003", "E3")));
+    
     testModelForErrors(modelName, expectedErrors);
   }
-
+  
   @Test
   void hasNoIncomingFlow() {
     String modelName = "de.monticore.bpmn.cocos.flows.valid.StartEventHasNoIncomingFlow";
-
+    
     testModelNoErrors(modelName);
   }
+  
 }

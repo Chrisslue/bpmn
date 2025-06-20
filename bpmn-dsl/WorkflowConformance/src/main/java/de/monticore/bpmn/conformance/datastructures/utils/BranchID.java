@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.conformance.datastructures.utils;
 
 import static de.monticore.bpmn.conformance.datastructures.utils.NodeType.*;
@@ -15,37 +16,39 @@ import java.util.Set;
  * It stores:
  * - id: the ID of the branch.
  * - nodeList: the list of visited nodes in the visiting order.
- * - checkCompleted: true when the check is completed on the branch, and it will not be expanded anymore.
+ * - checkCompleted: true when the check is completed on the branch, and it will not be expanded
+ * anymore.
  * - checkAborted: true when the branch is abandoned, for example, after an XOR split.
  * - waitingAndMerge: a list of nodes of type AND_MERGE that are waiting to be merged.
  *
  */
 
 public class BranchID {
+  
   private final int id;
   private final List<WfNode> nodeList;
-
+  
   private boolean checkCompleted = false;
   private boolean checkAborted = false;
   private final Set<WfNode> andMergeNodesWaitingToBeMerge = new HashSet<>();
-
+  
   private CheckResult loweBoundResult;
   private CheckResult upperBoundResult;
-
+  
   public void merge(WfNode andMerge) {
     andMergeNodesWaitingToBeMerge.remove(andMerge);
   }
-
+  
   public void wait(WfNode andMerge) {
     assert andMerge.getNodeType().equals(AND_MERGE);
     andMergeNodesWaitingToBeMerge.add(andMerge);
   }
-
+  
   public BranchID(List<WfNode> nodeList) {
     this.id = new Random().nextInt();
     this.nodeList = nodeList;
   }
-
+  
   public void addNode(WfNode node) {
     if (node.getNodeType().equals(AND_MERGE) && andMergeNodesWaitingToBeMerge.contains(node)) {
       return;
@@ -53,54 +56,43 @@ public class BranchID {
     if (nodeList.contains(node)) {
       checkCompleted = true;
     }
-
+    
     this.nodeList.add(node);
   }
-
-  public List<WfNode> getNodeList() {
-    return nodeList;
-  }
-
-  public boolean isEmpty() {
-    return nodeList.isEmpty();
-  }
-
+  
+  public List<WfNode> getNodeList() { return nodeList; }
+  
+  public boolean isEmpty() { return nodeList.isEmpty(); }
+  
   @Override
   public String toString() {
     return "id:" + id + " " + nodeList.toString();
   }
-
+  
   public void completeCheck() {
     this.checkCompleted = true;
   }
-
-  public boolean isCheckCompleted() {
-    return checkCompleted;
-  }
-
+  
+  public boolean isCheckCompleted() { return checkCompleted; }
+  
   public void abortCheck() {
     this.checkAborted = true;
   }
-
-  public boolean isCheckAborted() {
-    return checkAborted;
-  }
-
+  
+  public boolean isCheckAborted() { return checkAborted; }
+  
   public void setUpperBoundResult(CheckResult upperBoundResult) {
     this.upperBoundResult = upperBoundResult;
   }
-
+  
   public void setLoweBoundResult(CheckResult loweBoundResult) {
     if (this.loweBoundResult == null) {
       this.loweBoundResult = loweBoundResult;
     }
   }
-
-  public CheckResult getUpperBoundResult() {
-    return upperBoundResult;
-  }
-
-  public CheckResult getLoweBoundResult() {
-    return loweBoundResult;
-  }
+  
+  public CheckResult getUpperBoundResult() { return upperBoundResult; }
+  
+  public CheckResult getLoweBoundResult() { return loweBoundResult; }
+  
 }

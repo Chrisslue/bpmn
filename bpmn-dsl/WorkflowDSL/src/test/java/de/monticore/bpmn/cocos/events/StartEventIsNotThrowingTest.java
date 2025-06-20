@@ -1,4 +1,4 @@
- /* (c) https://github.com/MontiCore/monticore */ 
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.cocos.events;
 
 import com.google.common.collect.Lists;
@@ -11,26 +11,25 @@ import java.util.Collection;
 import org.junit.jupiter.api.Test;
 
 class StartEventIsNotThrowingTest extends AbstractCoCoTest {
-
+  
   @Override
-  protected WorkflowCoCoChecker getChecker() {
-    return WorkflowCoCos.getEventChecker();
-  }
-
+  protected WorkflowCoCoChecker getChecker() { return WorkflowCoCos.getEventChecker(); }
+  
   @Test
   void startEventIsThrowing() {
     String modelName = "de.monticore.bpmn.cocos.events.invalid.StartEventIsNotThrowing";
-
-    Collection<Finding> expectedErrors =
-        Lists.newArrayList(Finding.error(Messages.get("0xWFM2001", "E1")));
-
+    
+    Collection<Finding> expectedErrors = Lists.newArrayList(Finding.error(Messages.get("0xWFM2001",
+        "E1")));
+    
     testModelForErrors(modelName, expectedErrors);
   }
-
+  
   @Test
   void startEventIsNotThrowing() {
     String modelName = "de.monticore.bpmn.cocos.events.valid.StartEventIsNotThrowing";
-
+    
     testModelNoErrors(modelName);
   }
+  
 }

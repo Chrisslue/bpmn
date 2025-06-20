@@ -1,9 +1,4 @@
- /* (c) https://github.com/MontiCore/monticore */ 
-/*
- * Copyright (c) 2017, MontiCore. All rights reserved.
- *
- * http://www.se-rwth.de/
- */
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.cocos;
 
 import de.monticore.bpmn.cocos.activities.*;
@@ -18,9 +13,9 @@ import de.monticore.bpmn.timerconditions.cocos.TemporalExpressionsCoCos;
 
 /** Factory for CoCo checkers. */
 public class WorkflowCoCos {
-
+  
   private WorkflowCoCos() {}
-
+  
   /**
    * Returns the full CoCo checker.
    *
@@ -32,10 +27,10 @@ public class WorkflowCoCos {
     final WorkflowCoCoChecker checker = getBasicChecker();
     checker.addChecker(getStructuralChecker());
     checker.addChecker(getBehavioralChecker());
-
+    
     return checker;
   }
-
+  
   /**
    * Returns the basic CoCo checker
    *
@@ -51,10 +46,10 @@ public class WorkflowCoCos {
     checker.addChecker(getSequenceFlowChecker());
     checker.addChecker(getTypesChecker());
     checker.addChecker(getTimeExpressionsChecker());
-
+    
     return checker;
   }
-
+  
   /**
    * Returns the structural CoCo checker
    *
@@ -69,7 +64,7 @@ public class WorkflowCoCos {
     //checker.addCoCo(new ProcessHasNoLackOfSync());
     return checker;
   }
-
+  
   /**
    * Returns the behavioral CoCo checker
    *
@@ -80,7 +75,7 @@ public class WorkflowCoCos {
     // checker.addCoCo(new ProcessNetIsSound());
     return checker;
   }
-
+  
   public static WorkflowCoCoChecker getSequenceFlowChecker() {
     WorkflowCoCoChecker checker = new WorkflowCoCoChecker();
     checker.addCoCo(new SequenceFlowDoesNotCrossSubProcessBoundaries());
@@ -99,7 +94,7 @@ public class WorkflowCoCos {
     checker.addCoCo(new FlowBlockMinTwo());
     return checker;
   }
-
+  
   public static WorkflowCoCoChecker getGatewayChecker() {
     WorkflowCoCoChecker checker = new WorkflowCoCoChecker();
     checker.addCoCo(new EventGatewayDoesNotMixMessageEventsAndReceiveTasks());
@@ -112,7 +107,7 @@ public class WorkflowCoCos {
     checker.addCoCo(new ParallelEventGatewayHasNoIncomingFlow());
     return checker;
   }
-
+  
   public static WorkflowCoCoChecker getActivityChecker() {
     WorkflowCoCoChecker checker = new WorkflowCoCoChecker();
     checker.addCoCo(new CompensationActivityHasNoIncomingOrOutgoingFlow());
@@ -125,7 +120,7 @@ public class WorkflowCoCos {
     checker.addCoCo(new AdHocSubProcessHasAdHocCharacteristics());
     return checker;
   }
-
+  
   public static WorkflowCoCoChecker getEventChecker() {
     WorkflowCoCoChecker checker = new WorkflowCoCoChecker();
     checker.addCoCo(new AtLeastOneEndEventIfStartEventIsUsed());
@@ -140,7 +135,7 @@ public class WorkflowCoCos {
     checker.addChecker(getEventTriggerChecker());
     return checker;
   }
-
+  
   public static WorkflowCoCoChecker getEventTriggerChecker() {
     WorkflowCoCoChecker checker = new WorkflowCoCoChecker();
     checker.addCoCo(
@@ -158,14 +153,14 @@ public class WorkflowCoCos {
     checker.addCoCo(new CompensateCatchEventIsNotPartOfNormalFlow());
     return checker;
   }
-
+  
   public static WorkflowCoCoChecker getTimeExpressionsChecker() {
     final WorkflowCoCoChecker checker = new WorkflowCoCoChecker();
     checker.addChecker(TemporalExpressionsCoCos.createChecker());
-
+    
     return checker;
   }
-
+  
   // currently not working
   
   public static WorkflowCoCoChecker getTypesChecker() {
@@ -175,10 +170,10 @@ public class WorkflowCoCos {
     // another TypeChecker will be required to be initialized.
     //OCLTypeCheck3.init();
     WorkflowCoCoChecker checker = new WorkflowCoCoChecker();
-
+    
     //checker.addCoCo(new CalledElementDoesExist());
     //checker.addChecker(OCLCoCos.createChecker());
-
+    
     return checker;
   }
   

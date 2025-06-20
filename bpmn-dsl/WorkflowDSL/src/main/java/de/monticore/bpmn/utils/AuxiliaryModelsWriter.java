@@ -1,4 +1,4 @@
- /* (c) https://github.com/MontiCore/monticore */ 
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.utils;
 
 import com.google.common.base.Joiner;
@@ -28,13 +28,13 @@ import petrinet.prettyprint.PetrinetDotPrinter;
 
 /** Creates and writes auxiliary models to disk. */
 public class AuxiliaryModelsWriter {
-
+  
   private final ASTWFProcess workflow;
-
+  
   public AuxiliaryModelsWriter(final ASTWFProcess workflow) {
     this.workflow = workflow;
   }
-
+  
   public void print(final Path outputDir) throws IOException {
     if (!GraphVizWriter.isAvailable()) {
       Log.info("0xWFM0003", workflow.getName());
@@ -42,42 +42,38 @@ public class AuxiliaryModelsWriter {
     printGraphModels(outputDir);
     printPetriModels(outputDir);
   }
-
+  
   private void printGraphModels(final Path outputDir) throws IOException {
-    final Graph<ASTFlowElement, EndpointPair<ASTFlowElement>> graph =
-        GraphUtils.processGraphFrom(workflow);
-
+    final Graph<ASTFlowElement, EndpointPair<ASTFlowElement>> graph = GraphUtils.processGraphFrom(
+        workflow);
+    
     final String name = workflow.getName();
-
+    
     // write dot file
-    final File dotFile =
-        FilePrinter.from(GraphDotPrinter.print(graph)).to(outputDir, name, "graph.dot");
-
+    final File dotFile = FilePrinter.from(GraphDotPrinter.print(graph)).to(outputDir, name,
+        "graph.dot");
+    
     // write png/svg images
     if (GraphVizWriter.isAvailable()) {
-      new GraphVizWriter()
-          .input(dotFile)
-          .outputDir(outputDir)
-          .outputName(Joiners.DOT.join(name, "graph"))
-          .generatePng()
-          .generateSvg();
+      new GraphVizWriter().input(dotFile).outputDir(outputDir).outputName(Joiners.DOT.join(name,
+          "graph")).generatePng().generateSvg();
     }
   }
-
+  
   // TODO@ZukunftHiwi: split into smaller methods
   private void printPetriModels(final Path outputDir) throws IOException {
     final WorkflowNet workflowNet = WorkflowNet.from(workflow);
-
+    
     final ASTPetrinet petriNet = workflowNet.getPetriNet();
     final Map<ASTPlace, Long> initialMarking = Maps.newHashMap();
     initialMarking.put(workflowNet.getSource(), 1L);
-
+    
     final String name = workflow.getName();
-
+    
     // write pn
-    FilePrinter.from(new PetrinetFullPrettyPrinter(new IndentPrinter()).prettyprint(petriNet))
-        .to(outputDir, name, "pn");
-
+    FilePrinter.from(new PetrinetFullPrettyPrinter(new IndentPrinter()).prettyprint(petriNet)).to(
+        outputDir, name, "pn");
+    
     /* skipped for now since ecore incompatibilities when used within other projects
     // write pnml
     final Path pnmlOutPath = outputDir.resolve(Joiners.DOT.join(name, "pnml"));
@@ -87,42 +83,39 @@ public class AuxiliaryModelsWriter {
         throw new IOException(e);
     }
      */
-
+    
     // write apt
-    FilePrinter.from(new PetriNetAptPrinter().print(petriNet, initialMarking))
-        .to(outputDir, name, "apt");
-
+    FilePrinter.from(new PetriNetAptPrinter().print(petriNet, initialMarking)).to(outputDir, name,
+        "apt");
+    
     // write lola
-    FilePrinter.from(new PetriNetLoLaPrinter().print(petriNet, initialMarking))
-        .to(outputDir, name, "lola");
-
+    FilePrinter.from(new PetriNetLoLaPrinter().print(petriNet, initialMarking)).to(outputDir, name,
+        "lola");
+    
     // write lola formulae
     final Path lolaFormulaeDir = outputDir.resolve("formulae");
-
-    FilePrinter.from(LoLaFormulae.completion(workflowNet))
-        .to(lolaFormulaeDir, name, "complete.task");
-
+    
+    FilePrinter.from(LoLaFormulae.completion(workflowNet)).to(lolaFormulaeDir, name,
+        "complete.task");
+    
     for (final ASTTransition transition : petriNet.getTransitionList()) {
-      FilePrinter.from(LoLaFormulae.dead(transition))
-          .to(lolaFormulaeDir, Joiner.on("-").join(name, transition.getName()), "live.task");
+      FilePrinter.from(LoLaFormulae.dead(transition)).to(lolaFormulaeDir, Joiner.on("-").join(name,
+          transition.getName()), "live.task");
     }
     for (final ASTPlace place : petriNet.getPlaceList()) {
-      FilePrinter.from(LoLaFormulae.safe(place))
-          .to(lolaFormulaeDir, Joiner.on("-").join(name, place.getName()), "safe.task");
+      FilePrinter.from(LoLaFormulae.safe(place)).to(lolaFormulaeDir, Joiner.on("-").join(name, place
+          .getName()), "safe.task");
     }
-
+    
     // write dot
-    final File dotFile =
-        FilePrinter.from(PetrinetDotPrinter.print(petriNet)).to(outputDir, name, "petri.dot");
-
+    final File dotFile = FilePrinter.from(PetrinetDotPrinter.print(petriNet)).to(outputDir, name,
+        "petri.dot");
+    
     // write png/svg images
     if (GraphVizWriter.isAvailable()) {
-      new GraphVizWriter()
-          .input(dotFile)
-          .outputDir(outputDir)
-          .outputName(Joiners.DOT.join(name, "petri"))
-          .generatePng()
-          .generateSvg();
+      new GraphVizWriter().input(dotFile).outputDir(outputDir).outputName(Joiners.DOT.join(name,
+          "petri")).generatePng().generateSvg();
     }
   }
+  
 }

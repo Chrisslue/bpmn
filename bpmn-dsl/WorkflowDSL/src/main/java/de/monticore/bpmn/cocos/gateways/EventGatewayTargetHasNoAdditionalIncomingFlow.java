@@ -1,4 +1,4 @@
- /* (c) https://github.com/MontiCore/monticore */ 
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.cocos.gateways;
 
 import de.monticore.bpmn.Messages;
@@ -13,25 +13,15 @@ import de.se_rwth.commons.logging.Log;
  * the Event Gateway)
  */
 public class EventGatewayTargetHasNoAdditionalIncomingFlow implements WorkflowASTWFGatewayCoCo {
-
+  
   @Override
   public void check(final ASTWFGateway gateway) {
     if (gateway.getType().isEventBased()) {
-      gateway
-          .streamOutgoings()
-          .map(SequenceFlow::getTarget)
-          .forEach(
-              target ->
-                  target
-                      .streamIncomings()
-                      .map(SequenceFlow::getSource)
-                      .filter(source -> !source.equals(gateway))
-                      .forEach(
-                          source ->
-                              Log.error(
-                                  Messages.get("0xWFM5011", target.getName()),
-                                  source.get_SourcePositionStart(),
-                                  source.get_SourcePositionEnd())));
+      gateway.streamOutgoings().map(SequenceFlow::getTarget).forEach(target -> target
+          .streamIncomings().map(SequenceFlow::getSource).filter(source -> !source.equals(gateway))
+          .forEach(source -> Log.error(Messages.get("0xWFM5011", target.getName()), source
+              .get_SourcePositionStart(), source.get_SourcePositionEnd())));
     }
   }
+  
 }

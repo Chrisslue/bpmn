@@ -1,4 +1,4 @@
- /* (c) https://github.com/MontiCore/monticore */ 
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.cocos.activities;
 
 import de.monticore.bpmn.Messages;
@@ -12,14 +12,14 @@ import de.se_rwth.commons.logging.Log;
  * that MUST be used in an Ad-Hoc Sub-Process: Activity.
  */
 public class AdHocSubProcessContainsAtLeastOneActivity implements WorkflowASTWFSubProcessCoCo {
-
+  
   @Override
   public void check(final ASTWFSubProcess subProcess) {
-    if (subProcess.isAdHoc() && WorkflowCollectors.toActivitiesLocalSubProcess(subProcess).isEmpty()) {
-      Log.error(
-          Messages.get("0xWFM4002", subProcess.getName()),
-          subProcess.get_SourcePositionStart(),
-          subProcess.get_SourcePositionEnd());
+    if (subProcess.isAdHoc() && WorkflowCollectors.toActivitiesLocalSubProcess(subProcess)
+        .isEmpty()) {
+      Log.error(Messages.get("0xWFM4002", subProcess.getName()), subProcess
+          .get_SourcePositionStart(), subProcess.get_SourcePositionEnd());
     }
   }
+  
 }

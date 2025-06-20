@@ -1,4 +1,4 @@
- /* (c) https://github.com/MontiCore/monticore */ 
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.cocos.events;
 
 import de.monticore.bpmn.Messages;
@@ -11,14 +11,13 @@ import de.se_rwth.commons.logging.Log;
  * to ("catch") a trigger
  */
 public class StartEventIsNotThrowing implements WorkflowASTWFEventCoCo {
-
+  
   @Override
   public void check(final ASTWFEvent node) {
     if (node.isStart() && node.isThrow()) {
-      Log.error(
-          Messages.get("0xWFM2001", node.getName()),
-          node.get_SourcePositionStart(),
-          node.get_SourcePositionEnd());
+      Log.error(Messages.get("0xWFM2001", node.getName()), node.get_SourcePositionStart(), node
+          .get_SourcePositionEnd());
     }
   }
+  
 }

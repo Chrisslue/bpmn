@@ -1,4 +1,4 @@
- /* (c) https://github.com/MontiCore/monticore */ 
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.cocos.events.triggers;
 
 import de.monticore.bpmn.collectors.WorkflowCollectors;
@@ -13,45 +13,46 @@ import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
  * Events in BPMN: None, Message, Escalation, Error, Cancel, Compensation, Signal, Terminate, and
  * Multiple.
  */
-public class EndEventHasValidTrigger extends AbstractHasValidTriggerCoCo
-    implements WorkflowASTWFProcessCoCo {
-
+public class EndEventHasValidTrigger extends AbstractHasValidTriggerCoCo implements
+    WorkflowASTWFProcessCoCo {
+  
   private static final String ERROR_CODE = "0xWFM2012";
-
+  
   public EndEventHasValidTrigger() {
     super(ERROR_CODE);
   }
-
+  
   @Override
   public void check(final ASTWFProcess container) {
-    WorkflowCollectors.toEventsLocal(container).stream()
-        .filter(ASTWFEvent::isEnd)
-        .forEach(this::check);
+    WorkflowCollectors.toEventsLocal(container).stream().filter(ASTWFEvent::isEnd).forEach(
+        this::check);
   }
-
+  
   private void check(final ASTWFEvent event) {
-    WorkflowVisitor2 visitor =
-        new WorkflowVisitor2() {
-          @Override
-          public void visit(final ASTWFEventTriggerTimer trigger) {
-            logError(event);
-          }
-
-          @Override
-          public void visit(final ASTWFEventTriggerConditional trigger) {
-            logError(event);
-          }
-
-          @Override
-          public void visit(final ASTWFEventTriggerMultiple trigger) {
-            if (!trigger.isParallelMultiple()) {
-              logError(event);
-            }
-          }
-        };
-
+    WorkflowVisitor2 visitor = new WorkflowVisitor2() {
+      
+      @Override
+      public void visit(final ASTWFEventTriggerTimer trigger) {
+        logError(event);
+      }
+      
+      @Override
+      public void visit(final ASTWFEventTriggerConditional trigger) {
+        logError(event);
+      }
+      
+      @Override
+      public void visit(final ASTWFEventTriggerMultiple trigger) {
+        if (!trigger.isParallelMultiple()) {
+          logError(event);
+        }
+      }
+      
+    };
+    
     WorkflowTraverser traverser = WorkflowMill.traverser();
     traverser.add4Workflow(visitor);
     event.accept(traverser);
   }
+  
 }

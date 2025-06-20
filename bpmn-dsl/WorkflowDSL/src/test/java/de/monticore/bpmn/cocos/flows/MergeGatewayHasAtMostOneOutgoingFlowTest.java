@@ -1,4 +1,4 @@
- /* (c) https://github.com/MontiCore/monticore */ 
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.cocos.flows;
 
 import com.google.common.collect.Lists;
@@ -13,26 +13,25 @@ import org.jgrapht.io.ExportException;
 import org.junit.jupiter.api.Test;
 
 class MergeGatewayHasAtMostOneOutgoingFlowTest extends AbstractCoCoTest {
-
+  
   @Override
-  protected WorkflowCoCoChecker getChecker() {
-    return WorkflowCoCos.getSequenceFlowChecker();
-  }
-
+  protected WorkflowCoCoChecker getChecker() { return WorkflowCoCos.getSequenceFlowChecker(); }
+  
   @Test
   void mergeHasMultipleOutgoing() throws IOException, ExportException {
     String modelName = "de.monticore.bpmn.cocos.flows.invalid.MergeGatewayHasAtMostOneOutgoingFlow";
-
-    Collection<Finding> expectedErrors =
-        Lists.newArrayList(Finding.error(Messages.get("0xWFM5004", "G1")));
-
+    
+    Collection<Finding> expectedErrors = Lists.newArrayList(Finding.error(Messages.get("0xWFM5004",
+        "G1")));
+    
     testModelForErrors(modelName, expectedErrors);
   }
-
+  
   @Test
   void mergeHasAtMostOneOutgoing() {
     String modelName = "de.monticore.bpmn.cocos.flows.valid.MergeGatewayHasAtMostOneOutgoingFlow";
-
+    
     testModelNoErrors(modelName);
   }
+  
 }

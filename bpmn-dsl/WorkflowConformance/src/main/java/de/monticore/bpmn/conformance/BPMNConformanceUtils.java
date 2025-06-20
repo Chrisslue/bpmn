@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.conformance;
 
 import de.monticore.bpmn.cocos.flow.SequenceFlowNodeReferencesExist;
@@ -18,6 +19,7 @@ import java.io.IOException;
 import java.util.Optional;
 
 public class BPMNConformanceUtils {
+  
   /**
    * Parses a model and ensures that the root node is present.
    *
@@ -26,12 +28,12 @@ public class BPMNConformanceUtils {
    */
   public static ASTWorkflowCompilationUnit loadBPMN(String qualifiedModelName) {
     WorkflowTool tool = new WorkflowTool();
-    ASTWorkflowCompilationUnit ast =
-        tool.parse(Names.getPathFromPackage(qualifiedModelName).replaceAll("\\\\", "/") + ".wfm");
-
+    ASTWorkflowCompilationUnit ast = tool.parse(Names.getPathFromPackage(qualifiedModelName)
+        .replaceAll("\\\\", "/") + ".wfm");
+    
     return checkModel(ast);
   }
-
+  
   private static ASTWorkflowCompilationUnit checkModel(ASTWorkflowCompilationUnit ast) {
     WorkflowMill.scopesGenitorDelegator().createFromAST(ast);
     WorkflowCoCoChecker checker = new WorkflowCoCoChecker();
@@ -41,29 +43,31 @@ public class BPMNConformanceUtils {
     new AddSequenceFlowToFlowNodes().transform(ast);
     new AddReferenceToParentLane().transform(ast);
     new SetSubProcessTriggeredByEvent().transform(ast);
-
+    
     WorkflowSTCompleter stCompleter = new WorkflowSTCompleter();
     WorkflowTraverser traverser = WorkflowMill.traverser();
     traverser.add4Workflow(stCompleter);
     ast.accept(traverser);
-
+    
     // getChecker().checkAll(ast);
     return ast;
   }
-
+  
   public static ASTWorkflowCompilationUnit parseBPMNString(String input) {
     WorkflowParser parser = new WorkflowParser();
     Optional<ASTWorkflowCompilationUnit> ast = Optional.empty();
     try {
       ast = parser.parse_String(input);
-    } catch (IOException e) {
+    }
+    catch (IOException e) {
       Log.error("Error while parsing workflow", e);
     }
-
+    
     if (ast.isEmpty()) {
       Log.error("Error while parsing workflow");
       assert false;
     }
     return checkModel(ast.get());
   }
+  
 }
