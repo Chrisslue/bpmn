@@ -26,7 +26,7 @@ public class NonInterruptingEventHasValidTrigger extends AbstractHasValidTrigger
       
       @Override
       public void visit(final ASTWFEventTriggerNotification trigger) {
-        if (trigger.getType() == ASTConstantsWorkflow.ERROR) {
+        if (trigger.getKind() == ASTConstantsWorkflow.ERROR) {
           logError(event);
         }
       }

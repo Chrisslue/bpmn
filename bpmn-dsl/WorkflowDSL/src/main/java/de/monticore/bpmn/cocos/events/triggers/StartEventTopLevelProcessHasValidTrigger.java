@@ -33,7 +33,7 @@ public class StartEventTopLevelProcessHasValidTrigger extends AbstractHasValidTr
       
       @Override
       public void visit(final ASTWFEventTriggerNotification trigger) {
-        if (trigger.getType() == ASTConstantsWorkflow.ESCALATION || trigger.getType()
+        if (trigger.getKind() == ASTConstantsWorkflow.ESCALATION || trigger.getKind()
             == ASTConstantsWorkflow.ERROR) {
           logError(event);
         }

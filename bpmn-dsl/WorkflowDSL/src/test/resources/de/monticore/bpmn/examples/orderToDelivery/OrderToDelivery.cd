@@ -1,5 +1,4 @@
- /* (c) https://github.com/MontiCore/monticore */ 
-import de.monticore.bpmn.readMeExample.*;
+ /* (c) https://github.com/MontiCore/monticore */
 
 classdiagram OrderToDelivery{
     class InventoryAvailabilityChecker{

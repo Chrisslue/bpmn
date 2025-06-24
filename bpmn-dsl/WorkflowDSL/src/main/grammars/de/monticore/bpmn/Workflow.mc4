@@ -440,7 +440,7 @@ grammar Workflow extends
                 the current process.
    */
   WFEventTriggerNotification implements WFEventTrigger =
-    type:["error"|"escalation"|"message"|"signal"] Name@WFNotification;
+    kind:["error"|"escalation"|"message"|"signal"] Name@WFNotification;
 
   /*
    * CompensationHandler references a compensating activity for a boundary

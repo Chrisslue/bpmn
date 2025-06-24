@@ -58,7 +58,7 @@ public class WorkflowFilters {
           
           @Override
           public void visit(ASTWFEventTriggerNotification node) {
-            if (node.getType() == ASTConstantsWorkflow.MESSAGE) {
+            if (node.getKind() == ASTConstantsWorkflow.MESSAGE) {
               select(node);
             }
           }
@@ -75,7 +75,7 @@ public class WorkflowFilters {
           
           @Override
           public void visit(ASTWFEventTriggerNotification node) {
-            if (node.getType() == ASTConstantsWorkflow.MESSAGE) {
+            if (node.getKind() == ASTConstantsWorkflow.MESSAGE) {
               select(node);
             }
           }

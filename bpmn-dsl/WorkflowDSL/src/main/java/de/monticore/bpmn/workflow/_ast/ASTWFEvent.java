@@ -109,7 +109,7 @@ public class ASTWFEvent extends ASTWFEventTOP {
     
     @Override
     public void visit(final ASTWFEventTriggerNotification trigger) {
-      if (trigger.getType() == ASTConstantsWorkflow.ESCALATION) {
+      if (trigger.getKind() == ASTConstantsWorkflow.ESCALATION) {
         isThrow = true;
       }
       
