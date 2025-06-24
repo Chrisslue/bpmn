@@ -4,8 +4,14 @@ package de.monticore.bpmn.cocos.flows.invalid;
 process SplitGatewayHasMultipleOutgoingFlows {
 
   task T1;
+  task T2;
+  task T3;
+
   split xor G1;
+  split xor G2;
 
   G1 -> T1;
+
+  G2 -> {T1;T2;};
 
 }

@@ -20,6 +20,7 @@ public class MergeGatewayHasMultipleIncomingFlow implements WorkflowASTWFGateway
           Messages.get("0xWFM5002", gateway.getName()),
           gateway.get_SourcePositionStart(),
           gateway.get_SourcePositionEnd());
+      
     }
   }
 }

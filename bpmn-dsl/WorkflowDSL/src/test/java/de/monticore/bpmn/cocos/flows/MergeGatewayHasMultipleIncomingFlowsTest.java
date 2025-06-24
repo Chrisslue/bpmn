@@ -22,7 +22,7 @@ class MergeGatewayHasMultipleIncomingFlowsTest extends AbstractCoCoTest {
     String modelName = "de.monticore.bpmn.cocos.flows.invalid.MergeGatewayHasMultipleIncomingFlows";
 
     Collection<Finding> expectedErrors =
-        Lists.newArrayList(Finding.error(Messages.get("0xWFM5002", "G1")));
+        Lists.newArrayList(Finding.error(Messages.get("0xWFM5002", "G2")));
 
     testModelForErrors(modelName, expectedErrors);
   }

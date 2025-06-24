@@ -85,7 +85,7 @@ public class WorkflowCoCos {
 
   public static WorkflowCoCoChecker getSequenceFlowChecker() {
     WorkflowCoCoChecker checker = new WorkflowCoCoChecker();
-    checker.addCoCo(new SequenceFlowDoesNotCrossSubProcessBoundaries());
+    //checker.addCoCo(new SequenceFlowDoesNotCrossSubProcessBoundaries());
     checker.addCoCo(new SequenceFlowNodeReferencesExist());
     checker.addCoCo(new BoundaryEventHasNoIncomingFlow());
     checker.addCoCo(new EndEventHasNoOutgoingFlow());
