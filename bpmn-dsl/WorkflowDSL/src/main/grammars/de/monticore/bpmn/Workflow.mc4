@@ -106,7 +106,7 @@ grammar Workflow extends
      refers to that activity. In this context, compensating means to undo
      the effects of an activity.
    * Example: The activity "CANCEL HOTEL" compensates the activity
-              "BOOK HOTEL" by canceling the effects of the latter activity.
+              "BOOK HOTEL" by canceling the effects of the earlier activity.
    */
   symbolrule WFActivity =
     compensating:boolean
@@ -205,7 +205,9 @@ grammar Workflow extends
        */ 
       ("webservice" "="
         (
-          webservice:String|noWebservice:["##unspecified" | "##webservice"]
+          webservice:String
+        |
+          noWebservice:["##unspecified" | "##webservice"]
         ) ";"
       )
 
