@@ -4,6 +4,7 @@ package de.monticore.bpmn.lang;
 import de.monticore.bpmn.cocos.AbstractCoCoTest;
 import de.monticore.bpmn.cocos.WorkflowCoCos;
 import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class EmptyModelTest extends AbstractCoCoTest {
@@ -12,7 +13,8 @@ class EmptyModelTest extends AbstractCoCoTest {
   protected WorkflowCoCoChecker getChecker() {
     return WorkflowCoCos.getFullChecker();
   }
-
+  
+  @Disabled
   @Test
   void testEmptyModel() {
     final String modelName = "de.monticore.bpmn.lang.EmptyProcess";

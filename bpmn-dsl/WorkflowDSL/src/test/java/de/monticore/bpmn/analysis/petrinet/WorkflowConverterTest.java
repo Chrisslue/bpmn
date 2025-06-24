@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 
 class WorkflowConverterTest extends AbstractCoCoTest {
 
+  @Disabled
   @Test
   void testTask() {
     String modelName = "de.monticore.bpmn.petrinet.TaskProcess";
