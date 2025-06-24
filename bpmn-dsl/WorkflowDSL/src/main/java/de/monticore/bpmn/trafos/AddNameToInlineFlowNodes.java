@@ -27,14 +27,4 @@ public class AddNameToInlineFlowNodes extends WorkflowTransformation implements 
   public void visit(final ASTWFInlineGateway gateway) {
     gateway.setName("_Gateway_" + getNextId());
   }
-
-  // ASTWFEvent always has a name.
-  /*
-  @Override
-  public void visit(final ASTWFEvent event) {
-    if (!event.isPresentName()) {
-      event.setName("_Event_" + getNextId());
-    }
-  }
-  */
 }

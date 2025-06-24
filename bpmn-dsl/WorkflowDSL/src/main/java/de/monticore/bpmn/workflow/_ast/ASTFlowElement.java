@@ -60,10 +60,6 @@ public interface ASTFlowElement extends ASTFlowElementTOP {
 
   abstract  boolean addOutgoings (de.monticore.bpmn.workflow._ast.SequenceFlow element);
 
-  abstract  void setLaneRef (String laneRef);
-
-  abstract  void setParentRef (String parentRef);
-
   abstract  List<de.monticore.bpmn.workflow._ast.SequenceFlow> getIncomingsList ();
 
   abstract  List<de.monticore.bpmn.workflow._ast.SequenceFlow> getOutgoingsList ();
