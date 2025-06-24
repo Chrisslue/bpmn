@@ -118,9 +118,11 @@ public abstract class AbstractTest {
   protected boolean shouldWriteAuxModels() {
     return false;
   }
-  
+
   protected void writeTestAuxModels(final String qualifiedModelName,
       final ASTWorkflowCompilationUnit unit) {
+    /* Likely fails due to broken dependency.
+     * FIXME or delete
     Path out = get(MODEL_AUX_DIR).resolve(get(getPathFromQualifiedName(qualifiedModelName)))
         .resolve(getSimpleName(qualifiedModelName).toLowerCase());
     try {
@@ -128,6 +130,7 @@ public abstract class AbstractTest {
     }
     catch (IOException ignored) {
     }
+     */
   }
   
 }
