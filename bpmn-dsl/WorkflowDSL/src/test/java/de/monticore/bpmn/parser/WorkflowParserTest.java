@@ -11,13 +11,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import de.monticore.bpmn.AbstractTest;
 import de.monticore.bpmn.cocos.WorkflowCoCos;
-import de.monticore.bpmn.cocos.flow.SequenceFlowNodeReferencesExist;
-import de.monticore.bpmn.trafos.AddNameToInlineFlowNodes;
-import de.monticore.bpmn.trafos.AddReferenceToParentLane;
 import de.monticore.bpmn.trafos.AddSequenceFlowToFlowNodes;
-import de.monticore.bpmn.trafos.SetSubProcessTriggeredByEvent;
 import de.monticore.bpmn.workflow.WorkflowMill;
-import de.monticore.bpmn.workflow.WorkflowTool;
 import de.monticore.bpmn.workflow._ast.ASTWFTask;
 import de.monticore.bpmn.workflow._ast.ASTWorkflowCompilationUnit;
 import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
@@ -31,9 +26,8 @@ import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
 
 import org.antlr.v4.runtime.RecognitionException;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Disabled;
-
-public class WorkflowParserTest extends AbstractTest {
+ 
+ public class WorkflowParserTest extends AbstractTest {
 
 
   @Test

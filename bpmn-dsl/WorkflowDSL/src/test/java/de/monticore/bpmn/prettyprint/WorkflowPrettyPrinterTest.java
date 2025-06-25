@@ -8,24 +8,34 @@ import de.monticore.bpmn.workflow.WorkflowMill;
 import de.monticore.bpmn.workflow._ast.ASTWorkflowCompilationUnit;
 import java.io.IOException;
 import java.util.Optional;
-import org.junit.jupiter.api.Disabled;
+
+import de.monticore.bpmn.workflow._parser.WorkflowParser;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+
+
 
 public class WorkflowPrettyPrinterTest extends AbstractTest {
 
-  @Disabled
+  
   @Test
-  void prettyPrintRequestHoliday() throws IOException {
-    String modelName = "de.monticore.bpmn.examples.vacation.RequestHoliday";
+  void prettyPrintTest() throws IOException {
+    String modelName = "de.monticore.bpmn.prettyprint.PrettyPrintTest";
     ASTWorkflowCompilationUnit cu = parseModel(modelName);
-
-    // print AST
-    String content = WorkflowMill.prettyPrint(cu, true);
-
-    // parse printed AST
-    Optional<ASTWorkflowCompilationUnit> printedCu = WorkflowMill.parser().parse_String(content);
-    assertTrue(printedCu.isPresent());
-
-    assertTrue(cu.deepEquals(printedCu.get()));
+    final ASTWorkflowCompilationUnit ast = parseModel(modelName);
+    Assertions.assertNotNull(ast);
+    
+    // when
+    String output = WorkflowMill.prettyPrint(ast, false);
+    
+    // then
+    WorkflowParser parser = WorkflowMill.parser();
+    final Optional<ASTWorkflowCompilationUnit> astPrint = parser.parse_String(output);
+    Assertions.assertTrue( astPrint.isPresent());
+    Assertions.assertTrue(ast.deepEquals(astPrint.get()));
   }
+  
+ 
+  
 }

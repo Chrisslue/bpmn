@@ -1,0 +1,20 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
+package de.monticore.bpmn.prettyprint;
+
+process PrettyPrintTest {
+
+  task T1;
+  task T2;
+  task T3;
+  task T4;
+
+
+  split xor G1;
+  merge xor G2;
+
+  T1 -> G1 ->
+    {   T2;
+        T3; }
+    -> G2 -> T4;
+
+}

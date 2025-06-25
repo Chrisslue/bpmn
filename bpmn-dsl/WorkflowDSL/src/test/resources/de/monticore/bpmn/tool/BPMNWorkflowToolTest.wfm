@@ -6,6 +6,4 @@ process BPMNWorkflowToolTest {
  task T1;
  task T2;
 
- T1 -> T2;
-
 }

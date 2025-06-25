@@ -157,6 +157,7 @@ public class WorkflowCoCos {
     checker.addCoCo(
         (WorkflowASTWFSubProcessCoCo) new NonInterruptingEventIsSubProcessStartOrBoundary());
     checker.addCoCo(new CompensateCatchEventIsNotPartOfNormalFlow());
+    checker.addCoCo(new EventTriggerNotificationExists());
     return checker;
   }
 

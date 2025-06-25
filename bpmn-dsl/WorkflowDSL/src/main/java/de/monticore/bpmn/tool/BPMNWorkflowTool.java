@@ -65,12 +65,11 @@ public class BPMNWorkflowTool extends WorkflowTool {
             Log.error("0xA5C06x68980 Could not process WorkflowTool parameters: " + e.getMessage());
 
         }
-
     }
 
     @Override
     public void runDefaultCoCos(ASTWorkflowCompilationUnit ast) {
-        WorkflowCoCoChecker checker = WorkflowCoCos.getFullChecker();
+        WorkflowCoCoChecker checker = WorkflowCoCos.getBasicChecker();
         checker.checkAll(ast);
     }
 
@@ -80,7 +79,5 @@ public class BPMNWorkflowTool extends WorkflowTool {
         String model = WorkflowMill.prettyPrint(ast, true);
         print(model, ppFile);
     }
-
-
 
 }
