@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Collection;
 
 public class EventTriggerNotificationExistsTest extends AbstractCoCoTest {
-  
+  // ToDo: Re-enable this test when the CoCo is corrected.
   @Override
   protected WorkflowCoCoChecker getChecker() {
     return WorkflowCoCos.getEventTriggerChecker();

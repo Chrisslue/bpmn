@@ -10,7 +10,7 @@ import de.monticore.bpmn.cocos.activities.*;
 import de.monticore.bpmn.cocos.analysis.*;
 import de.monticore.bpmn.cocos.events.*;
 import de.monticore.bpmn.cocos.events.triggers.*;
-import de.monticore.bpmn.cocos.expressions.*;
+import de.monticore.bpmn.cocos.conditions.*;
 import de.monticore.bpmn.cocos.flow.*;
 import de.monticore.bpmn.cocos.gateways.*;
 import de.monticore.bpmn.types3.WorkflowTypeCheck3;

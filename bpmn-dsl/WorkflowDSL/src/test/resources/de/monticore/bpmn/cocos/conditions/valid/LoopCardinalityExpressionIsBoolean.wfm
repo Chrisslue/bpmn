@@ -5,6 +5,6 @@ import de.monticore.bpmn.cds.Domain.*;
 
 process LoopCardinalityExpressionIsBoolean {
 
-  manual task T1 count [true] until [true];
+  manual task T1 count [3] until [true];
 
 }

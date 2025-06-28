@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class ProcessHasNoLackOfSyncTest extends AbstractCoCoTest {
-
+  // ToDo: Re-enable this test when the CoCo is corrected.
   @Override
   protected WorkflowCoCoChecker getChecker() {
     return WorkflowCoCos.getStructuralChecker();
