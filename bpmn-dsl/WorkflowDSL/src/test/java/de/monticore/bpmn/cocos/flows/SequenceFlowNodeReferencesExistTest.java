@@ -1,4 +1,4 @@
- /* (c) https://github.com/MontiCore/monticore */ 
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.cocos.flows;
 
 import com.google.common.collect.Lists;
@@ -12,27 +12,24 @@ import java.util.NoSuchElementException;
 import org.junit.jupiter.api.Test;
 
 class SequenceFlowNodeReferencesExistTest extends AbstractCoCoTest {
-
+  
   @Override
-  protected WorkflowCoCoChecker getChecker() {
-    return WorkflowCoCos.getSequenceFlowChecker();
-  }
-
+  protected WorkflowCoCoChecker getChecker() { return WorkflowCoCos.getSequenceFlowChecker(); }
+  
   @Test
   void invalidSourcesAndTargets() {
     String modelName = "de.monticore.bpmn.cocos.flows.invalid.SequenceFlowNodeReferencesExist";
-
-    Collection<Finding> expectedErrors =
-        Lists.newArrayList(
-            Finding.error(Messages.get("0xWFM1004", "T2")),
-            Finding.error(Messages.get("0xWFM1004", "T2")));
+    
+    Collection<Finding> expectedErrors = Lists.newArrayList(Finding.error(Messages.get("0xWFM1004",
+        "T2")), Finding.error(Messages.get("0xWFM1004", "T2")));
     testModelForErrors(modelName, expectedErrors, NoSuchElementException.class);
   }
-
+  
   @Test
   void validSourcesAndTargets() {
     String modelName = "de.monticore.bpmn.cocos.flows.valid.SequenceFlowNodeReferencesExist";
-
+    
     testModelNoErrors(modelName);
   }
+  
 }

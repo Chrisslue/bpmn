@@ -1,4 +1,4 @@
- /* (c) https://github.com/MontiCore/monticore */ 
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.cocos.events.triggers;
 
 import de.monticore.bpmn.Messages;
@@ -20,43 +20,42 @@ import java.util.List;
  * can only be used when attached to the boundary of a Transaction Sub-Process. It cannot be used in
  * any normal flow and cannot be attached to a non-Transaction Sub-Process.
  */
-public class CancelIntermediateEventIsAttachedToTransaction
-    implements WorkflowASTWFProcessCoCo, WorkflowASTWFSubProcessCoCo {
-
+public class CancelIntermediateEventIsAttachedToTransaction implements WorkflowASTWFProcessCoCo,
+    WorkflowASTWFSubProcessCoCo {
+  
   @Override
   public void check(final ASTWFSubProcess subProcess) {
     List<ASTWFEvent> events = WorkflowCollectors.toEventsLocalSubProcess(subProcess);
-    events.forEach(
-        event -> {
-          if (!subProcess.isTransaction() || !event.getSymbol().isBoundary()) {
-            logErrorIfCancelIntermediateEvent(event);
-          }
-        });
+    events.forEach(event -> {
+      if (!subProcess.isTransaction() || !event.getSymbol().isBoundary()) {
+        logErrorIfCancelIntermediateEvent(event);
+      }
+    });
   }
-
+  
   @Override
   public void check(final ASTWFProcess process) {
     List<ASTWFEvent> events = WorkflowCollectors.toEventsLocal(process);
     events.forEach(this::logErrorIfCancelIntermediateEvent);
   }
-
+  
   private void logErrorIfCancelIntermediateEvent(final ASTWFEvent event) {
     if (!event.isIntermediate()) {
       return;
     }
-    WorkflowVisitor2 visitor =
-        new WorkflowVisitor2() {
-          @Override
-          public void endVisit(ASTWFEventTriggerCancel node) {
-            Log.error(
-                Messages.get("0xWFM2023", event.getName()),
-                event.get_SourcePositionStart(),
-                event.get_SourcePositionEnd());
-          }
-        };
-
+    WorkflowVisitor2 visitor = new WorkflowVisitor2() {
+      
+      @Override
+      public void endVisit(ASTWFEventTriggerCancel node) {
+        Log.error(Messages.get("0xWFM2023", event.getName()), event.get_SourcePositionStart(), event
+            .get_SourcePositionEnd());
+      }
+      
+    };
+    
     WorkflowTraverser traverser = WorkflowMill.traverser();
     traverser.add4Workflow(visitor);
     event.accept(traverser);
   }
+  
 }

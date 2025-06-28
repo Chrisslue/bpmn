@@ -1,4 +1,4 @@
- /* (c) https://github.com/MontiCore/monticore */ 
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.cocos.gateways;
 
 import com.google.common.collect.Lists;
@@ -11,28 +11,27 @@ import java.util.Collection;
 import org.junit.jupiter.api.Test;
 
 class EventGatewayTargetReceiveTaskHasNoBoundaryEventsTest extends AbstractCoCoTest {
-
+  
   @Override
-  protected WorkflowCoCoChecker getChecker() {
-    return WorkflowCoCos.getGatewayChecker();
-  }
-
+  protected WorkflowCoCoChecker getChecker() { return WorkflowCoCos.getGatewayChecker(); }
+  
   @Test
   void targetHasBoundaryEvents() {
     String modelName =
         "de.monticore.bpmn.cocos.gateways.invalid.EventGatewayTargetReceiveTaskHasNoBoundaryEvents";
-
-    Collection<Finding> expectedErrors =
-        Lists.newArrayList(Finding.error(Messages.get("0xWFM5009", "T3")));
-
+    
+    Collection<Finding> expectedErrors = Lists.newArrayList(Finding.error(Messages.get("0xWFM5009",
+        "T3")));
+    
     testModelForErrors(modelName, expectedErrors);
   }
-
+  
   @Test
   void targetHasNoBoundaryEvents() {
     String modelName =
         "de.monticore.bpmn.cocos.gateways.valid.EventGatewayTargetReceiveTaskHasNoBoundaryEvents";
-
+    
     testModelNoErrors(modelName);
   }
+  
 }

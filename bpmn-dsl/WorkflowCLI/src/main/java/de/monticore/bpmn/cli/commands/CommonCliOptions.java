@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.cli.commands;
 
 import de.monticore.io.paths.MCPath;
@@ -11,26 +12,23 @@ import picocli.CommandLine;
  * @see CheckModelCommand
  */
 class CommonCliOptions {
-
+  
   String qualifiedModel;
-
-  @CommandLine.Option(
-      names = {"-mp", "--model-path"},
-      paramLabel = "<DIR>",
-      required = true)
+  
+  @CommandLine.Option(names = { "-mp", "--model-path" }, paramLabel = "<DIR>", required = true)
   MCPath modelPath;
-
-  @CommandLine.Parameters(
-      paramLabel = "<FILE>",
-      description = "Qualified name of workflow model to process.")
+  
+  @CommandLine.Parameters(paramLabel = "<FILE>", description = "Qualified name of workflow model to process.")
   private void setQualifiedModel(final String qualifiedModelName) throws NoSuchFileException {
     if (modelPath.find(Names.getPathFromPackage(qualifiedModelName)).isPresent()) {
       qualifiedModel = qualifiedModelName;
-    } else {
+    }
+    else {
       throw new NoSuchFileException(qualifiedModelName);
     }
   }
-
-  @CommandLine.Option(names = {"-v", "--verbose"})
+  
+  @CommandLine.Option(names = { "-v", "--verbose" })
   boolean verbose;
+  
 }

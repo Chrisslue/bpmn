@@ -1,57 +1,51 @@
- /* (c) https://github.com/MontiCore/monticore */ 
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.workflow._ast;
 
-import de.se_rwth.commons.logging.Log;
-import de.monticore.bpmn.workflow.WorkflowMill;
-import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
-import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
 import java.util.*;
 import java.util.stream.Stream;
-import java.util.function.Predicate;
 
 public class ASTWFDataObject extends ASTWFDataObjectTOP {
-    // added additional attributes and methods
-  protected  List<de.monticore.bpmn.workflow._ast.SequenceFlow> incomings = new java.util.ArrayList<>();
-  protected  List<de.monticore.bpmn.workflow._ast.SequenceFlow> outgoings = new java.util.ArrayList<>();
-
-  public  boolean addIncomings (de.monticore.bpmn.workflow._ast.SequenceFlow element) {
+  
+  // added additional attributes and methods
+  protected List<de.monticore.bpmn.workflow._ast.SequenceFlow> incomings =
+      new java.util.ArrayList<>();
+  protected List<de.monticore.bpmn.workflow._ast.SequenceFlow> outgoings =
+      new java.util.ArrayList<>();
+  
+  public boolean addIncomings(de.monticore.bpmn.workflow._ast.SequenceFlow element) {
     return this.getIncomingsList().add(element);
   }
-
-  public  boolean addOutgoings (de.monticore.bpmn.workflow._ast.SequenceFlow element) {
+  
+  public boolean addOutgoings(de.monticore.bpmn.workflow._ast.SequenceFlow element) {
     return this.getOutgoingsList().add(element);
   }
   
-  public  List<de.monticore.bpmn.workflow._ast.SequenceFlow> getIncomingsList () {
+  public List<de.monticore.bpmn.workflow._ast.SequenceFlow> getIncomingsList() {
     return this.incomings;
   }
-
-  public  List<de.monticore.bpmn.workflow._ast.SequenceFlow> getOutgoingsList () {
+  
+  public List<de.monticore.bpmn.workflow._ast.SequenceFlow> getOutgoingsList() {
     return this.outgoings;
   }
-
-  public  boolean isEmptyIncomings () {
-    return this.getIncomingsList().isEmpty();
-  }
-
-  public  boolean isEmptyOutgoings () {
-    return this.getOutgoingsList().isEmpty();
-  }
-
-  public  int sizeIncomings () {
+  
+  public boolean isEmptyIncomings() { return this.getIncomingsList().isEmpty(); }
+  
+  public boolean isEmptyOutgoings() { return this.getOutgoingsList().isEmpty(); }
+  
+  public int sizeIncomings() {
     return this.getIncomingsList().size();
   }
-
-  public  int sizeOutgoings () {
+  
+  public int sizeOutgoings() {
     return this.getOutgoingsList().size();
   }
-
-  public  Stream<de.monticore.bpmn.workflow._ast.SequenceFlow> streamOutgoings () {
+  
+  public Stream<de.monticore.bpmn.workflow._ast.SequenceFlow> streamOutgoings() {
     return this.getOutgoingsList().stream();
   }
-
-  public  Stream<de.monticore.bpmn.workflow._ast.SequenceFlow> streamIncomings () {
+  
+  public Stream<de.monticore.bpmn.workflow._ast.SequenceFlow> streamIncomings() {
     return this.getIncomingsList().stream();
   }
-
+  
 }

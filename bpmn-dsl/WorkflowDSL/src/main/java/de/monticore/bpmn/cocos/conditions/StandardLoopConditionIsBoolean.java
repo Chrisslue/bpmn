@@ -10,12 +10,13 @@ import de.monticore.types3.SymTypeRelations;
 import de.se_rwth.commons.logging.Log;
 
 public class StandardLoopConditionIsBoolean implements WorkflowASTWFStandardLoopCoCo {
-
-    @Override
-    public void check(final ASTWFStandardLoop standardLoop) {
-      SymTypeExpression x = WorkflowTypeCheck3.typeOf(standardLoop.getLoopCondition());
-      if(!SymTypeRelations.isBoolean(x)){
-        Log.error(Messages.get("0xWFM9002"));
-      }
+  
+  @Override
+  public void check(final ASTWFStandardLoop standardLoop) {
+    SymTypeExpression x = WorkflowTypeCheck3.typeOf(standardLoop.getLoopCondition());
+    if (!SymTypeRelations.isBoolean(x)) {
+      Log.error(Messages.get("0xWFM9002"));
     }
+  }
+  
 }

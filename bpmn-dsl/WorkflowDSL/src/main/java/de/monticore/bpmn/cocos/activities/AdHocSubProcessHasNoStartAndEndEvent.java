@@ -1,4 +1,4 @@
- /* (c) https://github.com/MontiCore/monticore */ 
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.cocos.activities;
 
 import de.monticore.bpmn.Messages;
@@ -13,18 +13,15 @@ import de.se_rwth.commons.logging.Log;
  * (graphically), Conversation Links (graphically), and Choreography Activities.
  */
 public class AdHocSubProcessHasNoStartAndEndEvent implements WorkflowASTWFSubProcessCoCo {
-
+  
   @Override
   public void check(final ASTWFSubProcess subProcess) {
     if (subProcess.isAdHoc()) {
-      WorkflowCollectors.toEventsLocalSubProcess(subProcess).stream()
-          .filter(event -> event.isStart() || event.isEnd())
-          .forEach(
-              event ->
-                  Log.error(
-                      Messages.get("0xWFM4003", subProcess.getName()),
-                      event.get_SourcePositionStart(),
-                      event.get_SourcePositionEnd()));
+      WorkflowCollectors.toEventsLocalSubProcess(subProcess).stream().filter(event -> event
+          .isStart() || event.isEnd()).forEach(event -> Log.error(Messages.get("0xWFM4003",
+              subProcess.getName()), event.get_SourcePositionStart(), event
+                  .get_SourcePositionEnd()));
     }
   }
+  
 }

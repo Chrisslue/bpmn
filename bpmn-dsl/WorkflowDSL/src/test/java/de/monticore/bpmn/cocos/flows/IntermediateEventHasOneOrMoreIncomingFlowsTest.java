@@ -1,4 +1,4 @@
- /* (c) https://github.com/MontiCore/monticore */ 
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.cocos.flows;
 
 import com.google.common.collect.Lists;
@@ -11,28 +11,27 @@ import java.util.Collection;
 import org.junit.jupiter.api.Test;
 
 public class IntermediateEventHasOneOrMoreIncomingFlowsTest extends AbstractCoCoTest {
-
+  
   @Override
-  protected WorkflowCoCoChecker getChecker() {
-    return WorkflowCoCos.getSequenceFlowChecker();
-  }
-
+  protected WorkflowCoCoChecker getChecker() { return WorkflowCoCos.getSequenceFlowChecker(); }
+  
   @Test
   void hasNoIncomingFlow() {
     String modelName =
         "de.monticore.bpmn.cocos.flows.invalid.IntermediateEventHasOneOrMoreIncomingFlows";
-
-    Collection<Finding> expectedErrors =
-        Lists.newArrayList(Finding.error(Messages.get("0xWFM2020", "E2")));
-
+    
+    Collection<Finding> expectedErrors = Lists.newArrayList(Finding.error(Messages.get("0xWFM2020",
+        "E2")));
+    
     testModelForErrors(modelName, expectedErrors);
   }
-
+  
   @Test
   void hasIncomingFlow() {
     String modelName =
         "de.monticore.bpmn.cocos.flows.valid.IntermediateEventHasOneOrMoreIncomingFlows";
-
+    
     testModelNoErrors(modelName);
   }
+  
 }

@@ -1,4 +1,4 @@
- /* (c) https://github.com/MontiCore/monticore */ 
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.analysis.graph;
 
 import com.google.common.graph.EndpointPair;
@@ -10,12 +10,13 @@ import org.jgrapht.graph.guava.ImmutableGraphAdapter;
 
 /** Graph utils. */
 public class GraphUtils {
-
+  
   public static Graph<ASTFlowElement, EndpointPair<ASTFlowElement>> processGraphFrom(
       final ASTWFProcess container) {
-    final ImmutableGraph<ASTFlowElement> graph =
-        new WorkflowGraphConverter(container).convert().getGraph();
-
+    final ImmutableGraph<ASTFlowElement> graph = new WorkflowGraphConverter(container).convert()
+        .getGraph();
+    
     return new ImmutableGraphAdapter<>(graph);
   }
+  
 }

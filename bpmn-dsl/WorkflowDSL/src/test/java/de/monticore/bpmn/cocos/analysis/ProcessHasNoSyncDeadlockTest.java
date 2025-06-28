@@ -1,4 +1,4 @@
- /* (c) https://github.com/MontiCore/monticore */ 
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.cocos.analysis;
 
 import com.google.common.collect.Lists;
@@ -13,29 +13,29 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class ProcessHasNoSyncDeadlockTest extends AbstractCoCoTest {
+  
   // ToDo: Re-enable this test when the CoCo is corrected.
   @Override
-  protected WorkflowCoCoChecker getChecker() {
-    return WorkflowCoCos.getStructuralChecker();
-  }
-
+  protected WorkflowCoCoChecker getChecker() { return WorkflowCoCos.getStructuralChecker(); }
+  
   @Disabled
   @Test
   void mergeANDDeadlock() {
     String modelName = "de.monticore.bpmn.cocos.analysis.invalid.SyncDeadlockAND";
-    Collection<Finding> expectedWarnings =
-        Lists.newArrayList(Finding.warning(Messages.get("0xWFM7001", "_Gateway_2", "_Gateway_3")));
-
+    Collection<Finding> expectedWarnings = Lists.newArrayList(Finding.warning(Messages.get(
+        "0xWFM7001", "_Gateway_2", "_Gateway_3")));
+    
     testModelForErrors(modelName, Lists.newArrayList(), expectedWarnings);
   }
-
+  
   @Disabled
   @Test
   void mergeIORDeadlock() {
     String modelName = "de.monticore.bpmn.cocos.analysis.invalid.SyncDeadlockIOR";
-    Collection<Finding> expectedWarnings =
-        Lists.newArrayList(Finding.warning(Messages.get("0xWFM7001", "_Gateway_2", "_Gateway_3")));
-
+    Collection<Finding> expectedWarnings = Lists.newArrayList(Finding.warning(Messages.get(
+        "0xWFM7001", "_Gateway_2", "_Gateway_3")));
+    
     testModelForErrors(modelName, Lists.newArrayList(), expectedWarnings);
   }
+  
 }

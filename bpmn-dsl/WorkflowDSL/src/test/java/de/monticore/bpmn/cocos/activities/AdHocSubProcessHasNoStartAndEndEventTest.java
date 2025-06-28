@@ -1,4 +1,4 @@
- /* (c) https://github.com/MontiCore/monticore */ 
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.cocos.activities;
 
 import com.google.common.collect.Lists;
@@ -11,32 +11,28 @@ import java.util.Collection;
 import org.junit.jupiter.api.Test;
 
 class AdHocSubProcessHasNoStartAndEndEventTest extends AbstractCoCoTest {
-
+  
   @Override
-  protected WorkflowCoCoChecker getChecker() {
-    return WorkflowCoCos.getActivityChecker();
-  }
-
+  protected WorkflowCoCoChecker getChecker() { return WorkflowCoCos.getActivityChecker(); }
+  
   @Test
   void hasStartOrEndEvents() {
     String modelName =
         "de.monticore.bpmn.cocos.activities.invalid.AdHocSubProcessHasNoStartAndEndEvent";
-
-    Collection<Finding> expectedErrors =
-        Lists.newArrayList(
-            Finding.error(Messages.get("0xWFM4003", "S1")),
-            Finding.error(Messages.get("0xWFM4003", "S2")),
-            Finding.error(Messages.get("0xWFM4003", "S3")),
-            Finding.error(Messages.get("0xWFM4003", "S3")));
-
+    
+    Collection<Finding> expectedErrors = Lists.newArrayList(Finding.error(Messages.get("0xWFM4003",
+        "S1")), Finding.error(Messages.get("0xWFM4003", "S2")), Finding.error(Messages.get(
+            "0xWFM4003", "S3")), Finding.error(Messages.get("0xWFM4003", "S3")));
+    
     testModelForErrors(modelName, expectedErrors);
   }
-
+  
   @Test
   void hasNoStartOrEndEvent() {
     String modelName =
         "de.monticore.bpmn.cocos.activities.valid.AdHocSubProcessHasNoStartAndEndEvent";
-
+    
     testModelNoErrors(modelName);
   }
+  
 }

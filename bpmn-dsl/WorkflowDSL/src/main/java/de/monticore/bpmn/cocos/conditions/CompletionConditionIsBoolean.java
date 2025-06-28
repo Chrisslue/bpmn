@@ -10,14 +10,14 @@ import de.monticore.types3.SymTypeRelations;
 import de.se_rwth.commons.logging.Log;
 
 public class CompletionConditionIsBoolean implements WorkflowASTAdHocCharacteristicsCoCo {
-
-
-    @Override
-    public void check(final ASTAdHocCharacteristics characteristics) {
-        SymTypeExpression x = WorkflowTypeCheck3.typeOf(characteristics.getCompletionCondition());
-        if(!SymTypeRelations.isBoolean(x)){
-          Log.error(Messages.get("0xWFM9001"));
-        }
-        
+  
+  @Override
+  public void check(final ASTAdHocCharacteristics characteristics) {
+    SymTypeExpression x = WorkflowTypeCheck3.typeOf(characteristics.getCompletionCondition());
+    if (!SymTypeRelations.isBoolean(x)) {
+      Log.error(Messages.get("0xWFM9001"));
     }
+    
+  }
+  
 }

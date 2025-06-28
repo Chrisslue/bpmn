@@ -1,9 +1,4 @@
- /* (c) https://github.com/MontiCore/monticore */ 
-/*
- * Copyright (c) 2017, MontiCore. All rights reserved.
- *
- * http://www.se-rwth.de/
- */
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn;
 
 import static de.se_rwth.commons.Names.getPathFromQualifiedName;
@@ -25,7 +20,7 @@ import de.monticore.bpmn.workflow._symboltable.IWorkflowGlobalScope;
 import de.monticore.bpmn.workflow._symboltable.WorkflowSTCompleter;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
 import de.monticore.io.paths.MCPath;
-//import de.monticore.ocl.ocl.types3.OCLTypeCheck3;
+// import de.monticore.ocl.ocl.types3.OCLTypeCheck3;
 import de.monticore.symbols.basicsymbols.BasicSymbolsMill;
 import de.monticore.symboltable.ImportStatement;
 import de.se_rwth.commons.Names;
@@ -38,19 +33,19 @@ import org.junit.jupiter.api.BeforeEach;
 
 /** Abstract test with default methods for loading models. */
 public abstract class AbstractTest {
-
+  
   protected static final String MODEL_AUX_DIR = "out/";
-
+  
   protected static final String MODEL_DIR = "src/test/resources/";
-
+  
   protected static final String SYMBOL_DIR = "src/test/resources";
-
+  
   // Add OCL default types, this way we don't need to import them in the models every time
-  protected static final ImportStatement OCL_TYPES =
-      new ImportStatement("de.monticore.bpmn._types.ocl.DefaultTypes", true);
-
+  protected static final ImportStatement OCL_TYPES = new ImportStatement(
+      "de.monticore.bpmn._types.ocl.DefaultTypes", true);
+  
   private IWorkflowGlobalScope globalScope;
-
+  
   @BeforeAll
   public static void init() {
     Log.init();
@@ -61,12 +56,12 @@ public abstract class AbstractTest {
     BasicSymbolsMill.initializePrimitives();
     //OCLTypeCheck3.init();
   }
-
+  
   @BeforeEach
   public void setUp() {
     Log.getFindings().clear();
   }
-
+  
   /**
    * Parses a model and ensures that the root node is present.
    *
@@ -77,21 +72,19 @@ public abstract class AbstractTest {
     WorkflowParser parser = WorkflowMill.parser();
     Optional<ASTWorkflowCompilationUnit> ast = null;
     try {
-      ast =
-          parser.parse(
-              MODEL_DIR
-                  + Names.getPathFromPackage(qualifiedModelName).replaceAll("\\\\", "/")
-                  + ".wfm");
-    } catch (IOException e) {
+      ast = parser.parse(MODEL_DIR + Names.getPathFromPackage(qualifiedModelName).replaceAll("\\\\",
+          "/") + ".wfm");
+    }
+    catch (IOException e) {
       fail("Cannot parse " + qualifiedModelName);
       return null;
     }
     assertTrue(ast.isPresent());
     assertFalse(parser.hasErrors());
-
+    
     return ast.get();
   }
-
+  
   /**
    * Parses a model and ensures that the root node is present.
    *
@@ -107,32 +100,32 @@ public abstract class AbstractTest {
     checker.checkAll(ast);
     new AddNameToInlineFlowNodes().transform(ast);
     new AddSequenceFlowToFlowNodes().transform(ast);
-
+    
     WorkflowSTCompleter stCompleter = new WorkflowSTCompleter();
     WorkflowTraverser traverser = WorkflowMill.traverser();
     traverser.add4Workflow(stCompleter);
     ast.accept(traverser);
-
+    
     if (shouldWriteAuxModels()) {
       writeTestAuxModels(qualifiedModelName, ast);
     }
-
+    
     return ast;
   }
-
+  
   protected boolean shouldWriteAuxModels() {
     return false;
   }
-
-  protected void writeTestAuxModels(
-      final String qualifiedModelName, final ASTWorkflowCompilationUnit unit) {
-    Path out =
-        get(MODEL_AUX_DIR)
-            .resolve(get(getPathFromQualifiedName(qualifiedModelName)))
-            .resolve(getSimpleName(qualifiedModelName).toLowerCase());
+  
+  protected void writeTestAuxModels(final String qualifiedModelName,
+      final ASTWorkflowCompilationUnit unit) {
+    Path out = get(MODEL_AUX_DIR).resolve(get(getPathFromQualifiedName(qualifiedModelName)))
+        .resolve(getSimpleName(qualifiedModelName).toLowerCase());
     try {
       new AuxiliaryModelsWriter(unit.getWFProcess()).print(out);
-    } catch (IOException ignored) {
+    }
+    catch (IOException ignored) {
     }
   }
+  
 }

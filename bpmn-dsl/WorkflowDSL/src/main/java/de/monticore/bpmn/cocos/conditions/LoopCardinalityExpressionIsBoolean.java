@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.cocos.conditions;
 
 import de.monticore.bpmn.Messages;
@@ -9,17 +10,17 @@ import de.monticore.types3.SymTypeRelations;
 import de.se_rwth.commons.logging.Log;
 
 public class LoopCardinalityExpressionIsBoolean implements WorkflowASTWFLoopCardinalityCoCo {
-    @Override
-    public void check(final ASTWFLoopCardinality loopCardinality) {
-        
-        if(loopCardinality.isPresentExpression()){
-          SymTypeExpression x = WorkflowTypeCheck3.typeOf(loopCardinality.getExpression());
-          if(!SymTypeRelations.isInt(x)){
-            Log.error(Messages.get("0xWFM9005"));
-          }
-        }
-        
-        
-
+  
+  @Override
+  public void check(final ASTWFLoopCardinality loopCardinality) {
+    
+    if (loopCardinality.isPresentExpression()) {
+      SymTypeExpression x = WorkflowTypeCheck3.typeOf(loopCardinality.getExpression());
+      if (!SymTypeRelations.isInt(x)) {
+        Log.error(Messages.get("0xWFM9005"));
+      }
     }
+    
+  }
+  
 }

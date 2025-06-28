@@ -1,15 +1,11 @@
- /* (c) https://github.com/MontiCore/monticore */ 
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.cocos.flow;
 
-import de.monticore.bpmn.Messages;
 import de.monticore.bpmn.workflow._ast.ASTFlowBlock;
 import de.monticore.bpmn.workflow._cocos.WorkflowASTFlowBlockCoCo;
-import de.se_rwth.commons.logging.Log;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class AtMostOneDefaultBranch implements WorkflowASTFlowBlockCoCo {
-
+  
   @Override
   public void check(final ASTFlowBlock block) {
     /*
@@ -21,4 +17,5 @@ public class AtMostOneDefaultBranch implements WorkflowASTFlowBlockCoCo {
     }
     */
   }
+  
 }

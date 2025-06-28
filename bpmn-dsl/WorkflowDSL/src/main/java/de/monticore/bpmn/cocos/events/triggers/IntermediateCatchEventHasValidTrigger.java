@@ -1,4 +1,4 @@
- /* (c) https://github.com/MontiCore/monticore */ 
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.cocos.events.triggers;
 
 import de.monticore.bpmn.collectors.WorkflowCollectors;
@@ -13,55 +13,55 @@ import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
  * Intermediate Events in BPMN: None, Message, Timer, Escalation, Error, Cancel, Compensation,
  * Conditional, Link, Signal, Multiple, and Parallel Multiple.
  */
-public class IntermediateCatchEventHasValidTrigger extends AbstractHasValidTriggerCoCo
-    implements WorkflowASTWFProcessCoCo {
-
+public class IntermediateCatchEventHasValidTrigger extends AbstractHasValidTriggerCoCo implements
+    WorkflowASTWFProcessCoCo {
+  
   private static final String ERROR_CODE = "0xWFM2013";
-
+  
   public IntermediateCatchEventHasValidTrigger() {
     super(ERROR_CODE);
   }
-
+  
   @Override
   public void check(final ASTWFProcess container) {
-    WorkflowCollectors.toEventsLocal(container).stream()
-        .filter(ASTWFEvent::isIntermediate)
-        .filter(ASTWFEvent::isCatch)
-        .filter(event -> !event.getSymbol().isBoundary())
-        .forEach(this::check);
+    WorkflowCollectors.toEventsLocal(container).stream().filter(ASTWFEvent::isIntermediate).filter(
+        ASTWFEvent::isCatch).filter(event -> !event.getSymbol().isBoundary()).forEach(this::check);
   }
-
+  
   private void check(final ASTWFEvent event) {
     if (!event.isPresentTrigger()) {
       logError(event);
     }
-    WorkflowVisitor2 visitor =
-        new WorkflowVisitor2() {
-          @Override
-          public void visit(final ASTWFEventTriggerNotification trigger) {
-            if(trigger.getType() == ASTConstantsWorkflow.ERROR || trigger.getType() == ASTConstantsWorkflow.ESCALATION){
-              logError(event);
-            }
-          }
-
-          @Override
-          public void visit(final ASTWFEventTriggerCancel trigger) {
-            logError(event);
-          }
-
-          @Override
-          public void visit(final ASTWFEventTriggerCompensate trigger) {
-            logError(event);
-          }
-
-          @Override
-          public void visit(final ASTWFEventTriggerTerminate trigger) {
-            logError(event);
-          }
-        };
-
+    WorkflowVisitor2 visitor = new WorkflowVisitor2() {
+      
+      @Override
+      public void visit(final ASTWFEventTriggerNotification trigger) {
+        if (trigger.getKind() == ASTConstantsWorkflow.ERROR || trigger.getKind()
+            == ASTConstantsWorkflow.ESCALATION) {
+          logError(event);
+        }
+      }
+      
+      @Override
+      public void visit(final ASTWFEventTriggerCancel trigger) {
+        logError(event);
+      }
+      
+      @Override
+      public void visit(final ASTWFEventTriggerCompensate trigger) {
+        logError(event);
+      }
+      
+      @Override
+      public void visit(final ASTWFEventTriggerTerminate trigger) {
+        logError(event);
+      }
+      
+    };
+    
     WorkflowTraverser traverser = WorkflowMill.traverser();
     traverser.add4Workflow(visitor);
     event.accept(traverser);
   }
+  
 }

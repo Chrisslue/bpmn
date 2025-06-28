@@ -1,4 +1,4 @@
- /* (c) https://github.com/MontiCore/monticore */ 
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.cocos.gateways;
 
 import com.google.common.collect.Lists;
@@ -11,28 +11,27 @@ import java.util.Collection;
 import org.junit.jupiter.api.Test;
 
 class ParallelEventGatewayHasNoIncomingFlowTest extends AbstractCoCoTest {
-
+  
   @Override
-  protected WorkflowCoCoChecker getChecker() {
-    return WorkflowCoCos.getGatewayChecker();
-  }
-
+  protected WorkflowCoCoChecker getChecker() { return WorkflowCoCos.getGatewayChecker(); }
+  
   @Test
   void eventGatewayHasIncomingFlow() {
     String modelName =
         "de.monticore.bpmn.cocos.gateways.invalid.ParallelEventGatewayHasNoIncomingFlow";
-
-    Collection<Finding> expectedErrors =
-        Lists.newArrayList(Finding.error(Messages.get("0xWFM5012", "G1")));
-
+    
+    Collection<Finding> expectedErrors = Lists.newArrayList(Finding.error(Messages.get("0xWFM5012",
+        "G1")));
+    
     testModelForErrors(modelName, expectedErrors);
   }
-
+  
   @Test
   void eventGatewayHasNoIncomingFlow() {
     String modelName =
         "de.monticore.bpmn.cocos.gateways.valid.ParallelEventGatewayHasNoIncomingFlow";
-
+    
     testModelNoErrors(modelName);
   }
+  
 }

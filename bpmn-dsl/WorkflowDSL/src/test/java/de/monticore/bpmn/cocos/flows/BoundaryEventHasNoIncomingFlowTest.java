@@ -1,4 +1,4 @@
- /* (c) https://github.com/MontiCore/monticore */ 
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.cocos.flows;
 
 import com.google.common.collect.Lists;
@@ -11,28 +11,25 @@ import java.util.Collection;
 import org.junit.jupiter.api.Test;
 
 class BoundaryEventHasNoIncomingFlowTest extends AbstractCoCoTest {
-
+  
   @Override
-  protected WorkflowCoCoChecker getChecker() {
-    return WorkflowCoCos.getSequenceFlowChecker();
-  }
-
+  protected WorkflowCoCoChecker getChecker() { return WorkflowCoCos.getSequenceFlowChecker(); }
+  
   @Test
   void boundaryEventHasIncomingFlow() {
     String modelName = "de.monticore.bpmn.cocos.flows.invalid.BoundaryEventHasNoIncomingFlow";
-
-    Collection<Finding> expectedErrors =
-        Lists.newArrayList(
-            Finding.error(Messages.get("0xWFM2005", "E1")),
-            Finding.error(Messages.get("0xWFM2005", "E2")));
-
+    
+    Collection<Finding> expectedErrors = Lists.newArrayList(Finding.error(Messages.get("0xWFM2005",
+        "E1")), Finding.error(Messages.get("0xWFM2005", "E2")));
+    
     testModelForErrors(modelName, expectedErrors);
   }
-
+  
   @Test
   void boundaryEventHasNoIncomingFlow() {
     String modelName = "de.monticore.bpmn.cocos.flows.valid.BoundaryEventHasNoIncomingFlow";
-
+    
     testModelNoErrors(modelName);
   }
+  
 }

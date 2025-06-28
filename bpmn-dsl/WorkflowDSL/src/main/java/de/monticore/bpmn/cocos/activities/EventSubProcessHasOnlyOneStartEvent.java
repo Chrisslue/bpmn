@@ -1,11 +1,10 @@
- /* (c) https://github.com/MontiCore/monticore */ 
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.cocos.activities;
 
 import de.monticore.bpmn.Messages;
 import de.monticore.bpmn.collectors.WorkflowCollectors;
 import de.monticore.bpmn.workflow._ast.ASTWFEvent;
 import de.monticore.bpmn.workflow._ast.ASTWFSubProcess;
-import de.monticore.bpmn.workflow._ast.SequenceFlow;
 import de.monticore.bpmn.workflow._cocos.WorkflowASTWFSubProcessCoCo;
 import de.se_rwth.commons.logging.Log;
 import java.util.Collection;
@@ -15,25 +14,24 @@ import java.util.Collection;
  * have one and only one Start Event
  */
 public class EventSubProcessHasOnlyOneStartEvent implements WorkflowASTWFSubProcessCoCo {
-
+  
   @Override
   public void check(final ASTWFSubProcess subProcess) {
-
+    
     if (isEventSubProcess(subProcess)) {
-      Collection<ASTWFEvent> startEvents = WorkflowCollectors.toStartEventsLocalSubProcess(subProcess);
+      Collection<ASTWFEvent> startEvents = WorkflowCollectors.toStartEventsLocalSubProcess(
+          subProcess);
       if (startEvents.size() > 1) {
-        startEvents.forEach(
-            event ->
-                Log.error(
-                    Messages.get("0xWFM4001", subProcess.getName()),
-                    event.get_SourcePositionStart(),
-                    event.get_SourcePositionEnd()));
+        startEvents.forEach(event -> Log.error(Messages.get("0xWFM4001", subProcess.getName()),
+            event.get_SourcePositionStart(), event.get_SourcePositionEnd()));
       }
     }
-
+    
   }
-
+  
   private boolean isEventSubProcess(ASTWFSubProcess subProcess) {
-    return !subProcess.streamIncomings().findAny().isPresent() && !subProcess.streamOutgoings().findAny().isPresent();
+    return !subProcess.streamIncomings().findAny().isPresent() && !subProcess.streamOutgoings()
+        .findAny().isPresent();
   }
+  
 }

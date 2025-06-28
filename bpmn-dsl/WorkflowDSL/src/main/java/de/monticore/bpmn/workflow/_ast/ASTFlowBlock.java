@@ -1,4 +1,4 @@
- /* (c) https://github.com/MontiCore/monticore */ 
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.workflow._ast;
 
 import com.google.common.collect.ListMultimap;
@@ -9,34 +9,26 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class ASTFlowBlock extends ASTFlowBlockTOP {
-
+  
   /**
    * Calculates all entry flow nodes corresponding to this block
    *
    * @return input: ... -> split xor { [cond1]: { [cond2]: TaskA -> ..., [cond3]: TaskB -> ...,
-   *     default: TaskC -> ... }, [cond4]: TaskA } merge xor -> TaskE;
-   *     <p>output: [TaskA:[cond1, cond2], TaskB:[cond1, cond3], TaskC:[cond1, default],
-   *     TaskA:[cond4]]
+   * default: TaskC -> ... }, [cond4]: TaskA } merge xor -> TaskE;
+   * <p>output: [TaskA:[cond1, cond2], TaskB:[cond1, cond3], TaskC:[cond1, default],
+   * TaskA:[cond4]]
    */
   ListMultimap<ASTFlowElement, List<ASTFlowCondition>> asTarget() {
-    return getBranchList().stream()
-        .map(ASTSequenceFlow::asTarget)
-        .map(Multimap::entries)
-        .flatMap(Collection::stream)
-        .collect(
-            Multimaps.toMultimap(
-                Map.Entry::getKey,
-                Map.Entry::getValue,
-                MultimapBuilder.hashKeys().arrayListValues()::build));
+    return getBranchList().stream().map(ASTSequenceFlow::asTarget).map(Multimap::entries).flatMap(
+        Collection::stream).collect(Multimaps.toMultimap(Map.Entry::getKey, Map.Entry::getValue,
+            MultimapBuilder.hashKeys().arrayListValues()::build));
   }
-
+  
   List<ASTFlowElement> asSource() {
-    return getBranchList().stream()
-        .map(ASTSequenceFlow::asSource)
-        .flatMap(Collection::stream)
+    return getBranchList().stream().map(ASTSequenceFlow::asSource).flatMap(Collection::stream)
         .collect(Collectors.toList());
   }
+  
 }

@@ -1,4 +1,4 @@
- /* (c) https://github.com/MontiCore/monticore */ 
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.cocos.flow;
 
 import de.monticore.bpmn.Messages;
@@ -12,15 +12,14 @@ import de.se_rwth.commons.logging.Log;
  * split the flow).
  */
 public class MergeGatewayHasMultipleIncomingFlow implements WorkflowASTWFGatewayCoCo {
-
+  
   @Override
   public void check(final ASTWFGateway gateway) {
     if (gateway.isConverging() && gateway.sizeIncomings() <= 1) {
-      Log.error(
-          Messages.get("0xWFM5002", gateway.getName()),
-          gateway.get_SourcePositionStart(),
+      Log.error(Messages.get("0xWFM5002", gateway.getName()), gateway.get_SourcePositionStart(),
           gateway.get_SourcePositionEnd());
       
     }
   }
+  
 }

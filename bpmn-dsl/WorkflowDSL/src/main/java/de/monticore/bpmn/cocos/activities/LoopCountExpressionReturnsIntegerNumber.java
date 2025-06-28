@@ -1,4 +1,4 @@
- /* (c) https://github.com/MontiCore/monticore */ 
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.cocos.activities;
 
 import de.monticore.bpmn.Messages;
@@ -16,24 +16,23 @@ import de.se_rwth.commons.logging.Log;
  * an integer.
  */
 public class LoopCountExpressionReturnsIntegerNumber implements WorkflowASTWFLoopCardinalityCoCo {
-
+  
   @Override
   public void check(final ASTWFLoopCardinality loopCardinality) {
     WorkflowTypeCheck3.init();
     if (loopCardinality.isPresentExpression()) {
       ASTExpression loopExpression = loopCardinality.getExpression();
       SymTypeExpression type = WorkflowTypeCheck3.typeOf(loopExpression);
-
+      
       if (type == null) {
         Log.warn(Messages.get("0xWFM1009"));
       }
-
+      
       if (type != null && !new TypeRelations().isInt(type)) {
-        Log.error(
-            Messages.get("0xWFM1010", type.print()),
-            loopExpression.get_SourcePositionStart(),
+        Log.error(Messages.get("0xWFM1010", type.print()), loopExpression.get_SourcePositionStart(),
             loopExpression.get_SourcePositionEnd());
       }
     }
   }
+  
 }

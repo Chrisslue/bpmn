@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.conformance.datastructures;
 
 import de.monticore.bpmn.conformance.datastructures.interf.WfBuilder;
@@ -14,54 +15,57 @@ import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
  * The builder also collects the sequence flows.
  */
 public class WfNodeFactory implements WorkflowVisitor2 {
-
+  
   public static WfBuilder workflowBuilder(ASTWorkflowCompilationUnit ast, String pref) {
-
+    
     // traverse the Workflow asts a collect elements
     IDWfNodeBuilder builder = new IDWfNodeBuilder(pref);
-
+    
     WfNodeFactory collector = new WfNodeFactory(builder);
     WorkflowTraverser traverser = WorkflowMill.traverser();
     traverser.add4Workflow(collector);
     ast.accept(traverser);
-
+    
     return builder;
   }
-
+  
   private final WfBuilder builder;
-
+  
   public WfNodeFactory(WfBuilder builder) {
     this.builder = builder;
   }
-
+  
   @Override
   public void visit(ASTWFEvent node) {
     if (node.isStart()) {
       builder.mkStartEvent(node);
-    } else if (node.isEnd()) {
+    }
+    else if (node.isEnd()) {
       builder.mkEndEvent(node);
-    } else {
+    }
+    else {
       builder.mkNamedEvent(node);
     }
   }
-
+  
   @Override
   public void visit(ASTWFTask node) {
     builder.mkNamedTask(node);
   }
-
+  
   @Override
   public void visit(ASTSequenceFlow node) {
     builder.mkSequence(node);
   }
-
+  
   @Override
   public void visit(ASTWFGateway node) {
     builder.mkNamedGateway(node);
   }
-
+  
   @Override
   public void endVisit(ASTWorkflowCompilationUnit wf) {
     builder.build();
   }
+  
 }

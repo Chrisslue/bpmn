@@ -1,7 +1,5 @@
- /* (c) https://github.com/MontiCore/monticore */ 
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.prettyprint;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import de.monticore.bpmn.AbstractTest;
 import de.monticore.bpmn.workflow.WorkflowMill;
@@ -13,11 +11,7 @@ import de.monticore.bpmn.workflow._parser.WorkflowParser;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-
-
-
 public class WorkflowPrettyPrinterTest extends AbstractTest {
-
   
   @Test
   void prettyPrintTest() throws IOException {
@@ -32,10 +26,8 @@ public class WorkflowPrettyPrinterTest extends AbstractTest {
     // then
     WorkflowParser parser = WorkflowMill.parser();
     final Optional<ASTWorkflowCompilationUnit> astPrint = parser.parse_String(output);
-    Assertions.assertTrue( astPrint.isPresent());
+    Assertions.assertTrue(astPrint.isPresent());
     Assertions.assertTrue(ast.deepEquals(astPrint.get()));
   }
-  
- 
   
 }

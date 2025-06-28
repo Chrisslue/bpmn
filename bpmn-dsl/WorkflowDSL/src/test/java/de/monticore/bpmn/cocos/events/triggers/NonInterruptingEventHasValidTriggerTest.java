@@ -1,4 +1,4 @@
- /* (c) https://github.com/MontiCore/monticore */ 
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.cocos.events.triggers;
 
 import com.google.common.collect.Lists;
@@ -9,39 +9,32 @@ import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
 import de.se_rwth.commons.logging.Finding;
 import java.util.Collection;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class NonInterruptingEventHasValidTriggerTest extends AbstractCoCoTest {
-
+  
   @Override
-  protected WorkflowCoCoChecker getChecker() {
-    return WorkflowCoCos.getEventTriggerChecker();
-  }
-
-
+  protected WorkflowCoCoChecker getChecker() { return WorkflowCoCos.getEventTriggerChecker(); }
+  
   @Test
   void isNonInterrupting() {
     String modelName =
         "de.monticore.bpmn.cocos.events.triggers.invalid.NonInterruptingEventHasValidTrigger";
-
-    Collection<Finding> expectedErrors =
-        Lists.newArrayList(
-            Finding.error(Messages.get("0xWFM2019", "E01")),
-            Finding.error(Messages.get("0xWFM2019", "E02")),
-            Finding.error(Messages.get("0xWFM2019", "E11")),
-            Finding.error(Messages.get("0xWFM2019", "E12")),
-            Finding.error(Messages.get("0xWFM2019", "E13")));
-
+    
+    Collection<Finding> expectedErrors = Lists.newArrayList(Finding.error(Messages.get("0xWFM2019",
+        "E01")), Finding.error(Messages.get("0xWFM2019", "E02")), Finding.error(Messages.get(
+            "0xWFM2019", "E11")), Finding.error(Messages.get("0xWFM2019", "E12")), Finding.error(
+                Messages.get("0xWFM2019", "E13")));
+    
     testModelForErrors(modelName, expectedErrors);
   }
-
-
+  
   @Test
   void isInterrupting() {
     String modelName =
         "de.monticore.bpmn.cocos.events.triggers.valid.NonInterruptingEventHasValidTrigger";
-
+    
     testModelNoErrors(modelName);
   }
+  
 }

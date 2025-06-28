@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.cocos.conditions;
 
 import de.monticore.bpmn.Messages;
@@ -9,13 +10,15 @@ import de.monticore.types3.SymTypeRelations;
 import de.se_rwth.commons.logging.Log;
 
 public class GuardOfComplexGatewayIsBoolean implements WorkflowASTGatewayTypeCoCo {
-    @Override
-    public void check(final ASTGatewayType gatewayType) {
-        if(gatewayType.isComplex()) {
-          SymTypeExpression x = WorkflowTypeCheck3.typeOf(gatewayType.getGuard());
-          if(!SymTypeRelations.isBoolean(x)){
-            Log.error(Messages.get("0xWFM9006"));
-          }
-        }
+  
+  @Override
+  public void check(final ASTGatewayType gatewayType) {
+    if (gatewayType.isComplex()) {
+      SymTypeExpression x = WorkflowTypeCheck3.typeOf(gatewayType.getGuard());
+      if (!SymTypeRelations.isBoolean(x)) {
+        Log.error(Messages.get("0xWFM9006"));
+      }
     }
+  }
+  
 }

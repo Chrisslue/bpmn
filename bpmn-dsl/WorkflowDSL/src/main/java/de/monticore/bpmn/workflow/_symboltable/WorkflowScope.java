@@ -1,22 +1,21 @@
- /* (c) https://github.com/MontiCore/monticore */ 
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.workflow._symboltable;
 
-import de.monticore.bpmn.workflow._ast.ASTWFActivity;
 import de.monticore.bpmn.workflow._ast.ASTFlowElement;
 import de.monticore.bpmn.workflow._ast.ASTWFProcess;
 import java.util.Optional;
 
 /** This class should be refactored once MC 6 is released */
 public class WorkflowScope extends WorkflowScopeTOP {
-
+  
   public WorkflowScope() {
     super();
   }
-
+  
   public WorkflowScope(final boolean isShadowingScope) {
     super(isShadowingScope);
   }
-
+  
   /*
      MC v5.0.2 does not yet support symbol hierarchies.
      Ideally WorkflowScope#resolve(name, FlowNodeSymbol.KIND) would resolve all concrete types of ASTFlowElement.
@@ -26,7 +25,8 @@ public class WorkflowScope extends WorkflowScopeTOP {
     if (subProcessSymbol.isPresent()) {
       if (subProcessSymbol.get().isPresentAstNode()) {
         return Optional.of(subProcessSymbol.get().getAstNode());
-      } else {
+      }
+      else {
         return Optional.empty();
       }
     }
@@ -34,7 +34,8 @@ public class WorkflowScope extends WorkflowScopeTOP {
     if (taskSymbol.isPresent()) {
       if (taskSymbol.get().isPresentAstNode()) {
         return Optional.of(taskSymbol.get().getAstNode());
-      } else {
+      }
+      else {
         return Optional.empty();
       }
     }
@@ -42,7 +43,8 @@ public class WorkflowScope extends WorkflowScopeTOP {
     if (namedGatewaySymbol.isPresent()) {
       if (namedGatewaySymbol.get().isPresentAstNode()) {
         return Optional.of(namedGatewaySymbol.get().getAstNode());
-      } else {
+      }
+      else {
         return Optional.empty();
       }
     }
@@ -50,25 +52,27 @@ public class WorkflowScope extends WorkflowScopeTOP {
     if (namedEventSymbol.isPresent()) {
       if (namedEventSymbol.get().isPresentAstNode()) {
         return Optional.of(namedEventSymbol.get().getAstNode());
-      } else {
+      }
+      else {
         return Optional.empty();
       }
     }
     return Optional.empty();
   }
-
+  
   public Optional<ASTWFProcess> resolveCalledElement(final String name) {
     Optional<WFProcessSymbol> processSymbol = resolveWFProcess(name);
     if (processSymbol.isPresent()) {
       if (processSymbol.get().isPresentAstNode()) {
         return Optional.of(processSymbol.get().getAstNode());
-      } else {
+      }
+      else {
         return Optional.empty();
       }
     }
     return Optional.empty();
   }
-
+  
   /*
   public Optional<ASTWFActivity> resolveActivityLocally(final String name) {
     Optional<WFSubProcessSymbol> subProcessSymbol = resolveSubProcessLocally(name);

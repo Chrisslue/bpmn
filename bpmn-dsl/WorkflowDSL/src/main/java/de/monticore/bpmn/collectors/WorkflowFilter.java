@@ -1,4 +1,4 @@
- /* (c) https://github.com/MontiCore/monticore */ 
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.collectors;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -15,30 +15,28 @@ import java.util.Optional;
  * @param <E> the type of the filtered node
  */
 public class WorkflowFilter<E extends ASTWorkflowNode> implements WorkflowVisitor2 {
-
+  
   private ASTWorkflowNode unfiltered;
-
+  
   private E filtered;
-
+  
   public WorkflowFilter(final ASTWorkflowNode node) {
     unfiltered = node;
   }
-
+  
   public void filter(WorkflowFilter<E> filter) {
     WorkflowTraverser traverser = WorkflowMill.inheritanceTraverser();
     traverser.add4Workflow(filter);
     unfiltered.accept(traverser);
   }
-
+  
   /**
    * Returns the filtered node.
    *
    * @return Optional containing the filtered node if selected xor else an empty Optional
    */
-  public Optional<E> getFiltered() {
-    return Optional.ofNullable(filtered);
-  }
-
+  public Optional<E> getFiltered() { return Optional.ofNullable(filtered); }
+  
   /**
    * Selects the node. Root nodes cannot be selected.
    *
@@ -51,4 +49,5 @@ public class WorkflowFilter<E extends ASTWorkflowNode> implements WorkflowVisito
       filtered = node;
     }
   }
+  
 }

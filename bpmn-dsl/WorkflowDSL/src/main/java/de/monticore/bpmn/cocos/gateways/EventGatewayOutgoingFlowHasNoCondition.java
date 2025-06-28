@@ -1,4 +1,4 @@
- /* (c) https://github.com/MontiCore/monticore */ 
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.cocos.gateways;
 
 import de.monticore.bpmn.Messages;
@@ -13,20 +13,14 @@ import java.util.Collection;
  * of the Event Gateway MUST NOT have a conditionExpression
  */
 public class EventGatewayOutgoingFlowHasNoCondition implements WorkflowASTWFGatewayCoCo {
-
+  
   @Override
   public void check(final ASTWFGateway gateway) {
     if (gateway.getType().isEventBased()) {
-      gateway
-          .streamOutgoings()
-          .map(SequenceFlow::getConditions)
-          .flatMap(Collection::stream)
-          .forEach(
-              condition ->
-                  Log.error(
-                      Messages.get("0xWFM5006", gateway.getName()),
-                      condition.get_SourcePositionStart(),
-                      condition.get_SourcePositionEnd()));
+      gateway.streamOutgoings().map(SequenceFlow::getConditions).flatMap(Collection::stream)
+          .forEach(condition -> Log.error(Messages.get("0xWFM5006", gateway.getName()), condition
+              .get_SourcePositionStart(), condition.get_SourcePositionEnd()));
     }
   }
+  
 }

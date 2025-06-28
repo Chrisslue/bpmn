@@ -1,4 +1,4 @@
- /* (c) https://github.com/MontiCore/monticore */ 
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.analysis.petrinet;
 
 import com.google.common.collect.Maps;
@@ -25,29 +25,26 @@ import petrinet._ast.ASTTransition;
  * <p>http://mlwiki.org/index.php/Workflow_Nets
  */
 public class WorkflowNet {
-
+  
   // underlying petrinet
   private final ASTPetrinet petrinet;
-
+  
   // unique source
   private final ASTPlace source;
-
+  
   // unique sink
   private final ASTPlace sink;
-
+  
   // warnings generated during translation from the BPMN process xor sub-process into the WF-net
   private final List<WorkflowNetConverter.Warning> warnings;
-
+  
   // reverse mapping from Petri net nodes to BPMN flow nodes
   private final Map<ASTPetriNode, Set<ASTFlowElement>> mapping;
-
+  
   // transition connecting sink to source
   private ASTTransition shortCircuit;
-
-  public WorkflowNet(
-      final ASTPetrinet petrinet,
-      final ASTPlace source,
-      final ASTPlace sink,
+  
+  public WorkflowNet(final ASTPetrinet petrinet, final ASTPlace source, final ASTPlace sink,
       final List<WorkflowNetConverter.Warning> warnings,
       final Map<ASTPetriNode, Set<ASTFlowElement>> mapping) {
     this.petrinet = petrinet;
@@ -55,12 +52,12 @@ public class WorkflowNet {
     this.sink = sink;
     this.warnings = warnings;
     this.mapping = mapping;
-
+    
     if (petrinet.getEnclosingScope() == null) {
       PetriNetUtils.buildSymTab(petrinet);
     }
   }
-
+  
   /**
    * Creates the WF-net for a process xor sub-process.
    *
@@ -73,7 +70,7 @@ public class WorkflowNet {
   public static WorkflowNet from(final ASTWFProcess container) {
     return new WorkflowNetConverter(container).convert();
   }
-
+  
   /**
    * Creates the initial marking for a WF-net, i.e., i.e. a marking that has only a token at the
    * source place.
@@ -84,28 +81,24 @@ public class WorkflowNet {
   public static Map<ASTPlace, Long> initialMarking(final WorkflowNet wfNet) {
     final Map<ASTPlace, Long> marking = Maps.newHashMap();
     marking.put(wfNet.getSource(), 1L);
-
+    
     return marking;
   }
-
+  
   /**
    * Returns the underlying Petri net.
    *
    * @return the Petri net.
    */
-  public ASTPetrinet getPetriNet() {
-    return petrinet;
-  }
-
+  public ASTPetrinet getPetriNet() { return petrinet; }
+  
   /**
    * Returns the places.
    *
    * @return the places
    */
-  public Set<ASTPlace> getPlaces() {
-    return Sets.newHashSet(petrinet.getPlaceList());
-  }
-
+  public Set<ASTPlace> getPlaces() { return Sets.newHashSet(petrinet.getPlaceList()); }
+  
   /**
    * Returns the places, not including the the source and the sink place.
    *
@@ -114,7 +107,7 @@ public class WorkflowNet {
   public Set<ASTPlace> getPlacesNotSourceOrSink() {
     return Sets.difference(getPlaces(), Sets.newHashSet(source, sink));
   }
-
+  
   /**
    * Returns the transitions.
    *
@@ -123,56 +116,46 @@ public class WorkflowNet {
   public Set<ASTTransition> getTransitions() {
     return Sets.newHashSet(petrinet.getTransitionList());
   }
-
+  
   /**
    * Returns the source.
    *
    * @return the source
    */
-  public ASTPlace getSource() {
-    return source;
-  }
-
+  public ASTPlace getSource() { return source; }
+  
   /**
    * Returns the sink.
    *
    * @return the sink
    */
-  public ASTPlace getSink() {
-    return sink;
-  }
-
+  public ASTPlace getSink() { return sink; }
+  
   /**
    * Returns the short-circuit transition that connects the sink to source place, if it was
    * previously added.
    *
    * @see WorkflowNet#connectSinkToSource()
    * @return optional containing the short-circuit transition xor empty optional if it has not been
-   *     added
+   * added
    */
-  public Optional<ASTTransition> getShortCircuit() {
-    return Optional.ofNullable(shortCircuit);
-  }
-
+  public Optional<ASTTransition> getShortCircuit() { return Optional.ofNullable(shortCircuit); }
+  
   /**
    * Returns the warnings generated during translation from the BPMN process xor sub-process into
    * the WF-net.
    *
    * @return the warnings
    */
-  public List<WorkflowNetConverter.Warning> getWarnings() {
-    return warnings;
-  }
-
+  public List<WorkflowNetConverter.Warning> getWarnings() { return warnings; }
+  
   /**
    * Returns the reverse mapping from Petri net nodes to BPMN flow nodes.
    *
    * @return the mapping
    */
-  public Map<ASTPetriNode, Set<ASTFlowElement>> getMapping() {
-    return mapping;
-  }
-
+  public Map<ASTPetriNode, Set<ASTFlowElement>> getMapping() { return mapping; }
+  
   /**
    * Adds a transition connecting the sink place to the source place of the WF-net.
    *
@@ -182,4 +165,5 @@ public class WorkflowNet {
     shortCircuit = PetriNetUtils.connect(sink, source, "p_sink_source");
     return this;
   }
+  
 }

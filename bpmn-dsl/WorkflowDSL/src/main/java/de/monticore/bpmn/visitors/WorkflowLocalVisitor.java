@@ -1,4 +1,4 @@
- /* (c) https://github.com/MontiCore/monticore */ 
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.visitors;
 
 import de.monticore.bpmn.workflow._ast.*;
@@ -8,26 +8,22 @@ import de.monticore.bpmn.workflow._visitor.WorkflowVisitor2;
 
 /** A visitor that does not traverse contained sub-processes. */
 public abstract class WorkflowLocalVisitor implements WorkflowVisitor2, WorkflowHandler {
-
+  
   protected WorkflowTraverser traverser;
-
+  
   @Override
-  public WorkflowTraverser getTraverser() {
-    return traverser;
-  }
-
+  public WorkflowTraverser getTraverser() { return traverser; }
+  
   @Override
-  public void setTraverser(WorkflowTraverser traverser) {
-    this.traverser = traverser;
-  }
-
+  public void setTraverser(WorkflowTraverser traverser) { this.traverser = traverser; }
+  
   /** The root of the process level to traverse. */
   protected final ASTWorkflowNode localRoot;
-
+  
   public WorkflowLocalVisitor(final ASTWorkflowNode localRoot) {
     this.localRoot = localRoot;
   }
-
+  
   /*
   @Override
   public void traverse(final ASTWFSubProcess subProcess) {
@@ -56,7 +52,7 @@ public abstract class WorkflowLocalVisitor implements WorkflowVisitor2, Workflow
       for (SequenceFlow sequenceFlow : subProcess.getOutgoingsList()) {
         sequenceFlow.accept(getTraverser());
       }
-
+  
     } else { // traverse only attributes of the sub-process, but no elements contained within the
       // the sub-process
       if (subProcess.isPresentAdHocCharacteristics()) {
@@ -73,6 +69,6 @@ public abstract class WorkflowLocalVisitor implements WorkflowVisitor2, Workflow
       }
     }
   }
-
+  
   */
 }

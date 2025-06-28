@@ -1,4 +1,4 @@
- /* (c) https://github.com/MontiCore/monticore */ 
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.analysis.lola;
 
 import com.google.common.collect.Lists;
@@ -19,17 +19,17 @@ import org.zeroturnaround.exec.ProcessExecutor;
  * <p>http://service-technology.org/lola/
  */
 public class LoLaChecker {
-
+  
   private static Optional<Boolean> available = Optional.empty();
-
+  
   private List<String> arguments = Lists.newArrayList();
-
+  
   private File input;
-
+  
   private int timeout = 10; // seconds
-
+  
   private LoLaResult result;
-
+  
   /**
    * Checks if LoLA is installed and available in the Path
    *
@@ -41,12 +41,13 @@ public class LoLaChecker {
         // if LoLa is installed, exit code should be 0
         boolean test = 0 == new ProcessExecutor().command("lola", "-h").execute().getExitValue();
         available = Optional.of(test);
-      } catch (final Exception ignored) {
+      }
+      catch (final Exception ignored) {
       }
     }
     return available.orElse(false);
   }
-
+  
   /**
    * Adds a command line parameter to be passed to LoLA.
    *
@@ -57,7 +58,7 @@ public class LoLaChecker {
     arguments.add("--" + key);
     return this;
   }
-
+  
   /**
    * Adds a key-value command line parameter to be passed to LoLA.
    *
@@ -69,7 +70,7 @@ public class LoLaChecker {
     arguments.add("--" + key + "=" + value);
     return this;
   }
-
+  
   /**
    * Sets the CTL* formula to be checked.
    *
@@ -80,7 +81,7 @@ public class LoLaChecker {
   public LoLaChecker formula(final String formula) {
     return parameter("formula", formula); // "\"" + formula + "\"");
   }
-
+  
   /**
    * Sets the input file containing the Petri net to be checked. The Petri net must be in the LoLA
    * format.
@@ -92,7 +93,7 @@ public class LoLaChecker {
     this.input = input;
     return this;
   }
-
+  
   /**
    * Sets a timeout. When this timeout is reached, the system process executing LoLA is terminated.
    *
@@ -103,7 +104,7 @@ public class LoLaChecker {
     this.timeout = timeout;
     return this;
   }
-
+  
   /**
    * Executes LoLA.
    *
@@ -115,14 +116,12 @@ public class LoLaChecker {
   public LoLaChecker check() throws IOException, InterruptedException, TimeoutException {
     // reset result
     result = null;
-
+    
     // temp file where LoLa can write its output to
     final File output = File.createTempFile("lola", ".json");
-
+    
     // add default arguments
-    parameter(
-        "search",
-        "cover"); // use coverability graph instead of reachability graph (depth-first search may
+    parameter("search", "cover"); // use coverability graph instead of reachability graph (depth-first search may
     // fail if petri-net is unbounded)
     parameter("encoder", "full"); // required with --search=cover
     // argument("cycle");
@@ -130,35 +129,28 @@ public class LoLaChecker {
     parameter("jsoninclude", "path");
     parameter("jsoninclude", "state");
     parameter("quiet");
-
+    
     final List<String> command = Lists.newArrayList("lola");
     command.add(input.getAbsolutePath());
     command.addAll(arguments);
-
+    
     // execute LoLa
-    new ProcessExecutor()
-        .command(command)
-        .redirectOutput(System.out)
-        .destroyOnExit()
-        .timeout(timeout, TimeUnit.SECONDS)
-        .execute();
-
+    new ProcessExecutor().command(command).redirectOutput(System.out).destroyOnExit().timeout(
+        timeout, TimeUnit.SECONDS).execute();
+    
     // parse LoLa output
-    Gson gson =
-        new GsonBuilder()
-            .registerTypeAdapter(LoLaResult.class, new LoLaResultDeserializer())
-            .create();
+    Gson gson = new GsonBuilder().registerTypeAdapter(LoLaResult.class,
+        new LoLaResultDeserializer()).create();
     result = gson.fromJson(new FileReader(output), LoLaResult.class);
-
+    
     return this;
   }
-
+  
   /**
    * The result produced LoLA. TRUE = satisfied, FALSE = not satisfied.
    *
    * @return the result of the analysis
    */
-  public boolean getResult() {
-    return result.getAnalysis().isResult();
-  }
+  public boolean getResult() { return result.getAnalysis().isResult(); }
+  
 }

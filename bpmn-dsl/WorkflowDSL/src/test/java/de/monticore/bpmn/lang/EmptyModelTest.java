@@ -1,4 +1,4 @@
- /* (c) https://github.com/MontiCore/monticore */ 
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.lang;
 
 import de.monticore.bpmn.cocos.AbstractCoCoTest;
@@ -8,11 +8,9 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class EmptyModelTest extends AbstractCoCoTest {
-
+  
   @Override
-  protected WorkflowCoCoChecker getChecker() {
-    return WorkflowCoCos.getFullChecker();
-  }
+  protected WorkflowCoCoChecker getChecker() { return WorkflowCoCos.getFullChecker(); }
   
   @Disabled
   @Test
@@ -20,9 +18,10 @@ class EmptyModelTest extends AbstractCoCoTest {
     final String modelName = "de.monticore.bpmn.lang.EmptyProcess";
     testModelNoErrors(modelName);
   }
-
+  
   @Override
   protected boolean shouldWriteAuxModels() {
     return true;
   }
+  
 }

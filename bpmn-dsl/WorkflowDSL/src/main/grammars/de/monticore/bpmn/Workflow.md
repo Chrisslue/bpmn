@@ -282,5 +282,3 @@ Context conditions for gateways:
 * [```EventGatewayTargetReceiveTaskHasNoBoundaryEvents```](../../../../java/de/monticore/bpmn/cocos/gateways/EventGatewayTargetReceiveTaskHasNoBoundaryEvents.java)
 
 * [```TaskContainsOnlyBoundaryEvents```](../../../../java/de/monticore/bpmn/cocos/gateways/TaskContainsOnlyBoundaryEvents.java)
-
-

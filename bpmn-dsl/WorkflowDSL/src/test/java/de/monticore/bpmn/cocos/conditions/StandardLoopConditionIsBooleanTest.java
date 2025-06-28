@@ -12,28 +12,25 @@ import org.junit.jupiter.api.Test;
 import java.util.Collection;
 
 public class StandardLoopConditionIsBooleanTest extends AbstractCoCoTest {
-    @Override
-    protected WorkflowCoCoChecker getChecker() {
-        return WorkflowCoCos.getTypesChecker();
-    }
-
-    @Test
-    void isNotBoolean() {
-        String modelName =
-                "de.monticore.bpmn.cocos.conditions.invalid.StandardLoopConditionIsBoolean";
-
-        Collection<Finding> expectedErrors =
-                Lists.newArrayList(
-                        Finding.error(Messages.get("0xWFM9002")));
-
-        testModelForErrors(modelName, expectedErrors);
-    }
-
-    @Test
-    void isBoolean() {
-        String modelName =
-                "de.monticore.bpmn.cocos.conditions.valid.StandardLoopConditionIsBoolean";
-
-        testModelNoErrors(modelName);
-    }
+  
+  @Override
+  protected WorkflowCoCoChecker getChecker() { return WorkflowCoCos.getTypesChecker(); }
+  
+  @Test
+  void isNotBoolean() {
+    String modelName = "de.monticore.bpmn.cocos.conditions.invalid.StandardLoopConditionIsBoolean";
+    
+    Collection<Finding> expectedErrors = Lists.newArrayList(Finding.error(Messages.get(
+        "0xWFM9002")));
+    
+    testModelForErrors(modelName, expectedErrors);
+  }
+  
+  @Test
+  void isBoolean() {
+    String modelName = "de.monticore.bpmn.cocos.conditions.valid.StandardLoopConditionIsBoolean";
+    
+    testModelNoErrors(modelName);
+  }
+  
 }

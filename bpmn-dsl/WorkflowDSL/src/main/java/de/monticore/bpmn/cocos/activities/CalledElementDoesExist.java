@@ -1,4 +1,4 @@
- /* (c) https://github.com/MontiCore/monticore */ 
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.cocos.activities;
 
 import de.monticore.bpmn.Messages;
@@ -10,18 +10,17 @@ import de.se_rwth.commons.logging.Log;
 import java.util.Optional;
 
 public class CalledElementDoesExist implements WorkflowASTWFCallActivityCoCo {
-
+  
   @Override
   public void check(final ASTWFCallActivity callActivity) {
     // enclosing scope is always an Workflow scope
     final WorkflowScope enclosingScope = (WorkflowScope) callActivity.getEnclosingScope();
-    final Optional<ASTWFProcess> node =
-        enclosingScope.resolveCalledElement(callActivity.getCalledElement());
+    final Optional<ASTWFProcess> node = enclosingScope.resolveCalledElement(callActivity
+        .getCalledElement());
     if (!node.isPresent()) {
-      Log.error(
-          Messages.get("0xWFM1008", callActivity.getCalledElement()),
-          callActivity.get_SourcePositionStart(),
-          callActivity.get_SourcePositionEnd());
+      Log.error(Messages.get("0xWFM1008", callActivity.getCalledElement()), callActivity
+          .get_SourcePositionStart(), callActivity.get_SourcePositionEnd());
     }
   }
+  
 }

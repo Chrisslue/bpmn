@@ -1,4 +1,4 @@
- /* (c) https://github.com/MontiCore/monticore */ 
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.cocos.gateways;
 
 import de.monticore.bpmn.Messages;
@@ -11,14 +11,13 @@ import de.se_rwth.commons.logging.Log;
  * instantiate attribute is set to true and the eventGatewayType attribute is set to Parallel, [...]
  */
 public class ParallelEventGatewayHasNoIncomingFlow implements WorkflowASTWFGatewayCoCo {
-
+  
   @Override
   public void check(final ASTWFGateway gateway) {
     if (gateway.getType().isParallelEventBased() && !gateway.isEmptyIncomings()) {
-      Log.error(
-          Messages.get("0xWFM5012", gateway.getName()),
-          gateway.get_SourcePositionStart(),
+      Log.error(Messages.get("0xWFM5012", gateway.getName()), gateway.get_SourcePositionStart(),
           gateway.get_SourcePositionEnd());
     }
   }
+  
 }

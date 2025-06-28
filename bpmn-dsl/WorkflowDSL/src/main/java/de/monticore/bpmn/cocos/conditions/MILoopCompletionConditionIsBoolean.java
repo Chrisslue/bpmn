@@ -10,14 +10,15 @@ import de.monticore.types3.SymTypeRelations;
 import de.se_rwth.commons.logging.Log;
 
 public class MILoopCompletionConditionIsBoolean implements WorkflowASTWFMILoopCoCo {
-
-    @Override
-    public void check(final ASTWFMILoop multiInstanceLoop) {
-        if(multiInstanceLoop.isPresentCompletionCondition()) {
-          SymTypeExpression x = WorkflowTypeCheck3.typeOf(multiInstanceLoop.getCompletionCondition());
-          if(!SymTypeRelations.isBoolean(x)){
-            Log.error(Messages.get("0xWFM9003"));
-          }
-        }
+  
+  @Override
+  public void check(final ASTWFMILoop multiInstanceLoop) {
+    if (multiInstanceLoop.isPresentCompletionCondition()) {
+      SymTypeExpression x = WorkflowTypeCheck3.typeOf(multiInstanceLoop.getCompletionCondition());
+      if (!SymTypeRelations.isBoolean(x)) {
+        Log.error(Messages.get("0xWFM9003"));
+      }
     }
+  }
+  
 }

@@ -1,3 +1,4 @@
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.cocos.conditions;
 
 import de.monticore.bpmn.Messages;
@@ -8,13 +9,15 @@ import de.monticore.types.check.SymTypeExpression;
 import de.monticore.types3.SymTypeRelations;
 import de.se_rwth.commons.logging.Log;
 
-public class ExpressionOfEventTriggerConditionalIsBoolean implements WorkflowASTWFEventTriggerConditionalCoCo {
-
-    @Override
-    public void check(final ASTWFEventTriggerConditional eventTriggerConditional) {
-      SymTypeExpression x = WorkflowTypeCheck3.typeOf(eventTriggerConditional.getExpression());
-      if(!SymTypeRelations.isBoolean(x)){
-        Log.error(Messages.get("0xWFM9007"));
-      }
+public class ExpressionOfEventTriggerConditionalIsBoolean implements
+    WorkflowASTWFEventTriggerConditionalCoCo {
+  
+  @Override
+  public void check(final ASTWFEventTriggerConditional eventTriggerConditional) {
+    SymTypeExpression x = WorkflowTypeCheck3.typeOf(eventTriggerConditional.getExpression());
+    if (!SymTypeRelations.isBoolean(x)) {
+      Log.error(Messages.get("0xWFM9007"));
     }
+  }
+  
 }
