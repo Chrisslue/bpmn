@@ -14,8 +14,6 @@ public class ASTWFTask extends ASTWFTaskTOP {
   public Collection<? extends ASTWFEvent> getBoundaryEvents() { return getBoundaryEventList(); }
   
   // added additional attributes and methods
-  protected Optional<String> parentRef = Optional.empty();
-  protected Optional<String> laneRef = Optional.empty();
   protected List<de.monticore.bpmn.workflow._ast.SequenceFlow> incomings =
       new java.util.ArrayList<>();
   protected List<de.monticore.bpmn.workflow._ast.SequenceFlow> outgoings =
@@ -28,10 +26,6 @@ public class ASTWFTask extends ASTWFTaskTOP {
   public boolean addOutgoings(de.monticore.bpmn.workflow._ast.SequenceFlow element) {
     return this.getOutgoingsList().add(element);
   }
-  
-  public void setLaneRef(String laneRef) { this.laneRef = Optional.ofNullable(laneRef); }
-  
-  public void setParentRef(String parentRef) { this.parentRef = Optional.ofNullable(parentRef); }
   
   public List<de.monticore.bpmn.workflow._ast.SequenceFlow> getIncomingsList() {
     return this.incomings;

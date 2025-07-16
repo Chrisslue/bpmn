@@ -4,8 +4,14 @@ package de.monticore.bpmn.cocos.flows.invalid;
 process MergeGatewayHasMultipleIncomingFlows {
 
   task T1;
-  merge xor G1;
+  task T2;
+  task T3;
 
-  T1 -> G1;
+  merge xor G1;
+  merge xor G2;
+
+  {T1;T2;} -> G1;
+
+
 
 }

@@ -18,6 +18,7 @@ public class MergeGatewayHasMultipleIncomingFlow implements WorkflowASTWFGateway
     if (gateway.isConverging() && gateway.sizeIncomings() <= 1) {
       Log.error(Messages.get("0xWFM5002", gateway.getName()), gateway.get_SourcePositionStart(),
           gateway.get_SourcePositionEnd());
+      
     }
   }
   

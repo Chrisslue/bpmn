@@ -1,0 +1,10 @@
+/* (c) https://github.com/MontiCore/monticore */
+package de.monticore.bpmn.cocos.conditions.invalid;
+
+import de.monticore.bpmn.cds.Domain.*;
+
+process StandardLoopConditionIsBoolean {
+
+  manual task T1 while [5];
+
+}

@@ -3,9 +3,7 @@ package de.monticore.bpmn.conformance;
 
 import de.monticore.bpmn.cocos.flow.SequenceFlowNodeReferencesExist;
 import de.monticore.bpmn.trafos.AddNameToInlineFlowNodes;
-import de.monticore.bpmn.trafos.AddReferenceToParentLane;
 import de.monticore.bpmn.trafos.AddSequenceFlowToFlowNodes;
-import de.monticore.bpmn.trafos.SetSubProcessTriggeredByEvent;
 import de.monticore.bpmn.workflow.WorkflowMill;
 import de.monticore.bpmn.workflow.WorkflowTool;
 import de.monticore.bpmn.workflow._ast.ASTWorkflowCompilationUnit;
@@ -41,8 +39,6 @@ public class BPMNConformanceUtils {
     checker.checkAll(ast);
     new AddNameToInlineFlowNodes().transform(ast);
     new AddSequenceFlowToFlowNodes().transform(ast);
-    new AddReferenceToParentLane().transform(ast);
-    new SetSubProcessTriggeredByEvent().transform(ast);
     
     WorkflowSTCompleter stCompleter = new WorkflowSTCompleter();
     WorkflowTraverser traverser = WorkflowMill.traverser();

@@ -1,46 +1,48 @@
- /* (c) https://github.com/MontiCore/monticore */
+ /* (c) https://github.com/MontiCore/monticore */ 
+import de.monticore.bpmn.readMeExample.*;
+import java.lang.String;
 
 classdiagram OrderToDelivery{
-    class InventoryAvailabilityChecker{
-        boolean allProductsAvailable;
-        List<Product> unavailableProducts;
+    public class InventoryAvailabilityChecker{
+        public boolean allProductsAvailable;
+        public List<Product> unavailableProducts;
     }
 
-    class Order{
-        String orderID;
-        String customerID;
-        int numberOfOrderedProducts;
-        List<Product> orderList;
-        InventoryAvailabilityChecker checker;
-        double totalCost;
+    public class Order{
+        public String orderID;
+        public String customerID;
+        public int numberOfOrderedProducts;
+        public List<Product> orderList;
+        public InventoryAvailabilityChecker checker;
+        public double totalCost;
     }
 
-    class Product{
-        String productID;
-        String name;
-        int orderQuantity;
+    public class Product{
+        public String productID;
+        public String name;
+        public int orderQuantity;
     }
 
-    class CustomerDeliveryAgreement{
-        String customerID;
-        boolean isOrderPickedUp;
-        DestinationAddress address;
+    public class CustomerDeliveryAgreement{
+        public String customerID;
+        public boolean isOrderPickedUp;
+        public DestinationAddress address;
     }
 
-    class DestinationAddress{
-        String street;
-        String houseNumber;
-        String postalCode;
-        String city;
+    public class DestinationAddress{
+        public String street;
+        public String houseNumber;
+        public String postalCode;
+        public String city;
     }
 
-    class PaymentValidityChecker{
-        boolean paymentValid;
-        boolean cardNumberValid;
-        boolean cardVerificationValueValid;
-        String paymentMethod;
-        String cardNumber;
-        String cardVerificationValue;
-        String cardExpirationDate;
+    public class PaymentValidityChecker{
+        public boolean paymentValid;
+        public boolean cardNumberValid;
+        public boolean cardVerificationValueValid;
+        public String paymentMethod;
+        public String cardNumber;
+        public String cardVerificationValue;
+        public String cardExpirationDate;
     }
 }

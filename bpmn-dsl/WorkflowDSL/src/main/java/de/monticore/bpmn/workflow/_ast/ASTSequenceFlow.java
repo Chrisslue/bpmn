@@ -36,10 +36,6 @@ public class ASTSequenceFlow extends ASTSequenceFlowTOP {
     return this.getOutgoingsList().add(element);
   }
   
-  public void setLaneRef(String laneRef) { this.laneRef = Optional.ofNullable(laneRef); }
-  
-  public void setParentRef(String parentRef) { this.parentRef = Optional.ofNullable(parentRef); }
-  
   public List<de.monticore.bpmn.workflow._ast.SequenceFlow> getIncomingsList() {
     return this.incomings;
   }

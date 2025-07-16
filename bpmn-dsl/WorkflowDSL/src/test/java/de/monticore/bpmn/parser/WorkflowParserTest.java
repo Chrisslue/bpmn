@@ -5,9 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import de.monticore.bpmn.AbstractTest;
-import de.monticore.bpmn.cocos.flow.SequenceFlowNodeReferencesExist;
+import de.monticore.bpmn.cocos.WorkflowCoCos;
+import de.monticore.bpmn.trafos.AddSequenceFlowToFlowNodes;
 import de.monticore.bpmn.workflow.WorkflowMill;
-import de.monticore.bpmn.workflow.WorkflowTool;
 import de.monticore.bpmn.workflow._ast.ASTWFTask;
 import de.monticore.bpmn.workflow._ast.ASTWorkflowCompilationUnit;
 import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
@@ -81,17 +81,20 @@ public class WorkflowParserTest extends AbstractTest {
   @Test
   public void testExample1Model() {
     String modelName = "de.monticore.bpmn.examples.orderToDelivery.OrderToDeliveryWorkflow";
-    WorkflowTool tool = new WorkflowTool();
     ASTWorkflowCompilationUnit ast = parseModel(modelName);
     
     WorkflowMill.scopesGenitorDelegator().createFromAST(ast);
-    WorkflowCoCoChecker checker = new WorkflowCoCoChecker();
-    checker.addCoCo(new SequenceFlowNodeReferencesExist());
-    checker.checkAll(ast);
+    
+    new AddSequenceFlowToFlowNodes().transform(ast);
+    new AddSequenceFlowToFlowNodes().transform(ast);
+    
     WorkflowSTCompleter stCompleter = new WorkflowSTCompleter();
     WorkflowTraverser traverser = WorkflowMill.traverser();
     traverser.add4Workflow(stCompleter);
     ast.accept(traverser);
+    
+    WorkflowCoCoChecker checker = WorkflowCoCos.getBasicChecker();
+    checker.checkAll(ast);
   }
   
   @Test

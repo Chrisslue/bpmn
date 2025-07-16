@@ -1,0 +1,15 @@
+/* (c) https://github.com/MontiCore/monticore */
+package de.monticore.bpmn.cocos.conditions.invalid;
+
+import de.monticore.bpmn.cds.Domain.*;
+
+process FlowConditionIsBoolean{
+
+  manual task T1;
+  manual task T2;
+  manual task T3;
+
+  T1 -> [3] T2 -> T3;
+
+
+}

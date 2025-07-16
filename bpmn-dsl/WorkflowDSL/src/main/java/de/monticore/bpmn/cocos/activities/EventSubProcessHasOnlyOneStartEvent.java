@@ -1,8 +1,13 @@
 /* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.cocos.activities;
 
+import de.monticore.bpmn.Messages;
+import de.monticore.bpmn.collectors.WorkflowCollectors;
+import de.monticore.bpmn.workflow._ast.ASTWFEvent;
 import de.monticore.bpmn.workflow._ast.ASTWFSubProcess;
 import de.monticore.bpmn.workflow._cocos.WorkflowASTWFSubProcessCoCo;
+import de.se_rwth.commons.logging.Log;
+import java.util.Collection;
 
 /**
  * Source: https://www.omg.org/spec/BPMN/2.0/PDF Page: 174 Description: An Event Sub-Process MUST
@@ -12,19 +17,21 @@ public class EventSubProcessHasOnlyOneStartEvent implements WorkflowASTWFSubProc
   
   @Override
   public void check(final ASTWFSubProcess subProcess) {
-    /*
-    if (subProcess.getSymbol().isTriggeredByEvent()) {
-      Collection<ASTWFEvent> startEvents = WorkflowCollectors.toStartEventsLocalSubProcess(subProcess);
+    
+    if (isEventSubProcess(subProcess)) {
+      Collection<ASTWFEvent> startEvents = WorkflowCollectors.toStartEventsLocalSubProcess(
+          subProcess);
       if (startEvents.size() > 1) {
-        startEvents.forEach(
-            event ->
-                Log.error(
-                    Messages.get("0xWFM4001", subProcess.getName()),
-                    event.get_SourcePositionStart(),
-                    event.get_SourcePositionEnd()));
+        startEvents.forEach(event -> Log.error(Messages.get("0xWFM4001", subProcess.getName()),
+            event.get_SourcePositionStart(), event.get_SourcePositionEnd()));
       }
     }
-    */
+    
+  }
+  
+  private boolean isEventSubProcess(ASTWFSubProcess subProcess) {
+    return !subProcess.streamIncomings().findAny().isPresent() && !subProcess.streamOutgoings()
+        .findAny().isPresent();
   }
   
 }

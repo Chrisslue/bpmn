@@ -9,7 +9,6 @@ import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
 import de.se_rwth.commons.logging.Finding;
 import java.util.Collection;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class EventSubProcessHasOnlyOneStartEventTest extends AbstractCoCoTest {
@@ -17,7 +16,6 @@ public class EventSubProcessHasOnlyOneStartEventTest extends AbstractCoCoTest {
   @Override
   protected WorkflowCoCoChecker getChecker() { return WorkflowCoCos.getActivityChecker(); }
   
-  @Disabled
   @Test
   void invalidSourcesAndTargets() {
     String modelName =

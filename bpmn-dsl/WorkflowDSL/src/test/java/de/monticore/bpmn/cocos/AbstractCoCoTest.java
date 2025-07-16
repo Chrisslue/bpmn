@@ -128,8 +128,6 @@ public abstract class AbstractCoCoTest extends AbstractTest {
     checker.checkAll(ast);
     new AddNameToInlineFlowNodes().transform(ast);
     new AddSequenceFlowToFlowNodes().transform(ast);
-    new AddReferenceToParentLane().transform(ast);
-    new SetSubProcessTriggeredByEvent().transform(ast);
     
     WorkflowSTCompleter stCompleter = new WorkflowSTCompleter();
     WorkflowTraverser traverser = WorkflowMill.traverser();

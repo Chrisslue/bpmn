@@ -1,6 +1,9 @@
 /* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn;
 
+import static de.se_rwth.commons.Names.getPathFromQualifiedName;
+import static de.se_rwth.commons.Names.getSimpleName;
+import static java.nio.file.Paths.get;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -8,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import com.google.common.collect.Lists;
 import de.monticore.bpmn.cocos.flow.SequenceFlowNodeReferencesExist;
 import de.monticore.bpmn.trafos.*;
+import de.monticore.bpmn.utils.AuxiliaryModelsWriter;
 import de.monticore.bpmn.workflow.WorkflowMill;
 import de.monticore.bpmn.workflow._ast.ASTWorkflowCompilationUnit;
 import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
@@ -22,6 +26,7 @@ import de.monticore.symboltable.ImportStatement;
 import de.se_rwth.commons.Names;
 import de.se_rwth.commons.logging.Log;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -95,8 +100,6 @@ public abstract class AbstractTest {
     checker.checkAll(ast);
     new AddNameToInlineFlowNodes().transform(ast);
     new AddSequenceFlowToFlowNodes().transform(ast);
-    new AddReferenceToParentLane().transform(ast);
-    new SetSubProcessTriggeredByEvent().transform(ast);
     
     WorkflowSTCompleter stCompleter = new WorkflowSTCompleter();
     WorkflowTraverser traverser = WorkflowMill.traverser();
@@ -116,8 +119,6 @@ public abstract class AbstractTest {
   
   protected void writeTestAuxModels(final String qualifiedModelName,
       final ASTWorkflowCompilationUnit unit) {
-    /* Likely fails due to broken dependency.
-     * FIXME or delete
     Path out = get(MODEL_AUX_DIR).resolve(get(getPathFromQualifiedName(qualifiedModelName)))
         .resolve(getSimpleName(qualifiedModelName).toLowerCase());
     try {
@@ -125,7 +126,6 @@ public abstract class AbstractTest {
     }
     catch (IOException ignored) {
     }
-     */
   }
   
 }
