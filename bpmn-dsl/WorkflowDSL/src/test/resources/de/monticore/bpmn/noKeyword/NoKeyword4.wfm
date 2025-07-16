@@ -18,5 +18,5 @@ package de.monticore.bpmn.noKeyword;
 
   <<ref="abc">> event i;
 
-  start event E2 send message msg;
+  start event E2 throw message msg;
 }

@@ -3,7 +3,7 @@ package de.monticore.bpmn.cocos.events.invalid;
 
 process StartEventIsNotThrowing {
 
-  start event E1 send;
+  start event E1 throw;
   end event E2;
 
   E1 -> E2;

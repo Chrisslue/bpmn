@@ -37,8 +37,8 @@ process OrderToDeliveryWorkflow {
         split xor OrderFulfillable;
         merge xor FinishOrderProcessing;
         
-        start event ReceiveOrder receive;
-        event CancelOrder send
+        start event ReceiveOrder catch;
+        event CancelOrder throw
           compensate ProcessOrder;
     }
     

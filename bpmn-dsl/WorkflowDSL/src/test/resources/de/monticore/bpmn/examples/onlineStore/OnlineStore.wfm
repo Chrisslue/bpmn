@@ -21,7 +21,7 @@ process OnlineStore {
       in article;
     }
 
-    start event OrderReceived receive message orderMsg {
+    start event OrderReceived catch message orderMsg {
       out order;
     }
 
@@ -46,13 +46,13 @@ process OnlineStore {
         } -> merge xor -> ArticleReserved;
 
         subprocess subprocess1 {
-          start event Rollback receive;
-          event CancelReservation send;
+          start event Rollback catch;
+          event CancelReservation throw;
           end event E13;
           Rollback -> CancelReservation-> E13;
         }
 
-        boundary event LateShipping receive escalation lateShipping;
+        boundary event LateShipping catch escalation lateShipping;
 
       }
 
@@ -91,9 +91,9 @@ process OnlineStore {
         */
 
         call-activity ChargeCreditCard calls CollectPayment {
-          boundary event CreditCardFailed receive error creditCardFailed;
+          boundary event CreditCardFailed catch error creditCardFailed;
         }
-        end event E100 send cancel;
+        end event E100 throw cancel;
         ChargeCreditCard.CreditCardFailed -> E100;
         /* TODO
         start event 
@@ -102,7 +102,7 @@ process OnlineStore {
         */
     
       }
-      end event E101 send cancel;
+      end event E101 throw cancel;
       ProcessPayment.PaymentFailed -> E101;
 
       subprocess PreparePackage {
@@ -131,7 +131,7 @@ process OnlineStore {
           PrintShippingNote -> PackageArticles;
         } merge and -> FinalizePackage -> end event ArticlesPackaged;
         */
-        boundary event ShippingAddressUpdated receive signal shippingAddressUpdated;
+        boundary event ShippingAddressUpdated catch signal shippingAddressUpdated;
       }
 
       PreparePackage.ShippingAddressUpdated -> PreparePackage; // re-start sub-process
@@ -142,7 +142,7 @@ process OnlineStore {
         ComputeFinalDiscount -> split xor {
           [order.amount >= 1000]: #CheckCreditCardRating -> split xor {
             [rating == GOOD]: continue;
-            [rating == BAD]:  event OrderCancelled send rollback;
+            [rating == BAD]:  event OrderCancelled throw rollback;
           };
           else: continue;
         } merge xor -> event receive when:[forall a in order.articles: a.isAvailable] -> ProcessPayment;
@@ -152,20 +152,20 @@ process OnlineStore {
       /*
       // event sub-processes
       subprocess Bla {
-        // TODO start event NotShippable receive error:notShippable -> event send rollback -> end event OrderCancelled;
+        // TODO start event NotShippable catch error:notShippable -> event throw rollback -> end event OrderCancelled;
       }
 
       message orderCancellation:OrderCancellationRequest;
       subprocess Bla2 {
-        // TODO start event orderCancellationRequested receive message:orderCancellation -> end event OrderCancelled send rollback;
+        // TODO start event orderCancellationRequested catch message:orderCancellation -> end event OrderCancelled throw rollback;
       }
 
       message addressUpdate:ShippingAddressUpdateRequest;
       signal shippingAddressUpdated:ShippingAddressUpdatedSignal;
       subprocess Bla3 {
         // TODO
-        start event ShippingAddressUpdateRequested receive nocancel message:addressUpdate
-          -> task service UpdateDeliveryAddress -> end event send signal:shippingAddressUpdated;
+        start event ShippingAddressUpdateRequested catch nocancel message:addressUpdate
+          -> task service UpdateDeliveryAddress -> end event throw signal:shippingAddressUpdated;
 
       }
 
@@ -173,8 +173,8 @@ process OnlineStore {
       signal paymemntMethodUpdated:PaymentMethodUpdatedSignal;
       subprocess Bla4 {
         // TODO
-        start event PaymentMethodUpdateRequested receive nocancel message:paymentMethodUpdate
-          -> task service UpdatePaymentMethod -> end event send signal:paymemntMethodUpdated;
+        start event PaymentMethodUpdateRequested catch nocancel message:paymentMethodUpdate
+          -> task service UpdatePaymentMethod -> end event throw signal:paymemntMethodUpdated;
 
 
       */
@@ -183,8 +183,8 @@ process OnlineStore {
 
     message shippingNotification:ShippingNotification;
     message deliveryNotification:DeliveryNotification;
-    event E102 send message shippingNotification;
-    event E103 receive message deliveryNotification;
+    event E102 throw message shippingNotification;
+    event E103 catch message deliveryNotification;
 
     OrderFulfillment -> TransferPackageToCarrier -> E102 -> E103;
     OrderFulfillment -> [order.payment.isByInstallments] ProcessRecurringPayment;
@@ -196,11 +196,11 @@ process OnlineStore {
 
       call-activity CollectInstallment calls CollectPayment;
 
-      // TODO start event IthMonthAfterPurchase receive timeout:[after "3d"] -> task CollectInstallment;
+      // TODO start event IthMonthAfterPurchase catch timeout:[after "3d"] -> task CollectInstallment;
 
-      boundary event CreditCardFailed receive error creditCardFailed;
+      boundary event CreditCardFailed catch error creditCardFailed;
     }
-    event E104 send escalation recurringPaymentFailed;
+    event E104 throw escalation recurringPaymentFailed;
     ProcessRecurringPayment.CreditCardFailed -> E104;
   }
       
@@ -234,28 +234,28 @@ process OnlineStore {
       /* TODO
       start event -> CheckComplaint -> split xor {
         [complaintNotice.status == ACCEPTED]:
-          DetermineCredit -> UpdateStoreCredit -> end event ComplaintResolved send message:complaintResolved;
+          DetermineCredit -> UpdateStoreCredit -> end event ComplaintResolved throw message:complaintResolved;
         [complaintNotice.status == REJECTED]:
-          end event ComplaintRejected send message:complaintRejected;
+          end event ComplaintRejected throw message:complaintRejected;
         [complaintNotice.status == MORE_INFO_REQUIRED]:
           RequestMoreInformation -> split receive:first {
-            event ThreeDays receive timeout:[after "3d"] -> end event ComplaintRejected send message:complaintRejected;
-            ReceiveMoreInformation -> event RecheckComplaint send link:RecheckComplaint;
+            event ThreeDays catch timeout:[after "3d"] -> end event ComplaintRejected throw message:complaintRejected;
+            ReceiveMoreInformation -> event RecheckComplaint throw link:RecheckComplaint;
           };
       };
       */
-      // TODO event RecheckComplaint receive link -> CheckComplaint;
+      // TODO event RecheckComplaint catch link -> CheckComplaint;
     }
 
-    event ComplaintReceived receive message complaint {
+    event ComplaintReceived catch message complaint {
       out complaintNotice;
     }
 
     /* TODO
     OrderDelivered -> split and {
-      event FortyEightHours receive timeout:[after "48h"] -> AskForProductReview;
+      event FortyEightHours catch timeout:[after "48h"] -> AskForProductReview;
       split receive:all {
-        event FifteenDays receive timeout:[after "15d"];                            // event FifteenDays receive after:15d
+        event FifteenDays catch timeout:[after "15d"];                            // event FifteenDays catch after:15d
         ComplaintReceived -> HandleComplaint;                                     // but timeout:[Expression] seems more felxible, e.g. allows for CRON expressions "0 0 1 * *"
       } merge xor;
     } merge and -> end event OrderClosed;
@@ -281,12 +281,12 @@ process OnlineStore {
       }
       CreateRevenueForCast -> WriteSalesReport;
 
-      boundary event EveryTwentyFourHours receive nocancel timeout:[every "24h"];
+      boundary event EveryTwentyFourHours catch nocancel timeout:[every "24h"];
     }
     */
 
     signal newReviewAvailable:ReviewAvailableSignal;
-    event ReviewCreated receive signal newReviewAvailable;
+    event ReviewCreated catch signal newReviewAvailable;
 
     task ReviewReport
       count 3
@@ -300,12 +300,12 @@ process OnlineStore {
     }
 
     signal publication:SalesReport;
-    end event PublishReport send message publication {
+    end event PublishReport throw message publication {
       in report;
     }
 
     /* TODO
-    start event FirstDayOfMonth receive timeout [every "month"] -> CollectSalesData -> PrepareSalesReport -> ReviewReport -> split xor -> {
+    start event FirstDayOfMonth catch timeout [every "month"] -> CollectSalesData -> PrepareSalesReport -> ReviewReport -> split xor -> {
       [report.accepted ] PublishReport;
       [!report.accepted] UpdateReport -> ReviewReport;
     };
@@ -316,12 +316,12 @@ process OnlineStore {
 
   lane Inventory {
     call-activity ReorderArticle calls ProcureArticle {
-      boundary event NotShippable receive error notShippable;
+      boundary event NotShippable catch error notShippable;
     }
     /* TODO
     ReorderArticle.NotShippable -> task service RemoveArticle;
 
-    start event StockLevelBelowMinimum receive when:[exists a in Article: a.stock < 10]
+    start event StockLevelBelowMinimum catch when:[exists a in Article: a.stock < 10]
       -> ReorderArticle -> task service UpdateStockCount -> end event ArticleProcured;
     */
   }

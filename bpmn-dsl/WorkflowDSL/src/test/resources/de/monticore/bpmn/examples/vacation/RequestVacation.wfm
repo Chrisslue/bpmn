@@ -24,7 +24,7 @@ process RequestVacation {
     service task Bar;
 
     start event E1;
-    event E2 receive timer [after PT20S];
+    event E2 catch timer [after PT20S];
     end event E3;
 
     E1 -> DoWork -> Task1 -> split xor -> {

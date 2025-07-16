@@ -3,7 +3,7 @@ package de.monticore.bpmn.cocos.events.invalid;
 
 process CompensatedActivityExists {
   task t2{
-    boundary event E1 receive compensate t1;
+    boundary event E1 catch compensate t1;
   }
 
 }

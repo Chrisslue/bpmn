@@ -10,12 +10,12 @@ process EventGatewayHasValidTarget {
 
   task T1;
 
-  event E1 receive cancel;
-  event E2 receive error err;
-  event E3 receive escalation esc;
-  event E4 receive compensate;
-  event E5 receive one {message msg, error err};
-  event E6 receive all {message msg, error err};
+  event E1 catch cancel;
+  event E2 catch error err;
+  event E3 catch escalation esc;
+  event E4 catch compensate;
+  event E5 catch one {message msg, error err};
+  event E6 catch all {message msg, error err};
 
   task T2;
   service task T3;

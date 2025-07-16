@@ -11,8 +11,8 @@ process EventGatewayDoesNotMixMessageEventsAndReceiveTasks {
 
   task T1;
 
-  event E1 receive message msg;
-  event E2 receive message msg;
+  event E1 catch message msg;
+  event E2 catch message msg;
 
   split receive first G1;
 
@@ -42,7 +42,7 @@ process EventGatewayDoesNotMixMessageEventsAndReceiveTasks {
     message = msg;
   }
 
-  event E3 receive signal sig;
+  event E3 catch signal sig;
 
   split receive first G3;
 

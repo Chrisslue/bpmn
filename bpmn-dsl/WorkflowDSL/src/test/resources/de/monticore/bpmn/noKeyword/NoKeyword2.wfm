@@ -8,9 +8,9 @@ process NoKeyword2{
     script task script{
       script ( "script" ) = { "script" };
     }
-    start event receive receive with data;
-    end event event send compensate script;
-    start event send send terminate{
+    start event receive catch with data;
+    end event event throw compensate script;
+    start event send throw terminate{
       operation = event;
     }
     error error : String;

@@ -12,7 +12,7 @@ process OrderToDeliveryWorkflow {
     lane Sales{
         service task ProcessOrder{
           boundary event PossibleCancellation 
-            receive with RollbackOrderProcessing;
+            catch with RollbackOrderProcessing;
         }
         service task CheckProductAvailability
           count [order.numberOfOrderedProducts] parallel
@@ -25,8 +25,8 @@ process OrderToDeliveryWorkflow {
         split xor OrderFulfillable;
         merge xor FinishOrderProcessing;
         
-        start event ReceiveOrder receive;
-        event CancelOrder send
+        start event ReceiveOrder catch;
+        event CancelOrder throw
           compensate ProcessOrder;
     }
     

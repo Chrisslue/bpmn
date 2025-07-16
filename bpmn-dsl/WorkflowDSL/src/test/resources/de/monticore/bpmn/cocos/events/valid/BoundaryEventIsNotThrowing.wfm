@@ -8,7 +8,7 @@ process BoundaryEventIsNotThrowing {
   message msg:LeaveCard;
 
   task T1 {
-    boundary event E1 receive message msg;
+    boundary event E1 catch message msg;
   }
 
   task T2 {

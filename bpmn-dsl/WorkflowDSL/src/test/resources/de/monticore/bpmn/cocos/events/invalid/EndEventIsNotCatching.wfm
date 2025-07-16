@@ -4,7 +4,7 @@ package de.monticore.bpmn.cocos.events.invalid;
 process EndEventIsNotCatching {
 
   start event E1;
-  end event E2 receive;
+  end event E2 catch;
 
   E1 -> E2;
 

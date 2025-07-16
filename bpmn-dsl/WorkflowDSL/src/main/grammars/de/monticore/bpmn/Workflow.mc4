@@ -371,7 +371,7 @@ grammar Workflow extends
    */  
   symbol WFEvent implements FlowElement =
     Modifier (["start"]|["end"])? "event" Name
-    (throw:["send"] | catch:["receive"] (["noninterrupt"])?)?
+    (["throw"] | ["catch"] (["noninterrupt"])?)?
     trigger:WFEventTrigger?
     CompensationHandler?
     (  "{"

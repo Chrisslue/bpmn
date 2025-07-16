@@ -10,12 +10,12 @@ process EventGatewayHasValidTarget {
 
   task T1;
 
-  event E1 receive message msg;
-  event E2 receive signal sig;
-  event E3 receive timer [on 2019-11-25 at 20:38];
-  event E4 receive when [false];
-  event E5 receive one {message msg, signal sig, timer [on 2019-11-25 at 20:38], when [false]};
-  event E6 receive all {message msg, signal sig, timer [on 2019-11-25 at 20:38], when [false]};
+  event E1 catch message msg;
+  event E2 catch signal sig;
+  event E3 catch timer [on 2019-11-25 at 20:38];
+  event E4 catch when [false];
+  event E5 catch one {message msg, signal sig, timer [on 2019-11-25 at 20:38], when [false]};
+  event E6 catch all {message msg, signal sig, timer [on 2019-11-25 at 20:38], when [false]};
 
   split receive first G1;
 

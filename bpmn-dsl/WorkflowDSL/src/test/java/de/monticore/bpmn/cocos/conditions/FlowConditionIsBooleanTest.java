@@ -21,7 +21,7 @@ public class FlowConditionIsBooleanTest extends AbstractCoCoTest {
     String modelName = "de.monticore.bpmn.cocos.conditions.invalid.FlowConditionIsBoolean";
     
     Collection<Finding> expectedErrors = Lists.newArrayList(Finding.error(Messages.get(
-        "0xWFM9008")));
+        "0xWFM9008 FlowCondition [3] is not boolean.")));
     
     testModelForErrors(modelName, expectedErrors);
   }

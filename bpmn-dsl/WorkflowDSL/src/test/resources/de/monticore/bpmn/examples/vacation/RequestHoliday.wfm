@@ -62,7 +62,7 @@ process RequestHoliday {
     split xor IsRequestValid;
     merge and ValidateLeaveDaysAndCheckWaitingPeriodJoin;
 
-    event Terminate1 send terminate;
+    event Terminate1 throw terminate;
     
     IsRequestValid -> [true] ValidateLeaveDaysAndCheckWaitingPeriodJoin ;
     IsRequestValid -> [false] Terminate1 ;
@@ -78,7 +78,7 @@ process RequestHoliday {
     IsRequesterEligibleForHoliday -> [true] ValidateLeaveDaysAndCheckWaitingPeriodJoin;
     IsRequesterEligibleForHoliday -> [false] Terminate2;
 
-    event Terminate2 send terminate;
+    event Terminate2 throw terminate;
 
 
     ValidateLeaveDaysAndCheckWaitingPeriodJoin -> End;

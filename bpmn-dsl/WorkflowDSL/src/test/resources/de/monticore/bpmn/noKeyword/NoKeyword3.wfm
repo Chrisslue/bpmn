@@ -5,7 +5,7 @@ process NoKeyword3{
   data lane:String;
   store data:String;
 
-  start event send send;
+  start event send throw;
   end event timer timer [ at 12:54 ];
 
   service task store

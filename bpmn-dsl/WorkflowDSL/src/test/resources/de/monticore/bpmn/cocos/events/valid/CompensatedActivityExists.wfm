@@ -5,8 +5,8 @@ process CompensatedActivityExists {
 
   task T1;
 
-  event E1 send compensate T1;
+  event E1 throw compensate T1;
 
-  event E2 send compensate;
+  event E2 throw compensate;
 
 }

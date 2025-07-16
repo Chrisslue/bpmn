@@ -8,7 +8,7 @@ process CustomerOrder{
     data order:Order;
 
     start event StartOrdering;
-    event CancelOrderSession send terminate;
+    event CancelOrderSession throw terminate;
 
     user task AddProductA;
     user task AddProductB;
