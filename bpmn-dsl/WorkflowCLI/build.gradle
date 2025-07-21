@@ -13,7 +13,8 @@ test {
 
 dependencies {
     implementation project(":WorkflowDSL")
-//    implementation project(":TimerConditions")
+    implementation project(":WorkflowConformance")
+
     implementation "info.picocli:picocli:$picoli_version"
     implementation "de.monticore:monticore-runtime:$mc_version"
     implementation "de.monticore:monticore-grammar:$mc_version"
@@ -28,6 +29,33 @@ dependencies {
 
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_jupiter_version"
     testImplementation "org.junit.jupiter:junit-jupiter-engine:$junit_jupiter_version"
+}
+
+shadowJar {
+  manifest {
+    attributes "Main-Class": "de.monticore.bpmn.WorkFlowTool"
+  }
+  archiveFileName = "BPMN.jar"
+  archiveClassifier = "mc-tool"
+  zip64 = true
+}
+
+jar.dependsOn(shadowJar)
+
+publishing {
+  publications {
+    mavenJava(MavenPublication) {
+      // from components.java
+      artifact shadowJar
+      artifactId = "bpmn"
+    }
+  }
+  repositories.maven {
+    name = "$SE_Nexus_ID"
+    credentials.username mavenUser
+    credentials.password mavenPassword
+    url = version.endsWith('SNAPSHOT') ? "$snapshotsRepoUrl" : "$releasesRepoUrl"
+  }
 }
 
 // build sources jar in addition
