@@ -193,7 +193,7 @@ grammar Workflow extends
    * "send":    contains the used webservice, a message and the operation.
    * "receive": contains the used webservice, a message and the operation.
    * "user":    only contains the used webservice.   
-   * "manual":  only contain the needed resources.
+   * "manual":  only contains the needed resources.
    * "rule":    only contains the used webservice.
    * "script":  contains the used script and the format of the script.
    */ 
@@ -238,7 +238,7 @@ grammar Workflow extends
       "in" in:Name@WFNotification
       (";" "out" out:Name@WFNotification)?
     ")"
-    ("throws" error:Name@WFNotification)?
+    ("throws" errors:(Name@WFNotification || ",")+)?
     ("{" implementation:String "}" | ";");
 
   /**

@@ -80,7 +80,7 @@ public class WorkflowParserTest extends AbstractTest {
   
   @Test
   public void testExample1Model() {
-    String modelName = "de.monticore.bpmn.examples.orderToDelivery.OrderToDeliveryWorkflow";
+    String modelName = "de.monticore.bpmn.examples.order.OrderToDeliveryWorkflow";
     ASTWorkflowCompilationUnit ast = parseModel(modelName);
     
     WorkflowMill.scopesGenitorDelegator().createFromAST(ast);
@@ -99,13 +99,13 @@ public class WorkflowParserTest extends AbstractTest {
   
   @Test
   public void testExample2Model() {
-    String modelName = "de.monticore.bpmn.examples.orderToDelivery.CustomerOrder";
+    String modelName = "de.monticore.bpmn.examples.order.CustomerOrder";
     parseModel(modelName);
   }
   
   @Test
   public void testExample3Model() {
-    String modelName = "de.monticore.bpmn.examples.orderToDelivery.Payment";
+    String modelName = "de.monticore.bpmn.examples.order.Payment";
     parseModel(modelName);
   }
   
