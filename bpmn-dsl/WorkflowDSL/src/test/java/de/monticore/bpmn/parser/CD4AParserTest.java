@@ -17,6 +17,7 @@ class CD4AParserTest {
   
   @Test
   void testVacation() throws IOException {
+    CD4CodeMill.init();
     CD4CodeParser parser = CD4CodeMill.parser();
     Path model = Paths.get("src/test/resources/de/monticore/bpmn/cds/Domain.cd");
     Optional<ASTCDCompilationUnit> root = parser.parseCDCompilationUnit(model.toString());

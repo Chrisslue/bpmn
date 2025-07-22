@@ -1,3 +1,4 @@
+<!-- (c) https://github.com/MontiCore/monticore -->
 # Business Process Model and Notation (BPMN)
 The purpose of this language is to provide a textual alternative to graphical **BPMN** modeling.
 
@@ -11,28 +12,44 @@ The BPMN language consists of
 ## An Example Model For Processing Customer Orders
 
 ```
-package de.monticore.bpmn.examples.orderToDelivery;
+ /* (c) https://github.com/MontiCore/monticore */ 
+package de.monticore.bpmn.examples.order;
 
-import de.monticore.bpmn.examples.orderToDelivery.OrderToDelivery.*;
+import de.monticore.bpmn.examples.order.OrderToDelivery.*;
 
 process OrderToDeliveryWorkflow {
     
     data order:Order;
     data checker:InventoryAvailabilityChecker;
-    store agreement:CustomerDeliveryAgreement;
+    data agreement:CustomerDeliveryAgreement;
+    store products:Product;
+    
+    message cancelMsg:String;
+    operation prepCancelMsg(
+      in cancelMsg; 
+      out cancelMsg
+    );
     
     lane Sales{
         service task ProcessOrder{
+          webservice = ##webservice;
           boundary event PossibleCancellation 
-            receive with RollbackOrderProcessing;
+            catch compensate ProcessOrder with RollbackOrderProcessing;
         }
         service task CheckProductAvailability
-          count [order.numberOfOrderedProducts] parallel  
+          count [order.numberOfOrderedProducts] parallel
           {
+            webservice = ##webservice;
             in order:Order;
           }
-        send task CancellationMessage;
-        service task RollbackOrderProcessing;
+        send task SendCancellationMessage{
+          webservice = ##webservice;
+          operation = prepCancelMsg;
+          message = cancelMsg;
+        }
+        service task RollbackOrderProcessing {
+          webservice = ##webservice;
+        }
 
         split xor OrderFulfillable;
         merge xor FinishOrderProcessing;
@@ -44,58 +61,62 @@ process OrderToDeliveryWorkflow {
     
     lane Warehouse{
         
-        manual task PrepareAndPackProducts;
-        manual task PickUpOrder;
+        manual task PrepareAndPackProducts{
+          resources = order, products;
+        }
+        manual task PickUpOrder{
+          resources = order, products;
+        }
         event OrderDelivered;
 
         subprocess ShipOrder{
-          manual task AttachLabelToPacket;
+          manual task AttachLabelToPacket{
+            resources = order, products;
+          }
           manual task SecurePackageWithTape{
             resources = TapeDispenser;
           }
-          service task SelectShippingCarrier;
+          service task SelectShippingCarrier {
+            webservice = ##webservice;
+          }
           service task PrintShippingLabel{
-            webservice = ##unspecified;
-            operation = GetAddress;
+            webservice = ##webservice;
+            operation = getAddress;
           }
           
-          operation GetAddress( 
+          operation getAddress( 
             in customerID;
             out address
-            );
+          );
           message customerID:String;
           message address:DestinationAddress;
 
           start event PrepareForShipment;
           end event ShipmentDispatched;
 
-          PrepareForShipment 
-            -> SecurePackageWithTape 
-              -> SelectShippingCarrier 
-                -> PrintShippingLabel 
-                  -> AttachLabelToPacket 
-                    -> ShipmentDispatched;
+          PrepareForShipment -> SecurePackageWithTape 
+            -> SelectShippingCarrier -> PrintShippingLabel 
+            -> AttachLabelToPacket -> ShipmentDispatched;
         }
 
         end event OrderCompleted;
     }  
     
-    ReceiveOrder 
-      -> ProcessOrder 
-        -> CheckProductAvailability 
-          -> OrderFulfillable 
-            -> { 
-                 [checker.allProductsAvailable] PrepareAndPackProducts 
+    ReceiveOrder
+      -> ProcessOrder
+        -> CheckProductAvailability
+          -> OrderFulfillable
+            -> {
+                 [checker.allProductsAvailable] PrepareAndPackProducts
                    -> { [agreement.isOrderPickedUp] PickUpOrder;
                         [_] ShipOrder;
-                      } 
+                      }
                    -> OrderDelivered;
-                 [!checker.allProductsAvailable] CancellationMessage 
-                   -> CancelOrder; 
-               } 
-            -> FinishOrderProcessing 
+                 [!checker.allProductsAvailable] SendCancellationMessage
+                   -> CancelOrder;
+               }
+            -> FinishOrderProcessing
               -> OrderCompleted;
-
 }
 ```
 * The example model above specifies a process named `OrderToDeliveryWorkflow`.
