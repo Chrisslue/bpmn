@@ -13,6 +13,7 @@ public abstract class AbstractToolTest {
   
   protected static final String MODEL_DIR = "src/test/resources/de/monticore/bpmn/";
   protected static final String SYMBOL_DIR = "src/test/resources/de/monticore/bpmn/";
+  protected static final String TARGET_DIR = "target/test/de/monticore/bpmn/";
   
   @BeforeAll
   public static void init() {

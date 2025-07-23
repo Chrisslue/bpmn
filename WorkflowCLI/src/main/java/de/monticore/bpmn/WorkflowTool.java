@@ -14,6 +14,8 @@ import de.monticore.symbols.basicsymbols.BasicSymbolsMill;
 import de.se_rwth.commons.logging.Log;
 import org.apache.commons.cli.*;
 
+import java.nio.file.Paths;
+
 public class WorkflowTool extends de.monticore.bpmn.workflow.WorkflowTool {
   
   public static void main(String[] args) {
@@ -51,6 +53,15 @@ public class WorkflowTool extends de.monticore.bpmn.workflow.WorkflowTool {
       
       if (!cmd.hasOption("i")) {
         Log.error("0xA010 The arguments for the tool should include the option -i");
+      }
+      
+      //FIXME: Cannot locate symbols from cdsym-files
+      String[] modelPath = { "." };
+      if (cmd.hasOption("path")) {
+        modelPath = cmd.getOptionValues("path");
+      }
+      for (String path : modelPath) {
+        WorkflowMill.globalScope().getSymbolPath().addEntry(Paths.get(path));
       }
       
       String file = cmd.getOptionValue("i");
