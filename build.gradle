@@ -87,9 +87,8 @@ tasks.register('buildBPMN') {
     group("build")
     description("Builds the whole BPMN project, i.e. BpmnXML, TimerConditions, WorkflowCLI and WorkflowDSL")
     dependsOn(
-            ":BpmnXML:build",
-//            ":TimerConditions:build",
-//            ":WorkflowCLI:build",
+            ":WorkflowCLI:build",
+            ":WorkflowConformance:build",
             ":WorkflowDSL:build",
             gradle.includedBuilds*.task(":build")
     )
@@ -102,9 +101,8 @@ tasks.register('testBPMN') {
     group("verification")
     description("Tests the JUnit Tests in the BPMN project")
     dependsOn(
-            ":BpmnXML:test",
-//            ":TimerConditions:test",
-//            ":WorkflowCLI:test",
+            ":WorkflowCLI:test",
+            ":WorkflowConformance:test",
             ":WorkflowDSL:test",
             gradle.includedBuilds*.task(":test")
     )
@@ -119,9 +117,7 @@ tasks.register('publishBPMN') {
     description('Publishes the BPMN projects')
 
     dependsOn(
-            ":BpmnXML:publish",
-//            ":TimerConditions:publish",
-//            ":WorkflowCLI:publish",
+            ":WorkflowCLI:publish",
             ":WorkflowDSL:publish",
             gradle.includedBuilds*.task(":publish")
     )
@@ -137,9 +133,7 @@ tasks.register('publishBPMNToMavenLocal') {
     description('Publishes the BPMN projects' +
             'to the local maven repository.')
     dependsOn(
-            ":BpmnXML:publishToMavenLocal",
-//            ":TimerConditions:publishToMavenLocal",
-//            ":WorkflowCLI:publishToMavenLocal",
+            ":WorkflowCLI:publishToMavenLocal",
             ":WorkflowDSL:publishToMavenLocal",
             gradle.includedBuilds*.task(':publishToMavenLocal')
     )
@@ -152,18 +146,14 @@ tasks.register('buildAll', GradleBuild) {
 tasks.register('cleanBPMN') {
     group("build")
     dependsOn(
-            ":BpmnXML:clean",
-//            ":TimerConditions:clean",
-//            ":WorkflowCLI:clean",
+            ":WorkflowCLI:clean",
+            ":WorkflowConformance:clean",
             ":WorkflowDSL:clean"
-
     )
 }
 
 configure([
-        project(':BpmnXML'),
-         //  project(':TimerConditions'),
-         //  project(':WorkflowCLI'),
+           project(':WorkflowCLI'),
            project(':WorkflowDSL')
 ]){
     apply plugin: 'maven-publish'

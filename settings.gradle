@@ -16,10 +16,8 @@ pluginManagement {
 }
 
 rootProject.name="BPMN"
-include(':BpmnXML')
 include(':WorkflowCLI')
 include(':WorkflowDSL')
-//include(':Workflow2SMT')
 include(':WorkflowConformance')
 
 
