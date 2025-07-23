@@ -26,10 +26,12 @@ public class WorkflowToolTest extends AbstractToolTest {
   @Test
   public void testPrettyPrint() {
     String[] conformance = new String[] { "-i", MODEL_DIR
-        + "examples/order/OrderToDeliveryWorkflow.wfm", "-path", MODEL_DIR + "examples/order",
-        "-pp", TARGET_DIR };
+        + "examples/order/OrderToDeliveryWorkflow.wfm", "-path", "src/test/resources", "-pp",
+        TARGET_DIR };
     WorkflowTool.main(conformance);
-    //FIXME: Assertions.assertTrue(Log.getFindings().isEmpty());
+    /* FIXME: add String to global scope
+    Assertions.assertTrue(Log.getFindings().isEmpty());
+     */
   }
   
 }

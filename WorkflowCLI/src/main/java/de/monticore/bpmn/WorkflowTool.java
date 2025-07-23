@@ -55,7 +55,6 @@ public class WorkflowTool extends de.monticore.bpmn.workflow.WorkflowTool {
         Log.error("0xA010 The arguments for the tool should include the option -i");
       }
       
-      //FIXME: Cannot locate symbols from cdsym-files
       String[] modelPath = { "." };
       if (cmd.hasOption("path")) {
         modelPath = cmd.getOptionValues("path");

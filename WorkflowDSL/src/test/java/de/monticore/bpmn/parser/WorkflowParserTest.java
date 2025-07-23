@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import de.monticore.bpmn.AbstractTest;
 import de.monticore.bpmn.cocos.WorkflowCoCos;
+import de.monticore.bpmn.trafos.AddNameToInlineFlowNodes;
 import de.monticore.bpmn.trafos.AddSequenceFlowToFlowNodes;
 import de.monticore.bpmn.workflow.WorkflowMill;
 import de.monticore.bpmn.workflow._ast.ASTWFTask;
@@ -85,7 +86,7 @@ public class WorkflowParserTest extends AbstractTest {
     
     WorkflowMill.scopesGenitorDelegator().createFromAST(ast);
     
-    new AddSequenceFlowToFlowNodes().transform(ast);
+    new AddNameToInlineFlowNodes().transform(ast);
     new AddSequenceFlowToFlowNodes().transform(ast);
     
     WorkflowSTCompleter stCompleter = new WorkflowSTCompleter();
