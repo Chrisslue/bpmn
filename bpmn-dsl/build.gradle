@@ -12,7 +12,7 @@ plugins {
 description = "BPMN-DSL"
 
 allprojects {
-    group 'de.monticore'
+    group 'de.monticore.lang'
     buildDir = "$projectDir/target"
 
     repositories {
@@ -33,11 +33,11 @@ subprojects {
     apply plugin: 'io.github.themrmilchmann.ecj'
     apply plugin: 'maven-publish'
 
-    tasks.withType(Test) {
+    tasks.withType(Test).configureEach {
         useJUnit()
         testLogging {
             // controls whether test output is shown
-            showStandardStreams = ("false").equals(getProperty('showTestOutput')) ? false : true
+            showStandardStreams = !("false").equals(getProperty('showTestOutput'))
             showExceptions true
             showCauses true
             showStackTraces true
@@ -65,15 +65,17 @@ subprojects {
         }
     }
 
-    tasks.withType(JavaCompile) {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-        options.encoding = "UTF-8"
-        options.deprecation false
-        options.warnings = false
-        options.forkOptions.jvmArgs += ["-Xmx4G"]
-        // TODO: reevaluate with new ecj plugin
-        outputs.cacheIf { false } // ECJ has problem with caching
+    tasks.withType(JavaCompile).tap {
+        configureEach {
+            sourceCompatibility = JavaVersion.VERSION_11
+            targetCompatibility = JavaVersion.VERSION_11
+            options.encoding = "UTF-8"
+            options.deprecation false
+            options.warnings = false
+            options.forkOptions.jvmArgs += ["-Xmx4G"]
+            // TODO: reevaluate with new ecj plugin
+            outputs.cacheIf { false } // ECJ has problem with caching
+        }
     }
 }
 
@@ -81,7 +83,7 @@ subprojects {
  * Builds the whole BPMN project
  * Executes JUnit tests and assembles the jars
  */
-task buildBPMN {
+tasks.register('buildBPMN') {
     group("build")
     description("Builds the whole BPMN project, i.e. BpmnXML, TimerConditions, WorkflowCLI and WorkflowDSL")
     dependsOn(
@@ -96,7 +98,7 @@ task buildBPMN {
 /**
  * Executes JUnit tests for the BPMN project
  */
-task testBPMN {
+tasks.register('testBPMN') {
     group("verification")
     description("Tests the JUnit Tests in the BPMN project")
     dependsOn(
@@ -112,7 +114,7 @@ task testBPMN {
  *  Publishes the jars of the BPMN projects to the nexus repository.
  *  Assembles the jars and publishes them, but does not execute JUnit tests.
  */
-task publishBPMN {
+tasks.register('publishBPMN') {
     group("publishing")
     description('Publishes the BPMN projects')
 
@@ -130,7 +132,7 @@ task publishBPMN {
  *  to the local m2 repository. Typically this should not be needed.
  *  Assembles the jars and publishes them, but does not execute JUnit tests.
  */
-task publishBPMNToMavenLocal {
+tasks.register('publishBPMNToMavenLocal') {
     group("publishing")
     description('Publishes the BPMN projects' +
             'to the local maven repository.')
@@ -143,11 +145,11 @@ task publishBPMNToMavenLocal {
     )
 }
 
-task buildAll(type: GradleBuild) {
+tasks.register('buildAll', GradleBuild) {
     dependsOn(subprojects.collect { getTasksByName("build", false) })
 }
 
-task cleanBPMN {
+tasks.register('cleanBPMN') {
     group("build")
     dependsOn(
             ":BpmnXML:clean",

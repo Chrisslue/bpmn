@@ -1,10 +1,11 @@
 plugins {
     id 'java'
-    id('com.github.johnrengelman.shadow') version "7.1.2"
+    id "com.github.johnrengelman.shadow" version "7.1.2"
+    id "jacoco"
     id "de.se_rwth.codestyle" version "$mc_version"
 }
 
-group = 'com.monticore.workflowConformance'
+group = 'de.monticore.conformance'
 
 repositories {
     mavenCentral()

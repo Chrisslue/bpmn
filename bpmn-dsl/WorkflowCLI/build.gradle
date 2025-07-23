@@ -59,13 +59,13 @@ publishing {
 }
 
 // build sources jar in addition
-task sourcesJar(type: Jar) {
+tasks.register('sourcesJar', Jar) {
     from sourceSets.main.allJava
     archiveClassifier = "sources"
 }
 
 // build javadoc jar in addition
-task javadocJar(type: Jar) {
+tasks.register('javadocJar', Jar) {
     from javadoc
     archiveClassifier = "javadoc"
 }
@@ -73,8 +73,8 @@ task javadocJar(type: Jar) {
 // generated java doc contains errors, disable for now
 javadoc.failOnError(false)
 
-task buildAll(type: GradleBuild) {
-    tasks = [ 'build' ]
+tasks.register('buildAll', GradleBuild) {
+    tasks = ['build']
 }
 
 defaultTasks 'build'
