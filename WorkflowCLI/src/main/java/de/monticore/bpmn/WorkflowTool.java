@@ -2,22 +2,22 @@
 package de.monticore.bpmn;
 
 import de.monticore.bpmn.cocos.WorkflowCoCos;
-import de.monticore.bpmn.conformance.BPMNConformanceUtils;
 import de.monticore.bpmn.conformance.WfConformanceChecker;
+import de.monticore.bpmn.trafos.AddNameToInlineFlowNodes;
+import de.monticore.bpmn.trafos.AddSequenceFlowToFlowNodes;
 import de.monticore.bpmn.workflow.WorkflowMill;
 import de.monticore.bpmn.workflow._ast.ASTWorkflowCompilationUnit;
 import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
-import de.monticore.bpmn.workflow._symboltable.IWorkflowArtifactScope;
+import de.monticore.bpmn.workflow._symboltable.WorkflowSTCompleter;
+import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
 import de.monticore.symbols.basicsymbols.BasicSymbolsMill;
 import de.se_rwth.commons.logging.Log;
 import org.apache.commons.cli.*;
 
-import java.io.File;
-
 public class WorkflowTool extends de.monticore.bpmn.workflow.WorkflowTool {
   
   public static void main(String[] args) {
-    de.monticore.bpmn.workflow.WorkflowTool tool = new de.monticore.bpmn.workflow.WorkflowTool();
+    WorkflowTool tool = new WorkflowTool();
     tool.run(args);
   }
   
@@ -54,21 +54,11 @@ public class WorkflowTool extends de.monticore.bpmn.workflow.WorkflowTool {
       }
       
       String file = cmd.getOptionValue("i");
-      
-      ASTWorkflowCompilationUnit model = parse(file);
-      IWorkflowArtifactScope as = createSymbolTable(model);
-      runDefaultCoCos(model);
+      ASTWorkflowCompilationUnit model = loadModel(file);
       
       if (cmd.hasOption("r")) {
-        // declared artifacts
-        File concreteFile = new File(cmd.getOptionValue("i"));
-        File referenceFile = new File(cmd.getOptionValue("r"));
-        
-        // given
-        ASTWorkflowCompilationUnit concrete = BPMNConformanceUtils.loadBPMN(concreteFile
-            .getAbsolutePath().split("\\.")[0]);
-        ASTWorkflowCompilationUnit reference = BPMNConformanceUtils.loadBPMN(referenceFile
-            .getAbsolutePath().split("\\.")[0]);
+        String refFile = cmd.getOptionValue("r");
+        ASTWorkflowCompilationUnit reference = loadModel(refFile);
         
         // when
         WfConformanceChecker checker = new WfConformanceChecker();
@@ -77,7 +67,7 @@ public class WorkflowTool extends de.monticore.bpmn.workflow.WorkflowTool {
         if (cmd.hasOption("m")) {
           mapping = cmd.getOptionValue("m");
         }
-        checker.checkConformance(concrete, reference, mapping);
+        checker.checkConformance(model, reference, mapping);
       }
       
       if (cmd.hasOption("pp")) {
@@ -125,6 +115,23 @@ public class WorkflowTool extends de.monticore.bpmn.workflow.WorkflowTool {
     options.addOption(map);
     
     return options;
+  }
+  
+  protected ASTWorkflowCompilationUnit loadModel(String file) {
+    ASTWorkflowCompilationUnit model = parse(file);
+    WorkflowMill.scopesGenitorDelegator().createFromAST(model);
+    
+    new AddNameToInlineFlowNodes().transform(model);
+    new AddSequenceFlowToFlowNodes().transform(model);
+    
+    WorkflowSTCompleter stCompleter = new WorkflowSTCompleter();
+    WorkflowTraverser traverser = WorkflowMill.traverser();
+    traverser.add4Workflow(stCompleter);
+    model.accept(traverser);
+    
+    runDefaultCoCos(model);
+    
+    return model;
   }
   
 }

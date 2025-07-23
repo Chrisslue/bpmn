@@ -1,6 +1,5 @@
 plugins {
     id "java-library"
-    id "com.github.johnrengelman.shadow" version "7.1.2"
     id "de.monticore.generator" version "$version"
     id "jacoco"
     id "de.se_rwth.codestyle" version "$mc_version"
@@ -27,11 +26,6 @@ dependencies {
     implementation "org.zeroturnaround:zt-exec:$exec_version"
     implementation "ch.qos.logback:logback-classic:$logback_version"
     implementation "com.google.code.findbugs:jsr305:$jsr305_version"
-
-    implementation "jakarta.xml.bind:jakarta.xml.bind-api:3.0.1"
-    implementation "com.sun.xml.bind:jaxb-core:$jaxb_core_version"
-    implementation "com.sun.xml.bind:jaxb-impl:$jaxb_impl_version"
-    implementation "com.sun.xml.bind:jaxb-xjc:$jaxb_impl_version"
 
     /*----------------------Timer-Conditions-------------------------*/
     implementation "joda-time:joda-time:$joda_time_version"
