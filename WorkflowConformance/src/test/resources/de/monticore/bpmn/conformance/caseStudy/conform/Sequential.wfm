@@ -1,4 +1,4 @@
-// in the cas the work is perform sequentially
+ /* (c) https://github.com/MontiCore/monticore */
 
 process  Sequential {
 

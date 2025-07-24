@@ -1,4 +1,4 @@
-
+ /* (c) https://github.com/MontiCore/monticore */
 process MultipleIncarnation2 {
 
   start event Start;

@@ -1,4 +1,5 @@
-process NonConform2 {
+ /* (c) https://github.com/MontiCore/monticore */
+ process NonConform2 {
 
   start event S;
   end event E;

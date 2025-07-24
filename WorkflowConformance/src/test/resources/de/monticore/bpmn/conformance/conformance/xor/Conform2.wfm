@@ -1,4 +1,4 @@
-
+ /* (c) https://github.com/MontiCore/monticore */
 process Conform2 {
   start event S;
   task T1;

@@ -1,11 +1,12 @@
  /* (c) https://github.com/MontiCore/monticore */
+
 process PaperAuthoring {
 
   start event Start;
   end event Done;
 
-  task  Introduction;
-  task  Main;
+  task Introduction;
+  task Main;
   task Conclusion;
   task Draft;
   task Research;

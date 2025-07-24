@@ -1,13 +1,12 @@
  /* (c) https://github.com/MontiCore/monticore */
-package de.monticore.bpmn.conformance;
 
-process AntiPatternMerge {
+process Thesis {
 
   start event Start;
   end event Done;
 
-  <<ref="Research">> task LiteratureReview;
-  <<ref="Draft">> task Expose;
+  <<incarnates="Research">> task LiteratureReview;
+  <<incarnates="Draft">> task Expose;
   task Implement;
   task Evaluate;
   task Introduction;
@@ -21,7 +20,7 @@ process AntiPatternMerge {
   merge xor StartIteration;
   split xor EndIteration;
   split and SplitWork;
-  merge xor MergeWork;
+  merge and MergeWork;
 
 
   Start -> LiteratureReview-> Expose -> MLoop
