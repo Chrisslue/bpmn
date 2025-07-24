@@ -89,7 +89,7 @@ This example model describes the process of writing a scientific paper:
   `Main`, and `Conclusion` are executed in parallel
 - These three tasks are followed up by the `merge and` gateway.
 - Next up is the task `Review`.
-- Finally, an `spli xor` gateway allows us to choose between redoing the tasks
+- Finally, a `split xor` gateway allows us to choose between redoing the tasks
   `Introduction`, `Main`, and `Conclusion` or end the process.
 
 
@@ -112,7 +112,7 @@ The symbols defined in the example model
   java -jar WorkflowCLI/target/libs/BPMN.jar -i doc/PaperAuthoring.wfm -s doc/PaperAuthoring.wfsym
 ```
 
-### Step 3:
+### Step 3: Conformance Checking to Reference Models
 
 The example model [`PaperAuthoring`](doc/PaperAuthoring.wfm) can be viewed 
 as a reference model for writing scientific publications [[KRS+24]]. 
@@ -128,7 +128,7 @@ The check can be executed as follows:
 
 The process model [`AntiPatternMerge`](doc/AntiPatternMerge.wfm) is,
 however, not conform, as it closes a parallel executed branches of tasks 
-with an `merge xor` gateway.
+with a `merge xor` gateway.
 When executing the conformance check, the algorithm finds a sequence of
 tasks via backtracking that are not permitted by 
 [`PaperAuthoring`](doc/PaperAuthoring.wfm):
