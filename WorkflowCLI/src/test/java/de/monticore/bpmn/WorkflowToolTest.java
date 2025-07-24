@@ -20,25 +20,42 @@ public class WorkflowToolTest {
   
   @Test
   public void testConformance() {
-    String[] conformance = new String[] { "-i", MODEL_DIR + "Thesis.wfm", "-r", MODEL_DIR
-        + "PaperAuthoring.wfm", "-m", "ref" };
+    String[] conformance = new String[] { "-i", MODEL_DIR + "conformance/Thesis.wfm", "-ref",
+        MODEL_DIR + "conformance/PaperAuthoring.wfm", "-m", "ref" };
     WorkflowTool.main(conformance);
     Assertions.assertTrue(Log.getFindings().isEmpty());
   }
   
   @Test
   public void testNonConformance() {
-    String[] conformance = new String[] { "-i", MODEL_DIR + "AntiPatternMerge.wfm", "-r", MODEL_DIR
-        + "PaperAuthoring.wfm", "-m", "ref" };
+    String[] conformance = new String[] { "-i", MODEL_DIR + "conformance/AntiPatternMerge.wfm",
+        "-ref", MODEL_DIR + "conformance/PaperAuthoring.wfm", "-m", "ref" };
     WorkflowTool.main(conformance);
     Assertions.assertTrue(Log.getFindings().isEmpty());
   }
   
   @Test
   public void testPrettyPrint() {
-    String[] conformance = new String[] { "-i", MODEL_DIR
-        + "examples/order/OrderToDeliveryWorkflow.wfm", "-path", "src/test/resources", "-pp",
-        TARGET_DIR };
+    String[] conformance = new String[] { "-i", MODEL_DIR + "examples/OrderToDeliveryWorkflow.wfm",
+        "-path", "src/test/resources/", "-pp", TARGET_DIR
+            + "examples/OrderToDeliveryWorkflow.wfm" };
+    WorkflowTool.main(conformance);
+    Assertions.assertTrue(Log.getFindings().isEmpty());
+  }
+  
+  @Test
+  public void testPrettyPrintToStdOut() {
+    String[] conformance = new String[] { "-i", MODEL_DIR + "examples/OrderToDeliveryWorkflow.wfm",
+        "-path", "src/test/resources/", "-pp" };
+    WorkflowTool.main(conformance);
+    Assertions.assertTrue(Log.getFindings().isEmpty());
+  }
+  
+  @Test
+  public void testStoreSymbolTable() {
+    String[] conformance = new String[] { "-i", MODEL_DIR + "examples/OrderToDeliveryWorkflow.wfm",
+        "-path", "src/test/resources/", "-s", TARGET_DIR
+            + "examples/OrderToDeliveryWorkflow.wfsym" };
     WorkflowTool.main(conformance);
     Assertions.assertTrue(Log.getFindings().isEmpty());
   }

@@ -8,7 +8,7 @@ public class AtMostOneDefaultBranch implements WorkflowASTFlowBlockCoCo {
   
   @Override
   public void check(final ASTFlowBlock block) {
-    /*
+    /* FIXME
     final List<ASTFlowBranch> skipBranches =
         block.streamBranch().filter(ASTFlowBranch::isDefault).collect(Collectors.toList());
     if (skipBranches.size() > 1) {

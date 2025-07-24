@@ -1,4 +1,4 @@
-package de.monticore.bpmn;
+package de.monticore.bpmn.examples;
 
 import de.monticore.bpmn.Domain.*;
 

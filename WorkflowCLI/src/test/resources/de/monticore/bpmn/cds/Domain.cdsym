@@ -3,10 +3,6 @@
   "name": "Domain",
   "symbols": [
     {
-      "kind": "de.monticore.cdbasis._symboltable.CDPackageSymbol",
-      "name": "de.monticore.bpmn"
-    },
-    {
       "kind": "de.monticore.symbols.basicsymbols._symboltable.DiagramSymbol",
       "name": "Domain"
     },
@@ -43,6 +39,7 @@
           {
             "kind": "de.monticore.symbols.oosymbols._symboltable.FieldSymbol",
             "name": "version",
+            "isPublic":true,
             "type": {
               "kind": "de.monticore.types.check.SymTypePrimitive",
               "primitiveName": "int"

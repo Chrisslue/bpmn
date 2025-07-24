@@ -1,10 +1,12 @@
-package de.monticore.bpmn;
+ /* (c) https://github.com/MontiCore/monticore */ 
+package de.monticore.bpmn.cds;
+
 
 classdiagram Domain {
 
     class Contract {
       java.time.ZonedDateTime hiringDate;
-      int version;
+      public int version;
     }
 
     class DomainUser;

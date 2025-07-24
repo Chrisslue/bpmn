@@ -31,18 +31,18 @@ shadowJar {
 
 tasks.register("runDemoCLI", JavaExec) {
     classpath = files(tasks.shadowJar.archiveFile)
-    def modelDir = "src/test/resources/de/monticore/bpmn/"
+    def modelDir = "src/test/resources/de/monticore/bpmn/conformance/"
     def ref = modelDir+ "PaperAuthoring.wfm"
     def conc = modelDir+ "Thesis.wfm"
-    args = ["-r", ref, "-i", conc, "-m", "ref"]
+    args = ["-ref", ref, "-i", conc, "-m", "ref"]
 }
 
 tasks.register("runDemoCLI_notconform", JavaExec) {
     classpath = files(tasks.shadowJar.archiveFile)
-    def modelDir = "src/test/resources/de/monticore/bpmn/"
+    def modelDir = "src/test/resources/de/monticore/bpmn/conformance/"
     def ref = modelDir+ "PaperAuthoring.wfm"
     def conc = modelDir+ "AntiPatternMerge.wfm"
-    args = ["-r", ref, "-i", conc, "-m", "ref"]
+    args = ["-ref", ref, "-i", conc, "-m", "ref"]
 }
 
 jar.dependsOn(shadowJar)

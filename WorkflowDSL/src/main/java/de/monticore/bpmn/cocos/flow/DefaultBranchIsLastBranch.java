@@ -8,7 +8,7 @@ public class DefaultBranchIsLastBranch implements WorkflowASTFlowBlockCoCo {
   
   @Override
   public void check(final ASTFlowBlock block) {
-    /*
+    /* FIXME
     EntryStream.of(block.getBranchList())
         .filterKeys(index -> index < block.sizeBranch())
         .filterValues(ASTFlowBranch::isDefault)

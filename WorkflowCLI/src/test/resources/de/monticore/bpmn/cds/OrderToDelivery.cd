@@ -1,5 +1,5 @@
  /* (c) https://github.com/MontiCore/monticore */ 
-package de.monticore.bpmn.examples.order;
+package de.monticore.bpmn.cds;
 
 classdiagram OrderToDelivery{
     public class InventoryAvailabilityChecker{

@@ -1,4 +1,6 @@
-process Thesis {
+package de.monticore.bpmn.conformance;
+
+process AntiPatternMerge {
 
   start event Start;
   end event Done;
@@ -18,7 +20,7 @@ process Thesis {
   merge xor StartIteration;
   split xor EndIteration;
   split and SplitWork;
-  merge and MergeWork;
+  merge xor MergeWork;
 
 
   Start -> LiteratureReview-> Expose -> MLoop

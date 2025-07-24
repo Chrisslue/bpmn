@@ -10,6 +10,7 @@ import de.monticore.bpmn.trafos.AddSequenceFlowToFlowNodes;
 import de.monticore.bpmn.workflow.WorkflowMill;
 import de.monticore.bpmn.workflow._ast.ASTWorkflowCompilationUnit;
 import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
+import de.monticore.bpmn.workflow._symboltable.IWorkflowArtifactScope;
 import de.monticore.bpmn.workflow._symboltable.WorkflowSTCompleter;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
 import de.monticore.symbols.basicsymbols.BasicSymbolsMill;
@@ -18,6 +19,7 @@ import de.se_rwth.commons.logging.Log;
 import org.apache.commons.cli.*;
 
 import java.nio.file.Paths;
+import java.util.Optional;
 
 public class WorkflowTool extends de.monticore.bpmn.workflow.WorkflowTool {
   
@@ -60,7 +62,8 @@ public class WorkflowTool extends de.monticore.bpmn.workflow.WorkflowTool {
       }
       
       if (!cmd.hasOption("i")) {
-        Log.error("0xA010 The arguments for the tool should include the option -i");
+        Log.error(Messages.get("0xWFM0007"));
+        return;
       }
       
       String[] modelPath = { "." };
@@ -71,32 +74,48 @@ public class WorkflowTool extends de.monticore.bpmn.workflow.WorkflowTool {
         WorkflowMill.globalScope().getSymbolPath().addEntry(Paths.get(path));
       }
       
-      String file = cmd.getOptionValue("i");
-      ASTWorkflowCompilationUnit model = loadModel(file);
+      // load the process model from the specified file
+      String modelFile = cmd.getOptionValue("i");
+      Optional<ASTWorkflowCompilationUnit> model = loadModel(modelFile);
+      if (model.isEmpty()) {
+        Log.error(Messages.get("0xWFM0004", modelFile));
+        return;
+      }
       
-      if (cmd.hasOption("r")) {
-        String refFile = cmd.getOptionValue("r");
-        ASTWorkflowCompilationUnit reference = loadModel(refFile);
+      // pretty-printing
+      if (cmd.hasOption("pp")) {
+        prettyPrint(model.get(), cmd.getOptionValue("pp", ""));
+      }
+      
+      // print out a serialized symbol table
+      if (cmd.hasOption("s")) {
+        storeSymbols((IWorkflowArtifactScope) model.get().getEnclosingScope(), cmd.getOptionValue(
+            "s"));
+      }
+      
+      // conformance checking to a reference model
+      if (cmd.hasOption("ref")) {
         
-        // when
-        WfConformanceChecker checker = new WfConformanceChecker();
+        // load the reference model
+        String refFile = cmd.getOptionValue("ref");
+        Optional<ASTWorkflowCompilationUnit> reference = loadModel(refFile);
+        if (reference.isEmpty()) {
+          Log.error(Messages.get("0xWFM0005", refFile));
+          return;
+        }
         
+        // specify the name of the incarnation mapping encoded via stereotypes
         String mapping = "incarnates";
         if (cmd.hasOption("m")) {
           mapping = cmd.getOptionValue("m");
         }
-        checker.checkConformance(model, reference, mapping);
-      }
-      
-      if (cmd.hasOption("pp")) {
-        prettyPrint(model, cmd.getOptionValue("pp"));
+        WfConformanceChecker checker = new WfConformanceChecker();
+        checker.checkConformance(model.get(), reference.get(), mapping);
       }
       
     }
     catch (ParseException e) {
-      // e.getMessage displays the incorrect input-parameters
-      Log.error("0xA5C06x68980 Could not process WorkflowTool parameters: " + e.getMessage());
-      
+      Log.error(Messages.get("0xWFM0006", e.getMessage()));
     }
   }
   
@@ -108,9 +127,12 @@ public class WorkflowTool extends de.monticore.bpmn.workflow.WorkflowTool {
   
   @Override
   public void prettyPrint(ASTWorkflowCompilationUnit ast, String file) {
-    String ppFile = file + ast.getWFProcess().getName() + ".wfm";
-    String model = WorkflowMill.prettyPrint(ast, true);
-    print(model, ppFile);
+    if (!file.isEmpty()) {
+      super.prettyPrint(ast, file);
+    }
+    else {
+      System.out.println(WorkflowMill.prettyPrint(ast, true));
+    }
   }
   
   /**
@@ -122,21 +144,26 @@ public class WorkflowTool extends de.monticore.bpmn.workflow.WorkflowTool {
   public Options addAdditionalOptions(Options options) {
     
     // introduce the reference BPMN
-    Option reference = Option.builder("r").longOpt("reference").desc(
-        "Checks whether the input model conforms to the specified reference model!").numberOfArgs(1)
-        .build();
+    Option reference = Option.builder("ref").longOpt("reference").desc(
+        "Parses the file as a reference process model and checks if the the input process model specified by `-i` is conform to it. ")
+        .numberOfArgs(1).build();
     options.addOption(reference);
     
     // introduce the reference BPMN
     Option map = Option.builder("m").optionalArg(true).longOpt("map").desc(
-        "Specifies the name of the incarnation mapping.").numberOfArgs(1).build();
+        "Specify the names of stereotypes that are used as incarnation mappings in the concrete model. Default : 'incarnates'")
+        .numberOfArgs(1).build();
     options.addOption(map);
     
     return options;
   }
   
-  protected ASTWorkflowCompilationUnit loadModel(String file) {
+  protected Optional<ASTWorkflowCompilationUnit> loadModel(String file) {
     ASTWorkflowCompilationUnit model = parse(file);
+    
+    if (model == null) {
+      return Optional.empty();
+    }
     
     new AddMoreImports(Lists.newArrayList(OCL_TYPES)).transform(model);
     WorkflowMill.scopesGenitorDelegator().createFromAST(model);
@@ -152,7 +179,7 @@ public class WorkflowTool extends de.monticore.bpmn.workflow.WorkflowTool {
     WorkflowCoCoChecker checker = WorkflowCoCos.getBasicChecker();
     checker.checkAll(model);
     
-    return model;
+    return Optional.of(model);
   }
   
 }
