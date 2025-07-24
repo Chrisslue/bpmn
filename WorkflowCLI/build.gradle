@@ -15,9 +15,6 @@ dependencies {
     implementation project(":WorkflowDSL")
     implementation project(":WorkflowConformance")
 
-    implementation "de.monticore:monticore-runtime:$mc_version"
-    implementation "de.monticore:monticore-grammar:$mc_version"
-
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_jupiter_version"
     testImplementation "org.junit.jupiter:junit-jupiter-engine:$junit_jupiter_version"
 }

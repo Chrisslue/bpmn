@@ -9,14 +9,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import com.google.common.collect.Lists;
-import de.monticore.bpmn.cocos.flow.SequenceFlowNodeReferencesExist;
+import de.monticore.bpmn.cocos.WorkflowCoCos;
 import de.monticore.bpmn.trafos.*;
 import de.monticore.bpmn.utils.AuxiliaryModelsWriter;
 import de.monticore.bpmn.workflow.WorkflowMill;
 import de.monticore.bpmn.workflow._ast.ASTWorkflowCompilationUnit;
 import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
 import de.monticore.bpmn.workflow._parser.WorkflowParser;
-import de.monticore.bpmn.workflow._symboltable.IWorkflowGlobalScope;
 import de.monticore.bpmn.workflow._symboltable.WorkflowSTCompleter;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
 import de.monticore.io.paths.MCPath;
@@ -28,7 +27,7 @@ import de.se_rwth.commons.logging.Log;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Optional;
-import org.junit.jupiter.api.BeforeAll;
+
 import org.junit.jupiter.api.BeforeEach;
 
 /** Abstract test with default methods for loading models. */
@@ -44,21 +43,15 @@ public abstract class AbstractTest {
   protected static final ImportStatement OCL_TYPES = new ImportStatement(
       "de.monticore.bpmn._types.ocl.DefaultTypes", true);
   
-  private IWorkflowGlobalScope globalScope;
-  
-  @BeforeAll
-  public static void init() {
+  @BeforeEach
+  public void setUp() {
     Log.init();
     Log.enableFailQuick(false);
     WorkflowMill.init();
     WorkflowMill.globalScope().clear();
     WorkflowMill.globalScope().setSymbolPath(new MCPath(SYMBOL_DIR));
     BasicSymbolsMill.initializePrimitives();
-    //OCLTypeCheck3.init();
-  }
-  
-  @BeforeEach
-  public void setUp() {
+    BasicSymbolsMill.initializeString();
     Log.getFindings().clear();
   }
   
@@ -93,11 +86,9 @@ public abstract class AbstractTest {
    */
   protected ASTWorkflowCompilationUnit loadModel(final String qualifiedModelName) {
     ASTWorkflowCompilationUnit ast = parseModel(qualifiedModelName);
+    
     new AddMoreImports(Lists.newArrayList(OCL_TYPES)).transform(ast);
     WorkflowMill.scopesGenitorDelegator().createFromAST(ast);
-    WorkflowCoCoChecker checker = new WorkflowCoCoChecker();
-    checker.addCoCo(new SequenceFlowNodeReferencesExist());
-    checker.checkAll(ast);
     new AddNameToInlineFlowNodes().transform(ast);
     new AddSequenceFlowToFlowNodes().transform(ast);
     
@@ -105,6 +96,9 @@ public abstract class AbstractTest {
     WorkflowTraverser traverser = WorkflowMill.traverser();
     traverser.add4Workflow(stCompleter);
     ast.accept(traverser);
+    
+    WorkflowCoCoChecker checker = WorkflowCoCos.getBasicChecker();
+    checker.checkAll(ast);
     
     if (shouldWriteAuxModels()) {
       writeTestAuxModels(qualifiedModelName, ast);

@@ -163,13 +163,7 @@ public class WorkflowCoCos {
     return checker;
   }
   
-  // currently not working
-  
   public static WorkflowCoCoChecker getTypesChecker() {
-    // assure that OCL TypeCheck is used
-    // As of writing, this is valid, as long as only OCL expressions are used
-    // should other expressions be included in this language,
-    // another TypeChecker will be required to be initialized.
     WorkflowTypeCheck3.init();
     WorkflowCoCoChecker checker = new WorkflowCoCoChecker();
     checker.addCoCo(new CompletionConditionIsBoolean());

@@ -35,6 +35,7 @@ dependencies {
     /*-----------------------MONTICORE-------------------------------*/
     implementation "de.monticore.lang:cd4analysis:$mc_version"
     grammar "de.monticore:monticore-grammar:$mc_version"
+    implementation "de.monticore:class2mc:$mc_version"
 
     /*------------------------TESTING-----------------------------------*/
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_jupiter_version"

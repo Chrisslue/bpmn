@@ -3,9 +3,20 @@ package de.monticore.bpmn;
 
 import de.se_rwth.commons.logging.Log;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class WorkflowToolTest extends AbstractToolTest {
+public class WorkflowToolTest {
+  
+  protected static final String MODEL_DIR = "src/test/resources/de/monticore/bpmn/";
+  protected static final String TARGET_DIR = "target/test/de/monticore/bpmn/";
+  
+  @BeforeEach
+  public void setup() {
+    Log.init();
+    Log.getFindings().clear();
+    Log.enableFailQuick(false);
+  }
   
   @Test
   public void testConformance() {
@@ -29,9 +40,7 @@ public class WorkflowToolTest extends AbstractToolTest {
         + "examples/order/OrderToDeliveryWorkflow.wfm", "-path", "src/test/resources", "-pp",
         TARGET_DIR };
     WorkflowTool.main(conformance);
-    /* FIXME: add String to global scope
     Assertions.assertTrue(Log.getFindings().isEmpty());
-     */
   }
   
 }

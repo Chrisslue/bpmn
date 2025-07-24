@@ -13,9 +13,9 @@ The BPMN language consists of
 
 ```
  /* (c) https://github.com/MontiCore/monticore */ 
-package de.monticore.bpmn.examples.order;
+package de.monticore.bpmn.examples;
 
-import de.monticore.bpmn.examples.order.OrderToDelivery.*;
+import de.monticore.bpmn.cds.OrderToDelivery.*;
 
 process OrderToDeliveryWorkflow {
     
@@ -23,10 +23,10 @@ process OrderToDeliveryWorkflow {
     data checker:InventoryAvailabilityChecker;
     data agreement:CustomerDeliveryAgreement;
     store products:Product;
-    
+
     message cancelMsg:String;
     operation prepCancelMsg(
-      in cancelMsg; 
+      in cancelMsg;
       out cancelMsg
     );
     
@@ -84,7 +84,7 @@ process OrderToDeliveryWorkflow {
             operation = getAddress;
           }
           
-          operation getAddress( 
+          operation getAddress(
             in customerID;
             out address
           );

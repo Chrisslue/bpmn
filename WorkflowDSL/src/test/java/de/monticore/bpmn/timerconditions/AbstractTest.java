@@ -8,7 +8,7 @@ import de.se_rwth.commons.logging.LogStub;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 
-public class AbstractTest {
+public abstract class AbstractTest {
   
   protected WorkflowParser parser = WorkflowMill.parser();
   

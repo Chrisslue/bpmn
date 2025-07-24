@@ -1,0 +1,18 @@
+
+process Reference {
+
+  start event S;
+  task T1;
+  task T2;
+  task T3;
+  end event E;
+
+  split xor XOR1 ;
+  merge xor XOR2;
+
+
+       XOR1 ->  T1 -> XOR2;
+  S -> XOR1 ->  T2 -> XOR2;
+       XOR1 ->  T3 -> XOR2 -> E;
+
+}

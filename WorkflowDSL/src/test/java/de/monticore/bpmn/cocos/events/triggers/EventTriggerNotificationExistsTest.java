@@ -7,7 +7,6 @@ import de.monticore.bpmn.cocos.AbstractCoCoTest;
 import de.monticore.bpmn.cocos.WorkflowCoCos;
 import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
 import de.se_rwth.commons.logging.Finding;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -18,7 +17,6 @@ public class EventTriggerNotificationExistsTest extends AbstractCoCoTest {
   @Override
   protected WorkflowCoCoChecker getChecker() { return WorkflowCoCos.getEventTriggerChecker(); }
   
-  @Disabled
   @Test
   void invalidTriggers() {
     String modelName =

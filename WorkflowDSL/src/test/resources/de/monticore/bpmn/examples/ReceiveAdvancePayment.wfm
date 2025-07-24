@@ -1,0 +1,73 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
+package de.monticore.bpmn.examples;
+
+import de.monticore.bpmn.cds.Trip.*;
+
+
+process ReceiveAdvancePayment {
+
+  lane Traveler {
+    EnterReferenceNumber,
+    FillAdvancePaymentForm,
+    SignRequest,
+    ReceiveResponse
+  }
+
+  lane Secretariat {
+    CheckRequest,
+    SubmitRequest
+  }
+
+  lane Superior {
+    SignRequest2
+  }
+
+  event Start <<start>>;
+
+  Start -> IsFirstRequest;
+
+  split inclusive IsFirstRequest;
+
+  IsFirstRequest -> EnterReferenceNumber;
+  IsFirstRequest -> FillAdvancePaymentForm;
+
+  task user EnterReferenceNumber;
+
+  task user FillAdvancePaymentForm;
+
+  EnterReferenceNumber -> IsFirstRequestJoin;
+  FillAdvancePaymentForm -> IsFirstRequestJoin;
+
+  join inclusive IsFirstRequestJoin; // naming converging gateways is awkward
+
+  // events and gateways are not associated with any lane
+
+  IsFirstRequestJoin -> SignRequest;
+
+  task manual SignRequest;
+
+  SignRequest -> CheckRequest;
+
+  task user CheckRequest;
+
+  CheckRequest -> SignRequest2;
+
+  task manual SignRequest2;
+
+  SignRequest2 -> SubmitRequest;
+
+  task send:paymentRequest SubmitRequest;
+
+  message paymentRequest:AdvancePaymentRequestMessage;
+
+  SubmitRequest -> ReceiveResponse;
+
+  task receive:paymentResponse ReceiveResponse;
+
+  message paymentRequest:AdvancePaymentResponseMessage;
+
+  ReceiveResponse -> End;
+
+  event End <<end>>;
+
+}

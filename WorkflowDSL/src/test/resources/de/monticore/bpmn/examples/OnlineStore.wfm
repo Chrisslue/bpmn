@@ -1,0 +1,331 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
+package de.monticore.bpmn.examples;
+
+import de.monticore.bpmn.cds.OnlineStore.*;
+
+process OnlineStore {
+  
+  lane OrderFulfillment {
+    data orderMsg:Order;
+    data order:Order;
+
+    store customer:Customer;
+
+    /*
+    service task CheckArticleAvailability {
+      in article:Article;
+    }
+    */
+
+    task CheckArticleAvailability /*template:CheckArticleAvailability*/ {
+      in article;
+    }
+
+    start event OrderReceived catch message orderMsg {
+      out order;
+    }
+
+    OrderReceived -> OrderFulfillment;
+    
+    subprocess OrderFulfillment {
+
+      subprocess ReserveArticle {
+        //in order.articles[i] as article;
+
+        service task CheckArticleAvailability;
+
+        task ProcureArticle /* template:ProcureArticle */ ;
+
+        service task ReserveArticle;
+        service task RemoveReservation;
+        start event E11;
+        end event ArticleReserved;
+        E11 -> CheckArticleAvailability -> split xor -> {
+          [article.isAvailable] continue;
+          [!article.isAvailable] ProcureArticle;
+        } -> merge xor -> ArticleReserved;
+
+        subprocess subprocess1 {
+          start event Rollback catch;
+          event CancelReservation throw;
+          end event E13;
+          Rollback -> CancelReservation-> E13;
+        }
+
+        boundary event LateShipping catch escalation lateShipping;
+
+      }
+
+      // ReserveArticle.LateShipping -> task send InformCustomer message:lateShippingNotice -> end event;
+
+      rule task ComputeFinalDiscount {
+        in customer;
+      }
+
+      subprocess CheckCreditCardRating {
+        //store payments:Collection<PaymentRecord>;
+
+        rule task InternalRiskAssessment {
+          in payments;
+        }
+
+        service task GetCreditRatingCompanyA;
+        service task GetCreditRatingCompanyB;
+
+        /* TODO
+        start event  -> split and {
+          InternalRiskAssessment;
+          GetCreditRatingCompanyA;
+          GetCreditRatingCompanyB;
+        } merge complex [activationCount >= 2] -> end event;  // TODO BPMN model instance variables
+        */
+      }
+
+      transaction ProcessPayment {
+        //in order;
+
+        error creditCardFailed:CreditCardFailureError;
+        /* TODO
+        task service DeductStoreCredit rollback:RestoreStoreCredit;
+        rollback task service RestoreStoreCredit;
+        */
+
+        call-activity ChargeCreditCard calls CollectPayment {
+          boundary event CreditCardFailed catch error creditCardFailed;
+        }
+        end event E100 throw cancel;
+        ChargeCreditCard.CreditCardFailed -> E100;
+        /* TODO
+        start event 
+
+        PaymentRequested -> DeductStoreCredit -> ChargeCreditCard -> end event PaymentSucceeded;
+        */
+    
+      }
+      end event E101 throw cancel;
+      ProcessPayment.PaymentFailed -> E101;
+
+      subprocess PreparePackage {
+        data shippingNote:ShippingNote;
+
+        rule task DetermineCarrier {
+          in order;
+        }
+        user task PrintShippingLabel;
+        user task TakeOutShippingInsurance;
+        manual task FinalizePackage;
+        user task PrintShippingNote {
+          in order;
+          out shippingNote;
+        }
+        manual task PackageArticles {
+          in shippingNote;
+        }
+
+        /* TODO
+        start event -> split and {
+          DetermineCarrier -> split ior {
+            [order.requiresInsurance]: TakeOutShippingInsurance;
+            else: PrintShippingLabel;
+          } merge ior;
+          PrintShippingNote -> PackageArticles;
+        } merge and -> FinalizePackage -> end event ArticlesPackaged;
+        */
+        boundary event ShippingAddressUpdated catch signal shippingAddressUpdated;
+      }
+
+      PreparePackage.ShippingAddressUpdated -> PreparePackage; // re-start sub-process
+
+      /* TODO
+      start event -> split and {
+        ReserveArticle;
+        ComputeFinalDiscount -> split xor {
+          [order.amount >= 1000]: #CheckCreditCardRating -> split xor {
+            [rating == GOOD]: continue;
+            [rating == BAD]:  event OrderCancelled throw rollback;
+          };
+          else: continue;
+        } merge xor -> event receive when:[forall a in order.articles: a.isAvailable] -> ProcessPayment;
+      } merge and -> PreparePackage -> end event PackagePrepared;
+      */
+
+      /*
+      // event sub-processes
+      subprocess Bla {
+        // TODO start event NotShippable catch error:notShippable -> event throw rollback -> end event OrderCancelled;
+      }
+
+      message orderCancellation:OrderCancellationRequest;
+      subprocess Bla2 {
+        // TODO start event orderCancellationRequested catch message:orderCancellation -> end event OrderCancelled throw rollback;
+      }
+
+      message addressUpdate:ShippingAddressUpdateRequest;
+      signal shippingAddressUpdated:ShippingAddressUpdatedSignal;
+      subprocess Bla3 {
+        // TODO
+        start event ShippingAddressUpdateRequested catch nocancel message:addressUpdate
+          -> task service UpdateDeliveryAddress -> end event throw signal:shippingAddressUpdated;
+
+      }
+
+      message paymentMethodUpdate:PaymentMethodUpdateRequest;
+      signal paymemntMethodUpdated:PaymentMethodUpdatedSignal;
+      subprocess Bla4 {
+        // TODO
+        start event PaymentMethodUpdateRequested catch nocancel message:paymentMethodUpdate
+          -> task service UpdatePaymentMethod -> end event throw signal:paymemntMethodUpdated;
+
+
+      */
+
+    }
+
+    message shippingNotification:ShippingNotification;
+    message deliveryNotification:DeliveryNotification;
+    event E102 throw message shippingNotification;
+    event E103 catch message deliveryNotification;
+
+    OrderFulfillment -> TransferPackageToCarrier -> E102 -> E103;
+    OrderFulfillment -> [order.payment.isByInstallments] ProcessRecurringPayment;
+
+    manual task TransferPackageToCarrier;
+
+    subprocess ProcessRecurringPayment until [order.isPaid] {
+      escalation recurringPaymentFailed:RecurringPaymentFailure;
+
+      call-activity CollectInstallment calls CollectPayment;
+
+      // TODO start event IthMonthAfterPurchase catch timeout:[after "3d"] -> task CollectInstallment;
+
+      boundary event CreditCardFailed catch error creditCardFailed;
+    }
+    event E104 throw escalation recurringPaymentFailed;
+    ProcessRecurringPayment.CreditCardFailed -> E104;
+  }
+      
+
+  lane CustomerSupport {
+    message complaint:Complaint;
+    data complaintNotice:ComplaintNotice;
+
+    send task AskForProductReview;
+
+    subprocess HandleComplaint {
+      message moreInfoRequest:AdditionalInformationRequest;
+      message moreInfoResponse:AdditionalInformationResponse;
+      message complaintResolved:ComplaintResolvedNotification;
+      message complaintRejected:ComplaintRejectedNotification;
+
+      user task CheckComplaint {
+        in {complaintNotice, order};
+      }
+      rule task DetermineCredit;
+      service task UpdateStoreCredit;
+      send task RequestMoreInformation{
+       webservice = ##unspecified;
+       message = moreInfoRequest;
+      }
+      receive task ReceiveMoreInformation{
+       webservice = ##unspecified;
+       message = moreInfoResponse;
+      }
+
+      /* TODO
+      start event -> CheckComplaint -> split xor {
+        [complaintNotice.status == ACCEPTED]:
+          DetermineCredit -> UpdateStoreCredit -> end event ComplaintResolved throw message:complaintResolved;
+        [complaintNotice.status == REJECTED]:
+          end event ComplaintRejected throw message:complaintRejected;
+        [complaintNotice.status == MORE_INFO_REQUIRED]:
+          RequestMoreInformation -> split receive:first {
+            event ThreeDays catch timeout:[after "3d"] -> end event ComplaintRejected throw message:complaintRejected;
+            ReceiveMoreInformation -> event RecheckComplaint throw link:RecheckComplaint;
+          };
+      };
+      */
+      // TODO event RecheckComplaint catch link -> CheckComplaint;
+    }
+
+    event ComplaintReceived catch message complaint {
+      out complaintNotice;
+    }
+
+    /* TODO
+    OrderDelivered -> split and {
+      event FortyEightHours catch timeout:[after "48h"] -> AskForProductReview;
+      split receive:all {
+        event FifteenDays catch timeout:[after "15d"];                            // event FifteenDays catch after:15d
+        ComplaintReceived -> HandleComplaint;                                     // but timeout:[Expression] seems more felxible, e.g. allows for CRON expressions "0 0 1 * *"
+      } merge xor;
+    } merge and -> end event OrderClosed;
+    */
+  }
+  
+  lane Sales {
+    //data salesFigures:Collection<SalesFigures>;
+    data report:SalesReport;
+    message reportDueReminder:SalesReportDueReminder;
+    message publication:SalesReport;
+
+    script task CollectSalesData {
+      out salesFigures;
+    }
+
+    /* TODO
+    adhoc PrepareSalesReport parallel until:[report.pageCount >= 2] {
+      task user GenerateGraphics multi sequential;
+      task user CreateRevenueForCast;
+      task user WriteSalesReport {
+        out: report;
+      }
+      CreateRevenueForCast -> WriteSalesReport;
+
+      boundary event EveryTwentyFourHours catch nocancel timeout:[every "24h"];
+    }
+    */
+
+    signal newReviewAvailable:ReviewAvailableSignal;
+    event ReviewCreated catch signal newReviewAvailable;
+
+    task ReviewReport
+      count 3
+      sequential
+      (signal newReviewAvailable all){
+      in report -> out reviews[i];
+    }
+
+    task UpdateReport {
+      in report -> out report;
+    }
+
+    signal publication:SalesReport;
+    end event PublishReport throw message publication {
+      in report;
+    }
+
+    /* TODO
+    start event FirstDayOfMonth catch timeout [every "month"] -> CollectSalesData -> PrepareSalesReport -> ReviewReport -> split xor -> {
+      [report.accepted ] PublishReport;
+      [!report.accepted] UpdateReport -> ReviewReport;
+    };
+    end event E105;
+    PrepareSalesReport.EveryTwentyFourHours -> send task send SendEmailReminder message reportDueReminder -> E105;
+    */
+  }
+
+  lane Inventory {
+    call-activity ReorderArticle calls ProcureArticle {
+      boundary event NotShippable catch error notShippable;
+    }
+    /* TODO
+    ReorderArticle.NotShippable -> task service RemoveArticle;
+
+    start event StockLevelBelowMinimum catch when:[exists a in Article: a.stock < 10]
+      -> ReorderArticle -> task service UpdateStockCount -> end event ArticleProcured;
+    */
+  }
+
+  
+  
+}

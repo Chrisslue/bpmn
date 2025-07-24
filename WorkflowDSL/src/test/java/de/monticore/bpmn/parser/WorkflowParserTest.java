@@ -5,42 +5,36 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import de.monticore.bpmn.AbstractTest;
-import de.monticore.bpmn.cocos.WorkflowCoCos;
-import de.monticore.bpmn.trafos.AddNameToInlineFlowNodes;
-import de.monticore.bpmn.trafos.AddSequenceFlowToFlowNodes;
 import de.monticore.bpmn.workflow.WorkflowMill;
 import de.monticore.bpmn.workflow._ast.ASTWFTask;
-import de.monticore.bpmn.workflow._ast.ASTWorkflowCompilationUnit;
-import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
 import de.monticore.bpmn.workflow._parser.WorkflowParser;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Optional;
 
-import de.monticore.bpmn.workflow._symboltable.WorkflowSTCompleter;
-import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
-
+import de.se_rwth.commons.logging.Log;
 import org.antlr.v4.runtime.RecognitionException;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class WorkflowParserTest extends AbstractTest {
   
   @Test
   public void testRequestVacation() throws IOException {
-    String modelName = "de.monticore.bpmn.examples.vacation.RequestVacation";
+    String modelName = "de.monticore.bpmn.examples.RequestVacation";
     parseModel(modelName);
   }
   
   @Test
   public void testRequestHoliday() throws IOException {
-    String modelName = "de.monticore.bpmn.examples.vacation.RequestHoliday";
+    String modelName = "de.monticore.bpmn.examples.RequestHoliday";
     parseModel(modelName);
   }
   
   // Model needs to be semantically refined
   @Test
   public void testOnlineStore() throws IOException {
-    String modelName = "de.monticore.bpmn.examples.onlineStore.OnlineStore";
+    String modelName = "de.monticore.bpmn.examples.OnlineStore";
     parseModel(modelName);
   }
   
@@ -81,32 +75,20 @@ public class WorkflowParserTest extends AbstractTest {
   
   @Test
   public void testExample1Model() {
-    String modelName = "de.monticore.bpmn.examples.order.OrderToDeliveryWorkflow";
-    ASTWorkflowCompilationUnit ast = parseModel(modelName);
-    
-    WorkflowMill.scopesGenitorDelegator().createFromAST(ast);
-    
-    new AddNameToInlineFlowNodes().transform(ast);
-    new AddSequenceFlowToFlowNodes().transform(ast);
-    
-    WorkflowSTCompleter stCompleter = new WorkflowSTCompleter();
-    WorkflowTraverser traverser = WorkflowMill.traverser();
-    traverser.add4Workflow(stCompleter);
-    ast.accept(traverser);
-    
-    WorkflowCoCoChecker checker = WorkflowCoCos.getBasicChecker();
-    checker.checkAll(ast);
+    String modelName = "de.monticore.bpmn.examples.OrderToDeliveryWorkflow";
+    loadModel(modelName);
+    Assertions.assertTrue(Log.getFindings().isEmpty());
   }
   
   @Test
   public void testExample2Model() {
-    String modelName = "de.monticore.bpmn.examples.order.CustomerOrder";
+    String modelName = "de.monticore.bpmn.examples.CustomerOrder";
     parseModel(modelName);
   }
   
   @Test
   public void testExample3Model() {
-    String modelName = "de.monticore.bpmn.examples.order.Payment";
+    String modelName = "de.monticore.bpmn.examples.Payment";
     parseModel(modelName);
   }
   

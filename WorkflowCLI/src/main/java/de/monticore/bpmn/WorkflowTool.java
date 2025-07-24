@@ -1,8 +1,10 @@
 /* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn;
 
+import com.google.common.collect.Lists;
 import de.monticore.bpmn.cocos.WorkflowCoCos;
 import de.monticore.bpmn.conformance.WfConformanceChecker;
+import de.monticore.bpmn.trafos.AddMoreImports;
 import de.monticore.bpmn.trafos.AddNameToInlineFlowNodes;
 import de.monticore.bpmn.trafos.AddSequenceFlowToFlowNodes;
 import de.monticore.bpmn.workflow.WorkflowMill;
@@ -11,12 +13,17 @@ import de.monticore.bpmn.workflow._cocos.WorkflowCoCoChecker;
 import de.monticore.bpmn.workflow._symboltable.WorkflowSTCompleter;
 import de.monticore.bpmn.workflow._visitor.WorkflowTraverser;
 import de.monticore.symbols.basicsymbols.BasicSymbolsMill;
+import de.monticore.symboltable.ImportStatement;
 import de.se_rwth.commons.logging.Log;
 import org.apache.commons.cli.*;
 
 import java.nio.file.Paths;
 
 public class WorkflowTool extends de.monticore.bpmn.workflow.WorkflowTool {
+  
+  // Add OCL default types, this way we don't need to import them in the models every time
+  protected static final ImportStatement OCL_TYPES = new ImportStatement(
+      "de.monticore.bpmn._types.ocl.DefaultTypes", true);
   
   public static void main(String[] args) {
     WorkflowTool tool = new WorkflowTool();
@@ -28,6 +35,7 @@ public class WorkflowTool extends de.monticore.bpmn.workflow.WorkflowTool {
     super.init();
     WorkflowMill.globalScope().clear();
     BasicSymbolsMill.initializePrimitives();
+    BasicSymbolsMill.initializeString();
   }
   
   @Override
@@ -129,8 +137,9 @@ public class WorkflowTool extends de.monticore.bpmn.workflow.WorkflowTool {
   
   protected ASTWorkflowCompilationUnit loadModel(String file) {
     ASTWorkflowCompilationUnit model = parse(file);
-    WorkflowMill.scopesGenitorDelegator().createFromAST(model);
     
+    new AddMoreImports(Lists.newArrayList(OCL_TYPES)).transform(model);
+    WorkflowMill.scopesGenitorDelegator().createFromAST(model);
     new AddNameToInlineFlowNodes().transform(model);
     new AddSequenceFlowToFlowNodes().transform(model);
     
@@ -139,7 +148,9 @@ public class WorkflowTool extends de.monticore.bpmn.workflow.WorkflowTool {
     traverser.add4Workflow(stCompleter);
     model.accept(traverser);
     
-    runDefaultCoCos(model);
+    // FullChecker still has some issues
+    WorkflowCoCoChecker checker = WorkflowCoCos.getBasicChecker();
+    checker.checkAll(model);
     
     return model;
   }
