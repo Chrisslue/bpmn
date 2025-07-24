@@ -1,0 +1,87 @@
+/* (c) https://github.com/MontiCore/monticore */
+plugins {
+    id "java-library"
+    id "de.monticore.generator" version "$version"
+    id "jacoco"
+    id "de.se_rwth.codestyle" version "$mc_version"
+}
+
+group = "de.monticore.lang"
+sourceCompatibility = '11'
+
+test {
+    useJUnitPlatform()
+}
+
+dependencies {
+
+
+    implementation "de.monticore.lang:petrinets:$petrinets_version"
+
+    implementation "com.google.guava:guava:$guava_version"
+    implementation "com.google.code.gson:gson:$gson_version"
+    implementation 'one.util:streamex:0.7.0'
+    implementation "org.jgrapht:jgrapht-core:$jgrapht_version"
+    implementation "org.jgrapht:jgrapht-io:$jgrapht_version"
+    implementation "org.jgrapht:jgrapht-guava:$jgrapht_version"
+    implementation "org.zeroturnaround:zt-exec:$exec_version"
+    implementation "ch.qos.logback:logback-classic:$logback_version"
+    implementation "com.google.code.findbugs:jsr305:$jsr305_version"
+
+    /*----------------------Timer-Conditions-------------------------*/
+    implementation "joda-time:joda-time:$joda_time_version"
+    implementation "com.cronutils:cron-utils:$cron_utils_version"
+
+
+    /*-----------------------MONTICORE-------------------------------*/
+    implementation "de.monticore.lang:cd4analysis:$mc_version"
+    grammar "de.monticore:monticore-grammar:$mc_version"
+    implementation "de.monticore:class2mc:$mc_version"
+
+    /*------------------------TESTING-----------------------------------*/
+    testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_jupiter_version"
+    testImplementation "org.junit.jupiter:junit-jupiter-engine:$junit_jupiter_version"
+}
+
+// build sources jar in addition
+tasks.register('sourcesJar', Jar) {
+    from sourceSets.main.allJava
+    archiveClassifier = "sources"
+}
+
+sourcesJar.dependsOn project.collect { it.tasks.withType(MCTask)}
+
+// build javadoc jar in addition
+tasks.register('javadocJar', Jar) {
+    from javadoc
+    archiveClassifier = "javadoc"
+}
+
+// generated java doc contains errors, disable for now
+javadoc.failOnError(false)
+
+// build grammar jar as well
+tasks.register('grammarJar', Jar) {
+    from("$projectDir/src/main/grammars/") { include "**/*.mc4" }
+    archiveClassifier = "grammars"
+}
+
+tasks.register('buildAll', GradleBuild) {
+    tasks = ['build']
+}
+
+defaultTasks 'build'
+
+/////////////////////////   Deployment  //////////////////////////////////
+
+// configure deployment
+publishing {
+    repositories.maven {
+        credentials.username mavenUser
+        credentials.password mavenPassword
+
+        def releasesRepoUrl = "https://nexus.se.rwth-aachen.de/content/repositories/umlp-releases/"
+        def snapshotsRepoUrl = "https://nexus.se.rwth-aachen.de/content/repositories/umlp-snapshots/"
+        url = version.endsWith("SNAPSHOT") ? snapshotsRepoUrl : releasesRepoUrl
+    }
+}

@@ -1,0 +1,20 @@
+/* (c) https://github.com/MontiCore/monticore */
+package de.monticore.bpmn.cocos.flow;
+
+import de.monticore.bpmn.workflow._ast.ASTFlowBlock;
+import de.monticore.bpmn.workflow._cocos.WorkflowASTFlowBlockCoCo;
+
+public class DefaultBranchIsLastBranch implements WorkflowASTFlowBlockCoCo {
+  
+  @Override
+  public void check(final ASTFlowBlock block) {
+    /* FIXME
+    EntryStream.of(block.getBranchList())
+        .filterKeys(index -> index < block.sizeBranch())
+        .filterValues(ASTFlowBranch::isDefault)
+        .values()
+        .forEach(branch -> Log.error(Messages.get("0xWFM3005"), branch.get_SourcePositionStart()));
+    */
+  }
+  
+}

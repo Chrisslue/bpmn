@@ -1,0 +1,144 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
+package de.monticore.bpmn.examples;
+
+import de.monticore.bpmn.cds.Domain.*;
+
+
+process RequestHoliday {
+  
+  lane Requester {
+    CoordinateInternally;
+    FillHolidayCardEntry;
+    SubmitHolidayRequest;
+    ChooseToComplain;
+    ChooseToRetry;
+  }
+
+  lane Superior {
+    CheckHolidayRequest;
+    AcknowledgeHolidayRequest;
+  }
+  
+  data holidayCard:HolidayCard;
+
+  start event Start;
+
+  Start -> CoordinateInternally;
+  
+  subprocess CoordinateInternally {
+    manual task CoordinateWithColleagues;
+    task FindSubstitute;
+  }
+  
+  CoordinateInternally -> FillHolidayCardEntry;
+  
+  user task FillHolidayCardEntry {
+    in {} -> out { holidayCard };
+  }
+  
+  FillHolidayCardEntry -> SubmitHolidayRequest;
+
+  task SubmitHolidayRequest;
+  
+  subprocess CheckHolidayRequest {
+     
+    data contract:Contract;
+
+    start event Start;
+
+    Start -> ValidateLeaveDaysAndCheckWaitingPeriod;
+
+    split and ValidateLeaveDaysAndCheckWaitingPeriod;
+    
+    ValidateLeaveDaysAndCheckWaitingPeriod -> ValidateLeaveDays;
+    ValidateLeaveDaysAndCheckWaitingPeriod -> CheckWaitingPeriod;
+
+    task ValidateLeaveDays {
+      in {holidayCard} -> out {};
+    }
+    
+    ValidateLeaveDays -> IsRequestValid;
+
+    split xor IsRequestValid;
+    merge and ValidateLeaveDaysAndCheckWaitingPeriodJoin;
+
+    event Terminate1 throw terminate;
+    
+    IsRequestValid -> [true] ValidateLeaveDaysAndCheckWaitingPeriodJoin ;
+    IsRequestValid -> [false] Terminate1 ;
+    
+    task CheckWaitingPeriod {
+      in {contract} -> out {};
+    }
+
+    CheckWaitingPeriod -> IsRequesterEligibleForHoliday;
+
+    split xor IsRequesterEligibleForHoliday;
+    
+    IsRequesterEligibleForHoliday -> [true] ValidateLeaveDaysAndCheckWaitingPeriodJoin;
+    IsRequesterEligibleForHoliday -> [false] Terminate2;
+
+    event Terminate2 throw terminate;
+
+
+    ValidateLeaveDaysAndCheckWaitingPeriodJoin -> End;
+
+    end event End;
+    
+  }
+  
+  CheckHolidayRequest -> IsHolidayRequestAccepted;
+
+  split xor IsHolidayRequestAccepted;
+
+  IsHolidayRequestAccepted -> [true] AcknowledgeHolidayRequest;
+  IsHolidayRequestAccepted -> [false] ChooseToRetry;
+
+  task AcknowledgeHolidayRequest {
+    in {holidayCard} -> out {holidayCard};
+  }
+  
+  AcknowledgeHolidayRequest -> End1;
+  
+  end event End1;
+
+  task ChooseToRetry;
+  
+  ChooseToRetry -> Retry;
+
+  split xor Retry;
+
+  Retry -> [false] End2;
+  Retry -> [true] IsEscalationPossible;
+
+  end event End2;
+  
+  split xor IsEscalationPossible;
+
+  IsEscalationPossible -> CoordinateInternally;
+  IsEscalationPossible -> [3 > 3] ChooseToComplain;
+
+  task ChooseToComplain;
+
+  ChooseToComplain -> Complain;
+
+  split xor Complain;
+
+  Complain -> [false] CoordinateInternally;
+  Complain -> [true] SendComplaint;
+  
+  send task SendComplaint;
+  
+  message complaint:Complaint;
+  
+  SendComplaint -> ReceiveAnswer;
+
+  receive task ReceiveAnswer;
+
+  message answerToComplaint:ComplaintResponse;
+  
+  ReceiveAnswer -> End3;
+
+  end event End3;
+  
+}

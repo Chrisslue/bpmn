@@ -1,0 +1,10 @@
+ /* (c) https://github.com/MontiCore/monticore */
+process Concrete {
+
+  start event Start;
+  task Task1;
+  end event End;
+
+  Start -> Task1 -> End;
+
+}

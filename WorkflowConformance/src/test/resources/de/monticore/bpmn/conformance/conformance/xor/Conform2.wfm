@@ -1,0 +1,13 @@
+ /* (c) https://github.com/MontiCore/monticore */
+process Conform2 {
+  start event S;
+  task T1;
+  task T2;
+  end event E;
+
+  split xor XOR;
+  merge xor M;
+
+  S -> XOR -> T1 -> M;
+       XOR -> T2 -> M -> E;
+}

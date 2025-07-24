@@ -1,0 +1,12 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
+package de.monticore.bpmn.timer;
+
+process TemporalExpressions {
+
+    start event ReceiveTimeout timer [on 2019-10-31 at 10:37];
+
+    end event EndItAll;
+
+    ReceiveTimeout -> EndItAll;
+
+}

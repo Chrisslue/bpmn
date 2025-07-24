@@ -1,0 +1,85 @@
+plugins {
+    id "java-library"
+    id "com.github.johnrengelman.shadow" version "7.1.2"
+    id "jacoco"
+    id "de.se_rwth.codestyle" version "$mc_version"
+}
+
+group = "de.monticore.lang"
+
+test {
+    useJUnitPlatform()
+}
+
+dependencies {
+    implementation project(":WorkflowDSL")
+    implementation project(":WorkflowConformance")
+
+    testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_jupiter_version"
+    testImplementation "org.junit.jupiter:junit-jupiter-engine:$junit_jupiter_version"
+}
+
+shadowJar {
+  manifest {
+    attributes "Main-Class": "de.monticore.bpmn.WorkflowTool"
+  }
+  archiveFileName = "BPMN.jar"
+  archiveClassifier = "mc-tool"
+  zip64 = true
+    duplicatesStrategy DuplicatesStrategy.INCLUDE
+}
+
+tasks.register("runDemoCLI", JavaExec) {
+    classpath = files(tasks.shadowJar.archiveFile)
+    def modelDir = "src/test/resources/de/monticore/bpmn/conformance/"
+    def ref = modelDir+ "PaperAuthoring.wfm"
+    def conc = modelDir+ "Thesis.wfm"
+    args = ["-ref", ref, "-i", conc, "-m", "ref"]
+}
+
+tasks.register("runDemoCLI_notconform", JavaExec) {
+    classpath = files(tasks.shadowJar.archiveFile)
+    def modelDir = "src/test/resources/de/monticore/bpmn/conformance/"
+    def ref = modelDir+ "PaperAuthoring.wfm"
+    def conc = modelDir+ "AntiPatternMerge.wfm"
+    args = ["-ref", ref, "-i", conc, "-m", "ref"]
+}
+
+jar.dependsOn(shadowJar)
+
+publishing {
+  publications {
+    mavenJava(MavenPublication) {
+      // from components.java
+      artifact shadowJar
+      artifactId = "bpmn"
+    }
+  }
+  repositories.maven {
+    name = "$SE_Nexus_ID"
+    credentials.username mavenUser
+    credentials.password mavenPassword
+    url = version.endsWith('SNAPSHOT') ? "$snapshotsRepoUrl" : "$releasesRepoUrl"
+  }
+}
+
+// build sources jar in addition
+tasks.register('sourcesJar', Jar) {
+    from sourceSets.main.allJava
+    archiveClassifier = "sources"
+}
+
+// build javadoc jar in addition
+tasks.register('javadocJar', Jar) {
+    from javadoc
+    archiveClassifier = "javadoc"
+}
+
+// generated java doc contains errors, disable for now
+javadoc.failOnError(false)
+
+tasks.register('buildAll', GradleBuild) {
+    tasks = ['build']
+}
+
+defaultTasks 'build'

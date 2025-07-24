@@ -1,7 +1,0 @@
-
-process Conform1 {
-  start event S;
-  task T1;
-
-  S -> T1;
-}

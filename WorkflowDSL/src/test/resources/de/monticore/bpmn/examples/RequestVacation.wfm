@@ -1,0 +1,38 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
+package de.monticore.bpmn.examples;
+
+import de.monticore.bpmn.cds.RequestVacation.*;
+
+process RequestVacation {
+
+  lane Admin {
+    store contract:Contract;
+    data report:Report;
+    data notice:VacationCardEntry;
+
+    service task DoWork {
+      out report;
+    }
+    user task Task1 {
+      in {contract, report} -> out {report};
+    }
+    user task Task2 {
+      in {report} -> out {notice};
+    }
+
+    task Foo; // template:External;
+    service task Bar;
+
+    start event E1;
+    event E2 catch timer [after PT20S];
+    end event E3;
+
+    E1 -> DoWork -> Task1 -> split xor -> {
+      [true] Foo;
+      [false] Bar;
+    } -> merge xor -> E2 -> Task2 -> E3;
+
+
+  }
+
+}

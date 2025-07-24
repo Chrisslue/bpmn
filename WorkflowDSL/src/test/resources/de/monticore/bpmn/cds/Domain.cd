@@ -1,0 +1,43 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
+package de.monticore.bpmn.cds;
+
+
+classdiagram Domain {
+
+    class Contract {
+      java.time.ZonedDateTime hiringDate;
+      public int version;
+    }
+
+    class DomainUser;
+
+    association [1] DomainUser -> Contract [*];
+
+    class Report {
+      String result;
+      String details;
+    }
+
+    class LeaveCard;
+
+    class LeaveEntry {
+      java.time.ZonedDateTime startDate;
+      java.time.ZonedDateTime endDate;
+      /int workingDays;
+      /int remainingLeaveDays;
+      DomainUser substitute;
+      boolean valid;
+      boolean approved;
+    }
+
+    association entries [1] LeaveCard -> LeaveEntry [*]; // <<ordered>>;
+
+    association [1] LeaveCard -> DomainUser [1];
+
+    class MedicalCertificate {
+      java.time.ZonedDateTime startDate;
+      java.time.ZonedDateTime endDate;
+      String description;
+    }
+
+}

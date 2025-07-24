@@ -1,0 +1,27 @@
+ /* (c) https://github.com/MontiCore/monticore */
+
+process PaperAuthoring {
+
+  start event Start;
+  end event Done;
+
+  task Introduction;
+  task Main;
+  task Conclusion;
+  task Draft;
+  task Research;
+  task Review;
+
+  merge xor StartIteration;
+  split xor EndIteration;
+  split and SplitWork;
+  merge and MergeWork;
+
+
+  Start -> Research-> Draft -> StartIteration -> SplitWork -> Introduction -> MergeWork;
+                                                 SplitWork -> Main -> MergeWork;
+                                                 SplitWork -> Conclusion -> MergeWork -> Review -> EndIteration -> Done;
+               EndIteration -> StartIteration;
+
+
+}

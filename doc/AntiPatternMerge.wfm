@@ -1,0 +1,41 @@
+ /* (c) https://github.com/MontiCore/monticore */
+
+process AntiPatternMerge {
+
+  start event Start;
+  end event Done;
+
+  <<incarnates="Research">> task LiteratureReview;
+  <<incarnates="Draft">> task Expose;
+  task Implement;
+  task Evaluate;
+  task Introduction;
+  task Main;
+  task Conclusion;
+  task Review;
+
+  merge xor MLoop;
+  split xor SLoop;
+
+  merge xor StartIteration;
+  split xor EndIteration;
+  split and SplitWork;
+  merge xor MergeWork;
+
+
+  Start -> LiteratureReview-> Expose -> MLoop
+                                          -> Implement
+                                               -> Evaluate
+                                                  -> SLoop
+                                                       -> StartIteration
+                                                            -> SplitWork -> Introduction -> MergeWork;
+                                                               SplitWork -> Main -> MergeWork;
+                                                               SplitWork -> Conclusion -> MergeWork
+                                                                                            -> Review
+                                                                                                 -> EndIteration
+                                                                                                      -> Done;
+                                          EndIteration -> StartIteration;
+                               SLoop -> MLoop;
+
+
+}

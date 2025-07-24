@@ -1,6 +1,0 @@
-
-process NonConform1 {
-  start event S;
-
-  S ;
-}

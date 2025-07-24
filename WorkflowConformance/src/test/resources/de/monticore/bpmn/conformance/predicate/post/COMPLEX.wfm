@@ -1,0 +1,25 @@
+ /* (c) https://github.com/MontiCore/monticore */
+process COMPLEX {
+
+  start event S;
+  task T1;
+  task T2;
+  task T3;
+  task T4;
+  task T5;
+  split xor XOR ;
+  split and AND ;
+  split ior OR ;
+
+
+
+
+
+       XOR -> AND ->  T5;
+       XOR -> AND ->  T3 ;
+  S -> XOR -> T1 ;
+       XOR -> OR ->  T2 ;
+              OR ->  T4 ;
+
+}
+

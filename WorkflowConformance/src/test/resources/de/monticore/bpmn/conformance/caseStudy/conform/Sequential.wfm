@@ -1,0 +1,20 @@
+ /* (c) https://github.com/MontiCore/monticore */
+
+process  Sequential {
+
+  start event Start;
+  end event Done;
+
+  task  Introduction;
+  task  Research;
+  task  Main;
+  task Conclusion;
+  task Draft;
+  task Review;
+
+
+  Start -> Research ->  Draft  -> Introduction  -> Main -> Conclusion -> Review -> Done;
+
+
+
+}

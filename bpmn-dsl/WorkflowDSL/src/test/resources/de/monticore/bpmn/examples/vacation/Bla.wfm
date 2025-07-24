@@ -1,8 +1,0 @@
- /* (c) https://github.com/MontiCore/monticore */ 
-package de.monticore.bpmn.examples.vacation;
-
-process Bla {
-
-  start event -> task DoStuff -> end event;
-
-}
