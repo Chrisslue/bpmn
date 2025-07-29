@@ -6,7 +6,6 @@
 
 # Business Process Model and Notation (BPMN)
 
-[[_TOC_]]
 
 The Business Process Model and Notation (BPMN) is a standardized language 
 for modeling business processes and workflows. 
