@@ -17,7 +17,7 @@ public class ASTWFEvent extends ASTWFEventTOP {
       return true;
     }
     else {
-      return isStart() || getSymbol().isBoundary() || (isIntermediate()
+      return isStart() || (isPresentSymbol() && getSymbol().isBoundary()) || (isIntermediate()
           && new IsIntermediateCatchTrigger().test(this));
     }
   }
@@ -29,7 +29,7 @@ public class ASTWFEvent extends ASTWFEventTOP {
     else {
       
       return isEnd() || (isIntermediate() && new IsIntermediateThrowTrigger().test(this)
-          && !getSymbol().isBoundary());
+          && (isPresentSymbol() && !getSymbol().isBoundary()));
     }
   }
   
@@ -75,7 +75,7 @@ public class ASTWFEvent extends ASTWFEventTOP {
     return this.getIncomingsList().stream();
   }
   
-  class IsIntermediateThrowTrigger implements Predicate<ASTWFEvent>, WorkflowVisitor2 {
+  static class IsIntermediateThrowTrigger implements Predicate<ASTWFEvent>, WorkflowVisitor2 {
     
     boolean isThrow;
     
@@ -105,7 +105,7 @@ public class ASTWFEvent extends ASTWFEventTOP {
     
   }
   
-  class IsIntermediateCatchTrigger implements Predicate<ASTWFEvent>, WorkflowVisitor2 {
+  static class IsIntermediateCatchTrigger implements Predicate<ASTWFEvent>, WorkflowVisitor2 {
     
     boolean isCatch;
     

@@ -1,0 +1,13 @@
+ /* (c) https://github.com/MontiCore/monticore */ 
+package de.monticore.bpmn.prettyprint;
+
+process TimeAndDate {
+
+  start event Go catch;
+  task DoStuff;
+  event Happening catch timer [start on 2025-08-04 at 19:00:00, 3 times every P3M];
+  end event Stop throw;
+
+  Go -> DoStuff -> Happening -> Stop;
+
+}
