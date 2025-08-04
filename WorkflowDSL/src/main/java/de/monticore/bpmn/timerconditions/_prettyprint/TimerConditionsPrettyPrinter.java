@@ -50,8 +50,8 @@ public class TimerConditionsPrettyPrinter extends TimerConditionsPrettyPrinterTO
     printer.print(node.getHours().getDigits());
     printer.print(":");
     printer.print(node.getMinutes().getDigits());
-    printer.print(":");
     if (node.isPresentSeconds()) {
+      printer.print(":");
       printer.print(node.getSeconds().getDigits());
     }
   }
