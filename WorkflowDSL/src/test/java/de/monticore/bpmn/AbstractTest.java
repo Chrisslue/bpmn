@@ -63,7 +63,7 @@ public abstract class AbstractTest {
    */
   protected ASTWorkflowCompilationUnit parseModel(final String qualifiedModelName) {
     WorkflowParser parser = WorkflowMill.parser();
-    Optional<ASTWorkflowCompilationUnit> ast = null;
+    Optional<ASTWorkflowCompilationUnit> ast;
     try {
       ast = parser.parse(MODEL_DIR + Names.getPathFromPackage(qualifiedModelName).replaceAll("\\\\",
           "/") + ".wfm");
@@ -86,7 +86,16 @@ public abstract class AbstractTest {
    */
   protected ASTWorkflowCompilationUnit loadModel(final String qualifiedModelName) {
     ASTWorkflowCompilationUnit ast = parseModel(qualifiedModelName);
+    completeModel(ast);
     
+    if (shouldWriteAuxModels()) {
+      writeTestAuxModels(qualifiedModelName, ast);
+    }
+    
+    return ast;
+  }
+  
+  protected void completeModel(ASTWorkflowCompilationUnit ast) {
     new AddMoreImports(Lists.newArrayList(OCL_TYPES)).transform(ast);
     WorkflowMill.scopesGenitorDelegator().createFromAST(ast);
     new AddNameToInlineFlowNodes().transform(ast);
@@ -99,12 +108,6 @@ public abstract class AbstractTest {
     
     WorkflowCoCoChecker checker = WorkflowCoCos.getBasicChecker();
     checker.checkAll(ast);
-    
-    if (shouldWriteAuxModels()) {
-      writeTestAuxModels(qualifiedModelName, ast);
-    }
-    
-    return ast;
   }
   
   protected boolean shouldWriteAuxModels() {
