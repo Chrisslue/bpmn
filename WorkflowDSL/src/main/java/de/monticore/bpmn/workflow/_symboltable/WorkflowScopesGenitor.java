@@ -1,10 +1,10 @@
 /* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.workflow._symboltable;
 
+import com.google.common.base.Preconditions;
 import de.monticore.bpmn.workflow._ast.ASTWorkflowCompilationUnit;
 import de.monticore.symboltable.ImportStatement;
 import de.monticore.types.mcbasictypes._ast.ASTMCImportStatement;
-import de.se_rwth.commons.logging.Log;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -12,7 +12,7 @@ public class WorkflowScopesGenitor extends WorkflowScopesGenitorTOP {
   
   @Override
   public IWorkflowArtifactScope createFromAST(ASTWorkflowCompilationUnit rootNode) {
-    Log.errorIfNull(rootNode,
+    Preconditions.checkNotNull(rootNode,
         "0xA7004x55587 Error by creating of the WorkflowScopesGenitor symbol table: top ast node is null");
     IWorkflowArtifactScope artifactScope = de.monticore.bpmn.workflow.WorkflowMill.artifactScope();
     final String packageName = rootNode.getPackageName().orElse("");
