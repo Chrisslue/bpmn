@@ -3,15 +3,16 @@
 [monticore-website]: http://www.monticore.de
 [KMR24]: https://www.se-rwth.de/publications/Towards-Reference-Models-with-Conformance-Relations-for-Structure.pdf
 [KRS+24]: https://www.se-rwth.de/publications/Towards-a-Semantically-Useful-Definition-of-Conformance-with-a-Reference-Model.pdf
+[BPMN-spec]: https://www.omg.org/spec/BPMN
 
 # Business Process Model and Notation (BPMN)
 
-
 The Business Process Model and Notation (BPMN) is a standardized language 
 for modeling business processes and workflows. 
-This project implements the Workflow DSL, a textual notation of the BPMN 
-language with [MontiCore][monticore-website] and provides comprehensive 
-tooling for working with the language.
+This project implements the Workflow DSL, a textual notation for process models 
+based on the [BPMN 2.0.2 language specification][BPMN-spec] and developed with 
+the [MontiCore language workbench][monticore-website]. 
+The project also provides comprehensive tooling for working with the language.
 
 A detailed documentation for **language engineers** using or extending the
 Workflow DSL is located 
