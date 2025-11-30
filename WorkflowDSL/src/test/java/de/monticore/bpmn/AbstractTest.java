@@ -43,6 +43,10 @@ public abstract class AbstractTest {
   protected static final ImportStatement OCL_TYPES = new ImportStatement(
       "de.monticore.bpmn._types.ocl.DefaultTypes", true);
   
+  // Add Runtime types for expression variables
+  protected static final ImportStatement RUNTIME_TYPES = new ImportStatement(
+      "de.monticore.bpmn._types.RuntimeTypes", true);
+  
   @BeforeEach
   public void setUp() {
     Log.init();
