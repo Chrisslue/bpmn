@@ -35,6 +35,9 @@ public class PerformanceWFMBuilder {
         String prefix = "  ";
         String suffix = ";";
         
+        String xorBranch1 = "XorSplit%1$s -> F%1$s -> G%1$s -> XorMerge%1$s";
+        String xorBranch2 = "XorSplit%1$s -> H%1$s -> XorMerge%1$s";
+        
         if (i > 1) {
           Optional<ASTSequenceFlow> opt = WorkflowMill.parser().parse_StringSequenceFlow(String
               .format("  J%s -> A%s;", i - 1, i));
@@ -42,6 +45,11 @@ public class PerformanceWFMBuilder {
         }
         else {
           prefix = "  Begin -> ";
+          
+          if (diff) {
+            xorBranch1 = "XorSplit%1$s -> F%1$s -> XorMerge%1$s";
+            xorBranch2 = "XorSplit%1$s -> H%1$s -> G%1$s -> XorMerge%1$s";
+          }
         }
         
         if (i == size) {
@@ -77,14 +85,6 @@ public class PerformanceWFMBuilder {
         Optional<ASTWFGateway> optLoop = WorkflowMill.parser().parse_StringWFGateway(String.format(
             "  split xor Loop%s;", i));
         optLoop.ifPresent(gateway -> wf.get().getWFProcess().addFlowElement(gateway));
-        
-        String xorBranch1 = "XorSplit%1$s -> F%1$s -> G%1$s -> XorMerge%1$s";
-        String xorBranch2 = "XorSplit%1$s -> H%1$s -> XorMerge%1$s";
-        
-        if (diff) {
-          xorBranch1 = "XorSplit%1$s -> F%1$s -> XorMerge%1$s";
-          xorBranch2 = "XorSplit%1$s -> H%1$s -> G%1$s -> XorMerge%1$s";
-        }
         
         Optional<ASTSequenceFlow> optMainFlow = WorkflowMill.parser().parse_StringSequenceFlow(
             String.format(prefix + "A%1$s -> LoopBack%1$s -> AndSplit%1$s -> B%1$s -> C%1$s -> "
