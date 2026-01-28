@@ -236,12 +236,12 @@ class CaseStudyTest extends AbstractConfTest {
   }
   
   @Test
-  public void checkMotivatingExample() {
+  public void CheckMotivatingExample() {
     // given
     String modelDir = "de.monticore.bpmn.conformance.caseStudy.";
     
     ASTWorkflowCompilationUnit reference = loadBPMN(modelDir + "PaperAuthoring", true);
-    ASTWorkflowCompilationUnit concrete = loadBPMN(modelDir + "MotivatingExample", true);
+    ASTWorkflowCompilationUnit concrete = loadBPMN(modelDir + "more.MotivatingExample", true);
     
     // when
     WfConformanceChecker checker = new WfConformanceChecker();
