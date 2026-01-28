@@ -42,7 +42,7 @@ public class BPMNConformanceUtils {
     return ast;
   }
   
-  private static void completeModel(ASTWorkflowCompilationUnit ast) {
+  protected static void completeModel(ASTWorkflowCompilationUnit ast) {
     new AddMoreImports(Lists.newArrayList(OCL_TYPES)).transform(ast);
     WorkflowMill.scopesGenitorDelegator().createFromAST(ast);
     new AddNameToInlineFlowNodes().transform(ast);
