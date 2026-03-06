@@ -4,10 +4,13 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 
 plugins {
+    id 'java'
     id "maven-publish"
     id "io.github.themrmilchmann.ecj" version "0.2.0" apply false
     id "de.se_rwth.codestyle" version "$mc_version"
 }
+
+
 
 description = "BPMN-DSL"
 
@@ -32,6 +35,10 @@ subprojects {
     apply plugin: 'java-library'
     apply plugin: 'io.github.themrmilchmann.ecj'
     apply plugin: 'maven-publish'
+
+    ecj {
+        compilerVersion = "3.43.0"
+    }
 
     tasks.withType(Test).configureEach {
         useJUnit()
@@ -67,8 +74,8 @@ subprojects {
 
     tasks.withType(JavaCompile).tap {
         configureEach {
-            sourceCompatibility = JavaVersion.VERSION_11
-            targetCompatibility = JavaVersion.VERSION_11
+            sourceCompatibility = JavaVersion.VERSION_21
+            targetCompatibility = JavaVersion.VERSION_21
             options.encoding = "UTF-8"
             options.deprecation false
             options.warnings = false
