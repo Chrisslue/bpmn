@@ -36,6 +36,11 @@ subprojects {
     apply plugin: 'io.github.themrmilchmann.ecj'
     apply plugin: 'maven-publish'
 
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(21)
+        }
+
     ecj {
         compilerVersion = "3.43.0"
     }
@@ -74,8 +79,6 @@ subprojects {
 
     tasks.withType(JavaCompile).tap {
         configureEach {
-            sourceCompatibility = JavaVersion.VERSION_21
-            targetCompatibility = JavaVersion.VERSION_21
             options.encoding = "UTF-8"
             options.deprecation false
             options.warnings = false
