@@ -16,7 +16,7 @@ description = "BPMN-DSL"
 
 allprojects {
     group 'de.monticore.lang'
-    buildDir = "$projectDir/target"
+    layout.buildDirectory = layout.projectDirectory.dir("target")
 
     repositories {
         if (("true").equals(getProperty('useLocalRepo'))) {
@@ -46,7 +46,7 @@ subprojects {
     }
 
     tasks.withType(Test).configureEach {
-        useJUnit()
+        useJUnitPlatform()
         testLogging {
             // controls whether test output is shown
             showStandardStreams = !("false").equals(getProperty('showTestOutput'))
@@ -72,7 +72,7 @@ subprojects {
             }
         }
         reports {
-            junitXml.required = false
+            junitXml.required = true
             html.required = false
         }
     }
