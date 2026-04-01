@@ -58,7 +58,7 @@ tasks.register('javadocJar', Jar) {
 }
 
 // generated java doc contains errors, disable for now
-javadoc.failOnError(false)
+javadoc.failOnError = false
 
 // build grammar jar as well
 tasks.register('grammarJar', Jar) {
@@ -77,8 +77,8 @@ defaultTasks 'build'
 // configure deployment
 publishing {
     repositories.maven {
-        credentials.username mavenUser
-        credentials.password mavenPassword
+        credentials.username = mavenUser
+        credentials.password = mavenPassword
 
         def releasesRepoUrl = "https://nexus.se.rwth-aachen.de/content/repositories/umlp-releases/"
         def snapshotsRepoUrl = "https://nexus.se.rwth-aachen.de/content/repositories/umlp-snapshots/"

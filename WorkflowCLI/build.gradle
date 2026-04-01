@@ -27,7 +27,7 @@ shadowJar {
   archiveFileName = "BPMN.jar"
   archiveClassifier = "mc-tool"
   zip64 = true
-    duplicatesStrategy DuplicatesStrategy.INCLUDE
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 
 tasks.register("runDemoCLI", JavaExec) {
@@ -58,8 +58,8 @@ publishing {
   }
   repositories.maven {
     name = "$SE_Nexus_ID"
-    credentials.username mavenUser
-    credentials.password mavenPassword
+    credentials.username = mavenUser
+    credentials.password = mavenPassword
     url = version.endsWith('SNAPSHOT') ? "$snapshotsRepoUrl" : "$releasesRepoUrl"
   }
 }
@@ -77,7 +77,7 @@ tasks.register('javadocJar', Jar) {
 }
 
 // generated java doc contains errors, disable for now
-javadoc.failOnError(false)
+javadoc.failOnError = false
 
 tasks.register('buildAll', GradleBuild) {
     tasks = ['build']

@@ -15,7 +15,7 @@ plugins {
 description = "BPMN-DSL"
 
 allprojects {
-    group 'de.monticore.lang'
+    group = 'de.monticore.lang'
     layout.buildDirectory = layout.projectDirectory.dir("target")
 
     repositories {
@@ -23,9 +23,9 @@ allprojects {
             mavenLocal()
         }
         maven {
-            credentials.username mavenUser
-            credentials.password mavenPassword
-            url repo
+            credentials.username = mavenUser
+            credentials.password = mavenPassword
+            url = repo
         }
         mavenCentral()
     }
@@ -50,10 +50,10 @@ subprojects {
         testLogging {
             // controls whether test output is shown
             showStandardStreams = !("false").equals(getProperty('showTestOutput'))
-            showExceptions true
-            showCauses true
-            showStackTraces true
-            exceptionFormat TestExceptionFormat.FULL
+            showExceptions = true
+            showCauses = true
+            showStackTraces = true
+            exceptionFormat = TestExceptionFormat.FULL
             info {
                 events TestLogEvent.FAILED,
                         TestLogEvent.PASSED,
@@ -80,7 +80,7 @@ subprojects {
     tasks.withType(JavaCompile).tap {
         configureEach {
             options.encoding = "UTF-8"
-            options.deprecation false
+            options.deprecation = false
             options.warnings = false
             options.forkOptions.jvmArgs += ["-Xmx4G"]
             // TODO: reevaluate with new ecj plugin
@@ -94,8 +94,8 @@ subprojects {
  * Executes JUnit tests and assembles the jars
  */
 tasks.register('buildBPMN') {
-    group("build")
-    description("Builds the whole BPMN project, i.e. BpmnXML, TimerConditions, WorkflowCLI and WorkflowDSL")
+    group = "build"
+    description = "Builds the whole BPMN project, i.e. BpmnXML, TimerConditions, WorkflowCLI and WorkflowDSL"
     dependsOn(
             ":WorkflowCLI:build",
             ":WorkflowConformance:build",
@@ -108,8 +108,8 @@ tasks.register('buildBPMN') {
  * Executes JUnit tests for the BPMN project
  */
 tasks.register('testBPMN') {
-    group("verification")
-    description("Tests the JUnit Tests in the BPMN project")
+    group = "verification"
+    description = "Tests the JUnit Tests in the BPMN project"
     dependsOn(
             ":WorkflowCLI:test",
             ":WorkflowConformance:test",
@@ -176,8 +176,8 @@ configure([
             }
         }
         repositories.maven {
-            credentials.username mavenUser
-            credentials.password mavenPassword
+            credentials.username = mavenUser
+            credentials.password = mavenPassword
             def releasesRepoUrl = "https://nexus.se.rwth-aachen.de/content/repositories/monticore-releases/"
             def snapshotsRepoUrl = "https://nexus.se.rwth-aachen.de/content/repositories/monticore-snapshots/"
             url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
