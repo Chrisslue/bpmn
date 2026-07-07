@@ -106,11 +106,12 @@ process OrderToDeliveryWorkflow {
       -> ProcessOrder
         -> CheckProductAvailability
           -> OrderFulfillable
-            -> {
+              -> {
                  [checker.allProductsAvailable] PrepareAndPackProducts
-                   -> { [agreement.isOrderPickedUp] PickUpOrder;
+                   -> split xor -> {
+                        [agreement.isOrderPickedUp] PickUpOrder;
                         [_] ShipOrder;
-                      }
+                      } -> merge xor
                    -> OrderDelivered;
                  [!checker.allProductsAvailable] SendCancellationMessage
                    -> CancelOrder;
