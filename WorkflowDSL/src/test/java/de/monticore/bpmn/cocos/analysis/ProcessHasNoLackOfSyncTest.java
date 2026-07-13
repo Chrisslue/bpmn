@@ -18,7 +18,7 @@ class ProcessHasNoLackOfSyncTest extends AbstractCoCoTest {
   @Override
   protected WorkflowCoCoChecker getChecker() { return WorkflowCoCos.getStructuralChecker(); }
   
-  @Disabled
+  @Disabled("CoCo not yet active — ProcessHasNoLackOfSync has a known bug")
   @Test
   void mergeANDLackOfSync() {
     String modelName = "de.monticore.bpmn.cocos.analysis.invalid.LackOfSyncAND";
@@ -28,7 +28,7 @@ class ProcessHasNoLackOfSyncTest extends AbstractCoCoTest {
     testModelForErrors(modelName, Lists.newArrayList(), expectedWarnings);
   }
   
-  @Disabled
+  @Disabled("CoCo not yet active — ProcessHasNoLackOfSync has a known bug")
   @Test
   void mergeIORLackOfSync() {
     String modelName = "de.monticore.bpmn.cocos.analysis.invalid.LackOfSyncIOR";

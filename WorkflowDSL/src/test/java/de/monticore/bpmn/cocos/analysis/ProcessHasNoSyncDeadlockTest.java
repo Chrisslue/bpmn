@@ -18,7 +18,7 @@ class ProcessHasNoSyncDeadlockTest extends AbstractCoCoTest {
   @Override
   protected WorkflowCoCoChecker getChecker() { return WorkflowCoCos.getStructuralChecker(); }
   
-  @Disabled
+  @Disabled("CoCo not yet active — ProcessHasNoSyncDeadlock has a known bug")
   @Test
   void mergeANDDeadlock() {
     String modelName = "de.monticore.bpmn.cocos.analysis.invalid.SyncDeadlockAND";
@@ -28,7 +28,7 @@ class ProcessHasNoSyncDeadlockTest extends AbstractCoCoTest {
     testModelForErrors(modelName, Lists.newArrayList(), expectedWarnings);
   }
   
-  @Disabled
+  @Disabled("CoCo not yet active — ProcessHasNoSyncDeadlock has a known bug")
   @Test
   void mergeIORDeadlock() {
     String modelName = "de.monticore.bpmn.cocos.analysis.invalid.SyncDeadlockIOR";

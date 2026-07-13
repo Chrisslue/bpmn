@@ -18,7 +18,7 @@ class SequenceFlowDoesNotCrossSubProcessBoundariesTest extends AbstractCoCoTest 
   @Override
   protected WorkflowCoCoChecker getChecker() { return WorkflowCoCos.getSequenceFlowChecker(); }
   
-  @Disabled
+  @Disabled("CoCo not yet active — toSequenceFlow broken after FlowElementContainer removal")
   @Test
   void invalidSourcesAndTargets() {
     String modelName =

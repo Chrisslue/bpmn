@@ -1,0 +1,16 @@
+ /* (c) https://github.com/MontiCore/monticore */
+package de.monticore.bpmn.cocos.flows.valid;
+
+process AtMostOneOutgoingFlowIsDefault {
+
+  start event Start;
+  split xor Gateway;
+  task T1;
+  task T2;
+  end event End;
+
+  Start -> Gateway;
+  Gateway -> [_] T1 -> End;
+  Gateway -> [true] T2 -> End;
+
+}

@@ -206,7 +206,7 @@ Context conditions for analysis:
 * [```ProcessNetIsSound```](../../../../java/de/monticore/bpmn/cocos/analysis/ProcessNetIsSound.java) 
 
 
-Context conditions for event triggers (to be implemented):
+Context conditions for event triggers:
 
 * [```BoundaryEventHasValidTrigger```](../../../../java/de/monticore/bpmn/cocos/event/triggers/BoundaryEventHasValidTrigger.java) 
 
@@ -227,7 +227,7 @@ Context conditions for event triggers (to be implemented):
 * [```StartEventTopLevelProcessHasValidTrigger```](../../../../java/de/monticore/bpmn/cocos/event/triggers/StartEventTopLevelProcessHasValidTrigger.java) 
 
 
-Context conditions for events (to be implemented):
+Context conditions for events:
 
 * [```AtLeastOneEndEventIfStartEventIsUsed```](../../../../java/de/monticore/bpmn/cocos/event/triggers/AtLeastOneEndEventIfStartEventIsUsed.java) 
 
@@ -255,14 +255,12 @@ Context conditions for flow:
 * [```AtMostOneDefaultBranch```](../../../../java/de/monticore/bpmn/cocos/flow/AtMostOneDefaultBranch.java)
 
 * [```AtMostOneOutgoingFlowIsDefault```](../../../../java/de/monticore/bpmn/cocos/flow/AtMostOneOutgoingFlowIsDefault.java)
-  is not implemented.
 
 * [```BoundaryEventHasNoIncomingFlow```](../../../../java/de/monticore/bpmn/cocos/flow/BoundaryEventHasNoIncomingFlow.java)
 
 * [```DefaultBranchIsLastBranch```](../../../../java/de/monticore/bpmn/cocos/flow/DefaultBranchIsLastBranch.java)
 
 * [```DefaultFlowHasValidSource```](../../../../java/de/monticore/bpmn/cocos/flow/DefaultFlowHasValidSource.java)
-  is not yet implemented.
 
 * [```EndEventHasNoOutgoingFlow```](../../../../java/de/monticore/bpmn/cocos/flow/EndEventHasNoOutgoingFlow.java)
 

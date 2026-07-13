@@ -18,7 +18,7 @@ class ProcessHasNoDisconnectedComponentsTest extends AbstractCoCoTest {
   @Override
   protected WorkflowCoCoChecker getChecker() { return WorkflowCoCos.getStructuralChecker(); }
   
-  @Disabled
+  @Disabled("CoCo not yet active — ProcessHasNoDisconnectedComponents has a known bug")
   @Test
   void disconnected() {
     String modelName = "de.monticore.bpmn.cocos.analysis.invalid.Disconnected";
@@ -28,7 +28,7 @@ class ProcessHasNoDisconnectedComponentsTest extends AbstractCoCoTest {
     testModelForErrors(modelName, Lists.newArrayList(), expectedWarnings);
   }
   
-  @Disabled
+  @Disabled("CoCo not yet active — ProcessHasNoDisconnectedComponents has a known bug")
   @Test
   void connected() {
     String modelName = "de.monticore.bpmn.cocos.analysis.valid.Connected";

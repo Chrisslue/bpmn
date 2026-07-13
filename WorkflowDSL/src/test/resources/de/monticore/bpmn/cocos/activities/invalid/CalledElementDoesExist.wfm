@@ -1,0 +1,12 @@
+ /* (c) https://github.com/MontiCore/monticore */
+package de.monticore.bpmn.cocos.activities.invalid;
+
+process CalledElementDoesExist {
+
+  start event Start;
+  call-activity DoShipping calls NonExistentProcess;
+  end event End;
+
+  Start -> DoShipping -> End;
+
+}

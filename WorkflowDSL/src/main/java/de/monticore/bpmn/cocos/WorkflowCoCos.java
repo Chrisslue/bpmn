@@ -93,6 +93,8 @@ public class WorkflowCoCos {
     checker.addCoCo(new SplitGatewayHasMultipleOutgoingFlow());
     checker.addCoCo(new MergeGatewayHasAtMostOneOutgoingFlow());
     checker.addCoCo(new MergeGatewayHasMultipleIncomingFlow());
+    checker.addCoCo(new DefaultFlowHasValidSource());
+    checker.addCoCo(new AtMostOneOutgoingFlowIsDefault());
     checker.addCoCo(new FlowBlockMinTwo());
     return checker;
   }
@@ -175,7 +177,7 @@ public class WorkflowCoCos {
     checker.addCoCo(new ExpressionOfEventTriggerConditionalIsBoolean());
     checker.addCoCo(new FlowConditionIsBoolean());
     
-    //checker.addCoCo(new CalledElementDoesExist());
+    checker.addCoCo(new CalledElementDoesExist());
     //checker.addChecker(OCLCoCos.createChecker());
     
     return checker;
