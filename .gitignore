@@ -16,3 +16,10 @@ gradlew.bat
 .gradle/
 gradle/
 build
+
+# Generated build output
+**/bin/
+
+# Binary and temporary files
+*.pdf
+out/
