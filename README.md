@@ -7,22 +7,26 @@
 
 # Business Process Model and Notation (BPMN)
 
-The Business Process Model and Notation (BPMN) is a standardized language 
-for modeling business processes and workflows. 
-This project implements the Workflow DSL, a textual notation for process models 
-based on the [BPMN 2.0.2 language specification][BPMN-spec] and developed with 
-the [MontiCore language workbench][monticore-website]. 
+The Business Process Model and Notation (BPMN) is a standardized language
+for modeling business processes and workflows.
+This project implements the Workflow DSL, a textual notation for process models
+based on the [BPMN 2.0.2 language specification][BPMN-spec] and developed with
+the [MontiCore language workbench][monticore-website].
 The project also provides comprehensive tooling for working with the language.
 
 A detailed documentation for **language engineers** using or extending the
-Workflow DSL is located 
+Workflow DSL is located
 **[here](WorkflowDSL/src/main/grammars/de/monticore/bpmn/Workflow.md)**.
 
 ## Build the Project
 
-* Install Gradle 7.5
-* Install Java 11
+* Install Gradle 8.14
+* Install Java 21
 * Build with command `gradle build`
+
+> **Note:** No Gradle wrapper (`gradlew`) is included in this repository.
+> Gradle must be installed manually and available on the system `PATH`,
+> or invoked via its full installation path.
 
 ## BPMN Tool
 
@@ -35,16 +39,16 @@ The tool provides quite a number of executable actions and configurable
 parameters.
 The possible options are:
 
-| Option                      | Explanation                                                                                                                |
-|-----------------------------|----------------------------------------------------------------------------------------------------------------------------|
-| `-h,--help`                 | Prints this help dialog.                                                                                                   |
-| `-i,--input <file>`         | Reads the source file (mandatory) and parses the contents.                                                                 |
-| `-path <dirlist>`           | Sets the artifact path for imported symbols, space separated (default is: `.`).                                            |
-| `-pp,--prettyprint <file>`  | Prints the AST to stdout or the specified file (optional).                                                                 |
-| `-s,--symboltable <file>`   | Serializes the symbol table of the given artifact.                                                                         |
-| `-v,--version`              | Prints version information.                                                                                                |
-| `-ref,--reference <file>`   | Parses the file as a reference process model and checks if the the input process model specified by `-i` is conform to it. |
-| `-m,--map <string>`         | Specify the names of stereotypes that are used as incarnation mappings in the concrete model. Default : 'incarnates'       |
+| Option                     | Explanation                                                                                                                |
+|----------------------------|----------------------------------------------------------------------------------------------------------------------------|
+| `-h,--help`                | Prints this help dialog.                                                                                                   |
+| `-i,--input <file>`        | Reads the source file (mandatory) and parses the contents.                                                                 |
+| `-path <dirlist>`          | Sets the artifact path for imported symbols, space separated (default is: `.`).                                            |
+| `-pp,--prettyprint <file>` | Prints the AST to stdout or the specified file (optional).                                                                 |
+| `-s,--symboltable <file>`  | Serializes the symbol table of the given artifact.                                                                         |
+| `-v,--version`             | Prints version information.                                                                                                |
+| `-ref,--reference <file>`  | Parses the file as a reference process model and checks if the input process model specified by `-i` is conform to it.    |
+| `-m,--map <string>`        | Specify the names of stereotypes that are used as incarnation mappings in the concrete model. Default: `incarnates`        |
 
 
 ### Small Example Workflow Model
@@ -84,70 +88,70 @@ This example model describes the process of writing a scientific paper:
 - The process has one start event `Start` and one end event `Done`
 - It defines the tasks `Introduction`, `Main`, `Conclusion`, `Draft`,
   `Research`, and `Review`
-- The Workflow begins with the task `Research` followed by `Draft`.
+- The workflow begins with the task `Research` followed by `Draft`
 - Then comes the `split and` gateway after which the tasks `Introduction`,
   `Main`, and `Conclusion` are executed in parallel
-- These three tasks are followed up by the `merge and` gateway.
-- Next up is the task `Review`.
-- Finally, a `split xor` gateway allows us to choose between redoing the tasks
-  `Introduction`, `Main`, and `Conclusion` or end the process.
+- These three tasks are followed by the `merge and` gateway
+- Next is the task `Review`
+- Finally, a `split xor` gateway allows choosing between redoing the tasks
+  `Introduction`, `Main`, and `Conclusion` or ending the process
 
 
 ### Step 1: Parsing and printing the model
 
-You can parse the example model [`PaperAuthoring`](doc/PaperAuthoring.wfm) 
+You can parse the example model [`PaperAuthoring`](doc/PaperAuthoring.wfm)
 and then print it to the console using the following command:
 
 ```shell
-  java -jar WorkflowCLI/target/libs/BPMN.jar -i doc/PaperAuthoring.wfm -pp
+java -jar WorkflowCLI/target/libs/BPMN.jar -i doc/PaperAuthoring.wfm -pp
 ```
 
 ### Step 2: Storing the symbol table
 
-The symbols defined in the example model 
+The symbols defined in the example model
 [`PaperAuthoring`](doc/PaperAuthoring.wfm) can be serialized and stored in a
 `.wfsym` file using the following command:
 
 ```shell
-  java -jar WorkflowCLI/target/libs/BPMN.jar -i doc/PaperAuthoring.wfm -s doc/PaperAuthoring.wfsym
+java -jar WorkflowCLI/target/libs/BPMN.jar -i doc/PaperAuthoring.wfm -s doc/PaperAuthoring.wfsym
 ```
 
 ### Step 3: Conformance Checking to Reference Models
 
-The example model [`PaperAuthoring`](doc/PaperAuthoring.wfm) can be viewed 
-as a reference model for writing scientific publications [[KRS+24]]. 
-We can check whether a concrete process model conforms to it using the 
-option `-r`.
+The example model [`PaperAuthoring`](doc/PaperAuthoring.wfm) can be viewed
+as a reference model for writing scientific publications [[KRS+24]].
+We can check whether a concrete process model conforms to it using the
+option `-ref`.
 
 The process model [`Thesis`](doc/Thesis.wfm) is a conforming model.
 The check can be executed as follows:
 
 ```shell
-  java -jar WorkflowCLI/target/libs/BPMN.jar -i doc/Thesis.wfm -ref doc/PaperAuthoring.wfm
+java -jar WorkflowCLI/target/libs/BPMN.jar -i doc/Thesis.wfm -ref doc/PaperAuthoring.wfm
 ```
 
 The process model [`AntiPatternMerge`](doc/AntiPatternMerge.wfm) is,
-however, not conform, as it closes a parallel executed branches of tasks 
+however, not conforming, as it closes parallel executed branches of tasks
 with a `merge xor` gateway.
 When executing the conformance check, the algorithm finds a sequence of
-tasks via backtracking that are not permitted by 
+tasks via backtracking that are not permitted by
 [`PaperAuthoring`](doc/PaperAuthoring.wfm):
 
 ```shell
-  java -jar WorkflowCLI/target/libs/BPMN.jar -i doc/AntiPatternMerge.wfm -ref doc/PaperAuthoring.wfm
+java -jar WorkflowCLI/target/libs/BPMN.jar -i doc/AntiPatternMerge.wfm -ref doc/PaperAuthoring.wfm
 ```
 
 ### Step 4: Loading symbols from a class diagram
 
-More complex Workflow models, such as the 
+More complex workflow models, such as the
 [`OrderToDeliveryWorkflow`](doc/de/monticore/bpmn/examples/OrderToDeliveryWorkflow.wfm)
-described 
-**[here](WorkflowDSL/src/main/grammars/de/monticore/bpmn/Workflow.md)**.
+described
+**[here](WorkflowDSL/src/main/grammars/de/monticore/bpmn/Workflow.md)**,
 may import symbols from class diagrams in order to utilize custom data types.
-To load the serialized symbol table of the class diagram 
-[OrderToDelivery](doc/de/monticore/bpmn/cds/OrderToDelivery.cd), 
+To load the serialized symbol table of the class diagram
+[`OrderToDelivery`](doc/de/monticore/bpmn/cds/OrderToDelivery.cd),
 the artifact path has to be set to `doc/` using the option `-path`:
 
 ```shell
-  java -jar WorkflowCLI/target/libs/BPMN.jar -i doc/de/monticore/bpmn/examples/OrderToDeliveryWorkflow.wfm -path doc/ -pp
+java -jar WorkflowCLI/target/libs/BPMN.jar -i doc/de/monticore/bpmn/examples/OrderToDeliveryWorkflow.wfm -path doc/ -pp
 ```
