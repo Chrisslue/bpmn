@@ -21,6 +21,7 @@ dependencies {
     implementation project(":WorkflowDSL")
     implementation "de.monticore:monticore-runtime:$mc_version"
     implementation "de.monticore:monticore-grammar:$mc_version"
+    implementation "de.monticore.lang:cd4analysis:7.9.0-SNAPSHOT"
 
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_jupiter_version"
     testImplementation "org.junit.jupiter:junit-jupiter-engine:$junit_jupiter_version"
