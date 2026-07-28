@@ -5,6 +5,7 @@ package de.monticore.bpmn.cds;
 classdiagram Domain {
 
     class Contract {
+      java.time.ZonedDateTime hiringDate;
       public int version;
     }
 
@@ -20,6 +21,8 @@ classdiagram Domain {
     class LeaveCard;
 
     class LeaveEntry {
+      java.time.ZonedDateTime startDate;
+      java.time.ZonedDateTime endDate;
       /int workingDays;
       /int remainingLeaveDays;
       DomainUser substitute;
@@ -32,6 +35,8 @@ classdiagram Domain {
     association [1] LeaveCard -> DomainUser [1];
 
     class MedicalCertificate {
+      java.time.ZonedDateTime startDate;
+      java.time.ZonedDateTime endDate;
       String description;
     }
 

@@ -3,7 +3,6 @@ plugins {
     id 'com.gradleup.shadow' version "$shadow_version"
     id "jacoco"
     id "de.se_rwth.codestyle" version "$mc_version"
-    id "cd2pojo" version "$mc_version"
 }
 
 group = "de.monticore.lang"
