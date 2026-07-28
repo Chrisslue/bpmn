@@ -21,18 +21,16 @@ process TimeManagement {
   lane Employee {
     start event UserLoggedIn;
 
-    user task OpenDashboard {
+    task OpenDashboard {
       webservice = ##webservice;
       in database -> out slots;
     }
 
-    user task ChooseTimeslot {
-      webservice = ##webservice;
+    task ChooseTimeslot {
       in slots -> out chosenSlot;
     }
 
-    service task CreateNewTimeslot {
-      webservice = ##webservice;
+    task CreateNewTimeslot {
       out slot;
     }
 
@@ -41,34 +39,27 @@ process TimeManagement {
     split and EnterTimeslotData;
     merge and TimeslotDataEntered;
 
-    service task FillStartTimeOfNewEntry {
-      webservice = ##webservice;
+    task FillStartTimeOfNewEntry {
       in slot -> out slot;
     }
 
-    user task EnterStartTime {
-      webservice = ##webservice;
+    task EnterStartTime {
       out slot;
     }
 
-    user task EnterEndTime {
-      webservice = ##webservice;
+    task EnterEndTime {
       out slot;
     }
 
-    user task EnterProject {
-      webservice = ##webservice;
+    task EnterProject {
       out slot;
     }
 
-    user task EnterWorkPackage {
-      webservice = ##webservice;
+    task EnterWorkPackage {
       out slot;
     }
 
-    user task Confirm {
-      webservice = ##webservice;
-    }
+    task Confirm;
 
     start event Abort signal abortRequested;
 
@@ -79,8 +70,7 @@ process TimeManagement {
         out validationSlot;
       }
 
-      service task CheckData {
-        webservice = ##webservice;
+      task CheckData {
         in validationSlot;
       }
 
@@ -105,7 +95,7 @@ process TimeManagement {
     merge xor TimeslotCanBePersisted;
     merge xor ErrorOccurred;
 
-    service task PersistTimeslot {
+    task PersistTimeslot {
       webservice = ##webservice;
       in slot -> out database;
     }
@@ -114,8 +104,7 @@ process TimeManagement {
       out error;
     }
 
-    service task ShowErrorMessage {
-      webservice = ##webservice;
+    task ShowErrorMessage {
       in error;
     }
 
@@ -126,12 +115,11 @@ process TimeManagement {
   }
 
   lane HR {
-    user task ReviewRequestForVacation {
-      webservice = ##webservice;
+    task ReviewRequestForVacation {
       out decision;
     }
 
-    service task PersistDecision {
+    task PersistDecision {
       webservice = ##webservice;
       in decision -> out database;
     }
