@@ -4,14 +4,14 @@ package de.monticore.bpmn.cds;
 classdiagram OrderToDelivery{
     public class InventoryAvailabilityChecker{
         public boolean allProductsAvailable;
-        public List<Product> unavailableProducts;
+        public ProductList unavailableProducts;
     }
 
     public class Order{
         public String orderID;
         public String customerID;
         public int numberOfOrderedProducts;
-        public List<Product> orderList;
+        public ProductList orderList;
         public InventoryAvailabilityChecker checker;
         public double totalCost;
     }
@@ -43,5 +43,8 @@ classdiagram OrderToDelivery{
         public String cardNumber;
         public String cardVerificationValue;
         public String cardExpirationDate;
+    }
+
+    public class ProductList{
     }
 }

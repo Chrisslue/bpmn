@@ -28,45 +28,46 @@ public class WorkflowToolTest {
   
   @Test
   public void testNonConformance() {
-    String[] conformance = new String[] { "-i", MODEL_DIR + "conformance/AntiPatternMerge.wfm",
-        "-ref", MODEL_DIR + "conformance/PaperAuthoring.wfm", "-m", "ref" };
+    String[] conformance =
+        new String[] { "-i", MODEL_DIR + "conformance/AntiPatternMerge.wfm", "-ref",
+            MODEL_DIR + "conformance/PaperAuthoring.wfm", "-m", "ref" };
     WorkflowTool.main(conformance);
     Assertions.assertTrue(Log.getFindings().isEmpty());
   }
   
   @Test
   public void testPrettyPrint() {
-    String[] conformance = new String[] { "-i", MODEL_DIR + "examples/OrderToDeliveryWorkflow.wfm",
-        "-path", "src/test/resources/", "-pp", TARGET_DIR
-            + "examples/OrderToDeliveryWorkflow.wfm" };
+    String[] conformance =
+        new String[] { "-i", MODEL_DIR + "examples/OrderToDeliveryWorkflow.wfm", "-path",
+            "target/cd2pojo/test/symbols/", "-pp", TARGET_DIR + "examples/OrderToDeliveryWorkflow.wfm" };
     WorkflowTool.main(conformance);
     Assertions.assertTrue(Log.getFindings().isEmpty());
   }
   
   @Test
   public void testPrettyPrintToStdOut() {
-    String[] conformance = new String[] { "-i", MODEL_DIR + "examples/OrderToDeliveryWorkflow.wfm",
-        "-path", "src/test/resources/", "-pp" };
+    String[] conformance =
+        new String[] { "-i", MODEL_DIR + "examples/OrderToDeliveryWorkflow.wfm", "-path",
+            "target/cd2pojo/test/symbols/", "-pp" };
     WorkflowTool.main(conformance);
     Assertions.assertTrue(Log.getFindings().isEmpty());
   }
   
   @Test
   public void testStoreSymbolTable() {
-    String[] conformance = new String[] { "-i", MODEL_DIR + "examples/OrderToDeliveryWorkflow.wfm",
-        "-path", "src/test/resources/", "-s", TARGET_DIR
-            + "examples/OrderToDeliveryWorkflow.wfsym" };
+    String[] conformance =
+        new String[] { "-i", MODEL_DIR + "examples/OrderToDeliveryWorkflow.wfm", "-path",
+            "target/cd2pojo/test/symbols/", "-s", TARGET_DIR + "examples/OrderToDeliveryWorkflow.wfsym" };
     WorkflowTool.main(conformance);
     Assertions.assertTrue(Log.getFindings().isEmpty());
   }
   
-//  @Test
-//  public void testStoreSymbolTable2() {
-//    String[] conformance = new String[] { "-i", MODEL_DIR + "examples/TimeManagement.wfm",
-//        "-path", "src/test/resources/", "-s", TARGET_DIR
-//        + "examples/TimeManagement.wfsym" };
-//    WorkflowTool.main(conformance);
-//    Assertions.assertTrue(Log.getFindings().isEmpty());
-//  }
+  @Test
+  public void testStoreSymbolTable2() {
+    String[] conformance = new String[] { "-i", MODEL_DIR + "examples/TimeManagement.wfm", "-path",
+        "target/cd2pojo/test/symbols/", "-s", TARGET_DIR + "examples/TimeManagement.wfsym" };
+    WorkflowTool.main(conformance);
+    Assertions.assertTrue(Log.getFindings().isEmpty());
+  }
   
 }

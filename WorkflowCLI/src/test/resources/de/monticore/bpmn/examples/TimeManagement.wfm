@@ -1,4 +1,4 @@
-/*·(c)·https://github.com/MontiCore/monticore·*/
+ /* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.examples;
 
 import de.monticore.bpmn.cds.TimeManagement.*;
@@ -18,13 +18,156 @@ process TimeManagement {
   signal abortRequested:boolean;
   signal vacationApproved:boolean;
 
-  start event UserLoggedIn;
-  end event UserLoggedOut;
+  lane Employee {
+    start event UserLoggedIn;
 
-  user task OpenDashboard {
-    webservice = ##webservice;
-    in database -> out slots;
+    user task OpenDashboard {
+      webservice = ##webservice;
+      in database -> out slots;
+    }
+
+    user task ChooseTimeslot {
+      webservice = ##webservice;
+      in slots -> out chosenSlot;
+    }
+
+    service task CreateNewTimeslot {
+      webservice = ##webservice;
+      out slot;
+    }
+
+    split xor ChosenSlotHasEndDate;
+    merge xor RetryTimeslotEntry;
+    split and EnterTimeslotData;
+    merge and TimeslotDataEntered;
+
+    service task FillStartTimeOfNewEntry {
+      webservice = ##webservice;
+      in slot -> out slot;
+    }
+
+    user task EnterStartTime {
+      webservice = ##webservice;
+      out slot;
+    }
+
+    user task EnterEndTime {
+      webservice = ##webservice;
+      out slot;
+    }
+
+    user task EnterProject {
+      webservice = ##webservice;
+      out slot;
+    }
+
+    user task EnterWorkPackage {
+      webservice = ##webservice;
+      out slot;
+    }
+
+    user task Confirm {
+      webservice = ##webservice;
+    }
+
+    start event Abort signal abortRequested;
+
+    subprocess ValidateInput {
+      data validationSlot:TimeSlot;
+
+      start event ValidationTriggered {
+        out validationSlot;
+      }
+
+      service task CheckData {
+        webservice = ##webservice;
+        in validationSlot;
+      }
+
+      split xor InputValidity;
+
+      end event Invalid throw error invalidInput;
+      end event Valid;
+
+      ValidationTriggered -> CheckData -> InputValidity -> {
+        [slot.endTimeBeforeStartTime()] Invalid;
+        [slot.insufficientPermissions()] Invalid;
+        [slot.durationGreaterThanTenHours()] Invalid;
+        [_] Valid;
+      };
+    }
+
+    start event InvalidInput when [true] {
+      out error;
+    }
+
+    split xor ProjectIsVacation;
+    merge xor TimeslotCanBePersisted;
+    merge xor ErrorOccurred;
+
+    service task PersistTimeslot {
+      webservice = ##webservice;
+      in slot -> out database;
+    }
+
+    start event Failed when [true] {
+      out error;
+    }
+
+    service task ShowErrorMessage {
+      webservice = ##webservice;
+      in error;
+    }
+
+    event VacationApproved throw signal vacationApproved;
+
+    end event TimeslotPersisted;
+    end event TimeslotCreationAborted;
   }
 
-  UserLoggedIn -> OpenDashboard -> UserLoggedOut;
+  lane HR {
+    user task ReviewRequestForVacation {
+      webservice = ##webservice;
+      out decision;
+    }
+
+    service task PersistDecision {
+      webservice = ##webservice;
+      in decision -> out database;
+    }
+
+    split xor VacationRequestApproved;
+
+    end event VacationDenied;
+  }
+
+  UserLoggedIn -> OpenDashboard -> ChooseTimeslot -> CreateNewTimeslot
+    -> ChosenSlotHasEndDate -> {
+      [chosenSlot.hasEndTime()] FillStartTimeOfNewEntry;
+      [!chosenSlot.hasEndTime()] RetryTimeslotEntry;
+    };
+
+  FillStartTimeOfNewEntry -> RetryTimeslotEntry -> EnterTimeslotData -> {
+    EnterStartTime;
+    EnterEndTime;
+    EnterProject;
+    EnterWorkPackage;
+  } -> TimeslotDataEntered -> Confirm -> ValidateInput -> ProjectIsVacation -> {
+    [!slot.isVacation()] TimeslotCanBePersisted;
+    [slot.isVacation()] ReviewRequestForVacation;
+  };
+
+  ReviewRequestForVacation -> PersistDecision -> VacationRequestApproved -> {
+    [decision.isApproved()] VacationApproved;
+    [!decision.isApproved()] VacationDenied;
+  };
+
+  VacationApproved -> TimeslotCanBePersisted -> PersistTimeslot -> TimeslotPersisted;
+
+  Abort -> TimeslotCreationAborted;
+
+  InvalidInput -> ErrorOccurred;
+  Failed -> ErrorOccurred;
+  ErrorOccurred -> ShowErrorMessage -> RetryTimeslotEntry;
+
 }
