@@ -60,4 +60,13 @@ public class WorkflowToolTest {
     Assertions.assertTrue(Log.getFindings().isEmpty());
   }
   
+//  @Test
+//  public void testStoreSymbolTable2() {
+//    String[] conformance = new String[] { "-i", MODEL_DIR + "examples/TimeManagement.wfm",
+//        "-path", "src/test/resources/", "-s", TARGET_DIR
+//        + "examples/TimeManagement.wfsym" };
+//    WorkflowTool.main(conformance);
+//    Assertions.assertTrue(Log.getFindings().isEmpty());
+//  }
+  
 }
