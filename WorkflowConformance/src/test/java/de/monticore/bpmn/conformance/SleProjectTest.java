@@ -1,4 +1,4 @@
-/*·(c)·https://github.com/MontiCore/monticore·*/
+/* (c) https://github.com/MontiCore/monticore */
 package de.monticore.bpmn.conformance;
 
 import de.monticore.bpmn.workflow.WorkflowMill;
@@ -8,9 +8,8 @@ import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
 
-
 public class SleProjectTest extends AbstractConfTest {
-
+  
   @Test
   void testTest() {
     init();
@@ -20,4 +19,5 @@ public class SleProjectTest extends AbstractConfTest {
     
     Assertions.assertTrue(Log.getFindings().isEmpty());
   }
+  
 }
