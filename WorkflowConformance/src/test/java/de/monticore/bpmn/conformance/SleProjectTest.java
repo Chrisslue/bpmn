@@ -11,13 +11,24 @@ import java.nio.file.Path;
 public class SleProjectTest extends AbstractConfTest {
   
   @Test
-  void testTest() {
+  void loadsSymbolsFromCD() {
     init();
-    WorkflowMill.globalScope().getSymbolPath().addEntry(Path.of("target/cd2pojo/test/symbols/"));
+    WorkflowMill.globalScope().getSymbolPath().addEntry(Path.of("target/cd2pojo/test/symbols/de/monticore/bpmn/conformance/sleProject/TimeManagement"));
     
     loadBPMN("de.monticore.bpmn.conformance.sleProject.TimeManagement", true);
     
     Assertions.assertTrue(Log.getFindings().isEmpty());
+  }
+  
+  
+  @Test
+  void failsForIncompleteSymbolsFromCD() {
+    init();
+    WorkflowMill.globalScope().getSymbolPath().addEntry(Path.of("target/cd2pojo/test/symbols/de/monticore/bpmn/conformance/sleProject/TimeManagement_Incomplete"));
+    
+    loadBPMN("de.monticore.bpmn.conformance.sleProject.TimeManagement_Incomplete", true);
+
+    Assertions.assertFalse(Log.getFindings().isEmpty());
   }
   
 }
