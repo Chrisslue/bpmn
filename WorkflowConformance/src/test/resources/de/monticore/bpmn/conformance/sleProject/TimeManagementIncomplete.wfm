@@ -1,9 +1,9 @@
 /*·(c)·https://github.com/MontiCore/monticore·*/
 package de.monticore.bpmn.conformance.sleProject;
 
-import de.monticore.bpmn.conformance.sleProject.TimeManagement_Incomplete.*;
+import de.monticore.bpmn.conformance.sleProject.TimeManagementIncomplete.*;
 
-process TimeManagement_Incomplete {
+process TimeManagementIncomplete {
 
   data slots:TimeSlotList;
   data chosenSlot:TimeSlot;
