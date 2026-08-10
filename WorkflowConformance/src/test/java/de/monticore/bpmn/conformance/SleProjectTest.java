@@ -33,7 +33,7 @@ public class SleProjectTest extends AbstractConfTest {
     
     WorkflowMill.globalScope().getSymbolPath().addEntry(Path.of("target/cd2pojo/test/symbols/de/monticore/bpmn/conformance/sleProject/TimeManagementIncomplete"));
 
-    loadBPMN("de.monticore.bpmn.conformance.sleProject.TimeManagement", true);
+    loadBPMN("de.monticore.bpmn.conformance.sleProject.TimeManagementIncomplete", true);
     
     List<Finding> errors = Log.getFindings().stream().filter(Finding::isError).toList();
 
