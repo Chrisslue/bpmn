@@ -28,7 +28,7 @@ public class SleProjectTest extends AbstractConfTest {
     init();
     
     // We have to start the Logger in interactive mode. Otherwise, it terminates the whole
-    // program if it has to log an error which negates the purpose of this test
+    // program if it has to log an error, which contradicts the purpose of this test.
     Log.enableFailQuick(false);
     
     WorkflowMill.globalScope().getSymbolPath().addEntry(Path.of(

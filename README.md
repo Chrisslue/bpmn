@@ -39,17 +39,25 @@ The tool provides quite a number of executable actions and configurable
 parameters.
 The possible options are:
 
-| Option                     | Explanation                                                                                                                |
-|----------------------------|----------------------------------------------------------------------------------------------------------------------------|
-| `-h,--help`                | Prints this help dialog.                                                                                                   |
-| `-i,--input <file>`        | Reads the source file (mandatory) and parses the contents.                                                                 |
-| `-path <dirlist>`          | Sets the artifact path for imported symbols, space separated (default is: `.`).                                            |
-| `-pp,--prettyprint <file>` | Prints the AST to stdout or the specified file (optional).                                                                 |
-| `-s,--symboltable <file>`  | Serializes the symbol table of the given artifact.                                                                         |
-| `-v,--version`             | Prints version information.                                                                                                |
-| `-ref,--reference <file>`  | Parses the file as a reference process model and checks if the input process model specified by `-i` is conform to it.    |
-| `-m,--map <string>`        | Specify the names of stereotypes that are used as incarnation mappings in the concrete model. Default: `incarnates`        |
+| Option                     | Explanation                                                                                                                 |
+|----------------------------|-----------------------------------------------------------------------------------------------------------------------------|
+| `-h,--help`                | Prints this help dialog.                                                                                                    |
+| `-i,--input <file>`        | Reads the source file (mandatory) and parses the contents.                                                                  |
+| `-path <dirlist>`          | Sets the artifact path for imported symbols, space separated (default is: `.`).                                             |
+| `-pp,--prettyprint <file>` | Prints the AST to stdout or the specified file (optional).                                                                  |
+| `-s,--symboltable <file>`  | Serializes the symbol table of the given artifact.                                                                          |
+| `-v,--version`             | Prints version information.                                                                                                 |
+| `-ref,--reference <file>`  | Parses the file as a reference process model and checks if the input process model specified by `-i` is conform to it.      |
+| `-m,--map <string>`        | Specify the names of stereotypes that are used as incarnation mappings in the concrete model. Default: `incarnates`         |
 
+### SLE-Project (BPMN4CD)
+
+Our contribution in form of the `TimeManagment` process, which acts as a proof-of-concept for the functionalities
+implemented in this repository, includes:
+1. a [BPMN native description](/doc/sleProject/process.bpmn) of the process,
+2. a WFM-encoding of a [valid](/WorkflowConformance/src/test/resources/de/monticore/bpmn/conformance/sleProject/TimeManagement.wfm) and [invalid](/WorkflowConformance/src/test/resources/de/monticore/bpmn/conformance/sleProject/TimeManagementIncomplete.wfm) process instance thereof,
+3. a [valid](/WorkflowConformance/src/test/cd2pojo/de.monticore.bpmn.conformance.sleProject/TimeManagement.cd) and [invalid](/WorkflowConformance/src/test/cd2pojo/de.monticore.bpmn.conformance.sleProject/TimeManagementIncomplete.cd) CD diagram of the data types used within the process, and 
+4. a thorough [documentation](/doc/sleProject/documentation.md).
 
 ### Small Example Workflow Model
 
