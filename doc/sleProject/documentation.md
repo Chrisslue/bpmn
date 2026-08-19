@@ -23,8 +23,8 @@ the `cd2pojo` dependency to be able to process CDs directly.
 ## Workflow
 
 Most of our work is a result of meeting on Discord on working on the problems at the
-same time. This allowed us to both keep all members up-to-date and also ensure
-that the time committed per person is spread evenly among the team members.
+same time through pair programming. This allowed us to both keep all members up-to-date 
+and also ensure that the time committed per person is spread evenly among the team members.
 
 # WorkflowManagement Process
 
