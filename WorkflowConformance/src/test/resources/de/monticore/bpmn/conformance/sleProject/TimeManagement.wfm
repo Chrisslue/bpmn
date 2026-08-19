@@ -34,7 +34,7 @@ process TimeManagement {
       out slot;
     }
 
-    split xor ChosenSlotHasEndDate;
+    split xor ChosenSlotHasEndTime;
     merge xor RetryTimeslotEntry;
     split and EnterTimeslotData;
     merge and TimeslotDataEntered;
@@ -130,7 +130,7 @@ process TimeManagement {
   }
 
   UserLoggedIn -> OpenDashboard -> ChooseTimeslot -> CreateNewTimeslot
-    -> ChosenSlotHasEndDate -> {
+    -> ChosenSlotHasEndTime -> {
       [chosenSlot.hasEndTime()] FillStartTimeOfNewEntry;
       [!chosenSlot.hasEndTime()] RetryTimeslotEntry;
     };
