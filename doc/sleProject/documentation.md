@@ -4,12 +4,18 @@
 
 # Technical Details
 
-## Gradle Setup
+## Project and Gradle Setup
 
+To avoid replicating the Gradle infrastructure of the already existing project
+and to simplify the migration into the existing MontiCore codebase later, we
+decided to create a fork of the [existing BPMN repository](https://github.com/MontiCore/bpmn) 
+instead of working in the created [GitLab repository](https://git.rwth-aachen.de/se-student/ss26/lectures/sle/projects/bpmn4cd).
 In addition to the already existing Gradle setup and dependencies, we added 
 the `cd2pojo` dependency to be able to process CDs directly.
 
 ## Project Structure
+
+
 
 # Organizational Details
 
@@ -20,17 +26,22 @@ the `cd2pojo` dependency to be able to process CDs directly.
 - Christoph Lütticke
 - Abdullah Rehman
 
+**Supervisor**: Sedat Cakici
+
 ## Workflow
 
 Most of our work is a result of meeting on Discord on working on the problems at the
 same time through pair programming. This allowed us to both keep all members up-to-date 
 and also ensure that the time committed per person is spread evenly among the team members.
+During the meetings we took notes to guarantee that we meet the expectations of our
+supervisor.
 
 # WorkflowManagement Process
 
 ![process.svg](img/process.svg)
-
+*Process 1: Main process to handle the business case*
 ![subprocess.png](img/subprocess.png)
+*Process 2: Sub-process to validate the user input*
 
 ## Business Case
 
