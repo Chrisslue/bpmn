@@ -48,6 +48,8 @@ concepts of the BPMN standard as possible.
 
 ## Class Diagrams
 
+![CD.svg](img/CD.png)
+
 ## Test Cases
 
 ### Happy Case: loadsSymbolsFromCD
