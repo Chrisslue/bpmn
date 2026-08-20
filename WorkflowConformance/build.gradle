@@ -33,3 +33,17 @@ dependencies {
 test {
     useJUnitPlatform()
 }
+
+tasks.register('testSleProject', Test) {
+    group = 'verification'
+    description = 'Runs only the sleProject-related JUnit tests.'
+
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+    shouldRunAfter test
+
+    useJUnitPlatform()
+    filter {
+        includeTestsMatching 'de.monticore.bpmn.conformance.SleProjectTest'
+    }
+}

@@ -128,6 +128,15 @@ tasks.register('testBPMN') {
 }
 
 /**
+ * Executes only the tests related to the sleProject (BPMN4CD).
+ */
+tasks.register('testSleProject') {
+    group = "verification"
+    description = "Tests only the sleProject-related JUnit tests"
+    dependsOn(":WorkflowConformance:testSleProject")
+}
+
+/**
  *  Publishes the jars of the BPMN projects to the nexus repository.
  *  Assembles the jars and publishes them, but does not execute JUnit tests.
  */
