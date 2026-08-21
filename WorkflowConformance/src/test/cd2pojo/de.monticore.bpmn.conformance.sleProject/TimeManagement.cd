@@ -21,6 +21,8 @@ classdiagram TimeManagement {
 
   public class TimeSlotList;
 
+  association slots [1] TimeSlotList -> TimeSlot [*];
+
   public class Database;
 
   public class VacationRequestDecision {
@@ -34,4 +36,3 @@ classdiagram TimeManagement {
   }
 
 }
-

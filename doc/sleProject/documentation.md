@@ -72,6 +72,20 @@ persisted or the process ends.
 
 *Class Diagram 1: Data model of the process*
 
+When modeling the class diagram we focused on staying close to the vocabulary of
+the process to make it easier to understand the data flow.
+In the CD, `TimeSlot` represents a certain time slot that can be booked to some
+project or vacation, which we modeled as a dedicated vacation project.
+As a `TimeSlot` is not required to have an `endTime`, we connected them by a `[0..1]`
+association.
+The Boolean operations `hasEndTime()`, `isVacation()`, `endTimeBeforeStartTime()`,
+`insufficientPermissions()` and `durationGreaterThanTenHours()` each correspond
+to gateway conditions in the process.
+For the `TimeSlotList` we added an association.
+The additional classes `VacationRequestDecision` and `ErrorMessage` are kept as
+small as possible as they only model side effects that are not central to the
+business case.
+
 # Technical Details
 
 ## Project Structure
@@ -80,7 +94,7 @@ As we forked the existing BPMN repository of MontiCore, our project-specific
 results are added to the predefined project structure.
 However, for completeness, we give a short overview of the complete repository,
 which is made up of three modules:
-- `WorkflowDSL` contains the MontiCore grammar in form of [`Workflow.mc4`](/WorkflowDSL/src/main/grammars/de/monticore/bpmn/Workflow.mc4).
+- `WorkflowDSL` contains the MontiCore grammar in form of [`Workflow.mc4`](/WorkflowDSL/src/main/grammars/de/monticore/bpmn/Workflow.mc4),
   which defines a process language that mimics the BPMN standard.
 - `WorkflowConformance` contains implementation that allows to check whether
   a process model conforms to some reference model.
