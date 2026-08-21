@@ -125,25 +125,6 @@ This test case loads the business process `TimeManagement` via the
 ### Bad Case: failsForIncompleteSymbolsFromCD
 
 
-# Organizational Details
-
-## Team (alphabetically)
-
-- Johannes Kurth
-- Peter Lindner
-- Christoph Lütticke
-- Abdullah Rehman
-
-**Supervisor**: Sedat Cakici
-
-## General Workflow
-
-Most of our work is a result of meeting on Discord and working on the problems at the
-same time through pair programming. This allowed us to both keep all members up-to-date
-and also ensure that the time committed per person is spread evenly among the team members.
-During the meetings we took notes to guarantee that we meet all expectations of our
-supervisor.
-
 # Project Evaluation
 
 In the following, we discuss the limitations of the results produced throughout
@@ -178,7 +159,26 @@ was achieved partially; in more detail:
 into the class diagram which are required by the process but are not yet part
 of the CD.
 
-# Usage of AI Tools
+# Organizational Details
+
+## Team (alphabetically)
+
+- Johannes Kurth
+- Peter Lindner
+- Christoph Lütticke
+- Abdullah Rehman
+
+**Supervisor**: Sedat Cakici
+
+## General Workflow
+
+Most of our work is a result of meeting on Discord and working on the problems at the
+same time through pair programming. This allowed us to both keep all members up-to-date
+and also ensure that the time committed per person is spread evenly among the team members.
+During the meetings we took notes to guarantee that we meet all expectations of our
+supervisor.
+
+## Usage of AI Tools
 
 We used Codex for the first translation of our process from the BPMN format to 
 the WFM encoding. However, we were required to manually adjust the WFM-file as
