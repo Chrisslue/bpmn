@@ -52,11 +52,11 @@ The possible options are:
 
 ### SLE-Project (BPMN4CD)
 
-Our contribution in form of the `TimeManagment` process, which acts as a proof-of-concept for the functionalities
+Our contribution in form of the `TimeManagement` process, which acts as a proof-of-concept for the functionalities
 implemented in this repository, includes:
 1. a [BPMN native description](/doc/sleProject/process.bpmn) of the process,
-2. a WFM-encoding of a [valid](/WorkflowConformance/src/test/resources/de/monticore/bpmn/conformance/sleProject/TimeManagement.wfm) and [invalid](/WorkflowConformance/src/test/resources/de/monticore/bpmn/conformance/sleProject/TimeManagementIncomplete.wfm) process instance thereof,
-3. a [valid](/WorkflowConformance/src/test/cd2pojo/de.monticore.bpmn.conformance.sleProject/TimeManagement.cd) and [invalid](/WorkflowConformance/src/test/cd2pojo/de.monticore.bpmn.conformance.sleProject/TimeManagementIncomplete.cd) CD diagram of the data types used within the process, and 
+2. a WFM-encoding of a [complete](/WorkflowConformance/src/test/resources/de/monticore/bpmn/conformance/sleProject/TimeManagement.wfm) and [incomplete](/WorkflowConformance/src/test/resources/de/monticore/bpmn/conformance/sleProject/TimeManagementIncomplete.wfm) process instance thereof, where the latter mirrors the former but imports the `TimeManangementIncomplete` CD symbol namespace,
+3. a [complete](/WorkflowConformance/src/test/cd2pojo/de.monticore.bpmn.conformance.sleProject/TimeManagement.cd) and [incomplete](/WorkflowConformance/src/test/cd2pojo/de.monticore.bpmn.conformance.sleProject/TimeManagementIncomplete.cd) CD diagram of the data types used within the process, and 
 4. a thorough [documentation](/doc/sleProject/documentation.md).
 
 ### Small Example Workflow Model
