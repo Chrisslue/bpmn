@@ -85,6 +85,8 @@ For the `TimeSlotList` we added an association.
 The additional classes `VacationRequestDecision` and `ErrorMessage` are kept as
 small as possible as they only model side effects that are not central to the
 business case.
+The `Database` class is only included to enable the process model to resolve the
+symbol `store database:Database`.
 
 # Technical Details
 
@@ -117,6 +119,9 @@ decided to create a fork of the [existing BPMN repository](https://github.com/Mo
 instead of working in the created [GitLab repository](https://git.rwth-aachen.de/se-student/ss26/lectures/sle/projects/bpmn4cd).
 In addition to the already existing Gradle setup and dependencies, we added
 the `cd2pojo` dependency to be able to process CDs directly.
+When triggering the test build, `cd2pojo` parses the CD models in `WorkflowConformance/src/test/cd2pojo/...`
+and generates the corresponding symbol tables (`*.cd`) under `target/cd2pojo/test/symbols/...`.
+These symbol table files are then added to the global symbol path `WorkflowMill`.
 
 As usual, the project can be built by executing:
 ```
