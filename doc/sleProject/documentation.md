@@ -29,8 +29,13 @@ In the beginning the `Employee` opens the dashboard, which shows their (we use
 gender-neutral language here) already logged timeslots. These timeslots are
 persisted on a database and locally represented as a list of `TimeSlot` objects.
 Upon choosing an empty timeslot with the intention to mark it as vacation, the
-system creates a new `TimeSlot` object.
-**TODO**: Explain `chosenSlot.hasEndTime()` branching.
+system creates a new `TimeSlot` object called `slot`.
+Now, the process branches depending on whether `chosenSlot.hasEndTime()` is
+`true` or `false`. Here, `chosenSlot` refers to the previously chosen `TimeSlot`
+the `Employee` selected from the dashboard.
+In case the `chosenSlot` already has an end time, i.e., `chosenSlot.hasEndTime()`
+returns `true`, then the process pre-fills the start time of the created `slot`.
+Otherwise, it just continues.
 Next, the `Employee` manually inserts the information of the new `TimeSlot`, and
 confirms the input or aborts the creation.
 As the order of the input does not really matter, for this step the process relies
