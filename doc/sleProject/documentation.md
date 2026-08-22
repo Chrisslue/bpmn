@@ -28,8 +28,8 @@ For this, we have two stakeholders, being the `Employee` and the `HR` representa
 In the beginning the `Employee` opens the dashboard, which shows their (we use
 gender-neutral language here) already logged timeslots. These timeslots are
 persisted on a database and locally represented as a list of `TimeSlot` objects.
-Upon choosing an empty timeslot with the intention to mark it as vacation, the
-system creates a new `TimeSlot` object called `slot`.
+Upon choosing an empty timeslot with the intention to either log time to a project
+or mark it as vacation, the system creates a new `TimeSlot` object called `slot`.
 Now, the process branches depending on whether `chosenSlot.hasEndTime()` is
 `true` or `false`. Here, `chosenSlot` refers to the previously chosen `TimeSlot`
 the `Employee` selected from the dashboard.
@@ -125,7 +125,7 @@ instead of working in the created [GitLab repository](https://git.rwth-aachen.de
 In addition to the already existing Gradle setup and dependencies, we added
 the `cd2pojo` dependency to be able to process CDs directly.
 When triggering the test build, `cd2pojo` parses the CD models in `WorkflowDSL/src/test/cd2pojo/...`
-and generates the corresponding symbol tables (`*.cd`) under `target/cd2pojo/test/symbols/...`.
+and generates the corresponding symbol tables (`*.cdsym`) under `target/cd2pojo/test/symbols/...`.
 These symbol table files are then added to the global symbol path `WorkflowMill`.
 
 As usual, the project can be built by executing:
