@@ -13,6 +13,23 @@ the following artifacts:
 2. A [BPMN](https://bpmn.io/) process that handles the flow of our business case
 3. Translations of both to the corresponding DSLs
 
+## Team (alphabetically)
+
+- Johannes Kurth
+- Peter Lindner
+- Christoph Lütticke
+- Abdullah Rehman
+
+**Supervisor**: Sedat Cakici
+
+## General Workflow
+
+Most of our work is a result of meeting on Discord and working on the problems at the
+same time through pair programming. This allowed us to both keep all members up-to-date
+and also ensure that the time committed per person is spread evenly among the team members.
+During the meetings we took notes to guarantee that we meet all expectations of our
+supervisor.
+
 # TimeManagement Process
 
 ![process.svg](img/process.svg)
@@ -34,12 +51,12 @@ Now, the process branches depending on whether `chosenSlot.hasEndTime()` is
 `true` or `false`. Here, `chosenSlot` refers to the previously chosen `TimeSlot`
 the `Employee` selected from the dashboard.
 In case the `chosenSlot` already has an end time, i.e., `chosenSlot.hasEndTime()`
-returns `true`, then the process pre-fills the start time of the created `slot`.
-Otherwise, it just continues.
+returns `true`, the process pre-fills the start time of the created `slot`.
+Otherwise, it continues with the empty `slot`.
 Next, the `Employee` manually inserts the information of the new `TimeSlot`, and
 confirms the input or aborts the creation.
-As the order of the input does not really matter, for this step the process relies
-on parallel user tasks.
+As the order of the input does not really matter, the process relies
+on parallel user tasks here.
 Afterward, the given user input gets validated in the sub-process illustrated above.
 Here, the input data gets both checked for consistency, e.g., that the times
 represent a valid `TimeSlot` and additional business requirements.
@@ -186,26 +203,7 @@ was achieved partially; in more detail:
 into the class diagram which are required by the process but are not yet part
 of the CD.
 
-# Organizational Details
-
-## Team (alphabetically)
-
-- Johannes Kurth
-- Peter Lindner
-- Christoph Lütticke
-- Abdullah Rehman
-
-**Supervisor**: Sedat Cakici
-
-## General Workflow
-
-Most of our work is a result of meeting on Discord and working on the problems at the
-same time through pair programming. This allowed us to both keep all members up-to-date
-and also ensure that the time committed per person is spread evenly among the team members.
-During the meetings we took notes to guarantee that we meet all expectations of our
-supervisor.
-
-## Usage of AI Tools
+# Usage of AI Tools
 
 We used Codex for the first translation of our process from the BPMN format to 
 the WFM encoding. However, we were required to manually adjust the WFM-file as
