@@ -1,7 +1,7 @@
 /*·(c)·https://github.com/MontiCore/monticore·*/
-package de.monticore.bpmn.conformance.sleProject;
+package de.monticore.bpmn.sleProject;
 
-import de.monticore.bpmn.conformance.sleProject.TimeManagement.*;
+import de.monticore.bpmn.sleProject.TimeManagement.*;
 
 process TimeManagement {
 

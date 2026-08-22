@@ -104,12 +104,12 @@ which is made up of three modules:
   command-line entry point for parsing, pretty-printing and conformance-checking
   models. Here, we indirectly utilize the `BPMNConformanceUtils` to load models.
 
-Our contributions can be found at the following places in the `WorkflowConformance` module:
-- `TimeManagement.cd`: ` src/test/cd2pojo/de.monticore.bpmn.conformance.sleProject/`
-- `TimeManagementIncomplete.cd`: ` src/test/cd2pojo/de.monticore.bpmn.conformance.sleProject/`
-- `TimeManagement.wfm`: `src/test/resources/de/monticore/bpmn/conformance/sleProject/`
-- `TimeManagementIncomplete.wfm`: `src/test/resources/de/monticore/bpmn/conformance/sleProject/`
-- `SleProjectTest.java`: `src/test/java/de/monticore/bpmn/conformance/`
+Our contributions can be found at the following places in the `WorkflowDSL` module:
+- `TimeManagement.cd`: `src/test/cd2pojo/de.monticore.bpmn.sleProject/`
+- `TimeManagementIncomplete.cd`: `src/test/cd2pojo/de.monticore.bpmn.sleProject/`
+- `TimeManagement.wfm`: `src/test/resources/de/monticore/bpmn/sleProject/`
+- `TimeManagementIncomplete.wfm`: `src/test/resources/de/monticore/bpmn/sleProject/`
+- `SleProjectTest.java`: `src/test/java/de/monticore/bpmn/sleProject/`
 
 ## Gradle Setup
 
@@ -119,7 +119,7 @@ decided to create a fork of the [existing BPMN repository](https://github.com/Mo
 instead of working in the created [GitLab repository](https://git.rwth-aachen.de/se-student/ss26/lectures/sle/projects/bpmn4cd).
 In addition to the already existing Gradle setup and dependencies, we added
 the `cd2pojo` dependency to be able to process CDs directly.
-When triggering the test build, `cd2pojo` parses the CD models in `WorkflowConformance/src/test/cd2pojo/...`
+When triggering the test build, `cd2pojo` parses the CD models in `WorkflowDSL/src/test/cd2pojo/...`
 and generates the corresponding symbol tables (`*.cd`) under `target/cd2pojo/test/symbols/...`.
 These symbol table files are then added to the global symbol path `WorkflowMill`.
 
@@ -141,8 +141,11 @@ gradle testSleProject
 This test case loads the business process `TimeManagement` via the
 `BPMNConformanceUtils`, and ensures that no errors occur during the processing.
 
+**TODO Abdullah: extend on this**
+
 ### Bad Case: failsForIncompleteSymbolsFromCD
 
+**TODO Abdullah: extend on this**
 
 # Project Evaluation
 

@@ -1,8 +1,7 @@
 /*·(c)·https://github.com/MontiCore/monticore·*/
+package de.monticore.bpmn.sleProject;
 
-package de.monticore.bpmn.conformance.sleProject;
-
-classdiagram TimeManagementIncomplete {
+classdiagram TimeManagement {
 
   public class LocalDateTime;
 
@@ -20,7 +19,9 @@ classdiagram TimeManagementIncomplete {
 
   association endTime [1] TimeSlot -> LocalDateTime [0..1];
 
-  /* The `public class TimeSlotList` class is missing */
+  public class TimeSlotList;
+
+  association slots [1] TimeSlotList -> TimeSlot [*];
 
   public class Database;
 
@@ -35,4 +36,3 @@ classdiagram TimeManagementIncomplete {
   }
 
 }
-

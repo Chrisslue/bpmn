@@ -1,6 +1,7 @@
 /* (c) https://github.com/MontiCore/monticore */
-package de.monticore.bpmn.conformance;
+package de.monticore.bpmn.sleProject;
 
+import de.monticore.bpmn.AbstractTest;
 import de.monticore.bpmn.workflow.WorkflowMill;
 import de.se_rwth.commons.logging.Finding;
 import de.se_rwth.commons.logging.Log;
@@ -10,31 +11,24 @@ import org.junit.jupiter.api.Test;
 import java.nio.file.Path;
 import java.util.List;
 
-public class SleProjectTest extends AbstractConfTest {
+public class SleProjectTest extends AbstractTest {
   
   @Test
   void loadsSymbolsFromCD() {
-    init();
     WorkflowMill.globalScope().getSymbolPath().addEntry(Path.of(
-        "target/cd2pojo/test/symbols/de/monticore/bpmn/conformance/sleProject/TimeManagement"));
+        "target/cd2pojo/test/symbols/de/monticore/bpmn/sleProject/TimeManagement"));
     
-    loadBPMN("de.monticore.bpmn.conformance.sleProject.TimeManagement", true);
+    loadModel("de.monticore.bpmn.sleProject.TimeManagement");
     
     Assertions.assertTrue(Log.getFindings().isEmpty());
   }
   
   @Test
   void failsForIncompleteSymbolsFromCD() {
-    init();
-    
-    // We have to start the Logger in interactive mode. Otherwise, it terminates the whole
-    // program if it has to log an error, which contradicts the purpose of this test.
-    Log.enableFailQuick(false);
-    
     WorkflowMill.globalScope().getSymbolPath().addEntry(Path.of(
-        "target/cd2pojo/test/symbols/de/monticore/bpmn/conformance/sleProject/TimeManagementIncomplete"));
+        "target/cd2pojo/test/symbols/de/monticore/bpmn/sleProject/TimeManagementIncomplete"));
     
-    loadBPMN("de.monticore.bpmn.conformance.sleProject.TimeManagementIncomplete", true);
+    loadModel("de.monticore.bpmn.sleProject.TimeManagementIncomplete");
     
     List<Finding> errors = Log.getFindings().stream().filter(Finding::isError).toList();
     

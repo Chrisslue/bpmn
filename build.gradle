@@ -133,7 +133,7 @@ tasks.register('testBPMN') {
 tasks.register('testSleProject') {
     group = "verification"
     description = "Tests only the sleProject-related JUnit tests"
-    dependsOn(":WorkflowConformance:testSleProject")
+    dependsOn(":WorkflowDSL:testSleProject")
 }
 
 /**

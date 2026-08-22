@@ -4,12 +4,31 @@ plugins {
     id "de.monticore.generator" version "$version"
     id "jacoco"
     id "de.se_rwth.codestyle" version "$mc_version"
+    id "cd2pojo" version "$mc_version"
 }
 
 group = "de.monticore.lang"
 
 test {
     useJUnitPlatform()
+}
+
+tasks.register('testSleProject', Test) {
+    group = 'verification'
+    description = 'Runs only the sleProject-related JUnit tests.'
+
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+    shouldRunAfter test
+
+    useJUnitPlatform()
+    filter {
+        includeTestsMatching 'de.monticore.bpmn.sleProject.SleProjectTest'
+    }
+}
+
+tasks.named('generateMCGrammars') {
+    dependsOn tasks.named('compileCd2pojo')
 }
 
 dependencies {
