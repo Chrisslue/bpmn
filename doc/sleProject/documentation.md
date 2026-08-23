@@ -163,11 +163,23 @@ gradle testSleProject
 This test case loads the business process `TimeManagement` via the
 `BPMNConformanceUtils`, and ensures that no errors occur during the processing.
 
-**TODO Abdullah: extend on this**
-
 ### Bad Case: failsForIncompleteSymbolsFromCD
 
-**TODO Abdullah: extend on this**
+This test case mirrors the happy case, but loads the symbol table generated
+Rather take it from TimeManagementIncomplete.cd; this CD is identical to
+The TimeManagement.cd [file] with the exception that the TimeSlotList class is missing.
+Our `TimeManagement.wfm` process declares `data slots:TimeSlotList;`,
+loading it against the incomplete symbol table must fail while resolving that
+type.
+The test therefore begins by calling Log.enableFailQuick(false), so that the
+`Log` collects findings instead of terminating the process on the first error,
+which would in that case stop the test from being able to inspect the result at all.
+It then asserts that exactly one error was logged, with the message
+The symbol TimeSlotList cannot be found. This serves to confirm two things at the same time:
+that our CD-to-symbol-table pipeline is actually consulted while resolving
+BPMN data types (an unresolvable type is not silently ignored), and that
+missing symbols are reported as a single, precise error rather than
+leading to a series of further errors.
 
 # Project Evaluation
 
