@@ -21,5 +21,4 @@ build
 **/bin/
 
 # Binary and temporary files
-*.pdf
 out/
