@@ -266,15 +266,6 @@ was achieved partially; in more detail:
   whether it is possible to access the data during runtime. Creating such an
   executable process engine is out of scope for this project. Thus, this
   might present an opportunity for future work.
-- In addition, we investigated whether it is possible to write from the process
-  to the class diagrams to manipulate the definition thereof in case there are
-  `data` items referenced in the process that were not defined in the
-  corresponding
-  class diagrams. However, **TODO Johannes: extend on this part**
-
-**TODO: Johannes:** Please explain what you tried regarding inserting elements
-into the class diagram which are required by the process but are not yet part
-of the CD.
 
 # Usage of AI Tools
 
