@@ -17,7 +17,7 @@ the following artifacts:
 3. Translations of both to the corresponding DSLs
 4. A short test suite to verify the correctness of the integration
 
-#Organization
+# Organization
 
 ## Team (alphabetically)
 
