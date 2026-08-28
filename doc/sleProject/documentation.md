@@ -224,10 +224,10 @@ against the symbol tables of an incomplete class diagram. The `TimeManagementInc
 is identical to the `TimeManagement.cd` but misses the `TimeSlotList` class required
 by the process. As the `TimeManagementIncomplete.wfm` declares `data slots:TimeSlotList;`,
 loading it against the incomplete symbol tables must fail because the type cannot be resolved.
-The test starts---after initialization---by calling `Log.enableFailQuick(false)`. This call
-disables the fail quick mode of the logger which is necessary because by default the logger
-terminates the program if an error is logged. This would contradict the purpose of the test
-because the results and expected error could not be inspected anymore.
+It is important to note that `Log.enableFailQuick(false)` is called by the setup
+of `AbstractTest`, which `SleProjectTest` extends.
+This ensures that the logger does not terminate the execution of the test 
+on occurrence of errors.
 After loading the model, the test assures that only one error occurred during loading
 and confirms that the symbol `TimeSlotList` could not be found by validating the error message.
 By doing so, we confirm two things: First, our CD-to-symbol-table pipeline is actually
