@@ -34,7 +34,7 @@ process TimeManagement {
       out slot;
     }
 
-    split xor ChosenSlotHasEndTime;
+    split xor ChosenSlotIsEmpty;
     merge xor RetryTimeslotEntry;
     split and EnterTimeslotData;
     merge and TimeslotDataEntered;
@@ -130,9 +130,9 @@ process TimeManagement {
   }
 
   UserLoggedIn -> OpenDashboard -> ChooseTimeslot -> CreateNewTimeslot
-    -> ChosenSlotHasEndTime -> {
-      [chosenSlot.hasEndTime()] FillStartTimeOfNewEntry;
-      [!chosenSlot.hasEndTime()] RetryTimeslotEntry;
+    -> ChosenSlotIsEmpty -> {
+      [chosenSlot.isEmpty()] FillStartTimeOfNewEntry;
+      [!chosenSlot.isEmpty()] RetryTimeslotEntry;
     };
 
   FillStartTimeOfNewEntry -> RetryTimeslotEntry -> EnterTimeslotData -> {
@@ -141,8 +141,8 @@ process TimeManagement {
     EnterProject;
     EnterWorkPackage;
   } -> TimeslotDataEntered -> Confirm -> ValidateInput -> ProjectIsVacation -> {
-    [!slot.isVacation()] TimeslotCanBePersisted;
-    [slot.isVacation()] ReviewRequestForVacation;
+    [slot.project == "vacation"] TimeslotCanBePersisted;
+    [slot.project != "vacation"] ReviewRequestForVacation;
   };
 
   ReviewRequestForVacation -> PersistDecision -> VacationRequestApproved -> {

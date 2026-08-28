@@ -10,7 +10,7 @@ classdiagram TimeManagement {
     public String project;
     public String workPackage;
 
-    public boolean hasEndTime();
+    public boolean isEmpty();
     public boolean isVacation();
     public boolean endTimeBeforeStartTime();
     public boolean insufficientPermissions();
